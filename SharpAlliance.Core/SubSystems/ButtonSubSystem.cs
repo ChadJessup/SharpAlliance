@@ -132,7 +132,7 @@ public class ButtonSubSystem : ISharpAllianceManager
 
     // public List<ButtonPic> ButtonPictures { get; } = new(MAX_BUTTON_PICS);
 
-    private async ValueTask<bool> InitializeButtonImageManager(SurfaceType DefaultBuffer, int DefaultPitch, int DefaultBPP)
+    private ValueTask<bool> InitializeButtonImageManager(SurfaceType DefaultBuffer, int DefaultPitch, int DefaultBPP)
     {
         byte Pix;
         int x;
@@ -216,7 +216,7 @@ public class ButtonSubSystem : ISharpAllianceManager
         if (GenericButtonOffNormal[bp] == null)
         {
             //DbgMessage(TOPIC_BUTTON_HANDLER, DBG_LEVEL_0, "Couldn't create VOBJECT for "DEFAULT_GENERIC_BUTTON_OFF);
-            return false;
+            return ValueTask.FromResult(false);
         }
 
         hobject = video.GetVideoObject(Globals.DEFAULT_GENERIC_BUTTON_ON);
@@ -224,7 +224,7 @@ public class ButtonSubSystem : ISharpAllianceManager
         if (GenericButtonOnNormal[bp] == null)
         {
             //DbgMessage(TOPIC_BUTTON_HANDLER, DBG_LEVEL_0, "Couldn't create VOBJECT for "DEFAULT_GENERIC_BUTTON_ON);
-            return false;
+            return ValueTask.FromResult(false);
         }
 
         // Load up the off hilite and on hilite images. We won't check for errors because if the file
@@ -237,12 +237,12 @@ public class ButtonSubSystem : ISharpAllianceManager
         if (!this.GetETRLEPixelValue(ref Pix, GenericButtonOffNormal[bp], 8, 0, 0))
         {
             // DbgMessage(TOPIC_BUTTON_HANDLER, DBG_LEVEL_0, "Couldn't get generic button's background pixel value");
-            return false;
+            return ValueTask.FromResult(false);
         }
 
         GenericButtonFillColors[bp] = GenericButtonOffNormal[bp].Palette[Pix];
 
-        return true;
+        return ValueTask.FromResult(true);
     }
 
     public static void UnMarkButtonDirty(GUI_BUTTON button)
@@ -460,11 +460,6 @@ public class ButtonSubSystem : ISharpAllianceManager
             usIconindex = 0
         };
 
-        for (x = 0; x < 4; x++)
-        {
-            b.UserData[x] = 0;
-        }
-
         // Set the button click callback function (if any)
         if (ClickCallback != Globals.BUTTON_NO_CALLBACK)
         {
@@ -490,10 +485,7 @@ public class ButtonSubSystem : ISharpAllianceManager
         // Define a MOUSE_REGION for this QuickButton
         MouseSubSystem.MSYS_DefineRegion(
             b.MouseRegion,
-            new(loc.X,
-                loc.Y,
-                b.ButtonPicture.MaxWidth,
-                b.ButtonPicture.MaxHeight),
+            new(loc, b.ButtonPicture.MaxSize),
             Priority,
             CURSOR.NORMAL,
             QuickButtonCallbackMouseMove,
@@ -947,11 +939,10 @@ public class ButtonSubSystem : ISharpAllianceManager
         }
 
         // Display the button image
-        video.BltVideoObject(
+        video.BlitSurfaceToSurface(
+            b.ButtonPicture.vobj.Images[UseImage],
             ButtonDestBuffer,
-            b.ButtonPicture.vobj,
-            (ushort)UseImage,
-            b.Loc.X, b.Loc.Y);
+            b.Loc);
     }
 
     public static void DrawCheckBoxButtonOff(GUI_BUTTON btn)
@@ -1628,8 +1619,7 @@ public class ButtonSubSystem : ISharpAllianceManager
         }
 
         // Set the width and height for this image set
-        buttonPic.MaxHeight = MaxHeight;
-        buttonPic.MaxWidth = MaxWidth;
+        buttonPic.MaxSize = new(MaxWidth, MaxHeight);
 
         // return the image slot number
         ButtonPicsLoaded++;
@@ -1766,8 +1756,7 @@ public class ButtonSubSystem : ISharpAllianceManager
         }
 
         // Set the width and height for this image set
-        buttonPic.MaxHeight = MaxHeight;
-        buttonPic.MaxWidth = MaxWidth;
+        buttonPic.MaxSize = new(MaxWidth, MaxHeight);
 
         // return the image slot number
         ButtonPicsLoaded++;
@@ -1890,10 +1879,8 @@ public class ButtonSubSystem : ISharpAllianceManager
         // Define a MOUSE_REGION for this QuickButton
 
         var regionRect = new Rectangle(
-            loc.X,
-            loc.Y,
-            Image.MaxWidth,
-            Image.MaxHeight);
+            loc,
+            Image.MaxSize);
 
         MouseSubSystem.MSYS_DefineRegion(
             ref b.MouseRegion,
@@ -2263,7 +2250,7 @@ public class ButtonSubSystem : ISharpAllianceManager
         if (buttonPic.fFlags.HasFlag(GUI_BTN.DUPLICATE_VOBJ)
             || buttonPic.fFlags.HasFlag(GUI_BTN.EXTERNAL_VOBJ))
         {
-            buttonPic.vobj = null;
+            //buttonPic.vobj = null;
             ButtonPicsLoaded--;
         }
         else
@@ -2281,10 +2268,10 @@ public class ButtonSubSystem : ISharpAllianceManager
                     // ButtonPictures[x].fFlags &= ~GUI_BTN.DUPLICATE_VOBJ;
 
                     // Now remove this button, but not it's vobject
-                    buttonPic.vobj = null;
+                //    buttonPic.vobj = null;
 
                     fDone = true;
-                    ButtonPicsLoaded--;
+                //    ButtonPicsLoaded--;
                 }
             }
         }
@@ -2292,8 +2279,8 @@ public class ButtonSubSystem : ISharpAllianceManager
         // If image slot isn't empty, delete the image
         if (buttonPic.vobj is not null)
         {
-            video.DeleteVideoObject(buttonPic.vobj);
-            buttonPic.vobj = null;
+          //  video.DeleteVideoObject(buttonPic.vobj);
+          //  buttonPic.vobj = null;
             ButtonPicsLoaded--;
         }
     }
@@ -2373,8 +2360,7 @@ public class ButtonPic
     public int OffHilite;            // index to use when button is OFF w/ hilite on it
     public int OnNormal;             // index to use when button is ON
     public int OnHilite;             // index to use when button is ON w/ hilite on it
-    public int MaxWidth;                // Width of largest image in use
-    public int MaxHeight;           // Height of largest image in use
+    public Size MaxSize;           // Height of largest image in use
     public GUI_BTN fFlags;                  // Special image flags
 }
 

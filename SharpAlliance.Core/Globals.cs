@@ -1799,8 +1799,7 @@ public partial class Globals
 
     public const int MAX_LINE_COUNT = 6;
     public const int MAX_AGE = 10000;
-    public const int X_START = 2;
-    public const int Y_START = 330;
+    public static SixLabors.ImageSharp.Point START = new(2, 330);
     public const int MAP_LINE_WIDTH = 300;
     public const int WIDTH_BETWEEN_NEW_STRINGS = 5;
 

@@ -1,6 +1,7 @@
 ﻿using System;
 using SharpAlliance.Core.Managers.VideoSurfaces;
 using SharpAlliance.Core.SubSystems;
+using SixLabors.ImageSharp;
 
 namespace SharpAlliance.Core;
 
@@ -157,10 +158,8 @@ public class FACETYPE
     public int uiSoundID;                                           // Sound ID if one being played
     public int ubSoldierID;                                      // SoldierID if one specified
     public NPCID ubCharacterNum;                                   // Profile ID num
-    public int usFaceX;                                             // X location to render face
-    public int usFaceY;                                             // Y location to render face
-    public int usFaceWidth;
-    public int usFaceHeight;
+    public Point usFaceLocation;
+    public Size usFaceSize;
     public SurfaceType uiAutoDisplayBuffer;                     // Display buffer for face
     public SurfaceType uiAutoRestoreBuffer;                     // Restore buffer
     public bool fAutoRestoreBuffer;                         // Flag to indicate our own restorebuffer or not

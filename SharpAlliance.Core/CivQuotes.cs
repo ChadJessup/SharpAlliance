@@ -87,8 +87,7 @@ public partial class Globals
     public static QUOTE_SYSTEM_STRUCT gCivQuoteData;
 
     public static int[] gzCivQuote = new int[320];
-    public static int gusCivQuoteBoxWidth;
-    public static int gusCivQuoteBoxHeight;
+    public static Size gusCivQuoteBox;
 }
 
 public struct QUOTE_SYSTEM_STRUCT
@@ -321,9 +320,12 @@ public class CivQuotes
     {
         if (gCivQuoteData.iVideoOverlay != -1)
         {
-            mercTextBox.RenderMercPopUpBoxFromIndex(gCivQuoteData.iDialogueBox, pBlitter.sX, pBlitter.sY, pBlitter.uiDestBuff);
+            mercTextBox.RenderMercPopUpBoxFromIndex(
+                gCivQuoteData.iDialogueBox, 
+                pBlitter.Location,
+                pBlitter.uiDestBuff);
 
-            video.InvalidateRegion(pBlitter.sX, pBlitter.sY, pBlitter.sX + gusCivQuoteBoxWidth, pBlitter.sY + gusCivQuoteBoxHeight);
+            video.InvalidateRegion(new(pBlitter.Location, new(pBlitter.Location.X + gusCivQuoteBox.Width, pBlitter.Location.Y + gusCivQuoteBox.Height)));
         }
     }
 
@@ -389,8 +391,8 @@ public class CivQuotes
 //        SET_USE_WINFONTS(false);
 
         // OK, find center for box......
-        sX = sX - (gusCivQuoteBoxWidth / 2);
-        sY = sY - (gusCivQuoteBoxHeight / 2);
+        sX = sX - (gusCivQuoteBox.Width / 2);
+        sY = sY - (gusCivQuoteBox.Height / 2);
 
         // OK, limit to screen......
         {
@@ -400,9 +402,9 @@ public class CivQuotes
             }
 
             // CHECK FOR LEFT/RIGHT
-            if ((sX + gusCivQuoteBoxWidth) > 640)
+            if ((sX + gusCivQuoteBox.Width) > 640)
             {
-                sX = 640 - gusCivQuoteBoxWidth;
+                sX = 640 - gusCivQuoteBox.Width;
             }
 
             // Now check for top
@@ -412,18 +414,15 @@ public class CivQuotes
             }
 
             // Check for bottom
-            if ((sY + gusCivQuoteBoxHeight) > 340)
+            if ((sY + gusCivQuoteBox.Height) > 340)
             {
-                sY = 340 - gusCivQuoteBoxHeight;
+                sY = 340 - gusCivQuoteBox.Height;
             }
         }
 
-        VideoOverlayDesc.sLeft = sX;
-        VideoOverlayDesc.sTop = sY;
-        VideoOverlayDesc.sRight = VideoOverlayDesc.sLeft + gusCivQuoteBoxWidth;
-        VideoOverlayDesc.sBottom = VideoOverlayDesc.sTop + gusCivQuoteBoxHeight;
-        VideoOverlayDesc.sX = VideoOverlayDesc.sLeft;
-        VideoOverlayDesc.sY = VideoOverlayDesc.sTop;
+        VideoOverlayDesc.Location = new(sX, sY);
+
+        VideoOverlayDesc.Rectangle.Inflate(gusCivQuoteBox);
         VideoOverlayDesc.BltCallback = RenderCivQuoteBoxOverlay;
 
 //        gCivQuoteData.iVideoOverlay = RegisterVideoOverlay(0, &VideoOverlayDesc);

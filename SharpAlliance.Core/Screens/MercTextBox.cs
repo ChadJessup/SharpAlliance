@@ -240,8 +240,7 @@ public class MercTextBox
         pPopUpTextBox.uiSourceBufferIndex = texture.SurfaceType;
 
         pPopUpTextBox.fMercTextPopupSurfaceInitialized = true;
-        pPopUpTextBox.sWidth = usWidth;
-        pPopUpTextBox.sHeight = usHeight;
+        pPopUpTextBox.Size = new(usWidth, usHeight);
 
         pActualWidth = usWidth;
         pActualHeight = usHeight;
@@ -451,6 +450,8 @@ public class MercTextBox
         SurfaceType surf = this.video.Surfaces.CreateSurface(VObjectDesc);
         gPopUpTextBox.uiMercTextPopUpBackground = surf;
 
+        VObjectDesc.Images[0].SaveAsPng($@"C:\temp\popupbackgroun.png");
+
         // border
         var borderFilePath = Utils.FilenameForBPP(this.zMercBorderPopupFilenames[(int)ubBorderIndex]);
         var borderImage = this.video.GetVideoObject(borderFilePath, out var key);
@@ -504,7 +505,7 @@ public class MercTextBox
         return true;
     }
 
-    public bool RenderMercPopUpBoxFromIndex(int iBoxId, int sDestX, int sDestY, SurfaceType uiBuffer)
+    public bool RenderMercPopUpBoxFromIndex(int iBoxId, Point sDest, SurfaceType uiBuffer)
     {
 
         // set the current box
@@ -514,10 +515,10 @@ public class MercTextBox
         }
 
         // now attempt to render the box
-        return this.RenderMercPopupBox(sDestX, sDestY, uiBuffer);
+        return this.RenderMercPopupBox(sDest, uiBuffer);
     }
 
-    public bool RenderMercPopupBox(int sDestX, int sDestY, SurfaceType uiBuffer)
+    public bool RenderMercPopupBox(Point sDest, SurfaceType uiBuffer)
     {
         // will render/transfer the image from the buffer in the data structure to the buffer specified by user
         bool fReturnValue = true;
@@ -536,8 +537,7 @@ public class MercTextBox
                 uiBuffer,
                 ((SurfaceType?)this.gPopUpTextBox.uiSourceBufferIndex) ?? SurfaceType.Unknown,
                 0,
-                sDestX,
-                sDestY,
+                sDest,
                 BlitTypes.FAST | BlitTypes.USECOLORKEY,
                 null);
         }
@@ -547,8 +547,7 @@ public class MercTextBox
                 uiBuffer,
                 ((SurfaceType?)this.gPopUpTextBox.uiSourceBufferIndex) ?? SurfaceType.Unknown,
                 0,
-                sDestX,
-                sDestY,
+                sDest,
                 BlitTypes.FAST,
                 null);
         }
@@ -560,17 +559,12 @@ public class MercTextBox
         //Invalidate!
         if (uiBuffer == SurfaceType.FRAME_BUFFER)
         {
-            this.video.InvalidateRegion(
-                new(sDestX,
-                sDestY,
-                sDestX + this.gPopUpTextBox.sWidth,
-                sDestY + this.gPopUpTextBox.sHeight));
+            this.video.InvalidateRegion(new(sDest, this.gPopUpTextBox.Size));
         }
 
         return fReturnValue;
     }
 }
-
 
 // background enumeration
 public enum MercTextBoxBackground
@@ -596,8 +590,7 @@ public enum MercTextBoxBorder
 public class MercPopUpBox
 {
     public SurfaceType uiSourceBufferIndex { get; set; }
-    public int sWidth { get; set; }
-    public int sHeight { get; set; }
+    public Size Size { get; set; }
     public MercTextBoxBackground ubBackgroundIndex { get; set; }
     public MercTextBoxBorder ubBorderIndex { get; set; }
     public SurfaceType uiMercTextPopUpBackground { get; set; }

@@ -161,7 +161,7 @@ public class CreditsScreen : IScreen
             }
         }
 
-        // RestoreExternBackgroundRect(CRDT_NAME_LOC_X, CRDT_NAME_LOC_Y, CRDT_NAME_LOC_WIDTH, (int)CRDT_NAME_LOC_HEIGHT);
+        RenderDirty.RestoreExternBackgroundRect(CRDT_NAME_LOC_X, CRDT_NAME_LOC_Y, CRDT_NAME_LOC_WIDTH, (int)CRDT_NAME_LOC_HEIGHT);
 
         if (Globals.giCurrentlySelectedFace != -1)
         {
@@ -532,10 +532,8 @@ public class CreditsScreen : IScreen
                 ubBitDepth = 16
             };
 
-            //            if (video.TryCreateVideoSurface(vs_desc, out pNodeToAdd.uiVideoSurfaceImage))
-            //            {
-            //                return false;
-            //            }
+            var tex = video.Surfaces.CreateSurface(vs_desc);
+            pNodeToAdd.uiVideoSurfaceImage = tex.SurfaceType;
 
             //Set transparency
             this.video.SetVideoSurfaceTransparency(pNodeToAdd.uiVideoSurfaceImage, new Rgba32(0, 0, 0));
@@ -654,8 +652,8 @@ public class CreditsScreen : IScreen
 
             //blit everything to the save buffer ( cause the save buffer can bleed through )
             this.video.BlitBufferToBuffer(SurfaceType.RENDER_BUFFER, SurfaceType.SAVE_BUFFER, new(0, 0, 640, 480));
-
-            // ButtonSubSystem.UnmarkButtonsDirty();
+            
+            //ButtonSubSystem.UnmarkButtonsDirty();
         }
 
         this.video.InvalidateScreen();
@@ -674,6 +672,29 @@ public class CreditsScreen : IScreen
                     case Key.Escape:
                         //Exit out of the screen
                         this.SetCreditsExitScreen(ScreenName.MAINMENU_SCREEN);
+                        break;
+                    case Key.R:
+                        gubCreditScreenRenderFlags = CreditRenderFlag.CRDT_RENDER_ALL;
+                        break;
+
+                    case Key.I:
+                        this.video.InvalidateRegion(0, 0, 640, 480);
+                        break;
+
+                    case Key.Up:
+                        guiCrdtNodeScrollSpeed += 5;
+                        break;
+                    case Key.Down:
+                        if (guiCrdtNodeScrollSpeed > 5)
+                        {
+                            guiCrdtNodeScrollSpeed -= 5;
+                        }
+
+                        break;
+
+                    case Key.Pause:
+                    case Key.Space:
+                        gfPauseCreditScreen = !gfPauseCreditScreen;
                         break;
                 }
             }
@@ -731,15 +752,15 @@ public class CreditsScreen : IScreen
                  new(
                     Globals.gCreditFaces[(int)uiCnt].sX,
                     Globals.gCreditFaces[(int)uiCnt].sY,
-                    Globals.gCreditFaces[(int)uiCnt].sX + Globals.gCreditFaces[(int)uiCnt].sWidth,
-                    Globals.gCreditFaces[(int)uiCnt].sY + Globals.gCreditFaces[(int)uiCnt].sHeight),
+                    Globals.gCreditFaces[(int)uiCnt].sWidth,
+                    Globals.gCreditFaces[(int)uiCnt].sHeight),
                 MSYS_PRIORITY.NORMAL,
                 CURSOR.WWW,
                 this.SelectCreditFaceMovementRegionCallBack,
                 this.SelectCreditFaceRegionCallBack);
 
             // Add region
-            //MouseSubSystem.MSYS_AddRegion(&gCrdtMouseRegions[uiCnt]);
+            MouseSubSystem.MSYS_AddRegion(ref gCrdtMouseRegions[(int)uiCnt]);
 
             MouseSubSystem.MSYS_SetRegionUserData(Globals.gCrdtMouseRegions[(int)uiCnt], 0, (int)uiCnt);
         }
@@ -782,12 +803,10 @@ public class CreditsScreen : IScreen
 
     private void InitCreditEyeBlinking()
     {
-
-    }
-
-    public void Draw(IVideoManager videoManager)
-    {
-
+        for (var ubCnt = 0; ubCnt < (int)PeopleInCredits.NUM_PEOPLE_IN_CREDITS; ubCnt++)
+        {
+            gCreditFaces[ubCnt].uiLastBlinkTime = (int)GetJA2Clock() + Globals.Random.Next(gCreditFaces[ubCnt].sBlinkFreq * 2);
+        }
     }
 
     private void SelectCreditFaceMovementRegionCallBack(ref MOUSE_REGION pRegion, MSYS_CALLBACK_REASON iReason)

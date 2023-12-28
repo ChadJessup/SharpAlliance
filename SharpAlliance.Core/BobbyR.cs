@@ -243,7 +243,7 @@ public class BobbyR
         //if we cant go to any sub pages, darken the page out
         if (!LaptopSaveInfo.fBobbyRSiteCanBeAccessed)
         {
-            VideoSurfaceManager.ShadowVideoSurfaceRect(SurfaceType.FRAME_BUFFER, LAPTOP_SCREEN_UL_X, LAPTOP_SCREEN_WEB_UL_Y, LAPTOP_SCREEN_LR_X, LAPTOP_SCREEN_WEB_LR_Y);
+            VideoSurfaceManager.ShadowVideoSurfaceRect(SurfaceType.FRAME_BUFFER, new(LAPTOP_SCREEN_UL_X, LAPTOP_SCREEN_WEB_UL_Y, LAPTOP_SCREEN_LR_X, LAPTOP_SCREEN_WEB_LR_Y));
         }
 
         Laptop.RenderWWWProgramTitleBar();

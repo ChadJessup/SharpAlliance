@@ -365,17 +365,14 @@ public class VideoSurfaceManager //: IVideoSurfaceManager
         return true;
     }
 
-    internal static bool ShadowVideoSurfaceRect(SurfaceType uiDestBuff, int sX, int sY, int v1, int v2)
+    internal static bool ShadowVideoSurfaceRect(SurfaceType uiDestBuff, Rectangle rectangle)
     {
-        return InternalShadowVideoSurfaceRect(uiDestBuff, sX, sY, v1, v2, false);
+        return InternalShadowVideoSurfaceRect(uiDestBuff, rectangle, false);
     }
 
     private static bool InternalShadowVideoSurfaceRect(
         SurfaceType uiDestVSurface,
-        int X1,
-        int Y1,
-        int X2,
-        int Y2,
+        Rectangle rectangle,
         bool fLowPercentShadeTable)
     {
         Image<Rgba32> pBuffer;
@@ -391,64 +388,6 @@ public class VideoSurfaceManager //: IVideoSurfaceManager
         //
         video.GetVideoSurface(out hVSurface, uiDestVSurface);
 
-        if (X1 < 0)
-        {
-            X1 = 0;
-        }
-
-        if (X2 < 0)
-        {
-            return false;
-        }
-
-        if (Y2 < 0)
-        {
-            return false;
-        }
-
-        if (Y1 < 0)
-        {
-            Y1 = 0;
-        }
-
-        if (X2 >= hVSurface.usWidth)
-        {
-            X2 = hVSurface.usWidth - 1;
-        }
-
-        if (Y2 >= hVSurface.usHeight)
-        {
-            Y2 = hVSurface.usHeight - 1;
-        }
-
-        if (X1 >= hVSurface.usWidth)
-        {
-            return false;
-        }
-
-        if (Y1 >= hVSurface.usHeight)
-        {
-            return false;
-        }
-
-        if ((X2 - X1) <= 0)
-        {
-            return false;
-        }
-
-        if ((Y2 - Y1) <= 0)
-        {
-            return false;
-        }
-
-        Rectangle area = new()
-        {
-            Y = Y1,
-            Height = Y2 - Y1,
-            X = X1,
-            Width = X2 - X1,
-        };
-
         // Lock video surface
         pBuffer = video.Surfaces[uiDestVSurface];
 
@@ -460,7 +399,7 @@ public class VideoSurfaceManager //: IVideoSurfaceManager
         if (!fLowPercentShadeTable)
         {
             // Now we have the video object and surface, call the shadow function
-            if (!Blitters.Blt16BPPBufferShadowRect(pBuffer, area))
+            if (!Blitters.Blt16BPPBufferShadowRect(pBuffer, rectangle))
             {
                 // Blit has failed if false returned
                 return false;
@@ -469,7 +408,7 @@ public class VideoSurfaceManager //: IVideoSurfaceManager
         else
         {
             // Now we have the video object and surface, call the shadow function
-            if (!Blitters.Blt16BPPBufferShadowRectAlternateTable(pBuffer, area))
+            if (!Blitters.Blt16BPPBufferShadowRectAlternateTable(pBuffer, rectangle))
             {
                 // Blit has failed if false returned
                 return false;

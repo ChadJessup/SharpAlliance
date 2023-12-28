@@ -1156,7 +1156,7 @@ public class GameClock
     {
         if ((gfPauseDueToPlayerGamePause == true) && (gfGamePaused == true) && (iPausedPopUpBox != -1))
         {
-            mercTextBox.RenderMercPopUpBoxFromIndex(iPausedPopUpBox, (int)(320 - usPausedActualWidth / 2), (int)(200 - usPausedActualHeight / 2), SurfaceType.FRAME_BUFFER);
+            mercTextBox.RenderMercPopUpBoxFromIndex(iPausedPopUpBox, new((320 - usPausedActualWidth / 2), (200 - usPausedActualHeight / 2)), SurfaceType.FRAME_BUFFER);
             video.InvalidateRegion(new(
                 320 - usPausedActualWidth / 2,
                 200 - usPausedActualHeight / 2,

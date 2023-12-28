@@ -9,9 +9,7 @@ using SharpAlliance.Core.Screens;
 using SharpAlliance.Core.SubSystems;
 using SharpAlliance.Platform;
 using SharpAlliance.Platform.Interfaces;
-using SixLabors.ImageSharp.ColorSpaces;
 using SixLabors.ImageSharp.Drawing.Processing;
-using static System.Runtime.InteropServices.JavaScript.JSType;
 using static SharpAlliance.Core.Globals;
 using FontStyle = SharpAlliance.Core.SubSystems.FontStyle;
 using Point = SixLabors.ImageSharp.Point;
@@ -1419,36 +1417,36 @@ public class SDL2VideoManager : IVideoManager
             //
 
             // DO SOME PREMIMARY CHECKS FOR VALID RECTS
-            bounds.Deconstruct(out int iLeft, out int iTop, out int iRight, out int iBottom);
-            if (iLeft < 0)
-            {
-                iLeft = 0;
-            }
+            //bounds.Deconstruct(out int iLeft, out int iTop, out int iRight, out int iBottom);
+            //if (iLeft < 0)
+            //{
+            //    iLeft = 0;
+            //}
 
-            if (iTop < 0)
-            {
-                iTop = 0;
-            }
+            //if (iTop < 0)
+            //{
+            //    iTop = 0;
+            //}
 
-            if (iRight > SCREEN_WIDTH)
-            {
-                iRight = SCREEN_WIDTH;
-            }
+            //if (iRight > SCREEN_WIDTH)
+            //{
+            //    iRight = SCREEN_WIDTH;
+            //}
 
-            if (iBottom > SCREEN_HEIGHT)
-            {
-                iBottom = SCREEN_HEIGHT;
-            }
+            //if (iBottom > SCREEN_HEIGHT)
+            //{
+            //    iBottom = SCREEN_HEIGHT;
+            //}
 
-            if ((iRight - iLeft) <= 0)
-            {
-                return;
-            }
+            //if ((iRight - iLeft) <= 0)
+            //{
+            //    return;
+            //}
 
-            if ((iBottom - iTop) <= 0)
-            {
-                return;
-            }
+            //if ((iBottom - iTop) <= 0)
+            //{
+            //    return;
+            //}
 
             gListOfDirtyRegions[guiDirtyRegionCount] = bounds;
             guiDirtyRegionCount++;
@@ -2221,7 +2219,7 @@ public class SDL2VideoManager : IVideoManager
         return [.. surfaces];
     }
 
-    public void BlitSurfaceToSurface(Image<Rgba32> src, SurfaceType dst, Point dstPoint, VO_BLT bltFlags)
+    public void BlitSurfaceToSurface(Image<Rgba32> src, SurfaceType dst, Point dstPoint, VO_BLT bltFlags = VO_BLT.SRCTRANSPARENCY)
     {
         var dstSurface = this.Surfaces.SurfaceByTypes[dst];
 
@@ -2233,8 +2231,8 @@ public class SDL2VideoManager : IVideoManager
             Y = dstPoint.Y,
         };
 
-        //        src.SaveAsPng(@$"C:\temp\{nameof(BlitSurfaceToSurface)}-src.png");
-        //        dstSurface.Image.SaveAsPng(@$"C:\temp\{nameof(BlitSurfaceToSurface)}-dstSurface-before.png");
+//        src.SaveAsPng(@$"C:\temp\{nameof(BlitSurfaceToSurface)}-src.png");
+//        dstSurface.Image.SaveAsPng(@$"C:\temp\{nameof(BlitSurfaceToSurface)}-dstSurface-before.png");
 
         dstSurface.Image.Mutate(ctx =>
         {
@@ -2247,7 +2245,7 @@ public class SDL2VideoManager : IVideoManager
                 1.0f);
         });
 
-        //        dstSurface.Image.SaveAsPng(@$"C:\temp\{nameof(BlitSurfaceToSurface)}-dstSurface.png");
+//        dstSurface.Image.SaveAsPng(@$"C:\temp\{nameof(BlitSurfaceToSurface)}-dstSurface.png");
     }
 
     public bool ShadowVideoSurfaceRect(SurfaceType buffer, Rectangle rectangle)
@@ -2255,11 +2253,15 @@ public class SDL2VideoManager : IVideoManager
         return InternalShadowVideoSurfaceRect(buffer, rectangle, false);
     }
 
-    public void BltVideoSurface(SurfaceType dstSurf, SurfaceType srcSurf, int usRegionIndex, int sDestX, int sDestY, BlitTypes blitTypes, object value)
+    public void BltVideoSurface(SurfaceType dstSurf, SurfaceType srcSurf, int usRegionIndex, Point sDest, BlitTypes blitTypes, object value)
     {
         var dst = this.Surfaces[dstSurf];
         var src = this.Surfaces[srcSurf];
 
-        this.BlitSurfaceToSurface(src, dstSurf, new(sDestX, sDestY), VO_BLT.DESTTRANSPARENCY);
+        this.BlitSurfaceToSurface(src, dstSurf, sDest, VO_BLT.DESTTRANSPARENCY);
+    }
+
+    public void StartFrameBufferRender()
+    {
     }
 }

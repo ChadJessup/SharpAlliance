@@ -157,7 +157,6 @@ public class TextureManager : ITextureManager
 
     public void Dispose()
     {
-        throw new NotImplementedException();
     }
 
     public bool TryGetTexture(string key, out HVOBJECT hPixHandle)

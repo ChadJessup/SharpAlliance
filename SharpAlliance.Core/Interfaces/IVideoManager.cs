@@ -66,11 +66,12 @@ public interface IVideoManager : ISharpAllianceManager
     void DeleteVideoObjectFromIndex(SurfaceType uiMercTextPopUpBackground);
     HVOBJECT LoadImage(string assetPath);
     Texture[] CreateSurfaces(nint renderer, Image<Rgba32>[] image);
-    void BlitSurfaceToSurface(Image<Rgba32> src, SurfaceType dst, Point dstPoint, VO_BLT bltFlags);
+    void BlitSurfaceToSurface(Image<Rgba32> src, SurfaceType dst, Point dstPoint, VO_BLT bltFlags = VO_BLT.SRCTRANSPARENCY);
     void Draw();
     void BltVideoObject(SurfaceType surface, HVOBJECT hPixHandle, int index, int x, int y, VO_BLT bltFlags = VO_BLT.SRCTRANSPARENCY, int? _ = default)
         => this.BlitSurfaceToSurface(hPixHandle.Images[index], surface, new(x, y), bltFlags);
     void SetClippingRegionAndImageWidth(int width, Rectangle rectangle);
     bool ShadowVideoSurfaceRect(SurfaceType fRAME_BUFFER, Rectangle rectangle);
-    void BltVideoSurface(SurfaceType uiBuffer, SurfaceType surfaceType, int v, int sDestX, int sDestY, BlitTypes blitTypes, object value);
+    void BltVideoSurface(SurfaceType uiBuffer, SurfaceType surfaceType, int v, Point sDest, BlitTypes blitTypes, object value);
+    void StartFrameBufferRender();
 }

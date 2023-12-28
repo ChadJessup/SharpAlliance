@@ -265,8 +265,8 @@ public class Faces
             return -1;
         }
 
-        pFace.usFaceWidth = ETRLEObject.usWidth;
-        pFace.usFaceHeight = ETRLEObject.usHeight;
+        pFace.usFaceSize.Width = ETRLEObject.usWidth;
+        pFace.usFaceSize.Height = ETRLEObject.usHeight;
 
 
         // OK, check # of items
@@ -458,8 +458,8 @@ public class Faces
             //            GetCurrentVideoSettings(usWidth, usHeight, ubBitDepth);
             // OK, ignore screen widths, height, only use BPP 
             //            vs_desc.fCreateFlags = VSURFACE_CREATE_DEFAULT | VSURFACE_SYSTEM_MEM_USAGE;
-            vs_desc.usWidth = pFace.usFaceWidth;
-            vs_desc.usHeight = pFace.usFaceHeight;
+            vs_desc.usWidth = pFace.usFaceSize.Width;
+            vs_desc.usHeight = pFace.usFaceSize.Height;
             vs_desc.ubBitDepth = ubBitDepth;
 
             pFace.fAutoRestoreBuffer = true;
@@ -478,8 +478,8 @@ public class Faces
             //            GetCurrentVideoSettings(usWidth, usHeight, ubBitDepth);
             // OK, ignore screen widths, height, only use BPP 
             //            vs_desc.fCreateFlags = VSURFACE_CREATE_DEFAULT | VSURFACE_SYSTEM_MEM_USAGE;
-            vs_desc.usWidth = pFace.usFaceWidth;
-            vs_desc.usHeight = pFace.usFaceHeight;
+            vs_desc.usWidth = pFace.usFaceSize.Width;
+            vs_desc.usHeight = pFace.usFaceSize.Height;
             vs_desc.ubBitDepth = ubBitDepth;
 
             pFace.fAutoDisplayBuffer = true;
@@ -495,8 +495,8 @@ public class Faces
 
         usMercProfileID = pFace.ubCharacterNum;
 
-        pFace.usFaceX = usFaceX;
-        pFace.usFaceY = usFaceY;
+        pFace.usFaceLocation.X = usFaceX;
+        pFace.usFaceLocation.Y = usFaceY;
         pFace.fCanHandleInactiveNow = false;
 
 
@@ -737,7 +737,7 @@ public class Faces
 
                     }
 
-                    this.HandleRenderFaceAdjustments(pFace, true, false, 0, pFace.usFaceX, pFace.usFaceY, pFace.usEyesX, pFace.usEyesY);
+                    this.HandleRenderFaceAdjustments(pFace, true, false, 0, pFace.usFaceLocation.X, pFace.usFaceLocation.Y, pFace.usEyesX, pFace.usEyesY);
 
                 }
             }
@@ -931,7 +931,7 @@ public class Faces
 
             if (!pFace.uiFlags.HasFlag(FACE.INACTIVE_HANDLED_ELSEWHERE))
             {
-                HandleFaceHilights(pFace, pFace.uiAutoDisplayBuffer, pFace.usFaceX, pFace.usFaceY);
+                HandleFaceHilights(pFace, pFace.uiAutoDisplayBuffer, pFace.usFaceLocation.X, pFace.usFaceLocation.Y);
             }
         }
     }
@@ -1050,8 +1050,8 @@ public class Faces
         //        usHeight = pTrav.usHeight;
         //        usWidth = pTrav.usWidth;
 
-        sX = sFaceX + pFace.usFaceWidth - usWidth - 1;
-        sY = sFaceY + pFace.usFaceHeight - usHeight - 1;
+        sX = sFaceX + pFace.usFaceSize.Width - usWidth - 1;
+        sY = sFaceY + pFace.usFaceSize.Height - usHeight - 1;
 
         psX = sX;
         psY = sY;
@@ -1072,7 +1072,7 @@ public class Faces
         //        usWidth = pTrav.usWidth;
 
         sX = sFaceX + (usWidth * bNumIcons) + 1;
-        sY = sFaceY + pFace.usFaceHeight - usHeight - 1;
+        sY = sFaceY + pFace.usFaceSize.Height - usHeight - 1;
 
         psX = sX;
         psY = sY;
@@ -1406,7 +1406,7 @@ public class Faces
                     FontSubSystem.SetFontForeground(FontColor.FONT_YELLOW);
                     FontSubSystem.SetFontBackground(FontColor.FONT_BLACK);
 
-                    mprintf(sFaceX + pFace.usFaceWidth - usTextWidth, (int)(sFaceY + 3), sString);
+                    mprintf(sFaceX + pFace.usFaceSize.Width - usTextWidth, (int)(sFaceY + 3), sString);
                     this.fonts.SetFontDestBuffer(SurfaceType.FRAME_BUFFER, 0, 0, 640, 480, false);
                 }
             }
@@ -1458,16 +1458,16 @@ public class Faces
             }
         }
 
-        this.HandleRenderFaceAdjustments(pFace, false, false, 0, pFace.usFaceX, pFace.usFaceY, pFace.usEyesX, pFace.usEyesY);
+        this.HandleRenderFaceAdjustments(pFace, false, false, 0, pFace.usFaceLocation.X, pFace.usFaceLocation.Y, pFace.usEyesX, pFace.usEyesY);
 
         // Restore extern rect
         if (pFace.uiAutoRestoreBuffer == SurfaceType.SAVE_BUFFER)
         {
-            FaceRestoreSavedBackgroundRect(iFaceIndex, (int)pFace.usFaceX, (int)pFace.usFaceY, (int)pFace.usFaceX, (int)pFace.usFaceY, (int)pFace.usFaceWidth, (int)pFace.usFaceHeight);
+            FaceRestoreSavedBackgroundRect(iFaceIndex, (int)pFace.usFaceLocation.X, (int)pFace.usFaceLocation.Y, (int)pFace.usFaceLocation.X, (int)pFace.usFaceLocation.Y, (int)pFace.usFaceSize.Width, (int)pFace.usFaceSize.Height);
         }
         else
         {
-            FaceRestoreSavedBackgroundRect(iFaceIndex, pFace.usFaceX, pFace.usFaceY, 0, 0, pFace.usFaceWidth, pFace.usFaceHeight);
+            FaceRestoreSavedBackgroundRect(iFaceIndex, pFace.usFaceLocation.X, pFace.usFaceLocation.Y, 0, 0, pFace.usFaceSize.Width, pFace.usFaceSize.Height);
         }
 
         return true;

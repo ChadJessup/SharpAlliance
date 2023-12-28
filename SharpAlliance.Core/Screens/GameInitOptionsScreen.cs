@@ -1,11 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using SharpAlliance.Core.Interfaces;
 using SharpAlliance.Core.Managers;
 using SharpAlliance.Core.Managers.VideoSurfaces;
-using SharpAlliance.Core.SubSystems;
 using SharpAlliance.Platform;
 using SixLabors.ImageSharp;
 namespace SharpAlliance.Core.Screens;
@@ -297,6 +295,8 @@ public class GameInitOptionsScreen : IScreen
 
     public async ValueTask<ScreenName> Handle()
     {
+        this.video.StartFrameBufferRender();
+
         if (this.gfGIOScreenEntry)
         {
             this.gfGIOScreenEntry = false;
@@ -314,7 +314,7 @@ public class GameInitOptionsScreen : IScreen
 
         // render help
         //RenderFastHelp( );
-        GuiManager.RenderButtonsFastHelp();
+        //GuiManager.RenderButtonsFastHelp();
 
         this.video.ExecuteBaseDirtyRectQueue();
         this.video.EndFrameBufferRender();

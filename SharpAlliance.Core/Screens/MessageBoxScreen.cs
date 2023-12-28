@@ -150,8 +150,7 @@ public class MessageBoxScreen : IScreen
 
             this.mercTextBox.RenderMercPopUpBoxFromIndex(
                 gMsgBox.iBoxId,
-                gMsgBox.sX,
-                gMsgBox.sY,
+                gMsgBox.Location,
                 SurfaceType.FRAME_BUFFER);
             //gMsgBox.fRenderBox = false;
             // ATE: Render each frame...
@@ -391,7 +390,7 @@ public class MessageBoxScreen : IScreen
             //            video.UnLockVideoSurface(gMsgBox.uiSaveBuffer);
             //            video.UnLockVideoSurface(Surfaces.FRAME_BUFFER);
 
-            video.InvalidateRegion(gMsgBox.sX, gMsgBox.sY, gMsgBox.sX + gMsgBox.usWidth, gMsgBox.sY + gMsgBox.usHeight);
+            video.InvalidateRegion(new(gMsgBox.Location, gMsgBox.Size));
         }
 
         fRestoreBackgroundForMessageBox = false;
@@ -406,7 +405,7 @@ public class MessageBoxScreen : IScreen
                 && (pPosition.Y < MessageBoxRestrictedCursorRegion.Top)
                 && (pPosition.Y > MessageBoxRestrictedCursorRegion.Bottom))
             {
-                MouseSubSystem.SimulateMouseMovement(pOldMousePosition.X, pOldMousePosition.Y);
+                MouseSubSystem.SimulateMouseMovement(pOldMousePosition);
             }
 
             MessageBoxSubSystem.fCursorLockedToArea = false;

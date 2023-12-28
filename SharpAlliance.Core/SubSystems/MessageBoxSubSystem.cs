@@ -225,12 +225,11 @@ public class MessageBoxSubSystem : ISharpAllianceManager
         }
 
         // Save height,width
-        gMsgBox.usWidth = usTextBoxWidth;
-        gMsgBox.usHeight = usTextBoxHeight;
+        gMsgBox.Size = new(usTextBoxWidth, usTextBoxHeight);
 
         // Determine position ( centered in rect )
-        gMsgBox.sX = (int)(((aRect.Width - aRect.X - usTextBoxWidth) / 2) + aRect.X);
-        gMsgBox.sY = (int)(((aRect.Height - aRect.Y - usTextBoxHeight) / 2) + aRect.Y);
+        gMsgBox.Location.X = ((aRect.Width - aRect.X - usTextBoxWidth) / 2) + aRect.X;
+        gMsgBox.Location.Y = ((aRect.Height - aRect.Y - usTextBoxHeight) / 2) + aRect.Y;
 
         if (screens.CurrentScreenName == ScreenName.GAME_SCREEN)
         {
@@ -269,7 +268,7 @@ public class MessageBoxSubSystem : ISharpAllianceManager
             pDestBuf,
             pSrcBuf,
             new(0, 0),
-            new(gMsgBox.sX, gMsgBox.sY),
+            gMsgBox.Location,
             usTextBoxWidth, usTextBoxHeight);
 
         // Create top-level mouse region
@@ -285,11 +284,11 @@ public class MessageBoxSubSystem : ISharpAllianceManager
         {
             if (usFlags.HasFlag(MSG_BOX_FLAG.OK))
             {
-                MouseSubSystem.SimulateMouseMovement(gMsgBox.sX + (usTextBoxWidth / 2) + 27, gMsgBox.sY + (usTextBoxHeight - 10));
+                MouseSubSystem.SimulateMouseMovement(new(gMsgBox.Location.X + (usTextBoxWidth / 2) + 27, gMsgBox.Location.Y + (usTextBoxHeight - 10)));
             }
             else
             {
-                MouseSubSystem.SimulateMouseMovement(gMsgBox.sX + usTextBoxWidth / 2, gMsgBox.sY + usTextBoxHeight - 4);
+                MouseSubSystem.SimulateMouseMovement(new(gMsgBox.Location.X + usTextBoxWidth / 2, gMsgBox.Location.Y + usTextBoxHeight - 4));
             }
         }
 
@@ -320,7 +319,7 @@ public class MessageBoxSubSystem : ISharpAllianceManager
                 ubFontColor, ubFontShadowColor,
                 ubFontColor, ubFontShadowColor,
                 ButtonTextJustifies.TEXT_CJUSTIFIED,
-                new(gMsgBox.sX + sButtonX, gMsgBox.sY + sButtonY),
+                new(gMsgBox.Location.X + sButtonX, gMsgBox.Location.Y + sButtonY),
                 ButtonFlags.BUTTON_TOGGLE,
                 MSYS_PRIORITY.HIGHEST,
                 null, NumberedMsgBoxCallback);
@@ -328,23 +327,31 @@ public class MessageBoxSubSystem : ISharpAllianceManager
             ButtonSubSystem.SetButtonCursor(gMsgBox.uiButton[0], usCursor);
 
             sButtonX += MSGBOX_SMALL_BUTTON_WIDTH + MSGBOX_SMALL_BUTTON_X_SEP;
-            gMsgBox.uiButton[1] = ButtonSubSystem.CreateIconAndTextButton(gMsgBox.iButtonImages, "2", FontStyle.FONT12ARIAL,
-                                                             ubFontColor, ubFontShadowColor,
-                                                             ubFontColor, ubFontShadowColor,
-                                                             ButtonTextJustifies.TEXT_CJUSTIFIED,
-                                                             new(gMsgBox.sX + sButtonX, gMsgBox.sY + sButtonY),
-                                                             ButtonFlags.BUTTON_TOGGLE, MSYS_PRIORITY.HIGHEST,
-                                                             null, NumberedMsgBoxCallback);
+            gMsgBox.uiButton[1] = ButtonSubSystem.CreateIconAndTextButton(
+                gMsgBox.iButtonImages,
+                "2",
+                FontStyle.FONT12ARIAL,
+                ubFontColor, ubFontShadowColor,
+                ubFontColor, ubFontShadowColor,
+                ButtonTextJustifies.TEXT_CJUSTIFIED,
+                new(gMsgBox.Location.X + sButtonX, gMsgBox.Location.Y + sButtonY),
+                ButtonFlags.BUTTON_TOGGLE, MSYS_PRIORITY.HIGHEST,
+                null, NumberedMsgBoxCallback);
+
             ButtonSubSystem.SetButtonUserData(gMsgBox.uiButton[1], 0, 2);
             ButtonSubSystem.SetButtonCursor(gMsgBox.uiButton[1], usCursor);
 
             sButtonX += MSGBOX_SMALL_BUTTON_WIDTH + MSGBOX_SMALL_BUTTON_X_SEP;
-            gMsgBox.uiButton[2] = ButtonSubSystem.CreateIconAndTextButton(gMsgBox.iButtonImages, "3", FontStyle.FONT12ARIAL,
-                                                             ubFontColor, ubFontShadowColor,
-                                                             ubFontColor, ubFontShadowColor,
-                                                             ButtonTextJustifies.TEXT_CJUSTIFIED,
-                                                             new(gMsgBox.sX + sButtonX, gMsgBox.sY + sButtonY), ButtonFlags.BUTTON_TOGGLE, MSYS_PRIORITY.HIGHEST,
-                                                             null, NumberedMsgBoxCallback);
+            gMsgBox.uiButton[2] = ButtonSubSystem.CreateIconAndTextButton(
+                gMsgBox.iButtonImages, 
+                "3", 
+                FontStyle.FONT12ARIAL,
+                ubFontColor, ubFontShadowColor,
+                ubFontColor, ubFontShadowColor,
+                ButtonTextJustifies.TEXT_CJUSTIFIED,
+                new(gMsgBox.Location.X + sButtonX, gMsgBox.Location.Y + sButtonY), ButtonFlags.BUTTON_TOGGLE, MSYS_PRIORITY.HIGHEST,
+                null, NumberedMsgBoxCallback);
+
             ButtonSubSystem.SetButtonUserData(gMsgBox.uiButton[2], 0, 3);
             ButtonSubSystem.SetButtonCursor(gMsgBox.uiButton[2], usCursor);
 
@@ -353,7 +360,7 @@ public class MessageBoxSubSystem : ISharpAllianceManager
                                                              ubFontColor, ubFontShadowColor,
                                                              ubFontColor, ubFontShadowColor,
                                                              ButtonTextJustifies.TEXT_CJUSTIFIED,
-                                                             new(gMsgBox.sX + sButtonX, gMsgBox.sY + sButtonY), ButtonFlags.BUTTON_TOGGLE, MSYS_PRIORITY.HIGHEST,
+                                                             new(gMsgBox.Location.X + sButtonX, gMsgBox.Location.Y + sButtonY), ButtonFlags.BUTTON_TOGGLE, MSYS_PRIORITY.HIGHEST,
                                                              null, NumberedMsgBoxCallback);
             ButtonSubSystem.SetButtonUserData(gMsgBox.uiButton[3], 0, 4);
             ButtonSubSystem.SetButtonCursor(gMsgBox.uiButton[3], usCursor);
@@ -380,7 +387,7 @@ public class MessageBoxSubSystem : ISharpAllianceManager
                                                                  ubFontColor, ubFontShadowColor,
                                                                  ubFontColor, ubFontShadowColor,
                                                                  ButtonTextJustifies.TEXT_CJUSTIFIED,
-                                                                 new(gMsgBox.sX + sButtonX, gMsgBox.sY + sButtonY), ButtonFlags.BUTTON_TOGGLE, MSYS_PRIORITY.HIGHEST,
+                                                                 new(gMsgBox.Location.X + sButtonX, gMsgBox.Location.Y + sButtonY), ButtonFlags.BUTTON_TOGGLE, MSYS_PRIORITY.HIGHEST,
                                                                  null, OKMsgBoxCallback);
                 ButtonSubSystem.SetButtonCursor(gMsgBox.uiOKButton, usCursor);
                 ButtonSubSystem.ForceButtonUnDirty(gMsgBox.uiOKButton);
@@ -398,7 +405,7 @@ public class MessageBoxSubSystem : ISharpAllianceManager
                                                                  ubFontColor, ubFontShadowColor,
                                                                  ubFontColor, ubFontShadowColor,
                                                                  ButtonTextJustifies.TEXT_CJUSTIFIED,
-                                                                 new(gMsgBox.sX + sButtonX, gMsgBox.sY + sButtonY), ButtonFlags.BUTTON_TOGGLE, MSYS_PRIORITY.HIGHEST,
+                                                                 new(gMsgBox.Location.X + sButtonX, gMsgBox.Location.Y + sButtonY), ButtonFlags.BUTTON_TOGGLE, MSYS_PRIORITY.HIGHEST,
                                                                  null, OKMsgBoxCallback);
                 ButtonSubSystem.SetButtonCursor(gMsgBox.uiOKButton, usCursor);
                 ButtonSubSystem.ForceButtonUnDirty(gMsgBox.uiOKButton);
@@ -417,7 +424,7 @@ public class MessageBoxSubSystem : ISharpAllianceManager
                     ubFontColor, ubFontShadowColor,
                     ubFontColor, ubFontShadowColor,
                     ButtonTextJustifies.TEXT_CJUSTIFIED,
-                    new(gMsgBox.sX + sButtonX, gMsgBox.sY + sButtonY),
+                    new(gMsgBox.Location.X + sButtonX, gMsgBox.Location.Y + sButtonY),
                     ButtonFlags.BUTTON_TOGGLE,
                     MSYS_PRIORITY.HIGHEST,
                     null,
@@ -435,7 +442,7 @@ public class MessageBoxSubSystem : ISharpAllianceManager
                     ubFontColor,
                     ubFontShadowColor,
                     ButtonTextJustifies.TEXT_CJUSTIFIED,
-                    new(gMsgBox.sX + sButtonX + MSGBOX_BUTTON_WIDTH + MSGBOX_BUTTON_X_SEP, gMsgBox.sY + sButtonY),
+                    new(gMsgBox.Location.X + sButtonX + MSGBOX_BUTTON_WIDTH + MSGBOX_BUTTON_X_SEP, gMsgBox.Location.Y + sButtonY),
                     ButtonFlags.BUTTON_TOGGLE,
                     MSYS_PRIORITY.HIGHEST,
                     null, NOMsgBoxCallback);
@@ -454,7 +461,7 @@ public class MessageBoxSubSystem : ISharpAllianceManager
                                                                  ubFontColor, ubFontShadowColor,
                                                                  ubFontColor, ubFontShadowColor,
                                                                  ButtonTextJustifies.TEXT_CJUSTIFIED,
-                                                                 new(gMsgBox.sX + sButtonX, gMsgBox.sY + sButtonY), ButtonFlags.BUTTON_TOGGLE, MSYS_PRIORITY.HIGHEST,
+                                                                 new(gMsgBox.Location.X + sButtonX, gMsgBox.Location.Y + sButtonY), ButtonFlags.BUTTON_TOGGLE, MSYS_PRIORITY.HIGHEST,
                                                                  null, YESMsgBoxCallback);
                 ButtonSubSystem.SetButtonCursor(gMsgBox.uiYESButton, usCursor);
 
@@ -464,7 +471,7 @@ public class MessageBoxSubSystem : ISharpAllianceManager
                                                                  ubFontColor, ubFontShadowColor,
                                                                  ubFontColor, ubFontShadowColor,
                                                                  ButtonTextJustifies.TEXT_CJUSTIFIED,
-                                                                 new(gMsgBox.sX + sButtonX + MSGBOX_BUTTON_WIDTH + MSGBOX_BUTTON_X_SEP, gMsgBox.sY + sButtonY), ButtonFlags.BUTTON_TOGGLE, MSYS_PRIORITY.HIGHEST,
+                                                                 new(gMsgBox.Location.X + sButtonX + MSGBOX_BUTTON_WIDTH + MSGBOX_BUTTON_X_SEP, gMsgBox.Location.Y + sButtonY), ButtonFlags.BUTTON_TOGGLE, MSYS_PRIORITY.HIGHEST,
                                                                  null, NOMsgBoxCallback);
                 ButtonSubSystem.SetButtonCursor(gMsgBox.uiNOButton, usCursor);
                 ButtonSubSystem.ForceButtonUnDirty(gMsgBox.uiNOButton);
@@ -480,7 +487,7 @@ public class MessageBoxSubSystem : ISharpAllianceManager
                                                                  ubFontColor, ubFontShadowColor,
                                                                  ubFontColor, ubFontShadowColor,
                                                                  ButtonTextJustifies.TEXT_CJUSTIFIED,
-                                                                 new(gMsgBox.sX + sButtonX, gMsgBox.sY + sButtonY), ButtonFlags.BUTTON_TOGGLE, MSYS_PRIORITY.HIGHEST,
+                                                                 new(gMsgBox.Location.X + sButtonX, gMsgBox.Location.Y + sButtonY), ButtonFlags.BUTTON_TOGGLE, MSYS_PRIORITY.HIGHEST,
                                                                  null, OKMsgBoxCallback);
                 ButtonSubSystem.SetButtonCursor(gMsgBox.uiYESButton, usCursor);
 
@@ -490,7 +497,7 @@ public class MessageBoxSubSystem : ISharpAllianceManager
                                                                  ubFontColor, ubFontShadowColor,
                                                                  ubFontColor, ubFontShadowColor,
                                                                  ButtonTextJustifies.TEXT_CJUSTIFIED,
-                                                                 new(gMsgBox.sX + sButtonX + MSGBOX_BUTTON_WIDTH + MSGBOX_BUTTON_X_SEP, gMsgBox.sY + sButtonY), ButtonFlags.BUTTON_TOGGLE, MSYS_PRIORITY.HIGHEST,
+                                                                 new(gMsgBox.Location.X + sButtonX + MSGBOX_BUTTON_WIDTH + MSGBOX_BUTTON_X_SEP, gMsgBox.Location.Y + sButtonY), ButtonFlags.BUTTON_TOGGLE, MSYS_PRIORITY.HIGHEST,
                                                                  null, ContractMsgBoxCallback);
                 ButtonSubSystem.SetButtonCursor(gMsgBox.uiNOButton, usCursor);
                 ButtonSubSystem.ForceButtonUnDirty(gMsgBox.uiNOButton);
@@ -506,7 +513,7 @@ public class MessageBoxSubSystem : ISharpAllianceManager
                                                                  ubFontColor, ubFontShadowColor,
                                                                  ubFontColor, ubFontShadowColor,
                                                                  ButtonTextJustifies.TEXT_CJUSTIFIED,
-                                                                 new(gMsgBox.sX + sButtonX, gMsgBox.sY + sButtonY), ButtonFlags.BUTTON_TOGGLE, MSYS_PRIORITY.HIGHEST,
+                                                                 new(gMsgBox.Location.X + sButtonX, gMsgBox.Location.Y + sButtonY), ButtonFlags.BUTTON_TOGGLE, MSYS_PRIORITY.HIGHEST,
                                                                  null, YESMsgBoxCallback);
                 ButtonSubSystem.SetButtonCursor(gMsgBox.uiYESButton, usCursor);
                 ButtonSubSystem.ForceButtonUnDirty(gMsgBox.uiYESButton);
@@ -516,7 +523,7 @@ public class MessageBoxSubSystem : ISharpAllianceManager
                                                                  ubFontColor, ubFontShadowColor,
                                                                  ubFontColor, ubFontShadowColor,
                                                                  ButtonTextJustifies.TEXT_CJUSTIFIED,
-                                                                 new(gMsgBox.sX + sButtonX + MSGBOX_BUTTON_WIDTH + MSGBOX_BUTTON_X_SEP, gMsgBox.sY + sButtonY), ButtonFlags.BUTTON_TOGGLE, MSYS_PRIORITY.HIGHEST,
+                                                                 new(gMsgBox.Location.X + sButtonX + MSGBOX_BUTTON_WIDTH + MSGBOX_BUTTON_X_SEP, gMsgBox.Location.Y + sButtonY), ButtonFlags.BUTTON_TOGGLE, MSYS_PRIORITY.HIGHEST,
                                                                  null, NOMsgBoxCallback);
                 ButtonSubSystem.SetButtonCursor(gMsgBox.uiNOButton, usCursor);
                 ButtonSubSystem.ForceButtonUnDirty(gMsgBox.uiNOButton);
@@ -525,7 +532,7 @@ public class MessageBoxSubSystem : ISharpAllianceManager
                                                                  ubFontColor, ubFontShadowColor,
                                                                  ubFontColor, ubFontShadowColor,
                                                                  ButtonTextJustifies.TEXT_CJUSTIFIED,
-                                                                 new(gMsgBox.sX + sButtonX + 2 * (MSGBOX_BUTTON_WIDTH + MSGBOX_BUTTON_X_SEP), gMsgBox.sY + sButtonY), ButtonFlags.BUTTON_TOGGLE, MSYS_PRIORITY.HIGHEST,
+                                                                 new(gMsgBox.Location.X + sButtonX + 2 * (MSGBOX_BUTTON_WIDTH + MSGBOX_BUTTON_X_SEP), gMsgBox.Location.Y + sButtonY), ButtonFlags.BUTTON_TOGGLE, MSYS_PRIORITY.HIGHEST,
                                                                  null, ContractMsgBoxCallback);
                 ButtonSubSystem.SetButtonCursor(gMsgBox.uiOKButton, usCursor);
                 ButtonSubSystem.ForceButtonUnDirty(gMsgBox.uiOKButton);
@@ -542,7 +549,7 @@ public class MessageBoxSubSystem : ISharpAllianceManager
                                                                  ubFontColor, ubFontShadowColor,
                                                                  ubFontColor, ubFontShadowColor,
                                                                  ButtonTextJustifies.TEXT_CJUSTIFIED,
-                                                                 new(gMsgBox.sX + sButtonX, gMsgBox.sY + sButtonY), ButtonFlags.BUTTON_TOGGLE, MSYS_PRIORITY.HIGHEST,
+                                                                 new(gMsgBox.Location.X + sButtonX, gMsgBox.Location.Y + sButtonY), ButtonFlags.BUTTON_TOGGLE, MSYS_PRIORITY.HIGHEST,
                                                                  null, YESMsgBoxCallback);
                 ButtonSubSystem.SetButtonCursor(gMsgBox.uiYESButton, usCursor);
                 ButtonSubSystem.ForceButtonUnDirty(gMsgBox.uiYESButton);
@@ -552,7 +559,7 @@ public class MessageBoxSubSystem : ISharpAllianceManager
                                                                  ubFontColor, ubFontShadowColor,
                                                                  ubFontColor, ubFontShadowColor,
                                                                  ButtonTextJustifies.TEXT_CJUSTIFIED,
-                                                                 new(gMsgBox.sX + sButtonX + MSGBOX_BUTTON_WIDTH + MSGBOX_BUTTON_X_SEP, gMsgBox.sY + sButtonY), ButtonFlags.BUTTON_TOGGLE, MSYS_PRIORITY.HIGHEST,
+                                                                 new(gMsgBox.Location.X + sButtonX + MSGBOX_BUTTON_WIDTH + MSGBOX_BUTTON_X_SEP, gMsgBox.Location.Y + sButtonY), ButtonFlags.BUTTON_TOGGLE, MSYS_PRIORITY.HIGHEST,
                                                                  null, NOMsgBoxCallback);
                 ButtonSubSystem.SetButtonCursor(gMsgBox.uiNOButton, usCursor);
                 ButtonSubSystem.ForceButtonUnDirty(gMsgBox.uiNOButton);
@@ -561,7 +568,7 @@ public class MessageBoxSubSystem : ISharpAllianceManager
                                                                  ubFontColor, ubFontShadowColor,
                                                                  ubFontColor, ubFontShadowColor,
                                                                  ButtonTextJustifies.TEXT_CJUSTIFIED,
-                                                                 new(gMsgBox.sX + sButtonX + 2 * (MSGBOX_BUTTON_WIDTH + MSGBOX_BUTTON_X_SEP), gMsgBox.sY + sButtonY), ButtonFlags.BUTTON_TOGGLE, MSYS_PRIORITY.HIGHEST,
+                                                                 new(gMsgBox.Location.X + sButtonX + 2 * (MSGBOX_BUTTON_WIDTH + MSGBOX_BUTTON_X_SEP), gMsgBox.Location.Y + sButtonY), ButtonFlags.BUTTON_TOGGLE, MSYS_PRIORITY.HIGHEST,
                                                                  null, ContractMsgBoxCallback);
                 ButtonSubSystem.SetButtonCursor(gMsgBox.uiOKButton, usCursor);
                 ButtonSubSystem.ForceButtonUnDirty(gMsgBox.uiOKButton);
@@ -577,7 +584,7 @@ public class MessageBoxSubSystem : ISharpAllianceManager
                                                                  ubFontColor, ubFontShadowColor,
                                                                  ubFontColor, ubFontShadowColor,
                                                                  ButtonTextJustifies.TEXT_CJUSTIFIED,
-                                                                 new(gMsgBox.sX + sButtonX, gMsgBox.sY + sButtonY), ButtonFlags.BUTTON_TOGGLE, MSYS_PRIORITY.HIGHEST,
+                                                                 new(gMsgBox.Location.X + sButtonX, gMsgBox.Location.Y + sButtonY), ButtonFlags.BUTTON_TOGGLE, MSYS_PRIORITY.HIGHEST,
                                                                  null, YESMsgBoxCallback);
                 ButtonSubSystem.SetButtonCursor(gMsgBox.uiYESButton, usCursor);
                 ButtonSubSystem.ForceButtonUnDirty(gMsgBox.uiYESButton);
@@ -587,7 +594,7 @@ public class MessageBoxSubSystem : ISharpAllianceManager
                                                                  ubFontColor, ubFontShadowColor,
                                                                  ubFontColor, ubFontShadowColor,
                                                                  ButtonTextJustifies.TEXT_CJUSTIFIED,
-                                                                 new(gMsgBox.sX + sButtonX + MSGBOX_BUTTON_WIDTH + MSGBOX_BUTTON_X_SEP, gMsgBox.sY + sButtonY),
+                                                                 new(gMsgBox.Location.X + sButtonX + MSGBOX_BUTTON_WIDTH + MSGBOX_BUTTON_X_SEP, gMsgBox.Location.Y + sButtonY),
                                                                  ButtonFlags.BUTTON_TOGGLE, MSYS_PRIORITY.HIGHEST,
                                                                  null, NOMsgBoxCallback);
                 ButtonSubSystem.SetButtonCursor(gMsgBox.uiNOButton, usCursor);
@@ -603,7 +610,7 @@ public class MessageBoxSubSystem : ISharpAllianceManager
                                                                  ubFontColor, ubFontShadowColor,
                                                                  ubFontColor, ubFontShadowColor,
                                                                  ButtonTextJustifies.TEXT_CJUSTIFIED,
-                                                                 new(gMsgBox.sX + sButtonX, gMsgBox.sY + sButtonY), ButtonFlags.BUTTON_TOGGLE, MSYS_PRIORITY.HIGHEST,
+                                                                 new(gMsgBox.Location.X + sButtonX, gMsgBox.Location.Y + sButtonY), ButtonFlags.BUTTON_TOGGLE, MSYS_PRIORITY.HIGHEST,
                                                                  null, YESMsgBoxCallback);
                 ButtonSubSystem.SetButtonCursor(gMsgBox.uiYESButton, usCursor);
                 ButtonSubSystem.ForceButtonUnDirty(gMsgBox.uiYESButton);
@@ -613,7 +620,7 @@ public class MessageBoxSubSystem : ISharpAllianceManager
                                                                  ubFontColor, ubFontShadowColor,
                                                                  ubFontColor, ubFontShadowColor,
                                                                  ButtonTextJustifies.TEXT_CJUSTIFIED,
-                                                                 new(gMsgBox.sX + sButtonX + MSGBOX_BUTTON_WIDTH + MSGBOX_BUTTON_X_SEP, gMsgBox.sY + sButtonY), ButtonFlags.BUTTON_TOGGLE, MSYS_PRIORITY.HIGHEST,
+                                                                 new(gMsgBox.Location.X + sButtonX + MSGBOX_BUTTON_WIDTH + MSGBOX_BUTTON_X_SEP, gMsgBox.Location.Y + sButtonY), ButtonFlags.BUTTON_TOGGLE, MSYS_PRIORITY.HIGHEST,
                                                                  null, NOMsgBoxCallback);
                 ButtonSubSystem.SetButtonCursor(gMsgBox.uiNOButton, usCursor);
                 ButtonSubSystem.ForceButtonUnDirty(gMsgBox.uiNOButton);
@@ -622,7 +629,7 @@ public class MessageBoxSubSystem : ISharpAllianceManager
                                                                  ubFontColor, ubFontShadowColor,
                                                                  ubFontColor, ubFontShadowColor,
                                                                  ButtonTextJustifies.TEXT_CJUSTIFIED,
-                                                                 new(gMsgBox.sX + sButtonX + 2 * (MSGBOX_BUTTON_WIDTH + MSGBOX_BUTTON_X_SEP), gMsgBox.sY + sButtonY), ButtonFlags.BUTTON_TOGGLE, MSYS_PRIORITY.HIGHEST,
+                                                                 new(gMsgBox.Location.X + sButtonX + 2 * (MSGBOX_BUTTON_WIDTH + MSGBOX_BUTTON_X_SEP), gMsgBox.Location.Y + sButtonY), ButtonFlags.BUTTON_TOGGLE, MSYS_PRIORITY.HIGHEST,
                                                                  null, LieMsgBoxCallback);
                 ButtonSubSystem.SetButtonCursor(gMsgBox.uiOKButton, usCursor);
                 ButtonSubSystem.ForceButtonUnDirty(gMsgBox.uiOKButton);
@@ -641,7 +648,7 @@ public class MessageBoxSubSystem : ISharpAllianceManager
                     ubFontColor, ubFontShadowColor,
                     ubFontColor, ubFontShadowColor,
                     ButtonTextJustifies.TEXT_CJUSTIFIED,
-                    new(gMsgBox.sX + sButtonX, gMsgBox.sY + sButtonY), ButtonFlags.BUTTON_TOGGLE, MSYS_PRIORITY.HIGHEST,
+                    new(gMsgBox.Location.X + sButtonX, gMsgBox.Location.Y + sButtonY), ButtonFlags.BUTTON_TOGGLE, MSYS_PRIORITY.HIGHEST,
                     null, YESMsgBoxCallback);
 
                 ButtonSubSystem.SetButtonCursor(gMsgBox.uiYESButton, usCursor);
@@ -656,8 +663,8 @@ public class MessageBoxSubSystem : ISharpAllianceManager
                     ubFontColor, ubFontShadowColor,
                     ButtonTextJustifies.TEXT_CJUSTIFIED,
                     new(
-                        gMsgBox.sX + sButtonX + MSGBOX_BUTTON_WIDTH + MSGBOX_BUTTON_X_SEP,
-                        gMsgBox.sY + sButtonY),
+                        gMsgBox.Location.X + sButtonX + MSGBOX_BUTTON_WIDTH + MSGBOX_BUTTON_X_SEP,
+                        gMsgBox.Location.Y + sButtonY),
                     ButtonFlags.BUTTON_TOGGLE,
                     MSYS_PRIORITY.HIGHEST,
                     null,
@@ -932,14 +939,14 @@ public class MessageBoxSubSystem : ISharpAllianceManager
             // 
             // Blt16BPPTo16BPP(pDestBuf, uiDestPitchBYTES,
             //             pSrcBuf, uiSrcPitchBYTES,
-            //             gMsgBox.sX, gMsgBox.sY,
+            //             gMsgBox.Location.X, gMsgBox.Location.Y,
             //             0, 0,
             //             gMsgBox.usWidth, gMsgBox.usHeight);
             // 
             // UnLockVideoSurface(gMsgBox.uiSaveBuffer);
             // UnLockVideoSurface(FRAME_BUFFER);
             // 
-            // InvalidateRegion(gMsgBox.sX, gMsgBox.sY, (gMsgBox.sX + gMsgBox.usWidth), (gMsgBox.sY + gMsgBox.usHeight));
+            // InvalidateRegion(gMsgBox.Location.X, gMsgBox.Location.Y, (gMsgBox.Location.X + gMsgBox.usWidth), (gMsgBox.Location.Y + gMsgBox.usHeight));
         }
 
         fRestoreBackgroundForMessageBox = false;
@@ -951,7 +958,7 @@ public class MessageBoxSubSystem : ISharpAllianceManager
 
             if ((pPosition.X > MessageBoxRestrictedCursorRegion.Width) || (pPosition.X > MessageBoxRestrictedCursorRegion.X) && (pPosition.Y < MessageBoxRestrictedCursorRegion.Y) && (pPosition.Y > MessageBoxRestrictedCursorRegion.Height))
             {
-                MouseSubSystem.SimulateMouseMovement(pOldMousePosition.X, pOldMousePosition.Y);
+                MouseSubSystem.SimulateMouseMovement(pOldMousePosition);
             }
 
             fCursorLockedToArea = false;
@@ -998,12 +1005,10 @@ public class MessageBox
     public MSG_BOX_FLAG usFlags;
     public ScreenName uiExitScreen;
     public MSGBOX_CALLBACK? ExitCallback;
-    public int sX;
-    public int sY;
+    public Point Location;
     public SurfaceType uiSaveBuffer;
     public MOUSE_REGION BackRegion { get; } = new(nameof(MessageBox));
-    public int usWidth;
-    public int usHeight;
+    public Size Size;
     public ButtonPic iButtonImages;
     public GUI_BUTTON uiOKButton;
     public GUI_BUTTON uiYESButton;

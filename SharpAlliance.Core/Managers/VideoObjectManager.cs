@@ -11,6 +11,7 @@ using Veldrid;
 using Rectangle = SixLabors.ImageSharp.Rectangle;
 
 using static SharpAlliance.Core.Globals;
+using Point = SixLabors.ImageSharp.Point;
 
 namespace SharpAlliance.Core.Managers;
 
@@ -33,8 +34,8 @@ public class VideoObjectManager
     {
         this.logger = logger;
 
-         Globals.gpVObjectTail = Globals.gpVObjectHead;
-         Globals.gfVideoObjectsInit = true;
+        Globals.gpVObjectTail = Globals.gpVObjectHead;
+        Globals.gfVideoObjectsInit = true;
 
         this.IsInitialized = true;
     }
@@ -187,32 +188,33 @@ public class VideoObjectManager
     }
 
     private static bool Blt8BPPDataTo16BPPBufferShadowClip(
-        Image<Rgba32> pBuffer, 
-        uint uiDestPitchBYTES, 
-        HVOBJECT hSrcVObject, 
-        int iX, 
-        int iY, 
-        ushort usIndex, 
+        Image<Rgba32> pBuffer,
+        uint uiDestPitchBYTES,
+        HVOBJECT hSrcVObject,
+        int iX,
+        int iY,
+        ushort usIndex,
         ref Rectangle? clipregion)
     {
         ushort p16BPPPalette;
         uint uiOffset;
-        uint usHeight, usWidth, Unblitted;
+        uint Unblitted;
+        Size us;
         ushort SrcPtr, DestPtr;
         uint LineSkip;
         ETRLEObject pTrav;
-        int iTempX, iTempY, LeftSkip, RightSkip, TopSkip, BottomSkip, BlitLength, BlitHeight;
+        Point iTemp = new();
+        int LeftSkip, RightSkip, TopSkip, BottomSkip, BlitLength, BlitHeight;
         int ClipX1, ClipY1, ClipX2, ClipY2;
 
         // Get Offsets from Index into structure
         pTrav = hSrcVObject.pETRLEObject[usIndex];
-        usHeight = (uint)pTrav.usHeight;
-        usWidth = (uint)pTrav.usWidth;
+        us = new(pTrav.usWidth, pTrav.usHeight);
         uiOffset = pTrav.uiDataOffset;
 
         // Add to start position of dest buffer
-        iTempX = iX + pTrav.sOffsetX;
-        iTempY = iY + pTrav.sOffsetY;
+        iTemp.X = iX + pTrav.sOffsetX;
+        iTemp.Y = iY + pTrav.sOffsetY;
 
         if (clipregion == null)
         {
@@ -230,23 +232,23 @@ public class VideoObjectManager
         }
 
         // Calculate rows hanging off each side of the screen
-        LeftSkip = Math.Min(ClipX1 - Math.Min(ClipX1, iTempX), (int)usWidth);
-        RightSkip = Math.Min(Math.Max(ClipX2, iTempX + (int)usWidth) - ClipX2, (int)usWidth);
-        TopSkip = Math.Min(ClipY1 - Math.Min(ClipY1, iTempY), (int)usHeight);
-        BottomSkip = Math.Min(Math.Max(ClipY2, iTempY + (int)usHeight) - ClipY2, (int)usHeight);
+        LeftSkip = Math.Min(ClipX1 - Math.Min(ClipX1, iTemp.X), (int)us.Width);
+        RightSkip = Math.Min(Math.Max(ClipX2, iTemp.X + (int)us.Width) - ClipX2, (int)us.Width);
+        TopSkip = Math.Min(ClipY1 - Math.Min(ClipY1, iTemp.Y), (int)us.Height);
+        BottomSkip = Math.Min(Math.Max(ClipY2, iTemp.Y + (int)us.Height) - ClipY2, (int)us.Height);
 
         // calculate the remaining rows and columns to blit
-        BlitLength = (int)usWidth - LeftSkip - RightSkip;
-        BlitHeight = (int)usHeight - TopSkip - BottomSkip;
+        BlitLength = (int)us.Width - LeftSkip - RightSkip;
+        BlitHeight = (int)us.Height - TopSkip - BottomSkip;
 
         // whole thing is clipped
-        if ((LeftSkip >= (int)usWidth) || (RightSkip >= (int)usWidth))
+        if ((LeftSkip >= (int)us.Width) || (RightSkip >= (int)us.Width))
         {
             return true;
         }
 
         // whole thing is clipped
-        if ((TopSkip >= (int)usHeight) || (BottomSkip >= (int)usHeight))
+        if ((TopSkip >= (int)us.Height) || (BottomSkip >= (int)us.Height))
         {
             return true;
         }
@@ -257,278 +259,278 @@ public class VideoObjectManager
         // p16BPPPalette = hSrcVObject.pShadeCurrent;
         // LineSkip = uiDestPitchBYTES - (BlitLength * 2);
 
-//             __asm {
-// 
-//                 mov esi, SrcPtr
-//         
-//         mov edi, DestPtr
-//         
-//         mov edx, OFFSET ShadeTable
-//     xor     eax, eax
-//     mov     ebx, TopSkip
-//     xor     ecx, ecx
-// 
-//     or      ebx, ebx                            // check for nothing clipped on top
-//     jz      LeftSkipSetup
-// 
-// TopSkipLoop:										// Skips the number of lines clipped at the top
-// 
-// 		mov cl, [esi]
-//         
-//         inc esi
-//         
-//         or cl, cl
-//         
-//         js TopSkipLoop
-//         
-//         jz TSEndLine
-//         
-// 
-//         add esi, ecx
-//         
-//         jmp TopSkipLoop
-//         
-// TSEndLine:
-//                 dec ebx
-//         
-//         jnz TopSkipLoop
-//         
-// 
-// 
-// 
-// LeftSkipSetup:
-// 
-//                 mov Unblitted, 0
-//         
-//         mov ebx, LeftSkip                   // check for nothing clipped on the left
-// 
-//         or ebx, ebx
-//         
-//         jz BlitLineSetup
-//         
-// LeftSkipLoop:
-// 
-//                 mov cl, [esi]
-//         
-//         inc esi
-//         
-// 
-//         or cl, cl
-//         
-//         js LSTrans
-//         
-// 
-//         cmp ecx, ebx
-//         
-//         je LSSkip2                              // if equal, skip whole, and start blit with new run
-// 
-//         jb LSSkip1                              // if less, skip whole thing
-// 
-// 
-//         add esi, ebx                            // skip partial run, jump into normal loop for rest
-// 
-//         sub ecx, ebx
-//         
-//         mov ebx, BlitLength
-//         
-//         mov Unblitted, 0
-//         
-//         jmp BlitNonTransLoop
-//         
-// LSSkip2:
-//                 add esi, ecx                            // skip whole run, and start blit with new run
-// 
-//         jmp BlitLineSetup
-//         
-// 
-// LSSkip1:
-//                 add esi, ecx                            // skip whole run, continue skipping
-// 
-//         sub ebx, ecx
-//         
-//         jmp LeftSkipLoop
-//         
-// 
-// LSTrans:
-//                 and ecx, 07fH
-//             cmp     ecx, ebx
-//             je      BlitLineSetup                   // if equal, skip whole, and start blit with new run
-//             jb      LSTrans1                            // if less, skip whole thing
-// 
-//             sub     ecx, ebx                            // skip partial run, jump into normal loop for rest
-//             mov     ebx, BlitLength
-//             jmp     BlitTransparent
-// 
-// 
-//     LSTrans1:
-// 		sub ebx, ecx                            // skip whole run, continue skipping
-// 
-//         jmp LeftSkipLoop
-//         
-// 
-// 
-// 
-// BlitLineSetup:                                  // Does any actual blitting (trans/non) for the line
-//                 mov ebx, BlitLength
-//         
-//         mov Unblitted, 0
-//         
-// BlitDispatch:
-// 
-//                 or ebx, ebx                         // Check to see if we're done blitting
-// 
-//         jz RightSkipLoop
-//         
-// 
-//         mov cl, [esi]
-//         
-//         inc esi
-//         
-//         or cl, cl
-//         
-//         js BlitTransparent
-//         
-// BlitNonTransLoop:
-// 
-//                 cmp ecx, ebx
-//         
-//         jbe BNTrans1
-//         
-// 
-//         sub ecx, ebx
-//         
-//         mov Unblitted, ecx
-//         
-//         mov ecx, ebx
-//         
-// BNTrans1:
-//                 sub ebx, ecx
-//         
-// 
-//         clc
-//         rcr     cl, 1
-//         
-//         jnc BlitNTL2
-//         
-// 
-//         mov ax, [edi]
-//         
-//         mov ax, [edx + eax * 2]
-//         
-//         mov[edi], ax
-// 
-//    inc     esi
-//    add     edi, 2
-//         
-// BlitNTL2:
-//                 clc
-//                 rcr     cl, 1
-//         
-//         jnc BlitNTL3
-//         
-// 
-//         mov ax, [edi]
-//         
-//         mov ax, [edx + eax * 2]
-//         
-//         mov[edi], ax
-// 
-//    mov     ax, [edi+2]
-// 		mov ax, [edx + eax * 2]
-//         
-//         mov[edi + 2], ax
-// 
-//      add     esi, 2
-//         
-//         add edi, 4
-//         
-// BlitNTL3:
-// 
-//                 or cl, cl
-//         
-//         jz BlitLineEnd
-//         
-// BlitNTL4:
-// 
-//                 mov ax, [edi]
-//         
-//         mov ax, [edx + eax * 2]
-//         
-//         mov[edi], ax
-// 
-//    mov     ax, [edi+2]
-// 		mov ax, [edx + eax * 2]
-//         
-//         mov[edi + 2], ax
-// 
-//      mov     ax, [edi+4]
-// 		mov ax, [edx + eax * 2]
-//         
-//         mov[edi + 4], ax
-// 
-//      mov     ax, [edi+6]
-// 		mov ax, [edx + eax * 2]
-//         
-//         mov[edi + 6], ax
-// 
-//      add     esi, 4
-//         
-//         add edi, 8
-//         
-//         dec cl
-//         
-//         jnz BlitNTL4
-//         
-// BlitLineEnd:
-//                 add esi, Unblitted
-//         
-//         jmp BlitDispatch
-//         
-// BlitTransparent:
-// 
-//                 and ecx, 07fH
-//             cmp     ecx, ebx
-//             jbe     BTrans1
-// 
-//             mov     ecx, ebx
-// 
-//     BTrans1:
-// 
-// 		sub ebx, ecx
-//         //		shl		ecx, 1
-//                 add ecx, ecx
-//         
-//         add edi, ecx
-//         
-//         jmp BlitDispatch
-//         
-// 
-// RightSkipLoop:
-// 
-// 
-//             RSLoop1:
-//                 mov al, [esi]
-//         
-//         inc esi
-//         
-//         or al, al
-//         
-//         jnz RSLoop1
-//         
-// 
-//         dec BlitHeight
-//         
-//         jz BlitDone
-//         
-//         add edi, LineSkip
-//         
-// 
-//         jmp LeftSkipSetup
-//         
-// 
-// BlitDone:
-// 
-//     }
+        //             __asm {
+        // 
+        //                 mov esi, SrcPtr
+        //         
+        //         mov edi, DestPtr
+        //         
+        //         mov edx, OFFSET ShadeTable
+        //     xor     eax, eax
+        //     mov     ebx, TopSkip
+        //     xor     ecx, ecx
+        // 
+        //     or      ebx, ebx                            // check for nothing clipped on top
+        //     jz      LeftSkipSetup
+        // 
+        // TopSkipLoop:										// Skips the number of lines clipped at the top
+        // 
+        // 		mov cl, [esi]
+        //         
+        //         inc esi
+        //         
+        //         or cl, cl
+        //         
+        //         js TopSkipLoop
+        //         
+        //         jz TSEndLine
+        //         
+        // 
+        //         add esi, ecx
+        //         
+        //         jmp TopSkipLoop
+        //         
+        // TSEndLine:
+        //                 dec ebx
+        //         
+        //         jnz TopSkipLoop
+        //         
+        // 
+        // 
+        // 
+        // LeftSkipSetup:
+        // 
+        //                 mov Unblitted, 0
+        //         
+        //         mov ebx, LeftSkip                   // check for nothing clipped on the left
+        // 
+        //         or ebx, ebx
+        //         
+        //         jz BlitLineSetup
+        //         
+        // LeftSkipLoop:
+        // 
+        //                 mov cl, [esi]
+        //         
+        //         inc esi
+        //         
+        // 
+        //         or cl, cl
+        //         
+        //         js LSTrans
+        //         
+        // 
+        //         cmp ecx, ebx
+        //         
+        //         je LSSkip2                              // if equal, skip whole, and start blit with new run
+        // 
+        //         jb LSSkip1                              // if less, skip whole thing
+        // 
+        // 
+        //         add esi, ebx                            // skip partial run, jump into normal loop for rest
+        // 
+        //         sub ecx, ebx
+        //         
+        //         mov ebx, BlitLength
+        //         
+        //         mov Unblitted, 0
+        //         
+        //         jmp BlitNonTransLoop
+        //         
+        // LSSkip2:
+        //                 add esi, ecx                            // skip whole run, and start blit with new run
+        // 
+        //         jmp BlitLineSetup
+        //         
+        // 
+        // LSSkip1:
+        //                 add esi, ecx                            // skip whole run, continue skipping
+        // 
+        //         sub ebx, ecx
+        //         
+        //         jmp LeftSkipLoop
+        //         
+        // 
+        // LSTrans:
+        //                 and ecx, 07fH
+        //             cmp     ecx, ebx
+        //             je      BlitLineSetup                   // if equal, skip whole, and start blit with new run
+        //             jb      LSTrans1                            // if less, skip whole thing
+        // 
+        //             sub     ecx, ebx                            // skip partial run, jump into normal loop for rest
+        //             mov     ebx, BlitLength
+        //             jmp     BlitTransparent
+        // 
+        // 
+        //     LSTrans1:
+        // 		sub ebx, ecx                            // skip whole run, continue skipping
+        // 
+        //         jmp LeftSkipLoop
+        //         
+        // 
+        // 
+        // 
+        // BlitLineSetup:                                  // Does any actual blitting (trans/non) for the line
+        //                 mov ebx, BlitLength
+        //         
+        //         mov Unblitted, 0
+        //         
+        // BlitDispatch:
+        // 
+        //                 or ebx, ebx                         // Check to see if we're done blitting
+        // 
+        //         jz RightSkipLoop
+        //         
+        // 
+        //         mov cl, [esi]
+        //         
+        //         inc esi
+        //         
+        //         or cl, cl
+        //         
+        //         js BlitTransparent
+        //         
+        // BlitNonTransLoop:
+        // 
+        //                 cmp ecx, ebx
+        //         
+        //         jbe BNTrans1
+        //         
+        // 
+        //         sub ecx, ebx
+        //         
+        //         mov Unblitted, ecx
+        //         
+        //         mov ecx, ebx
+        //         
+        // BNTrans1:
+        //                 sub ebx, ecx
+        //         
+        // 
+        //         clc
+        //         rcr     cl, 1
+        //         
+        //         jnc BlitNTL2
+        //         
+        // 
+        //         mov ax, [edi]
+        //         
+        //         mov ax, [edx + eax * 2]
+        //         
+        //         mov[edi], ax
+        // 
+        //    inc     esi
+        //    add     edi, 2
+        //         
+        // BlitNTL2:
+        //                 clc
+        //                 rcr     cl, 1
+        //         
+        //         jnc BlitNTL3
+        //         
+        // 
+        //         mov ax, [edi]
+        //         
+        //         mov ax, [edx + eax * 2]
+        //         
+        //         mov[edi], ax
+        // 
+        //    mov     ax, [edi+2]
+        // 		mov ax, [edx + eax * 2]
+        //         
+        //         mov[edi + 2], ax
+        // 
+        //      add     esi, 2
+        //         
+        //         add edi, 4
+        //         
+        // BlitNTL3:
+        // 
+        //                 or cl, cl
+        //         
+        //         jz BlitLineEnd
+        //         
+        // BlitNTL4:
+        // 
+        //                 mov ax, [edi]
+        //         
+        //         mov ax, [edx + eax * 2]
+        //         
+        //         mov[edi], ax
+        // 
+        //    mov     ax, [edi+2]
+        // 		mov ax, [edx + eax * 2]
+        //         
+        //         mov[edi + 2], ax
+        // 
+        //      mov     ax, [edi+4]
+        // 		mov ax, [edx + eax * 2]
+        //         
+        //         mov[edi + 4], ax
+        // 
+        //      mov     ax, [edi+6]
+        // 		mov ax, [edx + eax * 2]
+        //         
+        //         mov[edi + 6], ax
+        // 
+        //      add     esi, 4
+        //         
+        //         add edi, 8
+        //         
+        //         dec cl
+        //         
+        //         jnz BlitNTL4
+        //         
+        // BlitLineEnd:
+        //                 add esi, Unblitted
+        //         
+        //         jmp BlitDispatch
+        //         
+        // BlitTransparent:
+        // 
+        //                 and ecx, 07fH
+        //             cmp     ecx, ebx
+        //             jbe     BTrans1
+        // 
+        //             mov     ecx, ebx
+        // 
+        //     BTrans1:
+        // 
+        // 		sub ebx, ecx
+        //         //		shl		ecx, 1
+        //                 add ecx, ecx
+        //         
+        //         add edi, ecx
+        //         
+        //         jmp BlitDispatch
+        //         
+        // 
+        // RightSkipLoop:
+        // 
+        // 
+        //             RSLoop1:
+        //                 mov al, [esi]
+        //         
+        //         inc esi
+        //         
+        //         or al, al
+        //         
+        //         jnz RSLoop1
+        //         
+        // 
+        //         dec BlitHeight
+        //         
+        //         jz BlitDone
+        //         
+        //         add edi, LineSkip
+        //         
+        // 
+        //         jmp LeftSkipSetup
+        //         
+        // 
+        // BlitDone:
+        // 
+        //     }
 
         return true;
     }

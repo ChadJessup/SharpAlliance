@@ -144,7 +144,7 @@ public partial class Globals
     public static int guiBobbyRClearOrderImage;
 
     //Accept Order Button
-    public static int guiBobbyRAcceptOrder;
+    public static GUI_BUTTON guiBobbyRAcceptOrder;
     public static int guiBobbyRAcceptOrderImage;
 
     //Back Button

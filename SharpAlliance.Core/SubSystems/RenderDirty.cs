@@ -232,7 +232,7 @@ public class RenderDirty
         }
 
         VOVERLAY_DESC uiFlags;
-        int uiStringLength, uiStringHeight;
+        Size uiString;
 
         if (iBlitterIndex != -1)
         {
@@ -246,8 +246,7 @@ public class RenderDirty
             if (fForceAll)
             {
                 Globals.gVideoOverlays[iBlitterIndex].uiFontID = pTopmostDesc.uiFontID;
-                Globals.gVideoOverlays[iBlitterIndex].sX = pTopmostDesc.sX;
-                Globals.gVideoOverlays[iBlitterIndex].sY = pTopmostDesc.sY;
+                Globals.gVideoOverlays[iBlitterIndex].Location = pTopmostDesc.Location;
                 Globals.gVideoOverlays[iBlitterIndex].ubFontBack = pTopmostDesc.ubFontBack;
                 Globals.gVideoOverlays[iBlitterIndex].ubFontFore = pTopmostDesc.ubFontFore;
 
@@ -285,17 +284,16 @@ public class RenderDirty
                             return false;
                         }
 
-                        uiStringLength = FontSubSystem.StringPixLength(Globals.gVideoOverlays[iBlitterIndex].zText, Globals.gVideoOverlays[iBlitterIndex].uiFontID);
-                        uiStringHeight = this.fonts.GetFontHeight(Globals.gVideoOverlays[iBlitterIndex].uiFontID);
+
+                        uiString = new(FontSubSystem.StringPixLength(Globals.gVideoOverlays[iBlitterIndex].zText, Globals.gVideoOverlays[iBlitterIndex].uiFontID),
+                        this.fonts.GetFontHeight(Globals.gVideoOverlays[iBlitterIndex].uiFontID));
 
                         // Delete old rect
                         // Remove background
                         FreeBackgroundRectPending(Globals.gVideoOverlays[iBlitterIndex].uiBackground);
 
-                        Globals.gVideoOverlays[iBlitterIndex].uiBackground = RegisterBackgroundRect(BGND_FLAG.PERMANENT, out var _, pTopmostDesc.sLeft, pTopmostDesc.sTop, pTopmostDesc.sLeft + uiStringLength, pTopmostDesc.sTop + uiStringHeight);
-                        Globals.gVideoOverlays[iBlitterIndex].sX = pTopmostDesc.sX;
-                        Globals.gVideoOverlays[iBlitterIndex].sY = pTopmostDesc.sY;
-
+                        Globals.gVideoOverlays[iBlitterIndex].uiBackground = RegisterBackgroundRect(BGND_FLAG.PERMANENT, out var _, new(pTopmostDesc.Location, new(pTopmostDesc.Rectangle.Left + uiString.Width, pTopmostDesc.Rectangle.Top + uiString.Height)));
+                        Globals.gVideoOverlays[iBlitterIndex].Location = pTopmostDesc.Location;
                     }
 
                 }
@@ -355,7 +353,7 @@ public class RenderDirty
         return true;
     }
 
-    public static int RegisterBackgroundRect(BGND_FLAG uiFlags, out int? pSaveArea, int sLeft, int sTop, int sRight, int sBottom)
+    public static int RegisterBackgroundRect(BGND_FLAG uiFlags, out int? pSaveArea, Rectangle s)
     {
         int uiBufSize;
         int iBackIndex;
@@ -376,13 +374,13 @@ public class RenderDirty
         ClipX2 = Globals.gDirtyClipRect.Right;
         ClipY2 = Globals.gDirtyClipRect.Bottom;
 
-        usHeight = sBottom - sTop;
-        usWidth = sRight - sLeft;
+        usHeight = s.Bottom - s.Top;
+        usWidth = s.Right - s.Left;
 
         //if((sClipLeft >= sClipRight) || (sClipTop >= sClipBottom))
         //	return(-1);
-        iTempX = sLeft;
-        iTempY = sTop;
+        iTempX = s.Left;
+        iTempY = s.Top;
 
         // Clip to rect
         uiLeftSkip = Math.Min(ClipX1 - Math.Min(ClipX1, iTempX), (int)usWidth);
@@ -403,13 +401,14 @@ public class RenderDirty
         }
 
         // Set re-set values given based on clipping
-        sLeft = sLeft + (int)uiLeftSkip;
-        sRight = sRight - (int)uiRightSkip;
-        sTop = sTop + (int)uiTopSkip;
-        sBottom = sBottom - (int)uiBottomSkip;
+        
+        s.X = s.Left + (int)uiLeftSkip;
+        s.Width = s.Right - (int)uiRightSkip;
+        s.Y = s.Top + (int)uiTopSkip;
+        s.Height = s.Bottom - (int)uiBottomSkip;
 
 
-        if (sLeft == 192 || sLeft == 188)
+        if (s.Left == 192 || s.Left == 188)
         {
             int i = 0;
         }
@@ -425,7 +424,7 @@ public class RenderDirty
 
         if (pSaveArea == null)
         {
-            uiBufSize = (sRight - sLeft) * 2 * (sBottom - sTop);
+            uiBufSize = (s.Right - s.Left) * 2 * (s.Bottom - s.Top);
 
             if (uiBufSize == 0)
             {
@@ -434,13 +433,13 @@ public class RenderDirty
 
             if (uiFlags.HasFlag(BGND_FLAG.SAVERECT))
             {
-                Globals.gBackSaves[iBackIndex].pSaveArea = new Image<Rgba32>(sRight - sLeft, sBottom - sTop);
+                Globals.gBackSaves[iBackIndex].pSaveArea = new Image<Rgba32>(s.Right - s.Left, s.Bottom - s.Top);
             }
 
 
             if (uiFlags.HasFlag(BGND_FLAG.SAVE_Z))
             {
-                Globals.gBackSaves[iBackIndex].pZSaveArea = new Image<Rgba32>(sRight - sLeft, sBottom - sTop);
+                Globals.gBackSaves[iBackIndex].pZSaveArea = new Image<Rgba32>(s.Right - s.Left, s.Bottom - s.Top);
                 Globals.gBackSaves[iBackIndex].fZBuffer = true;
             }
 
@@ -451,12 +450,12 @@ public class RenderDirty
 
         Globals.gBackSaves[iBackIndex].fAllocated = true;
         Globals.gBackSaves[iBackIndex].uiFlags = uiFlags;
-        Globals.gBackSaves[iBackIndex].sLeft = sLeft;
-        Globals.gBackSaves[iBackIndex].sTop = sTop;
-        Globals.gBackSaves[iBackIndex].sRight = sRight;
-        Globals.gBackSaves[iBackIndex].sBottom = sBottom;
-        Globals.gBackSaves[iBackIndex].sWidth = sRight - sLeft;
-        Globals.gBackSaves[iBackIndex].sHeight = sBottom - sTop;
+        Globals.gBackSaves[iBackIndex].sLeft = s.Left;
+        Globals.gBackSaves[iBackIndex].sTop = s.Top;
+        Globals.gBackSaves[iBackIndex].sRight = s.Right;
+        Globals.gBackSaves[iBackIndex].sBottom = s.Bottom;
+        Globals.gBackSaves[iBackIndex].sWidth = s.Right - s.Left;
+        Globals.gBackSaves[iBackIndex].sHeight = s.Bottom - s.Top;
 
         Globals.gBackSaves[iBackIndex].fFilled = false;
 
@@ -648,14 +647,14 @@ public class RenderDirty
             uiStringLength = FontSubSystem.StringPixLength(pTopmostDesc.pzText, pTopmostDesc.uiFontID);
             uiStringHeight = this.fonts.GetFontHeight(pTopmostDesc.uiFontID);
 
-            iBackIndex = RegisterBackgroundRect(BGND_FLAG.PERMANENT, out var _, pTopmostDesc.sLeft, pTopmostDesc.sTop, pTopmostDesc.sLeft + uiStringLength, pTopmostDesc.sTop + uiStringHeight);
+            iBackIndex = RegisterBackgroundRect(BGND_FLAG.PERMANENT, out var _, new(pTopmostDesc.Location, new(pTopmostDesc.Location.X + uiStringLength, pTopmostDesc.Location.Y + uiStringHeight)));
 
 
         }
         else
         {
             // Register background
-            iBackIndex = RegisterBackgroundRect(BGND_FLAG.PERMANENT, out var _, pTopmostDesc.sLeft, pTopmostDesc.sTop, pTopmostDesc.sRight, pTopmostDesc.sBottom);
+            iBackIndex = RegisterBackgroundRect(BGND_FLAG.PERMANENT, out var _, pTopmostDesc.Rectangle);
         }
 
 
@@ -730,13 +729,9 @@ public class VIDEO_OVERLAY_DESC
 {
     public VOVERLAY_DESC uiFlags;
     public bool fDisabled;
-    public int sLeft;
-    public int sTop;
-    public int sRight;
-    public int sBottom;
+    public Rectangle Rectangle;
     public FontStyle uiFontID;
-    public int sX;
-    public int sY;
+    public Point Location;
     public FontColor ubFontBack;
     public FontColor ubFontFore;
     public string pzText;// [200];
@@ -756,8 +751,7 @@ public class VIDEO_OVERLAY
     public int? pSaveArea;
     public int[] uiUserData = new int[5];
     public FontStyle uiFontID;
-    public int sX;
-    public int sY;
+    public Point Location;
     public FontColor ubFontBack;
     public FontColor ubFontFore;
     public string zText;// [200];

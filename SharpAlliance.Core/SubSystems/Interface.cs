@@ -80,12 +80,14 @@ public class Interface
             // Set Overlay
             VideoOverlayDesc = new()
             {
-                sLeft = (640 - gusUIMessageWidth) / 2,
-                sTop = 150,
-                sRight = (640 - gusUIMessageWidth) / 2 + gusUIMessageWidth,
-                sBottom = 150 + gusUIMessageHeight,
-                sX = (640 - gusUIMessageWidth) / 2,
-                sY = 150,
+                Rectangle = new()
+                {
+                    X = (640 - gusUIMessageWidth) / 2,
+                    Y = 150,
+                    Width = (640 - gusUIMessageWidth) / 2 + gusUIMessageWidth,
+                    Height = 150 + gusUIMessageHeight,
+                },
+                Location = new((640 - gusUIMessageWidth) / 2, 150),
                 BltCallback = this.RenderUIMessage,
             };
 
@@ -98,11 +100,12 @@ public class Interface
     private void RenderUIMessage(VIDEO_OVERLAY pBlitter)
     {
         // Shade area first...
-        VideoSurfaceManager.ShadowVideoSurfaceRect(pBlitter.uiDestBuff, pBlitter.sX, pBlitter.sY, pBlitter.sX + gusUIMessageWidth - 2, pBlitter.sY + gusUIMessageHeight - 2);
+        VideoSurfaceManager.ShadowVideoSurfaceRect(
+            pBlitter.uiDestBuff, new(pBlitter.Location, new(pBlitter.Location.X + gusUIMessageWidth - 2, pBlitter.Location.Y + gusUIMessageHeight - 2)));
 
-        this.mercTextBox.RenderMercPopUpBoxFromIndex(iUIMessageBox, pBlitter.sX, pBlitter.sY, pBlitter.uiDestBuff);
+        this.mercTextBox.RenderMercPopUpBoxFromIndex(iUIMessageBox, pBlitter.Location, pBlitter.uiDestBuff);
 
-        video.InvalidateRegion(pBlitter.sX, pBlitter.sY, pBlitter.sX + gusUIMessageWidth, pBlitter.sY + gusUIMessageHeight);
+        video.InvalidateRegion(new(pBlitter.Location, new(pBlitter.Location.X + gusUIMessageWidth, pBlitter.Location.Y + gusUIMessageHeight)));
     }
 
     public static void DirtyMercPanelInterface(SOLDIERTYPE pSoldier, int ubDirtyLevel)

@@ -814,7 +814,7 @@ public class MouseSubSystem : ISharpAllianceManager
         return ValueTask.FromResult(true);
     }
 
-    public static void SimulateMouseMovement(int x, int y)
+    public static void SimulateMouseMovement(Point location)
     {
     }
 

@@ -11,6 +11,7 @@ using SharpAlliance.Core.Managers.VideoSurfaces;
 using static SharpAlliance.Core.Globals;
 using SixLabors.ImageSharp.Processing;
 using SixLabors.ImageSharp.Drawing.Processing;
+using SharpAlliance.Platform;
 
 namespace SharpAlliance.Core.Screens;
 
@@ -28,6 +29,7 @@ public class MainMenuScreen : IScreen
     private readonly IVideoManager video;
     private readonly CursorSubSystem cursor;
     private readonly IClockManager clock;
+    private readonly GameContext context;
 
     private Dictionary<MainMenuItems, ButtonPic> iMenuImages = new();
     private Dictionary<MainMenuItems, GUI_BUTTON> iMenuButtons = new();
@@ -53,9 +55,11 @@ public class MainMenuScreen : IScreen
         IVideoManager videoManager,
         CursorSubSystem cursorSubSystem,
         FontSubSystem fontSubSystem,
+        GameContext context,
         IInputManager inputManager,
         RenderDirty renderDirtySubSystem)
     {
+        this.context = context;
         this.cursor = cursorSubSystem;
         this.clock = clockManager;
         this.input = inputManager;
@@ -196,6 +200,7 @@ public class MainMenuScreen : IScreen
                     Globals.gfMainMenuScreenExit = true;
 
                     Globals.gfProgramIsRunning = false;
+                    this.context.State = GameState.ExitRequested;
                     break;
 
                 case MainMenuItems.NEW_GAME:

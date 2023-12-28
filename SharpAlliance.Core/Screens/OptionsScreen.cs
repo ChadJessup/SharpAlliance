@@ -57,7 +57,7 @@ public class OptionsScreen : IScreen
 
     //toggle boxes
     public const int OPT_SPACE_BETWEEN_TEXT_AND_TOGGLE_BOX = 30;//220
-    public const int OPT_TOGGLE_TEXT_OFFSET_Y = 2;//3
+    public const int OPT_TOGGLE_TEXT_OFFSET_Y = 1;//3
 
     public const int OPT_TOGGLE_BOX_FIRST_COLUMN_X = 265; //257 //OPT_TOGGLE_BOX_TEXT_X + OPT_SPACE_BETWEEN_TEXT_AND_TOGGLE_BOX
     public const int OPT_TOGGLE_BOX_FIRST_COLUMN_START_Y = 89;//OPT_TOGGLE_BOX_TEXT_Y
@@ -101,7 +101,6 @@ public class OptionsScreen : IScreen
     private readonly IClockManager clock;
     private readonly IVideoManager video;
     private readonly MessageBoxSubSystem messageBox;
-    private readonly GameSettings settings;
     private readonly FontSubSystem fonts;
     private readonly GameOptions options;
     private readonly ISoundManager sound;
@@ -157,7 +156,6 @@ public class OptionsScreen : IScreen
         IMusicManager musicManager,
         GameInit gameInit,
         ButtonSubSystem buttonSubSystem,
-        GameSettings gameSettings,
         GameOptions gameOptions,
         FontSubSystem fontSubSystem,
         Messages messages,
@@ -173,7 +171,6 @@ public class OptionsScreen : IScreen
         this.music = musicManager;
         this.fonts = fontSubSystem;
         this.options = gameOptions;
-        this.settings = gameSettings;
         this.sound = soundManager;
         this.inputs = inputManager;
         this.clock = clockManager;
@@ -199,23 +196,6 @@ public class OptionsScreen : IScreen
         }
 
         return ValueTask.CompletedTask;
-    }
-
-    public void Draw(IVideoManager videoManager)
-    {
-        var background = this.video.GetVideoObject("INTERFACE\\OptionScreenBase.sti", out this.guiOptionBackGroundImageKey);
-
-        // load button, title graphic and add it
-        var options = this.video.GetVideoObject("INTERFACE\\optionscreenaddons.sti", out this.guiOptionsAddOnImagesKey);
-
-        this.RenderOptionsScreen();
-
-        this.guiManager.RenderAllSliderBars();
-
-        // render buttons marked dirty	
-        ButtonSubSystem.MarkButtonsDirty(this.buttonList);
-        ButtonSubSystem.RenderButtons(this.buttonList);
-
     }
 
     public ValueTask<ScreenName> Handle()
@@ -610,7 +590,7 @@ public class OptionsScreen : IScreen
 
         this.buttonList.Add(this.guiOptGotoLoadGameBtn);
 
-        //	SpecifyDisabledButtonStyle( guiBobbyRAcceptOrder, DISABLED_STYLE_SHADED );
+        //        ButtonSubSystem.SpecifyDisabledButtonStyle(guiBobbyRAcceptOrder, DISABLED_STYLE.SHADED);
 
         //Quit to main menu button
         this.giQuitBtnImage = ButtonSubSystem.UseLoadedButtonImage(this.giOptionsButtonImages, -1, 2, -1, 3, -1);
@@ -632,7 +612,7 @@ public class OptionsScreen : IScreen
         this.buttonList.Add(this.guiQuitButton);
 
         ButtonSubSystem.SpecifyDisabledButtonStyle(this.guiQuitButton, DISABLED_STYLE.HATCHED);
-        //	DisableButton( guiQuitButton );
+        ButtonSubSystem.DisableButton(guiQuitButton);
 
         //Done button
 
@@ -654,7 +634,7 @@ public class OptionsScreen : IScreen
 
         this.buttonList.Add(this.guiDoneButton);
 
-        //	SpecifyDisabledButtonStyle( guiBobbyRAcceptOrder, DISABLED_STYLE_SHADED );
+        //        ButtonSubSystem.SpecifyDisabledButtonStyle(guiBobbyRAcceptOrder, DISABLED_STYLE.SHADED);
 
         //
         // Toggle Boxes
@@ -692,7 +672,7 @@ public class OptionsScreen : IScreen
                     OPT_HIGHLIGHT_COLOR,
                     EnglishText.zOptionsToggleText[(int)cnt],
                     FontColor.FONT_MCOLOR_BLACK,
-                    (TextJustifies)((int)((int)ButtonTextJustifies.BUTTON_TEXT_LEFT | FontSubSystem.DONT_DISPLAY_TEXT) / this.fonts.GetFontHeight(OPT_MAIN_FONT)));
+                    (TextJustifies)(((int)ButtonTextJustifies.BUTTON_TEXT_LEFT | FontSubSystem.DONT_DISPLAY_TEXT) / this.fonts.GetFontHeight(OPT_MAIN_FONT)));
 
                 TextSize.Width = OPT_TOGGLE_BOX_TEXT_WIDTH;
 
@@ -722,7 +702,7 @@ public class OptionsScreen : IScreen
                     new Rectangle(
                         OPT_TOGGLE_BOX_FIRST_COLUMN_X,
                         usPosY,
-                        OPT_TOGGLE_BOX_SECOND_TEXT_X,
+                        OPT_TOGGLE_BOX_SECOND_TEXT_X + TextSize.Width,
                         TextSize.Height),
                     MSYS_PRIORITY.HIGH,
                     CURSOR.NORMAL,
@@ -743,7 +723,7 @@ public class OptionsScreen : IScreen
         usPosY = OPT_TOGGLE_BOX_FIRST_COLUMN_START_Y;
         for (TOPTION cnt = this.gubFirstColOfOptions; cnt < TOPTION.NUM_GAME_OPTIONS; cnt++)
         {
-            var option = (TOPTION)cnt;
+            var option = cnt;
 
             //Check box to toggle tracking mode
             this.guiOptionsToggles[option] = this.buttons.CreateCheckBoxButton(
@@ -791,9 +771,9 @@ public class OptionsScreen : IScreen
                 MouseSubSystem.MSYS_DefineRegion(
                     this.gSelectedOptionTextRegion[cnt],
                     new(
-                        OPT_TOGGLE_BOX_SECOND_COLUMN_X + 13,
-                        480 - usPosY,
-                        OPT_TOGGLE_BOX_SECOND_TEXT_X + TextSize.Width,
+                        OPT_TOGGLE_BOX_SECOND_COLUMN_X,
+                        usPosY,
+                        OPT_TOGGLE_BOX_SECOND_TEXT_X,
                         TextSize.Height),
                     MSYS_PRIORITY.HIGH,
                     CURSOR.NORMAL,
@@ -807,7 +787,7 @@ public class OptionsScreen : IScreen
                 MouseSubSystem.MSYS_DefineRegion(
                     this.gSelectedOptionTextRegion[option],
                     new(
-                        OPT_TOGGLE_BOX_SECOND_COLUMN_X + 13,
+                        OPT_TOGGLE_BOX_SECOND_COLUMN_X,
                         usPosY,
                         OPT_TOGGLE_BOX_SECOND_TEXT_X + TextSize.Width,
                         TextSize.Height),
@@ -895,12 +875,12 @@ public class OptionsScreen : IScreen
 
         //get the status of the tree top option
 
-        this.gfSettingOfTreeTopStatusOnEnterOfOptionScreen = this.settings[TOPTION.TOGGLE_TREE_TOPS];
+        this.gfSettingOfTreeTopStatusOnEnterOfOptionScreen = gGameSettings[TOPTION.TOGGLE_TREE_TOPS];
 
         //Get the status of the item glow option
-        this.gfSettingOfItemGlowStatusOnEnterOfOptionScreen = this.settings[TOPTION.GLOW_ITEMS];
+        this.gfSettingOfItemGlowStatusOnEnterOfOptionScreen = gGameSettings[TOPTION.GLOW_ITEMS];
 
-        this.gfSettingOfDontAnimateSmoke = this.settings[TOPTION.ANIMATE_SMOKE];
+        this.gfSettingOfDontAnimateSmoke = gGameSettings[TOPTION.ANIMATE_SMOKE];
     }
 
     private void SetOptionsScreenToggleBoxes()
@@ -909,7 +889,7 @@ public class OptionsScreen : IScreen
 
         for (cnt = 0; cnt < TOPTION.NUM_GAME_OPTIONS; cnt++)
         {
-            if (this.settings[cnt])
+            if (Globals.gGameSettings[cnt])
             {
                 this.guiOptionsToggles[cnt].uiFlags |= ButtonFlags.BUTTON_CLICKED_ON;
             }
@@ -961,13 +941,13 @@ public class OptionsScreen : IScreen
 
         if (iReason.HasFlag(MSYS_CALLBACK_REASON.LBUTTON_UP))
         {
-            this.HandleOptionToggle(ubButton, !this.settings[ubButton], false, true);
+            this.HandleOptionToggle(ubButton, !gGameSettings[ubButton], false, true);
 
             this.video.InvalidateRegion(pRegion.Bounds);
         }
         else if (iReason.HasFlag(MSYS_CALLBACK_REASON.LBUTTON_DWN))//iReason & MSYS_CALLBACK_REASON.LBUTTON_REPEAT || 
         {
-            if (this.settings[ubButton])
+            if (gGameSettings[ubButton])
             {
                 this.HandleOptionToggle(ubButton, true, true, true);
             }
@@ -992,7 +972,7 @@ public class OptionsScreen : IScreen
         }
         else if (reason.HasFlag(MSYS_CALLBACK_REASON.GAIN_MOUSE))
         {
-            //                this.gbHighLightedOptionText = bButton;
+            this.gbHighLightedOptionText = (int)bButton.UserData[0];
 
             this.video.InvalidateRegion(pRegion.Bounds);
         }
@@ -1043,13 +1023,13 @@ public class OptionsScreen : IScreen
             {
                 Pos = new(
                     OPT_TOGGLE_BOX_FIRST_COL_TEXT_X,
-                    OPT_TOGGLE_BOX_FIRST_COLUMN_START_Y - 15 + (bHighLight * OPT_GAP_BETWEEN_TOGGLE_BOXES));
+                    OPT_TOGGLE_BOX_FIRST_COLUMN_START_Y + OPT_TOGGLE_TEXT_OFFSET_Y + (bHighLight * OPT_GAP_BETWEEN_TOGGLE_BOXES));
             }
             else
             {
                 Pos = new(
                     OPT_TOGGLE_BOX_SECOND_TEXT_X,
-                    OPT_TOGGLE_BOX_SECOND_COLUMN_START_Y - 15 + ((bHighLight - OPT_FIRST_COLUMN_TOGGLE_CUT_OFF) * OPT_GAP_BETWEEN_TOGGLE_BOXES));
+                    OPT_TOGGLE_BOX_SECOND_COLUMN_START_Y + OPT_TOGGLE_TEXT_OFFSET_Y + ((bHighLight - OPT_FIRST_COLUMN_TOGGLE_CUT_OFF) * OPT_GAP_BETWEEN_TOGGLE_BOXES));
             }
 
 
@@ -1071,11 +1051,25 @@ public class OptionsScreen : IScreen
             {
                 if (fHighLight)
                 {
-                    FontSubSystem.DrawTextToScreen(EnglishText.zOptionsToggleText[bHighLight], Pos, 0, OPT_MAIN_FONT, OPT_HIGHLIGHT_COLOR, FontColor.FONT_MCOLOR_BLACK, TextJustifies.LEFT_JUSTIFIED);
+                    FontSubSystem.DrawTextToScreen(
+                        EnglishText.zOptionsToggleText[bHighLight],
+                        Pos,
+                        0,
+                        OPT_MAIN_FONT,
+                        OPT_HIGHLIGHT_COLOR,
+                        FontColor.FONT_MCOLOR_BLACK,
+                        TextJustifies.LEFT_JUSTIFIED);
                 }
                 else
                 {
-                    FontSubSystem.DrawTextToScreen(EnglishText.zOptionsToggleText[bHighLight], Pos, 0, OPT_MAIN_FONT, OPT_MAIN_COLOR, FontColor.FONT_MCOLOR_BLACK, TextJustifies.LEFT_JUSTIFIED);
+                    FontSubSystem.DrawTextToScreen(
+                        EnglishText.zOptionsToggleText[bHighLight],
+                        Pos,
+                        0,
+                        OPT_MAIN_FONT,
+                        OPT_MAIN_COLOR,
+                        FontColor.FONT_MCOLOR_BLACK,
+                        TextJustifies.LEFT_JUSTIFIED);
                 }
             }
         }
@@ -1218,7 +1212,7 @@ public class OptionsScreen : IScreen
 
         if (fState)
         {
-            this.settings[ubButton] = true;
+            gGameSettings[ubButton] = true;
 
             this.guiOptionsToggles[ubButton].uiFlags |= ButtonFlags.BUTTON_CLICKED_ON;
 
@@ -1229,7 +1223,7 @@ public class OptionsScreen : IScreen
         }
         else
         {
-            this.settings[ubButton] = false;
+            gGameSettings[ubButton] = false;
 
             this.guiOptionsToggles[ubButton].uiFlags &= ~ButtonFlags.BUTTON_CLICKED_ON;
 
@@ -1246,7 +1240,7 @@ public class OptionsScreen : IScreen
                 {
                     if (!this.guiOptionsToggles[TOPTION.SUBTITLES].uiFlags.HasFlag(ButtonFlags.BUTTON_CLICKED_ON))
                     {
-                        this.settings[ubButton] = true;
+                        gGameSettings[ubButton] = true;
                         this.guiOptionsToggles[ubButton].uiFlags |= ButtonFlags.BUTTON_CLICKED_ON;
 
                         //Confirm the Exit to the main menu screen

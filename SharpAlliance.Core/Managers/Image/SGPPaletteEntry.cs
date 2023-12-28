@@ -5,6 +5,8 @@ using SixLabors.ImageSharp;
 using SixLabors.ImageSharp.PixelFormats;
 
 using static SharpAlliance.Core.Globals;
+using Point = SixLabors.ImageSharp.Point;
+using Size = SixLabors.ImageSharp.Size;
 
 namespace SharpAlliance.Core.Managers.Image;
 

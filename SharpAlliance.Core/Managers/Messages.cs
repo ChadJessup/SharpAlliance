@@ -79,9 +79,9 @@ public class Messages
     }
 
 
-    void SetStringPosition(ScrollStringStPtr pStringSt, int usX, int usY)
+    void SetStringPosition(ScrollStringStPtr pStringSt, Point us)
     {
-        this.SetStringVideoOverlayPosition(pStringSt, usX, usY);
+        this.SetStringVideoOverlayPosition(pStringSt, us);
     }
 
 
@@ -133,20 +133,20 @@ public class Messages
     }
 
 
-    bool CreateStringVideoOverlay(ScrollStringStPtr pStringSt, int usX, int usY)
+    bool CreateStringVideoOverlay(ScrollStringStPtr pStringSt, Point us)
     {
-        VIDEO_OVERLAY_DESC VideoOverlayDesc = new();
+        VIDEO_OVERLAY_DESC VideoOverlayDesc = new()
+        {
+            // SET VIDEO OVERLAY
+            Location = us,
+            Rectangle = new Rectangle(us, new(100, 100)),
+            uiFontID = pStringSt.uiFont,
+            ubFontBack = FontColor.FONT_MCOLOR_BLACK,
+            ubFontFore = pStringSt.usColor,
+            pzText = pStringSt.pString16!,
+            BltCallback = this.BlitString,
+        };
 
-        // SET VIDEO OVERLAY
-        VideoOverlayDesc.sLeft = usX;
-        VideoOverlayDesc.sTop = usY;
-        VideoOverlayDesc.uiFontID = pStringSt.uiFont;
-        VideoOverlayDesc.ubFontBack = FontColor.FONT_MCOLOR_BLACK;
-        VideoOverlayDesc.ubFontFore = pStringSt.usColor;
-        VideoOverlayDesc.sX = VideoOverlayDesc.sLeft;
-        VideoOverlayDesc.sY = VideoOverlayDesc.sTop;
-        VideoOverlayDesc.pzText = pStringSt.pString16!;
-        VideoOverlayDesc.BltCallback = this.BlitString;
         pStringSt.iVideoOverlay = this.renderDirty.RegisterVideoOverlay(VOVERLAY.DIRTYBYTEXT, VideoOverlayDesc);
 
         if (pStringSt.iVideoOverlay == -1)
@@ -173,7 +173,7 @@ public class Messages
     }
 
 
-    void SetStringVideoOverlayPosition(ScrollStringStPtr pStringSt, int usX, int usY)
+    void SetStringVideoOverlayPosition(ScrollStringStPtr pStringSt, Point us)
     {
         VIDEO_OVERLAY_DESC VideoOverlayDesc = new();
 
@@ -183,10 +183,7 @@ public class Messages
         if (pStringSt.iVideoOverlay != -1)
         {
             VideoOverlayDesc.uiFlags = VOVERLAY_DESC.POSITION;
-            VideoOverlayDesc.sLeft = usX;
-            VideoOverlayDesc.sTop = usY;
-            VideoOverlayDesc.sX = VideoOverlayDesc.sLeft;
-            VideoOverlayDesc.sY = VideoOverlayDesc.sTop;
+            VideoOverlayDesc.Location = us;
 
             this.renderDirty.UpdateVideoOverlay(VideoOverlayDesc, pStringSt.iVideoOverlay, false);
         }
@@ -352,7 +349,7 @@ public class Messages
                 // now add in the new string
                 cnt = 0;
                 Globals.gpDisplayList[cnt] = pStringS;
-                this.CreateStringVideoOverlay(pStringS, Globals.X_START, Globals.Y_START);
+                this.CreateStringVideoOverlay(pStringS, Globals.START);
                 if (pStringS.fBeginningOfNewString == true)
                 {
                     iNumberOfNewStrings++;
@@ -368,20 +365,15 @@ public class Messages
                     // Adjust position!
                     if (Globals.gpDisplayList[cnt] != null)
                     {
-
-                        this.SetStringVideoOverlayPosition(Globals.gpDisplayList[cnt], Globals.X_START, Globals.Y_START - (cnt * this.fonts.GetFontHeight(FontStyle.SMALLFONT1)) - (Globals.WIDTH_BETWEEN_NEW_STRINGS * iNumberOfNewStrings));
+                        this.SetStringVideoOverlayPosition(Globals.gpDisplayList[cnt], new(Globals.START.X, Globals.START.Y - (cnt * this.fonts.GetFontHeight(FontStyle.SMALLFONT1)) - (Globals.WIDTH_BETWEEN_NEW_STRINGS * iNumberOfNewStrings)));
 
                         // start of new string, increment count of new strings, for spacing purposes
                         if (Globals.gpDisplayList[cnt].fBeginningOfNewString == true)
                         {
                             iNumberOfNewStrings++;
                         }
-
-
                     }
-
                 }
-
 
                 // WE NOW HAVE A FREE SPACE, INSERT!
 
