@@ -223,20 +223,37 @@ public class SDL2VideoManager : IVideoManager
 	etc. to their unblit buffer, for later reblitting. Does NOT clip.
 
 **********************************************************************************************/
-    public bool Blt16BPPTo16BPP(Image<Rgba32> pDest, Image<Rgba32> pSrc, Point iDestPos, Point iSrcPos, int uiWidth, int uiHeight)
+    public bool Blt16BPPTo16BPP(Image<Rgba32> pDest, Image<Rgba32> pSrc, Point iDestPos, Point iSrcPos, Size size, bool debug = false)
     {
-        Rectangle destRect = new(iDestPos.X, iDestPos.Y, uiWidth, uiHeight);
+        Rectangle destRect = new(iSrcPos, size);
 
-        //pDest.SaveAsPng($@"C:\temp\{nameof(Blt16BPPTo16BPP)}-dst.png");
-        //pSrc.SaveAsPng($@"C:\temp\{nameof(Blt16BPPTo16BPP)}-src.png");
+        if (debug)
+        {
+            pDest.SaveAsPng($@"C:\temp\{nameof(Blt16BPPTo16BPP)}-dst.png");
+            pSrc.SaveAsPng($@"C:\temp\{nameof(Blt16BPPTo16BPP)}-src.png");
+        }
+
+        var srcClone = pSrc.Clone();
+        srcClone.Mutate(ctx =>
+        {
+            ctx.Crop(destRect);
+        });
+
+        if (debug)
+        {
+            srcClone.SaveAsPng($@"C:\temp\{nameof(Blt16BPPTo16BPP)}-clone.png");
+        }
 
         pDest.Mutate(ctx =>
         {
-            ctx.DrawImage(pSrc, iDestPos, destRect, 1.0f);
+            ctx.DrawImage(srcClone, iDestPos, new Rectangle(iDestPos, size), 1.0f);
         });
 
-        //pDest.SaveAsPng($@"C:\temp\{nameof(Blt16BPPTo16BPP)}-dst-after.png");
-        //pSrc.SaveAsPng($@"C:\temp\{nameof(Blt16BPPTo16BPP)}-src-after.png");
+        if (debug)
+        {
+            pDest.SaveAsPng($@"C:\temp\{nameof(Blt16BPPTo16BPP)}-dst-after.png");
+            pSrc.SaveAsPng($@"C:\temp\{nameof(Blt16BPPTo16BPP)}-src-after.png");
+        }
 
         return true;
     }
@@ -1830,8 +1847,7 @@ public class SDL2VideoManager : IVideoManager
                             pSrcBuf,
                             new(0, 0),
                             new(gBackSaves[uiCount].sLeft, gBackSaves[uiCount].sTop),
-                            gBackSaves[uiCount].sWidth,
-                            gBackSaves[uiCount].sHeight);
+                            new(gBackSaves[uiCount].sWidth, gBackSaves[uiCount].sHeight));
                     }
 
                 }
@@ -1842,7 +1858,7 @@ public class SDL2VideoManager : IVideoManager
                         this.Surfaces[SurfaceType.Z_BUFFER],
                         new(0, 0),
                         new(gBackSaves[uiCount].sLeft, gBackSaves[uiCount].sTop),
-                        gBackSaves[uiCount].sWidth, gBackSaves[uiCount].sHeight);
+                        new(gBackSaves[uiCount].sWidth, gBackSaves[uiCount].sHeight));
                 }
                 else
                 {
@@ -1987,8 +2003,7 @@ public class SDL2VideoManager : IVideoManager
             src,
             srcRect.ToPoint(),
             srcRect.ToPoint(),
-            srcRect.Width,
-            srcRect.Height);
+            new(srcRect.Width, srcRect.Height));
 
         return (fRetVal);
     }
@@ -2240,8 +2255,8 @@ public class SDL2VideoManager : IVideoManager
             Y = dstPoint.Y,
         };
 
-//        src.SaveAsPng(@$"C:\temp\{nameof(BlitSurfaceToSurface)}-src.png");
-//        dstSurface.Image.SaveAsPng(@$"C:\temp\{nameof(BlitSurfaceToSurface)}-dstSurface-before.png");
+        //        src.SaveAsPng(@$"C:\temp\{nameof(BlitSurfaceToSurface)}-src.png");
+        //        dstSurface.Image.SaveAsPng(@$"C:\temp\{nameof(BlitSurfaceToSurface)}-dstSurface-before.png");
 
         dstSurface.Image.Mutate(ctx =>
         {
@@ -2254,7 +2269,7 @@ public class SDL2VideoManager : IVideoManager
                 1.0f);
         });
 
-//        dstSurface.Image.SaveAsPng(@$"C:\temp\{nameof(BlitSurfaceToSurface)}-dstSurface.png");
+        //        dstSurface.Image.SaveAsPng(@$"C:\temp\{nameof(BlitSurfaceToSurface)}-dstSurface.png");
     }
 
     public bool ShadowVideoSurfaceRect(SurfaceType buffer, Rectangle rectangle)

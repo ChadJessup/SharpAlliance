@@ -66,7 +66,6 @@ public class MessageBoxSubSystem : ISharpAllianceManager
         this.mouse = mouseSubSystem;
         screens = screenManager;
         inputs = inputManager;
-        //        clock = clockManager;
         this.overhead = overhead;
         this.context = context;
     }
@@ -218,7 +217,17 @@ public class MessageBoxSubSystem : ISharpAllianceManager
         gMsgBox.bHandled = 0;
 
         // Init message box
-        gMsgBox.iBoxId = mercTextBox.PrepareMercPopupBox(iId, ubMercBoxBackground, ubMercBoxBorder, zString, MSGBOX_DEFAULT_WIDTH, 40, 10, 30, out int usTextBoxWidth, out int usTextBoxHeight);
+        gMsgBox.iBoxId = mercTextBox.PrepareMercPopupBox(
+            iId, 
+            ubMercBoxBackground, 
+            ubMercBoxBorder, 
+            zString, 
+            MSGBOX_DEFAULT_WIDTH, 
+            40, 
+            10, 
+            30, 
+            out int usTextBoxWidth, 
+            out int usTextBoxHeight);
 
         if (gMsgBox.iBoxId == -1)
         {
@@ -265,14 +274,14 @@ public class MessageBoxSubSystem : ISharpAllianceManager
         var pDestBuf = this.video.Surfaces[gMsgBox.uiSaveBuffer];
         var pSrcBuf = this.video.Surfaces[SurfaceType.FRAME_BUFFER];
 
-        this.video.BlitSurfaceToSurface(pDestBuf, SurfaceType.FRAME_BUFFER, gMsgBox.Location);
-        //  this.video.Blt16BPPTo16BPP(
-        //      pDestBuf,
-        //      pSrcBuf,
-        //      new(0, 0),
-        //      gMsgBox.Location,
-        //      usTextBoxWidth,
-        //      usTextBoxHeight);
+//        this.video.BlitSurfaceToSurface(pDestBuf, SurfaceType.FRAME_BUFFER, gMsgBox.Location);
+          this.video.Blt16BPPTo16BPP(
+              pDestBuf,
+              pSrcBuf,
+              new(0, 0),
+              gMsgBox.Location,
+              new(usTextBoxWidth, usTextBoxHeight),
+              debug: true);
 
         // Create top-level mouse region
         MouseSubSystem.MSYS_DefineRegion(
@@ -954,8 +963,7 @@ public class MessageBoxSubSystem : ISharpAllianceManager
                 pSrcBuf, 
                 gMsgBox.Location,
                 new(0, 0),
-                gMsgBox.Size.Width,
-                gMsgBox.Size.Height);
+                gMsgBox.Size);
             
             //UnLockVideoSurface(gMsgBox.uiSaveBuffer);
             //UnLockVideoSurface(FRAME_BUFFER);

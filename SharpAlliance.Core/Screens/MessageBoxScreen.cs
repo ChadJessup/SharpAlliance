@@ -386,8 +386,7 @@ public class MessageBoxScreen : IScreen
                 pSrcBuf,
                 gMsgBox.Location,
                 new(0, 0),
-                gMsgBox.Size.Width,
-                gMsgBox.Size.Height);
+                gMsgBox.Size);
 
 //            video.UnLockVideoSurface(gMsgBox.uiSaveBuffer);
 //            video.UnLockVideoSurface(Surfaces.FRAME_BUFFER);

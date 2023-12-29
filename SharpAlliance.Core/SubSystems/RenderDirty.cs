@@ -45,8 +45,8 @@ public class RenderDirty
                             gBackSaves[uiCount].pSaveArea,
                             new(gBackSaves[uiCount].sWidth * 2, gBackSaves[uiCount].sLeft),
                             new(gBackSaves[uiCount].sTop, 0),
-                            gBackSaves[uiCount].sWidth,
-                            gBackSaves[uiCount].sHeight);
+                            new(gBackSaves[uiCount].sWidth,
+                            gBackSaves[uiCount].sHeight));
 
                         AddBaseDirtyRect(
                             new(gBackSaves[uiCount].sLeft,
@@ -286,7 +286,7 @@ public class RenderDirty
 
 
                         uiString = new(FontSubSystem.StringPixLength(Globals.gVideoOverlays[iBlitterIndex].zText, Globals.gVideoOverlays[iBlitterIndex].uiFontID),
-                        this.fonts.GetFontHeight(Globals.gVideoOverlays[iBlitterIndex].uiFontID));
+                        FontSubSystem.GetFontHeight(Globals.gVideoOverlays[iBlitterIndex].uiFontID));
 
                         // Delete old rect
                         // Remove background
@@ -622,7 +622,7 @@ public class RenderDirty
             pSrcBuf,
             new(sLeft, sTop),
             new(sLeft, sTop),
-            sWidth, sHeight);
+            new(sWidth, sHeight));
 
         // Add rect to frame buffer queue
         video.InvalidateRegionEx(sLeft, sTop, sWidth, sHeight, 0);
@@ -645,7 +645,7 @@ public class RenderDirty
             }
 
             uiStringLength = FontSubSystem.StringPixLength(pTopmostDesc.pzText, pTopmostDesc.uiFontID);
-            uiStringHeight = this.fonts.GetFontHeight(pTopmostDesc.uiFontID);
+            uiStringHeight = FontSubSystem.GetFontHeight(pTopmostDesc.uiFontID);
 
             iBackIndex = RegisterBackgroundRect(BGND_FLAG.PERMANENT, out var _, new(pTopmostDesc.Location, new(pTopmostDesc.Location.X + uiStringLength, pTopmostDesc.Location.Y + uiStringHeight)));
 

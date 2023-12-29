@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using SharpAlliance.Core.Interfaces;
@@ -494,15 +495,7 @@ public class GameInitOptionsScreen : IScreen
 
     private bool GetCurrentGameSaveButtonSetting()
     {
-        for (IronManMode cnt = 0; cnt < IronManMode.NUM_SAVE_OPTIONS; cnt++)
-        {
-            if (this.guiGameSaveToggles[cnt].uiFlags.HasFlag(ButtonFlags.BUTTON_CLICKED_ON))
-            {
-                return true;
-            }
-        }
-
-        return false;
+        return this.guiGameSaveToggles[IronManMode.GIO_IRON_MAN].uiFlags.HasFlag(ButtonFlags.BUTTON_CLICKED_ON);
     }
 
     private DifficultyLevel GetCurrentDifficultyButtonSetting()
@@ -511,7 +504,7 @@ public class GameInitOptionsScreen : IScreen
         {
             if (this.guiDifficultySettingsToggles[cnt].uiFlags.HasFlag(ButtonFlags.BUTTON_CLICKED_ON))
             {
-                return (DifficultyLevel)cnt;
+                return (DifficultyLevel)cnt + 1;
             }
         }
 
@@ -868,6 +861,31 @@ public class GameInitOptionsScreen : IScreen
 
     private void DisplayMessageToUserAboutGameDifficulty()
     {
+        void ConfirmGioDifSettingMessageBoxCallBack(MessageBoxReturnCode bExitValue)
+        {
+            if (bExitValue == MessageBoxReturnCode.MSG_BOX_RETURN_YES)
+            {
+                gubGameOptionScreenHandler = GameMode.GIO_EXIT;
+            }
+        }
+
+
+        DifficultyLevel ubDiffLevel = GetCurrentDifficultyButtonSetting();
+
+        switch (ubDiffLevel)
+        {
+            case DifficultyLevel.Easy:
+                DoGioMessageBox(MessageBoxStyle.MSG_BOX_BASIC_STYLE, zGioDifConfirmText[GIO_CFS.NOVICE], ScreenName.GAME_INIT_OPTIONS_SCREEN, MSG_BOX_FLAG.YESNO, ConfirmGioDifSettingMessageBoxCallBack);
+                break;
+            case DifficultyLevel.Medium:
+                DoGioMessageBox(MessageBoxStyle.MSG_BOX_BASIC_STYLE, zGioDifConfirmText[GIO_CFS.EXPERIENCED], ScreenName.GAME_INIT_OPTIONS_SCREEN, MSG_BOX_FLAG.YESNO, ConfirmGioDifSettingMessageBoxCallBack);
+                break;
+            case DifficultyLevel.Hard:
+                DoGioMessageBox(MessageBoxStyle.MSG_BOX_BASIC_STYLE, zGioDifConfirmText[GIO_CFS.EXPERT], ScreenName.GAME_INIT_OPTIONS_SCREEN, MSG_BOX_FLAG.YESNO, ConfirmGioDifSettingMessageBoxCallBack);
+                break;
+            default:
+                throw new ArgumentException("Invalid difficulty selected when starting a new game?");
+        }
     }
 
     private void BtnGIOCancelCallback(ref GUI_BUTTON btn, MSYS_CALLBACK_REASON reason)
@@ -902,6 +920,13 @@ public enum GameDifficulty
     GIO_DIFF_HARD,
 
     NUM_DIFF_SETTINGS,
+};
+
+public enum GIO_CFS
+{
+    NOVICE,
+    EXPERIENCED,
+    EXPERT,
 };
 
 // Game Settings options

@@ -51,7 +51,7 @@ public partial class Globals
 
     internal static string wcscpy(string src)
     {
-        throw new NotImplementedException();
+        return src;
     }
 
     internal static void wcsncat(string pFinishedString, char v, int iLength)

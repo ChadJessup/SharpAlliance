@@ -202,6 +202,14 @@ public static class EnglishText
     	{ Traversability.ABANDONED_MINE, "" },							//Unused
     };
 
+    public static Dictionary<GIO_CFS, string> zGioDifConfirmText = new()
+    {
+        { GIO_CFS.NOVICE , "You have chosen NOVICE mode. This setting is appropriate for those new to Jagged Alliance, those new to strategy games in general, or those wishing shorter battles in the game. Your choice will affect things throughout the entire course of the game, so choose wisely. Are you sure you want to play in Novice mode?" },
+        { GIO_CFS.EXPERIENCED , "You have chosen EXPERIENCED mode. This setting is suitable for those already familiar with Jagged Alliance or similar games. Your choice will affect things throughout the entire course of the game, so choose wisely. Are you sure you want to play in Experienced mode?"},
+        { GIO_CFS.EXPERT , "You have chosen EXPERT mode. We warned you. Don't blame us if you get shipped back in a body bag. Your choice will affect things throughout the entire course of the game, so choose wisely. Are you sure you want to play in Expert mode?"},
+    };
+
+
     // NOTE: combine prestatbuildstring with statgain to get a line like the example below.
     // "John has gained 3 points of marksmanship skill." 
 

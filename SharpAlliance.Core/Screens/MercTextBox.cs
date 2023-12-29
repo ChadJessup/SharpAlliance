@@ -168,7 +168,7 @@ public class MercTextBox
         // reset flags
         guiFlags = 0;
 
-        usStringPixLength = this.fonts.WFStringPixLength(pString, TEXT_POPUP_FONT);
+        usStringPixLength = FontSubSystem.WFStringPixLength(pString, TEXT_POPUP_FONT);
 
         if (usStringPixLength < (usWidth - MERC_TEXT_POPUP_WINDOW_TEXT_OFFSET_X * 2))
         {
@@ -322,7 +322,7 @@ public class MercTextBox
         this.GetMercPopupBoxFontColor(ubBackgroundIndex, out FontColor ubFontColor, out FontShadow ubFontShadowColor);
 
         FontSubSystem.SetFontShadow(ubFontShadowColor);
-        this.fonts.SetFontDestBuffer(pPopUpTextBox.uiSourceBufferIndex, 0, 0, usWidth, usHeight, false);
+        FontSubSystem.SetFontDestBuffer(pPopUpTextBox.uiSourceBufferIndex, 0, 0, usWidth, usHeight, false);
 
         //Display the text
         sDispTextXPos = MERC_TEXT_POPUP_WINDOW_TEXT_OFFSET_X + usMarginX;
@@ -343,7 +343,7 @@ public class MercTextBox
             FontColor.FONT_MCOLOR_BLACK,
             TextJustifies.LEFT_JUSTIFIED);
 
-        this.fonts.SetFontDestBuffer(SurfaceType.FRAME_BUFFER, 0, 0, 640, 480, false);
+        FontSubSystem.SetFontDestBuffer(SurfaceType.FRAME_BUFFER, 0, 0, 640, 480, false);
         FontSubSystem.SetFontShadow(FontShadow.DEFAULT_SHADOW);
 
         if (iBoxId == -1)
@@ -445,12 +445,9 @@ public class MercTextBox
     {
         // this function will load the graphics associated with the background and border index values
 
-        // Image<Rgba32> backgroundImage = this.textures.LoadTexture(zMercBackgroundPopupFilenames[(int)ubBackgroundIndex]);
         var VObjectDesc = video.GetVideoObject(zMercBackgroundPopupFilenames[(int)ubBackgroundIndex], out var popupboxSurface);
         SurfaceType surf = this.video.Surfaces.CreateSurface(VObjectDesc);
         gPopUpTextBox.uiMercTextPopUpBackground = surf;
-
-        //VObjectDesc.Images[0].SaveAsPng($@"C:\temp\popupbackgroun.png");
 
         // border
         var borderFilePath = Utils.FilenameForBPP(this.zMercBorderPopupFilenames[(int)ubBorderIndex]);

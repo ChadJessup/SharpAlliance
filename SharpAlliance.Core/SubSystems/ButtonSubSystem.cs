@@ -641,12 +641,12 @@ public class ButtonSubSystem : ISharpAllianceManager
             xp = b.MouseRegion.Bounds.X + b.bTextOffset.X;
 
             // Set the font printing settings to the buttons viewable area
-            fonts.SetFontDestBuffer(ButtonDestBuffer, NewClip, false);
+            FontSubSystem.SetFontDestBuffer(ButtonDestBuffer, NewClip, false);
 
             // Compute the coordinates to center the text
             if (b.bTextOffset.Y == -1)
             {
-                yp = ((height - fonts.GetFontHeight(b.usFont)) / 2) + TextY - 1;
+                yp = ((height - FontSubSystem.GetFontHeight(b.usFont)) / 2) + TextY - 1;
             }
             else
             {

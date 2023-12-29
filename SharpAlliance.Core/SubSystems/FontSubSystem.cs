@@ -10,6 +10,7 @@ using SixLabors.Fonts;
 using SixLabors.ImageSharp;
 using SixLabors.ImageSharp.PixelFormats;
 using Veldrid;
+using Rectangle = SixLabors.ImageSharp.Rectangle;
 
 namespace SharpAlliance.Core.SubSystems;
 
@@ -34,14 +35,14 @@ public class FontSubSystem : ISharpAllianceManager
     private const int ID_BLACK = 0;
     private const int MAX_FONTS = 25;
     public const int INVALIDATE_TEXT = 0x00000010;
-    public SixLabors.ImageSharp.Rectangle FontDestRegion = new(0, 0, 640, 480);
+    public static Rectangle FontDestRegion = new(0, 0, 640, 480);
 
     // Wont display the text.  Used if you just want to get how many lines will be displayed
     public const int DONT_DISPLAY_TEXT = 0x00000020;
     private static FontStyle gpLargeFontType1;
     private static HVOBJECT gvoLargeFontType1;
     private static FontStyle FontDefault;
-    public SurfaceType FontDestBuffer { get; set; } = SurfaceType.BACKBUFFER;
+    public static SurfaceType FontDestBuffer { get; set; } = SurfaceType.BACKBUFFER;
     private static int FontDestPitch = 640 * 2;
     private static int FontDestBPP = 16;
     private readonly ITextureManager textures;
@@ -111,7 +112,7 @@ public class FontSubSystem : ISharpAllianceManager
     private FontColor SaveFontBackground8;
 
     public bool IsInitialized { get; }
-    public bool FontDestWrap { get; private set; }
+    public static bool FontDestWrap { get; private set; }
     public TextJustifies IAN_WRAP_NO_SHADOW { get; } = (TextJustifies)32;
 
     public static TextRenderer TextRenderer { get; private set; }
@@ -139,7 +140,7 @@ public class FontSubSystem : ISharpAllianceManager
 
         // Compute the coordinates to right justify the text
         xp = sWidth - StringPixLength(pStr, iFontIndex) + sLeft;
-        yp = ((sHeight - this.GetFontHeight(iFontIndex)) / 2) + sTop;
+        yp = ((sHeight - GetFontHeight(iFontIndex)) / 2) + sTop;
 
         psNewX = xp;
         psNewY = yp;
@@ -197,11 +198,11 @@ public class FontSubSystem : ISharpAllianceManager
         FontBackground8 = SaveFontBackground8;
     }
 
-    public int GetFontHeight(FontStyle usFont)
+    public static int GetFontHeight(FontStyle usFont)
     {
         if (!FontObjs.TryGetValue(usFont, out var hVobject))
         {
-            this.InitializeFonts();
+            InitializeFonts();
         }
 
         return GetHeight(FontObjs[usFont], 0);
@@ -216,15 +217,15 @@ public class FontSubSystem : ISharpAllianceManager
         return pTrav.usHeight + pTrav.sOffsetY;
     }
 
-    public void SetFontDestBuffer(SurfaceType DestBuffer, SixLabors.ImageSharp.Rectangle bounds, bool wrap)
+    public static void SetFontDestBuffer(SurfaceType DestBuffer, SixLabors.ImageSharp.Rectangle bounds, bool wrap)
     {
-        this.FontDestBuffer = DestBuffer;
+        FontDestBuffer = DestBuffer;
 
-        this.FontDestRegion.X = bounds.X;
-        this.FontDestRegion.Y = bounds.Y;
-        this.FontDestRegion.Width = bounds.Width;
-        this.FontDestRegion.Height = bounds.Height;
-        this.FontDestWrap = wrap;
+        FontDestRegion.X = bounds.X;
+        FontDestRegion.Y = bounds.Y;
+        FontDestRegion.Width = bounds.Width;
+        FontDestRegion.Height = bounds.Height;
+        FontDestWrap = wrap;
     }
 
     public static int StringPixLength(string stringText, FontStyle UseFont)
@@ -390,66 +391,66 @@ public class FontSubSystem : ISharpAllianceManager
         fontColorLookup.Add(FontColor.FONT_WHITE, Color.White);
         fontColorLookup.Add(FontColor.FONT_MCOLOR_WHITE, Color.White);
 
-        this.InitializeFonts();
+        InitializeFonts();
 
         return ValueTask.FromResult(true);
     }
 
-    public void InitializeFonts()
+    public static void InitializeFonts()
     {
         // Initialize fonts
-        gpLargeFontType1 = this.LoadFontFile(FontStyle.LARGEFONT1, "FONTS\\LARGEFONT1.sti");
+        gpLargeFontType1 = LoadFontFile(FontStyle.LARGEFONT1, "FONTS\\LARGEFONT1.sti");
         gvoLargeFontType1 = GetFontObject(gpLargeFontType1);
         CreateFontPaletteTables(gvoLargeFontType1);
         fontLookup.TryAdd(FontStyle.LARGEFONT1, FontSubSystem.TextRenderer.LoadFont("Arial", 15, SixLabors.Fonts.FontStyle.Regular));
         FontObjs[FontStyle.LARGEFONT1] = gvoLargeFontType1;
         // 
-        gpSmallFontType1 = this.LoadFontFile(FontStyle.SMALLFONT1, "FONTS\\SMALLFONT1.sti");
+        gpSmallFontType1 = LoadFontFile(FontStyle.SMALLFONT1, "FONTS\\SMALLFONT1.sti");
         gvoSmallFontType1 = GetFontObject(gpSmallFontType1);
         CreateFontPaletteTables(gvoSmallFontType1);
         fontLookup.TryAdd(FontStyle.SMALLFONT1, FontSubSystem.TextRenderer.LoadFont("Arial", 10, SixLabors.Fonts.FontStyle.Regular));
         FontObjs[FontStyle.SMALLFONT1] = gvoSmallFontType1;
 
-        gpTinyFontType1 = this.LoadFontFile(FontStyle.TINYFONT1, "FONTS\\TINYFONT1.sti");
+        gpTinyFontType1 = LoadFontFile(FontStyle.TINYFONT1, "FONTS\\TINYFONT1.sti");
         gvoTinyFontType1 = GetFontObject(gpTinyFontType1);
         CreateFontPaletteTables(gvoTinyFontType1);
         fontLookup.TryAdd(FontStyle.TINYFONT1, FontSubSystem.TextRenderer.LoadFont("Arial", 5, SixLabors.Fonts.FontStyle.Regular));
         FontObjs[FontStyle.TINYFONT1] = gvoTinyFontType1;
 
-        gp12PointFont1 = this.LoadFontFile(FontStyle.FONT12POINT1, "FONTS\\FONT12POINT1.sti");
+        gp12PointFont1 = LoadFontFile(FontStyle.FONT12POINT1, "FONTS\\FONT12POINT1.sti");
         gvo12PointFont1 = GetFontObject(gp12PointFont1);
         CreateFontPaletteTables(gvo12PointFont1);
         fontLookup.TryAdd(FontStyle.FONT12POINT1, FontSubSystem.TextRenderer.LoadFont("Arial", 12, SixLabors.Fonts.FontStyle.Bold));
         FontObjs[FontStyle.FONT12POINT1] = gvo12PointFont1;
 
-        gpClockFont = this.LoadFontFile(FontStyle.CLOCKFONT, "FONTS\\CLOCKFONT.sti");
+        gpClockFont = LoadFontFile(FontStyle.CLOCKFONT, "FONTS\\CLOCKFONT.sti");
         gvoClockFont = GetFontObject(gpClockFont);
         CreateFontPaletteTables(gvoClockFont);
         FontObjs[FontStyle.CLOCKFONT] = gvoClockFont;
 
-        gpCompFont = this.LoadFontFile(FontStyle.COMPFONT, "FONTS\\COMPFONT.sti");
+        gpCompFont = LoadFontFile(FontStyle.COMPFONT, "FONTS\\COMPFONT.sti");
         gvoCompFont = GetFontObject(gpCompFont);
         CreateFontPaletteTables(gvoCompFont);
         FontObjs[FontStyle.COMPFONT] = gvoCompFont;
 
-        gpSmallCompFont = this.LoadFontFile(FontStyle.SMALLCOMPFONT, "FONTS\\SMALLCOMPFONT.sti");
+        gpSmallCompFont = LoadFontFile(FontStyle.SMALLCOMPFONT, "FONTS\\SMALLCOMPFONT.sti");
         gvoSmallCompFont = GetFontObject(gpSmallCompFont);
         CreateFontPaletteTables(gvoSmallCompFont);
         FontObjs[FontStyle.SMALLCOMPFONT] = gvoSmallCompFont;
 
-        gp10PointRoman = this.LoadFontFile(FontStyle.FONT10ROMAN, "FONTS\\FONT10ROMAN.sti");
+        gp10PointRoman = LoadFontFile(FontStyle.FONT10ROMAN, "FONTS\\FONT10ROMAN.sti");
         gvo10PointRoman = GetFontObject(gp10PointRoman);
         CreateFontPaletteTables(gvo10PointRoman);
         fontLookup.TryAdd(FontStyle.FONT10ROMAN, FontSubSystem.TextRenderer.LoadFont("Times New Roman", 10, SixLabors.Fonts.FontStyle.Regular));
         FontObjs[FontStyle.FONT10ROMAN] = gvo10PointRoman;
 
-        gp12PointRoman = this.LoadFontFile(FontStyle.FONT12ROMAN, "FONTS\\FONT12ROMAN.sti");
+        gp12PointRoman = LoadFontFile(FontStyle.FONT12ROMAN, "FONTS\\FONT12ROMAN.sti");
         gvo12PointRoman = GetFontObject(gp12PointRoman);
         CreateFontPaletteTables(gvo12PointRoman);
         fontLookup.TryAdd(FontStyle.FONT12ROMAN, FontSubSystem.TextRenderer.LoadFont("Times New Roman", 12, SixLabors.Fonts.FontStyle.Regular));
         FontObjs[FontStyle.FONT12ROMAN] = gvo12PointRoman;
 
-        gp14PointSansSerif = this.LoadFontFile(FontStyle.FONT14SANSERIF, "FONTS\\FONT14SANSERIF.sti");
+        gp14PointSansSerif = LoadFontFile(FontStyle.FONT14SANSERIF, "FONTS\\FONT14SANSERIF.sti");
         gvo14PointSansSerif = GetFontObject(gp14PointSansSerif);
         CreateFontPaletteTables(gvo14PointSansSerif);
         fontLookup.TryAdd(FontStyle.FONT14SANSERIF, FontSubSystem.TextRenderer.LoadFont("Times New Roman", 14, SixLabors.Fonts.FontStyle.Regular));
@@ -460,70 +461,70 @@ public class FontSubSystem : ISharpAllianceManager
         //  gvoMilitaryFont1 = GetFontObject( gpMilitaryFont1);
         //   CreateFontPaletteTables( gvoMilitaryFont1) );
 
-        gp10PointArial = this.LoadFontFile(FontStyle.FONT10ARIAL, "FONTS\\FONT10ARIAL.sti");
+        gp10PointArial = LoadFontFile(FontStyle.FONT10ARIAL, "FONTS\\FONT10ARIAL.sti");
         gvo10PointArial = GetFontObject(gp10PointArial);
         CreateFontPaletteTables(gvo10PointArial);
         fontLookup.TryAdd(FontStyle.FONT10ARIAL, FontSubSystem.TextRenderer.LoadFont("Arial", 10, SixLabors.Fonts.FontStyle.Regular));
         FontObjs[FontStyle.FONT10ARIAL] = gvo10PointArial;
 
-        gp14PointArial = this.LoadFontFile(FontStyle.FONT14ARIAL, "FONTS\\FONT14ARIAL.sti");
+        gp14PointArial = LoadFontFile(FontStyle.FONT14ARIAL, "FONTS\\FONT14ARIAL.sti");
         gvo14PointArial = GetFontObject(gp14PointArial);
         CreateFontPaletteTables(gvo14PointArial);
         fontLookup.TryAdd(FontStyle.FONT14ARIAL, FontSubSystem.TextRenderer.LoadFont("Arial", 14, SixLabors.Fonts.FontStyle.Regular));
         FontObjs[FontStyle.FONT14ARIAL] = gvo14PointArial;
 
-        gp10PointArialBold = this.LoadFontFile(FontStyle.FONT10ARIALBOLD, "FONTS\\FONT10ARIALBOLD.sti");
+        gp10PointArialBold = LoadFontFile(FontStyle.FONT10ARIALBOLD, "FONTS\\FONT10ARIALBOLD.sti");
         gvo10PointArialBold = GetFontObject(gp10PointArialBold);
         CreateFontPaletteTables(gvo10PointArialBold);
         fontLookup.TryAdd(FontStyle.FONT10ARIALBOLD, FontSubSystem.TextRenderer.LoadFont("Arial", 10, SixLabors.Fonts.FontStyle.Bold));
         FontObjs[FontStyle.FONT10ARIALBOLD] = gvo10PointArialBold;
 
-        gp12PointArial = this.LoadFontFile(FontStyle.FONT12ARIAL, "FONTS\\FONT12ARIAL.sti");
+        gp12PointArial = LoadFontFile(FontStyle.FONT12ARIAL, "FONTS\\FONT12ARIAL.sti");
         gvo12PointArial = GetFontObject(gp12PointArial);
         CreateFontPaletteTables(gvo12PointArial);
         fontLookup.TryAdd(FontStyle.FONT12ARIAL, FontSubSystem.TextRenderer.LoadFont("Arial", 12, SixLabors.Fonts.FontStyle.Regular));
         FontObjs[FontStyle.FONT12ARIAL] = gvo12PointArial;
 
-        gpBlockyFont = this.LoadFontFile(FontStyle.BLOCKFONT, "FONTS\\BLOCKFONT.sti");
+        gpBlockyFont = LoadFontFile(FontStyle.BLOCKFONT, "FONTS\\BLOCKFONT.sti");
         gvoBlockyFont = GetFontObject(gpBlockyFont);
         CreateFontPaletteTables(gvoBlockyFont);
         FontObjs[FontStyle.BLOCKFONT] = gvoBlockyFont;
 
-        gpBlockyFont2 = this.LoadFontFile(FontStyle.BLOCKFONT2, "FONTS\\BLOCKFONT2.sti");
+        gpBlockyFont2 = LoadFontFile(FontStyle.BLOCKFONT2, "FONTS\\BLOCKFONT2.sti");
         gvoBlockyFont2 = GetFontObject(gpBlockyFont2);
         CreateFontPaletteTables(gvoBlockyFont2);
         FontObjs[FontStyle.BLOCKFONT2] = gvoBlockyFont2;
 
-        gp12PointArialFixedFont = this.LoadFontFile(FontStyle.FONT12ARIALFIXEDWIDTH, "FONTS\\FONT12ARIALFIXEDWIDTH.sti");
+        gp12PointArialFixedFont = LoadFontFile(FontStyle.FONT12ARIALFIXEDWIDTH, "FONTS\\FONT12ARIALFIXEDWIDTH.sti");
         gvo12PointArialFixedFont = GetFontObject(gp12PointArialFixedFont);
         CreateFontPaletteTables(gvo12PointArialFixedFont);
         fontLookup.TryAdd(FontStyle.FONT12ARIALFIXEDWIDTH, FontSubSystem.TextRenderer.LoadFont("Arial", 12, SixLabors.Fonts.FontStyle.Regular));
         FontObjs[FontStyle.FONT12ARIALFIXEDWIDTH] = gvo12PointArialFixedFont;
 
-        gp16PointArial = this.LoadFontFile(FontStyle.FONT16ARIAL, "FONTS\\FONT16ARIAL.sti");
+        gp16PointArial = LoadFontFile(FontStyle.FONT16ARIAL, "FONTS\\FONT16ARIAL.sti");
         gvo16PointArial = GetFontObject(gp16PointArial);
         CreateFontPaletteTables(gvo16PointArial);
         fontLookup.TryAdd(FontStyle.FONT16ARIAL, FontSubSystem.TextRenderer.LoadFont("Arial", 16, SixLabors.Fonts.FontStyle.Regular));
         FontObjs[FontStyle.FONT16ARIAL] = gvo16PointArial;
 
-        gpBlockFontNarrow = this.LoadFontFile(FontStyle.BLOCKFONTNARROW, "FONTS\\BLOCKFONTNARROW.sti");
+        gpBlockFontNarrow = LoadFontFile(FontStyle.BLOCKFONTNARROW, "FONTS\\BLOCKFONTNARROW.sti");
         gvoBlockFontNarrow = GetFontObject(gpBlockFontNarrow);
         CreateFontPaletteTables(gvoBlockFontNarrow);
         FontObjs[FontStyle.BLOCKFONTNARROW] = gvoBlockFontNarrow;
 
-        gp14PointHumanist = this.LoadFontFile(FontStyle.FONT14HUMANIST, "FONTS\\FONT14HUMANIST.sti");
+        gp14PointHumanist = LoadFontFile(FontStyle.FONT14HUMANIST, "FONTS\\FONT14HUMANIST.sti");
         gvo14PointHumanist = GetFontObject(gp14PointHumanist);
         CreateFontPaletteTables(gvo14PointHumanist);
         fontLookup.TryAdd(FontStyle.FONT14HUMANIST, FontSubSystem.TextRenderer.LoadFont("Arial", 14, SixLabors.Fonts.FontStyle.Regular));
         FontObjs[FontStyle.FONT14HUMANIST] = gvo14PointHumanist;
 
-        gpHugeFont = this.LoadFontFile(FontStyle.HUGEFONT, "FONTS\\HUGEFONT.sti");
+        gpHugeFont = LoadFontFile(FontStyle.HUGEFONT, "FONTS\\HUGEFONT.sti");
         gvoHugeFont = GetFontObject(gpHugeFont);
         CreateFontPaletteTables(gvoHugeFont);
         FontObjs[FontStyle.HUGEFONT] = gvoHugeFont;
 
         // Set default for font system
-        this.SetFontDestBuffer(SurfaceType.FRAME_BUFFER, new(0, 0, 640, 480), false);
+        SetFontDestBuffer(SurfaceType.FRAME_BUFFER, new(0, 0, 640, 480), false);
     }
 
     //*****************************************************************************
@@ -559,13 +560,13 @@ public class FontSubSystem : ISharpAllianceManager
         //	FontDestBPP=0;
 
         video.GetCurrentVideoSettings(out int uiRight, out int uiBottom, out int uiPixelDepth);
-        this.FontDestRegion.X = 0;
-        this.FontDestRegion.Y = 0;
-        this.FontDestRegion.Width = uiRight;
-        this.FontDestRegion.Height = uiBottom;
+        FontDestRegion.X = 0;
+        FontDestRegion.Y = 0;
+        FontDestRegion.Width = uiRight;
+        FontDestRegion.Height = uiBottom;
         // FontDestBPP = uiPixelDepth;
 
-        this.FontDestWrap = false;
+        FontDestWrap = false;
         FontManager.FontTranslationTable = translationTable;
         FontManager.usDefaultPixelDepth = uiPixelDepth;
     }
@@ -1005,7 +1006,7 @@ public class FontSubSystem : ISharpAllianceManager
     //  This function returns (-1) if it fails, and debug msgs for a reason.
     //  Otherwise the font number is returned.
     //*****************************************************************************
-    private FontStyle LoadFontFile(FontStyle LoadIndex, string filename)
+    private static FontStyle LoadFontFile(FontStyle LoadIndex, string filename)
     {
         if (FontObjs.ContainsKey(LoadIndex))
         {
@@ -1050,9 +1051,9 @@ public class FontSubSystem : ISharpAllianceManager
         return FontStyle.None;
     }
 
-    public int WFGetFontHeight(FontStyle font)
+    public static int WFGetFontHeight(FontStyle font)
     {
-        return this.GetFontHeight(font);
+        return GetFontHeight(font);
     }
 
     public void VarFindFontCenterCoordinates(int sLeft, int sTop, int sWidth, int sHeight, FontStyle iFontIndex, out int psNewX, out int psNewY, string pFontString)
@@ -1075,7 +1076,7 @@ public class FontSubSystem : ISharpAllianceManager
 
         // Compute the coordinates to center the text
         xp = ((sWidth - StringPixLength(pStr, iFontIndex) + 1) / 2) + sLeft;
-        yp = ((sHeight - this.GetFontHeight(iFontIndex)) / 2) + sTop;
+        yp = ((sHeight - GetFontHeight(iFontIndex)) / 2) + sTop;
 
         psNewX = xp;
         psNewY = yp;
@@ -1091,14 +1092,14 @@ public class FontSubSystem : ISharpAllianceManager
         throw new NotImplementedException();
     }
 
-    public int WFStringPixLength(string pString, FontStyle UseFont)
+    public static int WFStringPixLength(string pString, FontStyle UseFont)
     {
         // return how many Y pixels we used
         return StringPixLength(pString, UseFont);
     }
 
-    public void SetFontDestBuffer(SurfaceType DestBuffer, int x, int y, int width, int height, bool wrap)
-        => this.SetFontDestBuffer(DestBuffer, new(x, y, width, height), wrap);
+    public static void SetFontDestBuffer(SurfaceType DestBuffer, int x, int y, int width, int height, bool wrap)
+        => SetFontDestBuffer(DestBuffer, new(x, y, width, height), wrap);
 }
 
 public enum FONT_SHADE

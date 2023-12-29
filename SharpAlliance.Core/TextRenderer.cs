@@ -58,7 +58,7 @@ public class TextRenderer
         Rgba32 foreground,
         Rgba32 background)
     {
-        var buffer = this.video.Surfaces[this.fonts.FontDestBuffer];
+        var buffer = this.video.Surfaces[FontSubSystem.FontDestBuffer];
 
         RichTextOptions options = new(font)
         {

@@ -639,7 +639,7 @@ public class OptionsScreen : IScreen
         //
         // Toggle Boxes
         //
-        TextSize.Height = this.fonts.GetFontHeight(OPT_MAIN_FONT);
+        TextSize.Height = FontSubSystem.GetFontHeight(OPT_MAIN_FONT);
 
         //Create the first column of check boxes
         usPosY = OPT_TOGGLE_BOX_FIRST_COLUMN_START_Y;
@@ -672,7 +672,7 @@ public class OptionsScreen : IScreen
                     OPT_HIGHLIGHT_COLOR,
                     EnglishText.zOptionsToggleText[(int)cnt],
                     FontColor.FONT_MCOLOR_BLACK,
-                    (TextJustifies)(((int)ButtonTextJustifies.BUTTON_TEXT_LEFT | FontSubSystem.DONT_DISPLAY_TEXT) / this.fonts.GetFontHeight(OPT_MAIN_FONT)));
+                    (TextJustifies)(((int)ButtonTextJustifies.BUTTON_TEXT_LEFT | FontSubSystem.DONT_DISPLAY_TEXT) / FontSubSystem.GetFontHeight(OPT_MAIN_FONT)));
 
                 TextSize.Width = OPT_TOGGLE_BOX_TEXT_WIDTH;
 

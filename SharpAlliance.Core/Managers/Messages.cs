@@ -365,7 +365,7 @@ public class Messages
                     // Adjust position!
                     if (Globals.gpDisplayList[cnt] != null)
                     {
-                        this.SetStringVideoOverlayPosition(Globals.gpDisplayList[cnt], new(Globals.START.X, Globals.START.Y - (cnt * this.fonts.GetFontHeight(FontStyle.SMALLFONT1)) - (Globals.WIDTH_BETWEEN_NEW_STRINGS * iNumberOfNewStrings)));
+                        this.SetStringVideoOverlayPosition(Globals.gpDisplayList[cnt], new(Globals.START.X, Globals.START.Y - (cnt * FontSubSystem.GetFontHeight(FontStyle.SMALLFONT1)) - (Globals.WIDTH_BETWEEN_NEW_STRINGS * iNumberOfNewStrings)));
 
                         // start of new string, increment count of new strings, for spacing purposes
                         if (Globals.gpDisplayList[cnt].fBeginningOfNewString == true)
@@ -911,7 +911,7 @@ public class Messages
         int usSpacing;
 
 
-        this.fonts.SetFontDestBuffer(SurfaceType.FRAME_BUFFER, 17, 360 + 6, 407, 360 + 101, false);
+        FontSubSystem.SetFontDestBuffer(SurfaceType.FRAME_BUFFER, 17, 360 + 6, 407, 360 + 101, false);
 
         FontSubSystem.SetFont(MAP_SCREEN_MESSAGE_FONT);       // no longer supports variable fonts
         FontSubSystem.SetFontBackground(FontColor.FONT_BLACK);
@@ -920,7 +920,7 @@ public class Messages
         ubCurrentStringIndex = Globals.gubCurrentMapMessageString;
 
         sY = 377;
-        usSpacing = this.fonts.GetFontHeight(Globals.MAP_SCREEN_MESSAGE_FONT);
+        usSpacing = FontSubSystem.GetFontHeight(Globals.MAP_SCREEN_MESSAGE_FONT);
 
         for (ubLinesPrinted = 0; ubLinesPrinted < Globals.MAX_MESSAGES_ON_MAP_BOTTOM; ubLinesPrinted++)
         {
@@ -948,7 +948,7 @@ public class Messages
             ubCurrentStringIndex = (ubCurrentStringIndex + 1) % 256;
         }
 
-        this.fonts.SetFontDestBuffer(SurfaceType.FRAME_BUFFER, 0, 0, 640, 480, false);
+        FontSubSystem.SetFontDestBuffer(SurfaceType.FRAME_BUFFER, 0, 0, 640, 480, false);
     }
 
 

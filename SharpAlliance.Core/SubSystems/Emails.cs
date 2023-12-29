@@ -1140,7 +1140,7 @@ public class Emails
         // draw subject line of mail being viewed in viewer
 
         // lock buffer to prevent overwrite
-        this.fonts.SetFontDestBuffer(SurfaceType.FRAME_BUFFER, SUBJECT_X, (int)(MIDDLE_Y + iCounter * MIDDLE_WIDTH), SUBJECT_X + SUBJECT_WIDTH, ((int)(MIDDLE_Y + iCounter * MIDDLE_WIDTH)) + MIDDLE_WIDTH, false);
+        FontSubSystem.SetFontDestBuffer(SurfaceType.FRAME_BUFFER, SUBJECT_X, (int)(MIDDLE_Y + iCounter * MIDDLE_WIDTH), SUBJECT_X + SUBJECT_WIDTH, ((int)(MIDDLE_Y + iCounter * MIDDLE_WIDTH)) + MIDDLE_WIDTH, false);
         FontSubSystem.SetFontShadow(FontShadow.NO_SHADOW);
         FontSubSystem.SetFontForeground(FontColor.FONT_BLACK);
         FontSubSystem.SetFontBackground(FontColor.FONT_BLACK);
@@ -1175,7 +1175,7 @@ public class Emails
 
         FontSubSystem.SetFontShadow(FontShadow.DEFAULT_SHADOW);
         // reset font dest buffer
-        this.fonts.SetFontDestBuffer(SurfaceType.FRAME_BUFFER, 0, 0, 640, 480, false);
+        FontSubSystem.SetFontDestBuffer(SurfaceType.FRAME_BUFFER, 0, 0, 640, 480, false);
 
         return;
     }
@@ -1560,7 +1560,7 @@ public class Emails
         //DisplayWrappedString(VIEWER_X+VIEWER_HEAD_X+4, VIEWER_Y+VIEWER_HEAD_Y+4, VIEWER_HEAD_WIDTH, MESSAGE_GAP, MESSAGE_FONT, MESSAGE_COLOR, pString, 0,false,0);
 
         // increment height for size of one line
-        iHeight += this.fonts.GetFontHeight(MESSAGE_FONT);
+        iHeight += FontSubSystem.GetFontHeight(MESSAGE_FONT);
 
         // is there any special event meant for this mail?..if so, handle it
         this.HandleAnySpecialEmailMessageEvents(iOffSet);
@@ -1606,7 +1606,7 @@ public class Emails
 
         iCounter = 0;
         // now blit the text background based on height
-        for (iCounter = 2; iCounter < (this.iTotalHeight / this.fonts.GetFontHeight(MESSAGE_FONT)); iCounter++)
+        for (iCounter = 2; iCounter < (this.iTotalHeight / FontSubSystem.GetFontHeight(MESSAGE_FONT)); iCounter++)
         {
             // get a handle to the bitmap of EMAIL VIEWER Background
             hHandle = this.video.GetVideoObject(guiEmailMessage);
@@ -1633,7 +1633,7 @@ public class Emails
 
         // reset iCounter and iHeight
         iCounter = 1;
-        iHeight = this.fonts.GetFontHeight(MESSAGE_FONT);
+        iHeight = FontSubSystem.GetFontHeight(MESSAGE_FONT);
 
         // draw body of text. Any particular email can encompass more than one "record" in the
         // email file. Draw each record (length is number of records)
@@ -3072,7 +3072,7 @@ public class Emails
         //        pTempRecord = pMessageRecordList;
 
         // increment height for size of one line
-        iHeight += this.fonts.GetFontHeight(MESSAGE_FONT);
+        iHeight += FontSubSystem.GetFontHeight(MESSAGE_FONT);
 
         // load intro
         iEndOfSection = IMP_RESULTS_INTRO_LENGTH;
@@ -4389,7 +4389,7 @@ public class Emails
         // turn off the shadows
         FontSubSystem.SetFontShadow(FontShadow.NO_SHADOW);
 
-        this.fonts.SetFontDestBuffer(SurfaceType.FRAME_BUFFER, 0, 0, 640, 480, false);
+        FontSubSystem.SetFontDestBuffer(SurfaceType.FRAME_BUFFER, 0, 0, 640, 480, false);
 
         this.fonts.FindFontCenterCoordinates(VIEWER_X + INDENT_X_OFFSET, 0, INDENT_X_WIDTH, 0, sString, FontStyle.FONT12ARIAL, out int sX, out int sY);
         mprintf(sX, VIEWER_Y + iViewerY + INDENT_Y_OFFSET - 2, sString);
@@ -4690,7 +4690,7 @@ public class Emails
         //        pTempRecord = pMessageRecordList;
 
         // increment height for size of one line
-        iHeight += this.fonts.GetFontHeight(MESSAGE_FONT);
+        iHeight += FontSubSystem.GetFontHeight(MESSAGE_FONT);
 
         for (ubCnt = 0; ubCnt < ubNumberOfRecords; ubCnt++)
         {

@@ -78,7 +78,7 @@ public class AnimatedProgressBar
             {
                 if (pCurr.fUseSaveBuffer)
                 {
-                    int usFontHeight = this.fonts.GetFontHeight(pCurr.usMsgFont);
+                    int usFontHeight = FontSubSystem.GetFontHeight(pCurr.usMsgFont);
 
                     RenderDirty.RestoreExternBackgroundRect(pCurr.usBarLeft, pCurr.usBarBottom, (int)(pCurr.usBarRight - pCurr.usBarLeft), (int)(usFontHeight + 3));
                 }
@@ -207,7 +207,7 @@ public class AnimatedProgressBar
         //if we are to use the save buffer, blit the portion of the screen to the save buffer
         if (fSaveScreenToFrameBuffer)
         {
-            int usFontHeight = this.fonts.GetFontHeight(pCurr.usMsgFont) + 3;
+            int usFontHeight = FontSubSystem.GetFontHeight(pCurr.usMsgFont) + 3;
 
             //blit everything to the save buffer ( cause the save buffer can bleed through )
 //            RenderDirty.BlitBufferToBuffer(guiRENDERBUFFER, Surfaces.SAVE_BUFFER, pCurr.usBarLeft, pCurr.usBarBottom, (int)(pCurr.usBarRight - pCurr.usBarLeft), usFontHeight);
