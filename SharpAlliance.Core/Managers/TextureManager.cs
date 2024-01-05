@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using SharpAlliance.Core.Interfaces;
@@ -162,7 +163,7 @@ public class TextureManager : ITextureManager
     public bool TryGetTexture(string key, out HVOBJECT hPixHandle)
         => this.loadedTextures.TryGetValue(key, out hPixHandle);
 
-    HVOBJECT ITextureManager.LoadImage(string assetPath)
+    HVOBJECT ITextureManager.LoadImage(string assetPath, bool debug = false)
     {
         if (this.loadedTextures.TryGetValue(assetPath, out var existingObj))
         {
@@ -212,7 +213,15 @@ public class TextureManager : ITextureManager
             hVObject.Images[i] = hImage.ParsedImages[i];
         }
 
-        //hVObject.Images[0].SaveAsPng($@"C:\temp\pcxtest.png");
+        if (debug)
+        {
+            for (int i = 0; i < hVObject.Images.Length; i++)
+            {
+                Directory.CreateDirectory($@"C:\temp\{assetPath}");
+                hVObject.Images[i].SaveAsPng($@"C:\temp\{assetPath}\{i}.png");
+            }
+        }
+
         this.loadedTextures.Add(assetPath, hVObject);
 
         return hVObject;

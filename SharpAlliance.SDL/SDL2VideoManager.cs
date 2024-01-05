@@ -2136,12 +2136,12 @@ public class SDL2VideoManager : IVideoManager
 
     public void InvalidateRegion(int v1, int v2, int v3, int v4) => this.InvalidateRegion(new(v1, v2, v3, v4));
 
-    public bool Blt8BPPDataSubTo16BPPBuffer(Image<Rgba32> pDestBuf, Size size, Image<Rgba32> pSrcBuf, int iX, int iY, out Rectangle clip)
+    public bool Blt8BPPDataSubTo16BPPBuffer(Image<Rgba32> pBuffer, Size size, Image<Rgba32> pSrcBuffer, HVOBJECT hSrcVSurface, int iX, int iY, Rectangle pRect)
     {
-        clip = new Rectangle(0, 0, 100, 100);
-
-        int p16BPPPalette;
+        var p16BPPPalette = hSrcVSurface.Palette;
         int usHeight, usWidth;
+        int uiSrcPitch = pSrcBuffer.Width + 2;
+        int uiDestPitchBYTES = (pBuffer.Width * 2) + 4;
         int SrcPtr, DestPtr;
         int LineSkip, LeftSkip, RightSkip, TopSkip, BlitLength, SrcSkip, BlitHeight;
         int iTempX, iTempY;
@@ -2158,17 +2158,25 @@ public class SDL2VideoManager : IVideoManager
         CHECKF(iTempX >= 0);
         CHECKF(iTempY >= 0);
 
-        //LeftSkip = pRect.iLeft;
-        //RightSkip = usWidth - pRect.iRight;
-        //TopSkip = pRect.iTop * uiSrcPitch;
-        //BlitLength = pRect.iRight - pRect.iLeft;
-        //BlitHeight = pRect.iBottom - pRect.iTop;
-        //SrcSkip = uiSrcPitch - BlitLength;
-        //
-        //SrcPtr = (pSrcBuffer + TopSkip + LeftSkip);
-        //DestPtr = (pBuffer + (uiDestPitchBYTES * iTempY) + (iTempX * 2));
-        //p16BPPPalette = hSrcVSurface.p16BPPPalette;
-        //LineSkip = (uiDestPitchBYTES - (BlitLength * 2));
+        LeftSkip = pRect.Left;
+        RightSkip = usWidth - pRect.Right;
+        TopSkip = pRect.Top * uiSrcPitch;
+        BlitLength = pRect.Right - pRect.Left;
+        BlitHeight = pRect.Bottom - pRect.Top;
+        SrcSkip = uiSrcPitch - BlitLength;
+
+        SrcPtr = (0 + TopSkip + LeftSkip);
+        DestPtr = (0 + (uiDestPitchBYTES * iTempY) + (iTempX * 2));
+        LineSkip = (uiDestPitchBYTES - (BlitLength * 2));
+
+        for (int y = 0; y < pBuffer.Height; y++)
+        {
+            for (int x = 0; x < pBuffer.Width; x++)
+            {
+                var colorIndex = hSrcVSurface.hImage.p8BPPData[x + (y * x)];
+                pBuffer[x, y] = p16BPPPalette[colorIndex];
+            }
+        }
 
         return true;
     }
@@ -2243,7 +2251,7 @@ public class SDL2VideoManager : IVideoManager
         return [.. surfaces];
     }
 
-    public void BlitSurfaceToSurface(Image<Rgba32> src, SurfaceType dst, Point dstPoint, VO_BLT bltFlags = VO_BLT.SRCTRANSPARENCY)
+    public void BlitSurfaceToSurface(Image<Rgba32> src, SurfaceType dst, Point dstPoint, VO_BLT bltFlags = VO_BLT.SRCTRANSPARENCY, bool debug = false)
     {
         var dstSurface = this.Surfaces.SurfaceByTypes[dst];
 
@@ -2255,8 +2263,11 @@ public class SDL2VideoManager : IVideoManager
             Y = dstPoint.Y,
         };
 
-        //        src.SaveAsPng(@$"C:\temp\{nameof(BlitSurfaceToSurface)}-src.png");
-        //        dstSurface.Image.SaveAsPng(@$"C:\temp\{nameof(BlitSurfaceToSurface)}-dstSurface-before.png");
+        if (debug)
+        {
+            src.SaveAsPng(@$"C:\temp\{nameof(BlitSurfaceToSurface)}-src.png");
+            dstSurface.Image.SaveAsPng(@$"C:\temp\{nameof(BlitSurfaceToSurface)}-dstSurface-before.png");
+        }
 
         dstSurface.Image.Mutate(ctx =>
         {
@@ -2269,7 +2280,10 @@ public class SDL2VideoManager : IVideoManager
                 1.0f);
         });
 
-        //        dstSurface.Image.SaveAsPng(@$"C:\temp\{nameof(BlitSurfaceToSurface)}-dstSurface.png");
+        if (debug)
+        {
+            dstSurface.Image.SaveAsPng(@$"C:\temp\{nameof(BlitSurfaceToSurface)}-dstSurface.png");
+        }
     }
 
     public bool ShadowVideoSurfaceRect(SurfaceType buffer, Rectangle rectangle)
@@ -2282,7 +2296,7 @@ public class SDL2VideoManager : IVideoManager
         var dst = this.Surfaces[dstSurf];
         var src = this.Surfaces[srcSurf];
 
-        this.BlitSurfaceToSurface(src, dstSurf, sDest, VO_BLT.DESTTRANSPARENCY);
+        this.BlitSurfaceToSurface(src, dstSurf, sDest, VO_BLT.DESTTRANSPARENCY, debug: true);
     }
 
     public void StartFrameBufferRender()

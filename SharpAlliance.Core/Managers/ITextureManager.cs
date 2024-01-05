@@ -1,10 +1,6 @@
-﻿using SharpAlliance.Platform.Interfaces;
-using SixLabors.ImageSharp;
-using SixLabors.ImageSharp.PixelFormats;
-
-namespace SharpAlliance.Core.Managers;
+﻿namespace SharpAlliance.Core.Managers;
 
 public interface ITextureManager : ISharpAllianceManager
 {
-    HVOBJECT LoadImage(string assetPath);
+    HVOBJECT LoadImage(string assetPath, bool debug = false);
 }

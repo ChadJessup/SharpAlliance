@@ -51,7 +51,7 @@ public interface IVideoManager : ISharpAllianceManager
     void SetVideoSurfaceTransparency(SurfaceType uiVideoSurfaceImage, Rgba32 pixel);
     void ClearElements();
     bool Blt16BPPTo16BPP(Image<Rgba32> pDest, Image<Rgba32> pSrc, Point iDestPos, Point iSrcPos, Size size, bool debug = false);
-    bool Blt8BPPDataSubTo16BPPBuffer(Image<Rgba32> pDestBuf, Size size, Image<Rgba32> pSrcBuf, int iX, int iY, out Rectangle clip);
+    bool Blt8BPPDataSubTo16BPPBuffer(Image<Rgba32> pDestBuf, Size size, Image<Rgba32> pSrcBuf, HVOBJECT srcvObj, int iX, int iY, Rectangle clip);
     void Blt8BPPTo8BPP(Image<Rgba32> pDestBuf, int uiDestPitchBYTES, Image<Rgba32> pSrcBuf, int uiSrcPitchBYTES, int sLeft1, int sTop1, int sLeft2, int sTop2, int sWidth, int sHeight);
     void ColorFillVideoSurfaceArea(Rectangle rectangle, Color color);
     void ColorFillVideoSurfaceArea(Rectangle region, Rgba32 rgba32);
@@ -66,7 +66,7 @@ public interface IVideoManager : ISharpAllianceManager
     void DeleteVideoObjectFromIndex(SurfaceType uiMercTextPopUpBackground);
     HVOBJECT LoadImage(string assetPath);
     Texture[] CreateSurfaces(nint renderer, Image<Rgba32>[] image);
-    void BlitSurfaceToSurface(Image<Rgba32> src, SurfaceType dst, Point dstPoint, VO_BLT bltFlags = VO_BLT.SRCTRANSPARENCY);
+    void BlitSurfaceToSurface(Image<Rgba32> src, SurfaceType dst, Point dstPoint, VO_BLT bltFlags = VO_BLT.SRCTRANSPARENCY, bool debug = false);
     void Draw();
     void BltVideoObject(SurfaceType surface, HVOBJECT hPixHandle, int index, int x, int y, VO_BLT bltFlags = VO_BLT.SRCTRANSPARENCY, int? _ = default)
         => this.BlitSurfaceToSurface(hPixHandle.Images[index], surface, new(x, y), bltFlags);

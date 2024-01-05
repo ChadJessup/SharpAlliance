@@ -91,4 +91,6 @@ public class SGPPaletteEntry
     public byte peGreen;
     public byte peBlue;
     public int peFlags;
+
+    public override string ToString() => $"{peRed}{peGreen}{peBlue}-{peFlags}";
 }

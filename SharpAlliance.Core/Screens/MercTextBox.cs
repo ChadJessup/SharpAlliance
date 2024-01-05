@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Diagnostics;
+using System.Reflection.PortableExecutable;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using SharpAlliance.Core.Interfaces;
@@ -271,10 +272,13 @@ public class MercTextBox
         }
         else
         {
-            pDestBuf = this.video.Surfaces[pPopUpTextBox.uiMercTextPopUpBackground];
+            pDestBuf = this.video.Surfaces[pPopUpTextBox.uiSourceBufferIndex];
             pSrcBuf = this.video.Surfaces[pPopUpTextBox.uiMercTextPopUpBackground];
 
-            video.Blt8BPPDataSubTo16BPPBuffer(pDestBuf, new(pSrcBuf.Width, pSrcBuf.Height), pSrcBuf, 0, 0, out DestRect);
+            // pDestBuf.SaveAsPng($@"C:\temp\pdestBuf.png");
+            // pSrcBuf.SaveAsPng($@"C:\temp\pSrcBuf.png");
+
+            video.Blt8BPPDataSubTo16BPPBuffer(pDestBuf, new(pSrcBuf.Width, pSrcBuf.Height), pSrcBuf, pPopUpTextBox.BackgroundVideoObject,0, 0, DestRect);
         }
 
         hImageHandle = this.video.GetVideoObject(pPopUpTextBox.uiMercTextPopUpBorder);
@@ -448,10 +452,14 @@ public class MercTextBox
         var VObjectDesc = video.GetVideoObject(zMercBackgroundPopupFilenames[(int)ubBackgroundIndex], out var popupboxSurface);
         SurfaceType surf = this.video.Surfaces.CreateSurface(VObjectDesc);
         gPopUpTextBox.uiMercTextPopUpBackground = surf;
+        gPopUpTextBox.BackgroundVideoObject = VObjectDesc;
 
         // border
         var borderFilePath = Utils.FilenameForBPP(this.zMercBorderPopupFilenames[(int)ubBorderIndex]);
         var borderImage = this.video.GetVideoObject(borderFilePath, out var key);
+
+        VObjectDesc.Images[0].SaveAsPng($@"C:\temp\vobj.png");
+        borderImage.Images[0].SaveAsPng($@"C:\temp\borderImage.png");
 
         this.gPopUpTextBox.uiMercTextPopUpBorder = key;
         this.gPopUpTextBox.fMercTextPopupInitialized = true;
@@ -595,11 +603,13 @@ public class MercPopUpBox
     public bool fMercTextPopupInitialized { get; set; }
     public bool fMercTextPopupSurfaceInitialized { get; set; }
     public MERC_POPUP_PREPARE_FLAGS uiFlags { get; set; }
+    public HVOBJECT BackgroundVideoObject { get; internal set; }
 }
 
 [Flags]
 public enum MERC_POPUP_PREPARE_FLAGS
 {
+    Unknown = 0,
     TRANS_BACK = 0x00000001,
     MARGINS = 0x00000002,
     STOPICON = 0x00000004,

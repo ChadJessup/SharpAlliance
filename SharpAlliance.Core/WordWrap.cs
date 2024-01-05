@@ -92,7 +92,7 @@ public class WordWrap
 
         usHeight = FontSubSystem.WFGetFontHeight(uiFont);
 
-        return 100;
+        return 104;
         // simply a cut and paste operation on Ian Display Wrapped, but will not write string to screen
         // since this all we want to do, everything IanWrapped will do but without displaying string
 
