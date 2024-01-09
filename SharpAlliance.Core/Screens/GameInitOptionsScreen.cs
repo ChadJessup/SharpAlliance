@@ -426,7 +426,7 @@ public class GameInitOptionsScreen : IScreen
         //Check box to toggle Difficulty settings
         for (GameDifficulty cnt = 0; cnt < GameDifficulty.NUM_DIFF_SETTINGS; cnt++)
         {
-            RenderDirty.RestoreExternBackgroundRect(GIO_DIF_SETTINGS_X + GIO_OFFSET_TO_TOGGLE_BOX, usPosY, 34, 29);
+            RenderDirty.RestoreExternBackgroundRect(GIO_DIF_SETTINGS_X + GIO_OFFSET_TO_TOGGLE_BOX, usPosY, 34, 29, debug: false);
             usPosY += GIO_GAP_BN_SETTINGS;
         }
 
@@ -875,7 +875,12 @@ public class GameInitOptionsScreen : IScreen
         switch (ubDiffLevel)
         {
             case DifficultyLevel.Easy:
-                DoGioMessageBox(MessageBoxStyle.MSG_BOX_BASIC_STYLE, zGioDifConfirmText[GIO_CFS.NOVICE], ScreenName.GAME_INIT_OPTIONS_SCREEN, MSG_BOX_FLAG.YESNO, ConfirmGioDifSettingMessageBoxCallBack);
+                DoGioMessageBox(
+                    MessageBoxStyle.MSG_BOX_BASIC_STYLE, 
+                    zGioDifConfirmText[GIO_CFS.NOVICE], 
+                    ScreenName.GAME_INIT_OPTIONS_SCREEN, 
+                    MSG_BOX_FLAG.YESNO, 
+                    ConfirmGioDifSettingMessageBoxCallBack);
                 break;
             case DifficultyLevel.Medium:
                 DoGioMessageBox(MessageBoxStyle.MSG_BOX_BASIC_STYLE, zGioDifConfirmText[GIO_CFS.EXPERIENCED], ScreenName.GAME_INIT_OPTIONS_SCREEN, MSG_BOX_FLAG.YESNO, ConfirmGioDifSettingMessageBoxCallBack);

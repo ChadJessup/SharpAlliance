@@ -610,12 +610,18 @@ public class RenderDirty
     {
     }
 
-    public static bool RestoreExternBackgroundRect(int sLeft, int sTop, int sWidth, int sHeight)
+    public static bool RestoreExternBackgroundRect(int sLeft, int sTop, int sWidth, int sHeight, bool debug = false)
     {
         Debug.Assert((sLeft >= 0) && (sTop >= 0) && (sLeft + sWidth <= 640) && (sTop + sHeight <= 480));
 
         Image<Rgba32> pDestBuf = video.Surfaces[SurfaceType.RENDER_BUFFER];
         Image<Rgba32> pSrcBuf = video.Surfaces[SurfaceType.SAVE_BUFFER];
+
+        if (debug)
+        {
+            pDestBuf.SaveAsPng($@"c:\temp\{nameof(RestoreExternBackgroundRect)}-pDestBuf-before.png");
+            pSrcBuf.SaveAsPng($@"c:\temp\{nameof(RestoreExternBackgroundRect)}-pSrcBuf-before.png");
+        }
 
         video.Blt16BPPTo16BPP(
             pDestBuf,
@@ -623,6 +629,13 @@ public class RenderDirty
             new(sLeft, sTop),
             new(sLeft, sTop),
             new(sWidth, sHeight));
+
+        if (debug)
+        {
+            pDestBuf.SaveAsPng($@"c:\temp\{nameof(RestoreExternBackgroundRect)}-pDestBuf-after.png");
+            pSrcBuf.SaveAsPng($@"c:\temp\{nameof(RestoreExternBackgroundRect)}-pSrcBuf-after.png");
+        }
+
 
         // Add rect to frame buffer queue
         video.InvalidateRegionEx(sLeft, sTop, sWidth, sHeight, 0);

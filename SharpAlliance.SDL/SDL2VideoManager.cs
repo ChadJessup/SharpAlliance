@@ -2101,15 +2101,15 @@ public class SDL2VideoManager : IVideoManager
                 iBottom = SCREEN_HEIGHT;
             }
 
-            if ((iRight - iLeft) <= 0)
-            {
-                return;
-            }
-
-            if ((iBottom - iTop) <= 0)
-            {
-                return;
-            }
+//            if ((iRight - iLeft) <= 0)
+//            {
+//                return;
+//            }
+//
+//            if ((iBottom - iTop) <= 0)
+//            {
+//                return;
+//            }
 
             gDirtyRegionsEx[guiDirtyRegionExCount] = new(iLeft, iTop, iRight - iLeft, iBottom - iTop);
             gDirtyRegionsFlagsEx[guiDirtyRegionExCount] = uiFlags;
