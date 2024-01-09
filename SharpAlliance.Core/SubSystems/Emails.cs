@@ -440,7 +440,7 @@ public class Emails
         return;
     }
 
-    void AddPreReadEmail(int iMessageOffset, int iMessageLength, EmailAddresses ubSender, uint iDate)
+    public void AddPreReadEmail(int iMessageOffset, int iMessageLength, EmailAddresses ubSender, uint iDate)
     {
         //MessagePtr pMessageList;
         //MessagePtr pMessage;

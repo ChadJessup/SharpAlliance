@@ -1,9 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using SharpAlliance.Core.Managers;
+using SharpAlliance.Core.Screens;
 using SharpAlliance.Platform;
 using SharpAlliance.Platform.Interfaces;
 
@@ -13,12 +15,14 @@ namespace SharpAlliance.Core.SubSystems;
 
 public class GameInit
 {
+    private readonly BobbyR bobby;
     private readonly IClockManager clock;
     private readonly StrategicMap strategicMap;
     private readonly ISoundManager sound;
     private readonly TacticalSaveSubSystem tacticalSave;
     private readonly SoldierCreate soldierCreate;
     private readonly Overhead overhead;
+    private readonly Messages messages;
     private readonly Emails emails;
     private readonly Laptop laptop;
     private readonly SoldierProfileSubSystem soldierProfile;
@@ -42,6 +46,7 @@ public class GameInit
         Emails emails,
         Laptop laptop,
         SoldierProfileSubSystem soldierProfile,
+        Messages messages,
         TurnBasedInput tbi,
         Cheats cheats,
         GameEvents gameEvents,
@@ -49,9 +54,12 @@ public class GameInit
         ShopKeeper shopKeeper,
         World world,
         HelpScreenSubSystem helpScreen,
+        BobbyR bobbyR,
         DialogControl dialogs,
         AirRaid airRaid)
     {
+        this.messages = messages;
+        this.bobby = bobbyR;
         this.clock = clock;
         this.strategicMap = strategicMap;
         this.sound = soundManager;
@@ -150,8 +158,160 @@ public class GameInit
         Globals.gubCheatLevel = Cheats.STARTING_CHEAT_LEVEL;
     }
 
-    public ValueTask<bool> InitNewGame(bool fReset)
+    public bool InitNewGame(bool fReset)
     {
-        return ValueTask.FromResult(true);
+        int iStartingCash;
+
+        //	static fScreenCount = 0;
+
+        if (fReset)
+        {
+            gubScreenCount = 0;
+            return true;
+        }
+
+        // reset meanwhile flags
+        uiMeanWhileFlags = 0;
+
+        // Reset the selected soldier
+        gusSelectedSoldier = NOBODY;
+
+        if (gubScreenCount == 0)
+        {
+            if (!this.soldierProfile.LoadMercProfiles())
+            {
+                return false;
+            }
+        }
+
+        //Initialize the Arms Dealers and Bobby Rays inventory
+        if (gubScreenCount == 0)
+        {
+            //Init all the arms dealers inventory
+            InitAllArmsDealers();
+            this.bobby.InitBobbyRayInventory();
+        }
+
+        // clear tactical 
+        this.messages.ClearTacticalMessageQueue();
+
+        // clear mapscreen messages
+        this.messages.FreeGlobalMessageList();
+
+        // IF our first time, go into laptop!
+        if (gubScreenCount == 0)
+        {
+            //Init the laptop here
+            this.laptop.InitLaptopAndLaptopScreens();
+
+            InitStrategicLayer();
+
+            // Set new game flag
+            SetLaptopNewGameFlag();
+
+            // this is for the "mercs climbing down from a rope" animation, NOT Skyrider!!
+            ResetHeliSeats();
+
+            // Setup two new messages!
+            this.emails.AddPreReadEmail(OLD_ENRICO_1, OLD_ENRICO_1_LENGTH, EmailAddresses.MAIL_ENRICO, GetWorldTotalMin());
+            this.emails.AddPreReadEmail(OLD_ENRICO_2, OLD_ENRICO_2_LENGTH, EmailAddresses.MAIL_ENRICO, GetWorldTotalMin());
+            this.emails.AddPreReadEmail(RIS_REPORT, RIS_REPORT_LENGTH, EmailAddresses.RIS_EMAIL, GetWorldTotalMin());
+            this.emails.AddPreReadEmail(OLD_ENRICO_3, OLD_ENRICO_3_LENGTH, EmailAddresses.MAIL_ENRICO, GetWorldTotalMin());
+            this.emails.AddEmail(IMP_EMAIL_INTRO, IMP_EMAIL_INTRO_LENGTH, EmailAddresses.CHAR_PROFILE_SITE, GetWorldTotalMin());
+            //AddEmail(ENRICO_CONGRATS,ENRICO_CONGRATS_LENGTH,MAIL_ENRICO, GetWorldTotalMin() );
+
+            // ATE: Set starting cash....
+            switch (gGameOptions.ubDifficultyLevel)
+            {
+                case DifficultyLevel.Easy:
+
+                    iStartingCash = 45000;
+                    break;
+
+                case DifficultyLevel.Medium:
+
+                    iStartingCash = 35000;
+                    break;
+
+                case DifficultyLevel.Hard:
+
+                    iStartingCash = 30000;
+                    break;
+
+                default:
+                    Debug.Assert(false);
+                    return false;
+            }
+
+            // Setup initial money
+            AddTransactionToPlayersBook(ANONYMOUS_DEPOSIT, 0, GetWorldTotalMin(), iStartingCash);
+
+
+            {
+                int uiDaysTimeMercSiteAvailable = Random(2) + 1;
+
+                // schedule email for message from spec at 7am 3 days in the future
+                AddFutureDayStrategicEvent(EVENT_DAY3_ADD_EMAIL_FROM_SPECK, 60 * 7, 0, uiDaysTimeMercSiteAvailable);
+            }
+
+            SetLaptopExitScreen(ScreenName.InitScreen);
+            SetPendingNewScreen(ScreenName.LAPTOP_SCREEN);
+            gubScreenCount = 1;
+
+            //Set the fact the game is in progress
+            gTacticalStatus.fHasAGameBeenStarted = true;
+
+            return true;
+        }
+
+        /*
+        if( ( guiExitScreen == MAP_SCREEN ) && ( LaptopSaveInfo.gfNewGameLaptop ) )
+        {
+            SetLaptopExitScreen( GAME_SCREEN );
+            return( true );
+        }
+    */
+        if (gubScreenCount == 1)
+        {
+            // OK , FADE HERE
+            //BeginFade( INIT_SCREEN, 35, FADE_OUT_REALFADE, 5 );
+            //BeginFade( INIT_SCREEN, 35, FADE_OUT_VERSION_FASTER, 25 );
+            //BeginFade( INIT_SCREEN, 35, FADE_OUT_VERSION_SIDE, 0 );
+
+
+            gubScreenCount = 2;
+            return true;
+        }
+
+        /*
+            if ( gubScreenCount == 2 )
+            {
+
+                if ( !SetCurrentWorldSector( 9, 1, 0 ) )
+                {
+
+                }
+
+                SetLaptopExitScreen( MAP_SCREEN );
+
+                FadeInGameScreen( );
+
+                EnterTacticalScreen( );
+
+                if( gfAtLeastOneMercWasHired == true )
+                {  
+                    gubScreenCount = 3;
+                }
+                else
+                {
+
+                }
+
+                return( true );
+            }
+
+            */
+
+        return true;
     }
 }

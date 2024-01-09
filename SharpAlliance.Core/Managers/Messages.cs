@@ -1231,7 +1231,7 @@ public class Messages
 
 
 
-    void ClearTacticalMessageQueue()
+    public void ClearTacticalMessageQueue()
     {
         ScrollStringStPtr? pStringSt = pStringS;
         ScrollStringStPtr? pOtherStringSt = pStringS;
@@ -1290,7 +1290,7 @@ public class Messages
     }
 
 
-    void FreeGlobalMessageList()
+    public void FreeGlobalMessageList()
     {
         int iCounter = 0;
 

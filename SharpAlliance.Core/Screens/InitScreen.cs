@@ -207,7 +207,7 @@ public class InitScreen : IScreen
         {
             CursorSubSystem.SetCurrentCursorFromDatabase(CURSOR.VIDEO_NO_CURSOR);
             // TODO: Strategic stuff
-            await this.gameInit.InitNewGame(false);
+            this.gameInit.InitNewGame(false);
         }
 
         return ScreenName.InitScreen;

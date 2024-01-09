@@ -432,7 +432,7 @@ public class BobbyR
 
 
 
-    void InitBobbyRayInventory()
+    public void InitBobbyRayInventory()
     {
         //Initializes which NEW items can be bought at Bobby Rays
         this.InitBobbyRayNewInventory();
