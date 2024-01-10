@@ -46,7 +46,7 @@ public class Emails
     {
         this.fonts = fontSubSystem;
         this.buttons = buttonSubSystem;
-        this.files = fileManager;
+        files = fileManager;
         this.video = videoManager;
     }
 
@@ -412,7 +412,7 @@ public class Emails
         return;
     }
 
-    public void AddEmail(int iMessageOffset, int iMessageLength, EmailAddresses ubSender, uint iDate)
+    public static void AddEmail(int iMessageOffset, int iMessageLength, EmailAddresses ubSender, uint iDate)
     {
         string pSubject = string.Empty;
         //MessagePtr pMessageList;
@@ -439,7 +439,7 @@ public class Emails
         return;
     }
 
-    public void AddPreReadEmail(int iMessageOffset, int iMessageLength, EmailAddresses ubSender, uint iDate)
+    public static void AddPreReadEmail(int iMessageOffset, int iMessageLength, EmailAddresses ubSender, uint iDate)
     {
         //MessagePtr pMessageList;
         //MessagePtr pMessage;
@@ -449,7 +449,7 @@ public class Emails
 
 
         // starts at iSubjectOffset amd goes iSubjectLength, reading in string
-        this.files.LoadEncryptedDataFromFile("BINARYDATA\\Email.edt", out string pSubject, (uint)(640 * iMessageOffset), 640);
+        files.LoadEncryptedDataFromFile("BINARYDATA\\Email.edt", out string pSubject, (uint)(640 * iMessageOffset), 640);
 
         // add message to list
         AddEmailMessage(iMessageOffset, iMessageLength, pSubject, iDate, ubSender, true, 0, 0);
@@ -1497,7 +1497,7 @@ public class Emails
                 Laptop.DrawLapTopIcons();
 
                 // force update of entire screen
-                this.fPausedReDrawScreenFlag = true;
+                fPausedReDrawScreenFlag = true;
 
                 // rerender email
                 //RenderEmail();
@@ -1926,7 +1926,7 @@ public class Emails
             this.fReDraw = true;
 
             // redraw screen
-            this.fPausedReDrawScreenFlag = true;
+            fPausedReDrawScreenFlag = true;
         }
     }
 
@@ -2358,7 +2358,7 @@ public class Emails
     private readonly IVideoManager video;
     private readonly FontSubSystem fonts;
     private readonly ButtonSubSystem buttons;
-    private readonly IFileManager files;
+    private static IFileManager files;
     private readonly IEnumerable<GUI_BUTTON> buttonList;
 
     void CreateDestroyDeleteNoticeMailButton()
@@ -3083,7 +3083,7 @@ public class Emails
             while (iEndOfSection > iCounter)
             {
                 // read one record from email file
-                this.files.LoadEncryptedDataFromFile("BINARYDATA\\Impass.edt", out pString, (uint)(MAIL_STRING_SIZE * (iOffSet + iCounter)), MAIL_STRING_SIZE);
+                files.LoadEncryptedDataFromFile("BINARYDATA\\Impass.edt", out pString, (uint)(MAIL_STRING_SIZE * (iOffSet + iCounter)), MAIL_STRING_SIZE);
 
                 // have to place players name into string for first record
                 if (iCounter == 0)
@@ -3109,7 +3109,7 @@ public class Emails
             while (iEndOfSection > iCounter)
             {
                 // read one record from email file
-                this.files.LoadEncryptedDataFromFile("BINARYDATA\\Impass.edt", out pString, (uint)(MAIL_STRING_SIZE * (iOffSet + iCounter)), MAIL_STRING_SIZE);
+                files.LoadEncryptedDataFromFile("BINARYDATA\\Impass.edt", out pString, (uint)(MAIL_STRING_SIZE * (iOffSet + iCounter)), MAIL_STRING_SIZE);
 
                 // add to list
                 this.AddEmailRecordToList(pString);
@@ -3151,12 +3151,12 @@ public class Emails
             // personality tick
             //  DEF: removed 1/12/99, cause it was changing the length of email that were already calculated
             //		LoadEncryptedDataFromFile( "BINARYDATA\\Impass.edt", out pString, MAIL_STRING_SIZE * ( iOffSet + Globals.Random.Next( IMP_PERSONALITY_LENGTH - 1 ) + 1 ), MAIL_STRING_SIZE );
-            this.files.LoadEncryptedDataFromFile("BINARYDATA\\Impass.edt", out pString, (uint)(MAIL_STRING_SIZE * (iOffSet + 1)), MAIL_STRING_SIZE);
+            files.LoadEncryptedDataFromFile("BINARYDATA\\Impass.edt", out pString, (uint)(MAIL_STRING_SIZE * (iOffSet + 1)), MAIL_STRING_SIZE);
             // add to list
             this.AddEmailRecordToList(pString);
 
             // persoanlity paragraph
-            this.files.LoadEncryptedDataFromFile("BINARYDATA\\Impass.edt", out pString, (uint)(MAIL_STRING_SIZE * (iOffSet + IMP_PERSONALITY_LENGTH)), MAIL_STRING_SIZE);
+            files.LoadEncryptedDataFromFile("BINARYDATA\\Impass.edt", out pString, (uint)(MAIL_STRING_SIZE * (iOffSet + IMP_PERSONALITY_LENGTH)), MAIL_STRING_SIZE);
             // add to list
             this.AddEmailRecordToList(pString);
 
@@ -3164,7 +3164,7 @@ public class Emails
             if (gMercProfiles[PLAYER_GENERATED_CHARACTER_ID + LaptopSaveInfo.iVoiceId].bPersonalityTrait == PersonalityTrait.FEAR_OF_INSECTS)
             {
                 // persoanlity paragraph
-                this.files.LoadEncryptedDataFromFile("BINARYDATA\\Impass.edt", out pString, (uint)(MAIL_STRING_SIZE * (iOffSet + IMP_PERSONALITY_LENGTH + 1)), MAIL_STRING_SIZE);
+                files.LoadEncryptedDataFromFile("BINARYDATA\\Impass.edt", out pString, (uint)(MAIL_STRING_SIZE * (iOffSet + IMP_PERSONALITY_LENGTH + 1)), MAIL_STRING_SIZE);
                 // add to list
                 this.AddEmailRecordToList(pString);
             }
@@ -3178,7 +3178,7 @@ public class Emails
             while (iEndOfSection > iCounter)
             {
                 // read one record from email file
-                this.files.LoadEncryptedDataFromFile("BINARYDATA\\Impass.edt", out pString, (uint)(MAIL_STRING_SIZE * (iOffSet + iCounter)), MAIL_STRING_SIZE);
+                files.LoadEncryptedDataFromFile("BINARYDATA\\Impass.edt", out pString, (uint)(MAIL_STRING_SIZE * (iOffSet + iCounter)), MAIL_STRING_SIZE);
 
                 // add to list
                 this.AddEmailRecordToList(pString);
@@ -3222,7 +3222,7 @@ public class Emails
             }
 
             // attitude title
-            this.files.LoadEncryptedDataFromFile("BINARYDATA\\Impass.edt", out pString, (uint)(MAIL_STRING_SIZE * iOffSet), MAIL_STRING_SIZE);
+            files.LoadEncryptedDataFromFile("BINARYDATA\\Impass.edt", out pString, (uint)(MAIL_STRING_SIZE * iOffSet), MAIL_STRING_SIZE);
             // add to list
             this.AddEmailRecordToList(pString);
 
@@ -3230,12 +3230,12 @@ public class Emails
             // attitude tick
             //  DEF: removed 1/12/99, cause it was changing the length of email that were already calculated
             //		LoadEncryptedDataFromFile( "BINARYDATA\\Impass.edt", out pString, MAIL_STRING_SIZE * ( iOffSet + Globals.Random.Next( IMP_ATTITUDE_LENGTH - 2 ) + 1 ), MAIL_STRING_SIZE );
-            this.files.LoadEncryptedDataFromFile("BINARYDATA\\Impass.edt", out pString, (uint)(MAIL_STRING_SIZE * (iOffSet + 1)), MAIL_STRING_SIZE);
+            files.LoadEncryptedDataFromFile("BINARYDATA\\Impass.edt", out pString, (uint)(MAIL_STRING_SIZE * (iOffSet + 1)), MAIL_STRING_SIZE);
             // add to list
             this.AddEmailRecordToList(pString);
 
             // attitude paragraph
-            this.files.LoadEncryptedDataFromFile("BINARYDATA\\Impass.edt", out pString, (uint)(MAIL_STRING_SIZE * (iOffSet + IMP_ATTITUDE_LENGTH - 1)), MAIL_STRING_SIZE);
+            files.LoadEncryptedDataFromFile("BINARYDATA\\Impass.edt", out pString, (uint)(MAIL_STRING_SIZE * (iOffSet + IMP_ATTITUDE_LENGTH - 1)), MAIL_STRING_SIZE);
             // add to list
             this.AddEmailRecordToList(pString);
 
@@ -3243,7 +3243,7 @@ public class Emails
             if (iOffSet != IMP_ATTITUDE_NORMAL)
             {
                 // attitude paragraph
-                this.files.LoadEncryptedDataFromFile("BINARYDATA\\Impass.edt", out pString, (uint)(MAIL_STRING_SIZE * (iOffSet + IMP_ATTITUDE_LENGTH)), MAIL_STRING_SIZE);
+                files.LoadEncryptedDataFromFile("BINARYDATA\\Impass.edt", out pString, (uint)(MAIL_STRING_SIZE * (iOffSet + IMP_ATTITUDE_LENGTH)), MAIL_STRING_SIZE);
                 // add to list
                 this.AddEmailRecordToList(pString);
             }
@@ -3258,7 +3258,7 @@ public class Emails
             while (iEndOfSection > iCounter)
             {
                 // read one record from email file
-                this.files.LoadEncryptedDataFromFile("BINARYDATA\\Impass.edt", out pString, (uint)(MAIL_STRING_SIZE * (iOffSet + iCounter)), MAIL_STRING_SIZE);
+                files.LoadEncryptedDataFromFile("BINARYDATA\\Impass.edt", out pString, (uint)(MAIL_STRING_SIZE * (iOffSet + iCounter)), MAIL_STRING_SIZE);
 
                 // add to list
                 this.AddEmailRecordToList(pString);
@@ -3302,7 +3302,7 @@ public class Emails
             while (iEndOfSection > iCounter)
             {
                 // read one record from email file
-                this.files.LoadEncryptedDataFromFile("BINARYDATA\\Impass.edt", out pString, (uint)(MAIL_STRING_SIZE * (iOffSet + iCounter)), MAIL_STRING_SIZE);
+                files.LoadEncryptedDataFromFile("BINARYDATA\\Impass.edt", out pString, (uint)(MAIL_STRING_SIZE * (iOffSet + iCounter)), MAIL_STRING_SIZE);
 
                 // add to list
                 this.AddEmailRecordToList(pString);
@@ -3315,7 +3315,7 @@ public class Emails
             if (fSufficientMarkSkill)
             {
                 // read one record from email file
-                this.files.LoadEncryptedDataFromFile("BINARYDATA\\Impass.edt", out pString, MAIL_STRING_SIZE * IMP_SKILLS_IMPERIAL_MARK, MAIL_STRING_SIZE);
+                files.LoadEncryptedDataFromFile("BINARYDATA\\Impass.edt", out pString, MAIL_STRING_SIZE * IMP_SKILLS_IMPERIAL_MARK, MAIL_STRING_SIZE);
 
                 // add to list
                 this.AddEmailRecordToList(pString);
@@ -3325,7 +3325,7 @@ public class Emails
             if (fSufficientMedSkill)
             {
                 // read one record from email file
-                this.files.LoadEncryptedDataFromFile("BINARYDATA\\Impass.edt", out pString, MAIL_STRING_SIZE * IMP_SKILLS_IMPERIAL_MED, MAIL_STRING_SIZE);
+                files.LoadEncryptedDataFromFile("BINARYDATA\\Impass.edt", out pString, MAIL_STRING_SIZE * IMP_SKILLS_IMPERIAL_MED, MAIL_STRING_SIZE);
 
                 // add to list
                 this.AddEmailRecordToList(pString);
@@ -3334,7 +3334,7 @@ public class Emails
             if (fSufficientMechSkill)
             {
                 // read one record from email file
-                this.files.LoadEncryptedDataFromFile("BINARYDATA\\Impass.edt", out pString, MAIL_STRING_SIZE * IMP_SKILLS_IMPERIAL_MECH, MAIL_STRING_SIZE);
+                files.LoadEncryptedDataFromFile("BINARYDATA\\Impass.edt", out pString, MAIL_STRING_SIZE * IMP_SKILLS_IMPERIAL_MECH, MAIL_STRING_SIZE);
 
                 // add to list
                 this.AddEmailRecordToList(pString);
@@ -3344,7 +3344,7 @@ public class Emails
             if (fSufficientExplSkill)
             {
                 // read one record from email file
-                this.files.LoadEncryptedDataFromFile("BINARYDATA\\Impass.edt", out pString, MAIL_STRING_SIZE * IMP_SKILLS_IMPERIAL_EXPL, MAIL_STRING_SIZE);
+                files.LoadEncryptedDataFromFile("BINARYDATA\\Impass.edt", out pString, MAIL_STRING_SIZE * IMP_SKILLS_IMPERIAL_EXPL, MAIL_STRING_SIZE);
 
                 // add to list
                 this.AddEmailRecordToList(pString);
@@ -3390,7 +3390,7 @@ public class Emails
             while (iEndOfSection > iCounter)
             {
                 // read one record from email file
-                this.files.LoadEncryptedDataFromFile("BINARYDATA\\Impass.edt", out pString, (uint)(MAIL_STRING_SIZE * (iOffSet + iCounter)), MAIL_STRING_SIZE);
+                files.LoadEncryptedDataFromFile("BINARYDATA\\Impass.edt", out pString, (uint)(MAIL_STRING_SIZE * (iOffSet + iCounter)), MAIL_STRING_SIZE);
 
                 // add to list
                 this.AddEmailRecordToList(pString);
@@ -3402,7 +3402,7 @@ public class Emails
             if (fSufficientMarkSkill)
             {
                 // read one record from email file
-                this.files.LoadEncryptedDataFromFile("BINARYDATA\\Impass.edt", out pString, MAIL_STRING_SIZE * IMP_SKILLS_NEED_TRAIN_MARK, MAIL_STRING_SIZE);
+                files.LoadEncryptedDataFromFile("BINARYDATA\\Impass.edt", out pString, MAIL_STRING_SIZE * IMP_SKILLS_NEED_TRAIN_MARK, MAIL_STRING_SIZE);
 
                 // add to list
                 this.AddEmailRecordToList(pString);
@@ -3411,7 +3411,7 @@ public class Emails
             if (fSufficientMedSkill)
             {
                 // read one record from email file
-                this.files.LoadEncryptedDataFromFile("BINARYDATA\\Impass.edt", out pString, MAIL_STRING_SIZE * IMP_SKILLS_NEED_TRAIN_MED, MAIL_STRING_SIZE);
+                files.LoadEncryptedDataFromFile("BINARYDATA\\Impass.edt", out pString, MAIL_STRING_SIZE * IMP_SKILLS_NEED_TRAIN_MED, MAIL_STRING_SIZE);
 
                 // add to list
                 this.AddEmailRecordToList(pString);
@@ -3420,7 +3420,7 @@ public class Emails
             if (fSufficientMechSkill)
             {
                 // read one record from email file
-                this.files.LoadEncryptedDataFromFile("BINARYDATA\\Impass.edt", out pString, MAIL_STRING_SIZE * IMP_SKILLS_NEED_TRAIN_MECH, MAIL_STRING_SIZE);
+                files.LoadEncryptedDataFromFile("BINARYDATA\\Impass.edt", out pString, MAIL_STRING_SIZE * IMP_SKILLS_NEED_TRAIN_MECH, MAIL_STRING_SIZE);
 
                 // add to list
                 this.AddEmailRecordToList(pString);
@@ -3429,7 +3429,7 @@ public class Emails
             if (fSufficientExplSkill)
             {
                 // read one record from email file
-                this.files.LoadEncryptedDataFromFile("BINARYDATA\\Impass.edt", out pString, MAIL_STRING_SIZE * IMP_SKILLS_NEED_TRAIN_EXPL, MAIL_STRING_SIZE);
+                files.LoadEncryptedDataFromFile("BINARYDATA\\Impass.edt", out pString, MAIL_STRING_SIZE * IMP_SKILLS_NEED_TRAIN_EXPL, MAIL_STRING_SIZE);
 
                 // add to list
                 this.AddEmailRecordToList(pString);
@@ -3474,7 +3474,7 @@ public class Emails
             while (iEndOfSection > iCounter)
             {
                 // read one record from email file
-                this.files.LoadEncryptedDataFromFile("BINARYDATA\\Impass.edt", out pString, (uint)(MAIL_STRING_SIZE * (iOffSet + iCounter)), MAIL_STRING_SIZE);
+                files.LoadEncryptedDataFromFile("BINARYDATA\\Impass.edt", out pString, (uint)(MAIL_STRING_SIZE * (iOffSet + iCounter)), MAIL_STRING_SIZE);
 
                 // add to list
                 this.AddEmailRecordToList(pString);
@@ -3486,7 +3486,7 @@ public class Emails
             if (fSufficientMechSkill)
             {
                 // read one record from email file
-                this.files.LoadEncryptedDataFromFile("BINARYDATA\\Impass.edt", out pString, MAIL_STRING_SIZE * IMP_SKILLS_NO_SKILL_MECH, MAIL_STRING_SIZE);
+                files.LoadEncryptedDataFromFile("BINARYDATA\\Impass.edt", out pString, MAIL_STRING_SIZE * IMP_SKILLS_NO_SKILL_MECH, MAIL_STRING_SIZE);
 
                 // add to list
                 this.AddEmailRecordToList(pString);
@@ -3495,7 +3495,7 @@ public class Emails
             if (fSufficientMarkSkill)
             {
                 // read one record from email file
-                this.files.LoadEncryptedDataFromFile("BINARYDATA\\Impass.edt", out pString, MAIL_STRING_SIZE * IMP_SKILLS_NO_SKILL_MARK, MAIL_STRING_SIZE);
+                files.LoadEncryptedDataFromFile("BINARYDATA\\Impass.edt", out pString, MAIL_STRING_SIZE * IMP_SKILLS_NO_SKILL_MARK, MAIL_STRING_SIZE);
 
                 // add to list
                 this.AddEmailRecordToList(pString);
@@ -3504,7 +3504,7 @@ public class Emails
             if (fSufficientMedSkill)
             {
                 // read one record from email file
-                this.files.LoadEncryptedDataFromFile("BINARYDATA\\Impass.edt", out pString, MAIL_STRING_SIZE * IMP_SKILLS_NO_SKILL_MED, MAIL_STRING_SIZE);
+                files.LoadEncryptedDataFromFile("BINARYDATA\\Impass.edt", out pString, MAIL_STRING_SIZE * IMP_SKILLS_NO_SKILL_MED, MAIL_STRING_SIZE);
 
                 // add to list
                 this.AddEmailRecordToList(pString);
@@ -3512,7 +3512,7 @@ public class Emails
             if (fSufficientExplSkill)
             {
                 // read one record from email file
-                this.files.LoadEncryptedDataFromFile("BINARYDATA\\Impass.edt", out pString, MAIL_STRING_SIZE * IMP_SKILLS_NO_SKILL_EXPL, MAIL_STRING_SIZE);
+                files.LoadEncryptedDataFromFile("BINARYDATA\\Impass.edt", out pString, MAIL_STRING_SIZE * IMP_SKILLS_NO_SKILL_EXPL, MAIL_STRING_SIZE);
 
                 // add to list
                 this.AddEmailRecordToList(pString);
@@ -3527,7 +3527,7 @@ public class Emails
             while (iEndOfSection > iCounter)
             {
                 // read one record from email file
-                this.files.LoadEncryptedDataFromFile("BINARYDATA\\Impass.edt", out pString, (uint)(MAIL_STRING_SIZE * (iOffSet + iCounter)), MAIL_STRING_SIZE);
+                files.LoadEncryptedDataFromFile("BINARYDATA\\Impass.edt", out pString, (uint)(MAIL_STRING_SIZE * (iOffSet + iCounter)), MAIL_STRING_SIZE);
 
                 // add to list
                 this.AddEmailRecordToList(pString);
@@ -3539,7 +3539,7 @@ public class Emails
             if ((gMercProfiles[PLAYER_GENERATED_CHARACTER_ID + LaptopSaveInfo.iVoiceId].bSkillTrait == SkillTrait.KNIFING) || (gMercProfiles[PLAYER_GENERATED_CHARACTER_ID + LaptopSaveInfo.iVoiceId].bSkillTrait2 == SkillTrait.KNIFING))
             {
                 // read one record from email file
-                this.files.LoadEncryptedDataFromFile("BINARYDATA\\Impass.edt", out pString, MAIL_STRING_SIZE * IMP_SKILLS_SPECIAL_KNIFE, MAIL_STRING_SIZE);
+                files.LoadEncryptedDataFromFile("BINARYDATA\\Impass.edt", out pString, MAIL_STRING_SIZE * IMP_SKILLS_SPECIAL_KNIFE, MAIL_STRING_SIZE);
 
                 // add to list
                 this.AddEmailRecordToList(pString);
@@ -3549,7 +3549,7 @@ public class Emails
             if ((gMercProfiles[PLAYER_GENERATED_CHARACTER_ID + LaptopSaveInfo.iVoiceId].bSkillTrait == SkillTrait.LOCKPICKING) || (gMercProfiles[PLAYER_GENERATED_CHARACTER_ID + LaptopSaveInfo.iVoiceId].bSkillTrait2 == SkillTrait.LOCKPICKING))
             {
                 // read one record from email file
-                this.files.LoadEncryptedDataFromFile("BINARYDATA\\Impass.edt", out pString, MAIL_STRING_SIZE * IMP_SKILLS_SPECIAL_LOCK, MAIL_STRING_SIZE);
+                files.LoadEncryptedDataFromFile("BINARYDATA\\Impass.edt", out pString, MAIL_STRING_SIZE * IMP_SKILLS_SPECIAL_LOCK, MAIL_STRING_SIZE);
 
                 // add to list
                 this.AddEmailRecordToList(pString);
@@ -3559,7 +3559,7 @@ public class Emails
             if ((gMercProfiles[PLAYER_GENERATED_CHARACTER_ID + LaptopSaveInfo.iVoiceId].bSkillTrait == SkillTrait.HANDTOHAND) || (gMercProfiles[PLAYER_GENERATED_CHARACTER_ID + LaptopSaveInfo.iVoiceId].bSkillTrait2 == SkillTrait.HANDTOHAND))
             {
                 // read one record from email file
-                this.files.LoadEncryptedDataFromFile("BINARYDATA\\Impass.edt", out pString, MAIL_STRING_SIZE * IMP_SKILLS_SPECIAL_HAND, MAIL_STRING_SIZE);
+                files.LoadEncryptedDataFromFile("BINARYDATA\\Impass.edt", out pString, MAIL_STRING_SIZE * IMP_SKILLS_SPECIAL_HAND, MAIL_STRING_SIZE);
 
                 // add to list
                 this.AddEmailRecordToList(pString);
@@ -3569,7 +3569,7 @@ public class Emails
             if ((gMercProfiles[PLAYER_GENERATED_CHARACTER_ID + LaptopSaveInfo.iVoiceId].bSkillTrait == SkillTrait.ELECTRONICS) || (gMercProfiles[PLAYER_GENERATED_CHARACTER_ID + LaptopSaveInfo.iVoiceId].bSkillTrait2 == SkillTrait.ELECTRONICS))
             {
                 // read one record from email file
-                this.files.LoadEncryptedDataFromFile("BINARYDATA\\Impass.edt", out pString, MAIL_STRING_SIZE * IMP_SKILLS_SPECIAL_ELEC, MAIL_STRING_SIZE);
+                files.LoadEncryptedDataFromFile("BINARYDATA\\Impass.edt", out pString, MAIL_STRING_SIZE * IMP_SKILLS_SPECIAL_ELEC, MAIL_STRING_SIZE);
 
                 // add to list
                 this.AddEmailRecordToList(pString);
@@ -3578,7 +3578,7 @@ public class Emails
             if ((gMercProfiles[PLAYER_GENERATED_CHARACTER_ID + LaptopSaveInfo.iVoiceId].bSkillTrait == SkillTrait.NIGHTOPS) || (gMercProfiles[PLAYER_GENERATED_CHARACTER_ID + LaptopSaveInfo.iVoiceId].bSkillTrait2 == SkillTrait.NIGHTOPS))
             {
                 // read one record from email file
-                this.files.LoadEncryptedDataFromFile("BINARYDATA\\Impass.edt", out pString, MAIL_STRING_SIZE * IMP_SKILLS_SPECIAL_NIGHT, MAIL_STRING_SIZE);
+                files.LoadEncryptedDataFromFile("BINARYDATA\\Impass.edt", out pString, MAIL_STRING_SIZE * IMP_SKILLS_SPECIAL_NIGHT, MAIL_STRING_SIZE);
 
                 // add to list
                 this.AddEmailRecordToList(pString);
@@ -3587,7 +3587,7 @@ public class Emails
             if ((gMercProfiles[PLAYER_GENERATED_CHARACTER_ID + LaptopSaveInfo.iVoiceId].bSkillTrait == SkillTrait.THROWING) || (gMercProfiles[PLAYER_GENERATED_CHARACTER_ID + LaptopSaveInfo.iVoiceId].bSkillTrait2 == SkillTrait.THROWING))
             {
                 // read one record from email file
-                this.files.LoadEncryptedDataFromFile("BINARYDATA\\Impass.edt", out pString, MAIL_STRING_SIZE * IMP_SKILLS_SPECIAL_THROW, MAIL_STRING_SIZE);
+                files.LoadEncryptedDataFromFile("BINARYDATA\\Impass.edt", out pString, MAIL_STRING_SIZE * IMP_SKILLS_SPECIAL_THROW, MAIL_STRING_SIZE);
 
                 // add to list
                 this.AddEmailRecordToList(pString);
@@ -3596,7 +3596,7 @@ public class Emails
             if ((gMercProfiles[PLAYER_GENERATED_CHARACTER_ID + LaptopSaveInfo.iVoiceId].bSkillTrait == SkillTrait.TEACHING) || (gMercProfiles[PLAYER_GENERATED_CHARACTER_ID + LaptopSaveInfo.iVoiceId].bSkillTrait2 == SkillTrait.TEACHING))
             {
                 // read one record from email file
-                this.files.LoadEncryptedDataFromFile("BINARYDATA\\Impass.edt", out pString, MAIL_STRING_SIZE * IMP_SKILLS_SPECIAL_TEACH, MAIL_STRING_SIZE);
+                files.LoadEncryptedDataFromFile("BINARYDATA\\Impass.edt", out pString, MAIL_STRING_SIZE * IMP_SKILLS_SPECIAL_TEACH, MAIL_STRING_SIZE);
 
                 // add to list
                 this.AddEmailRecordToList(pString);
@@ -3605,7 +3605,7 @@ public class Emails
             if ((gMercProfiles[PLAYER_GENERATED_CHARACTER_ID + LaptopSaveInfo.iVoiceId].bSkillTrait == SkillTrait.HEAVY_WEAPS) || (gMercProfiles[PLAYER_GENERATED_CHARACTER_ID + LaptopSaveInfo.iVoiceId].bSkillTrait2 == SkillTrait.HEAVY_WEAPS))
             {
                 // read one record from email file
-                this.files.LoadEncryptedDataFromFile("BINARYDATA\\Impass.edt", out pString, MAIL_STRING_SIZE * IMP_SKILLS_SPECIAL_HEAVY, MAIL_STRING_SIZE);
+                files.LoadEncryptedDataFromFile("BINARYDATA\\Impass.edt", out pString, MAIL_STRING_SIZE * IMP_SKILLS_SPECIAL_HEAVY, MAIL_STRING_SIZE);
 
                 // add to list
                 this.AddEmailRecordToList(pString);
@@ -3614,7 +3614,7 @@ public class Emails
             if ((gMercProfiles[PLAYER_GENERATED_CHARACTER_ID + LaptopSaveInfo.iVoiceId].bSkillTrait == SkillTrait.AUTO_WEAPS) || (gMercProfiles[PLAYER_GENERATED_CHARACTER_ID + LaptopSaveInfo.iVoiceId].bSkillTrait2 == SkillTrait.AUTO_WEAPS))
             {
                 // read one record from email file
-                this.files.LoadEncryptedDataFromFile("BINARYDATA\\Impass.edt", out pString, MAIL_STRING_SIZE * IMP_SKILLS_SPECIAL_AUTO, MAIL_STRING_SIZE);
+                files.LoadEncryptedDataFromFile("BINARYDATA\\Impass.edt", out pString, MAIL_STRING_SIZE * IMP_SKILLS_SPECIAL_AUTO, MAIL_STRING_SIZE);
 
                 // add to list
                 this.AddEmailRecordToList(pString);
@@ -3623,7 +3623,7 @@ public class Emails
             if ((gMercProfiles[PLAYER_GENERATED_CHARACTER_ID + LaptopSaveInfo.iVoiceId].bSkillTrait == SkillTrait.STEALTHY) || (gMercProfiles[PLAYER_GENERATED_CHARACTER_ID + LaptopSaveInfo.iVoiceId].bSkillTrait2 == SkillTrait.STEALTHY))
             {
                 // read one record from email file
-                this.files.LoadEncryptedDataFromFile("BINARYDATA\\Impass.edt", out pString, MAIL_STRING_SIZE * IMP_SKILLS_SPECIAL_STEALTH, MAIL_STRING_SIZE);
+                files.LoadEncryptedDataFromFile("BINARYDATA\\Impass.edt", out pString, MAIL_STRING_SIZE * IMP_SKILLS_SPECIAL_STEALTH, MAIL_STRING_SIZE);
 
                 // add to list
                 this.AddEmailRecordToList(pString);
@@ -3632,7 +3632,7 @@ public class Emails
             if ((gMercProfiles[PLAYER_GENERATED_CHARACTER_ID + LaptopSaveInfo.iVoiceId].bSkillTrait == SkillTrait.AMBIDEXT) || (gMercProfiles[PLAYER_GENERATED_CHARACTER_ID + LaptopSaveInfo.iVoiceId].bSkillTrait2 == SkillTrait.AMBIDEXT))
             {
                 // read one record from email file
-                this.files.LoadEncryptedDataFromFile("BINARYDATA\\Impass.edt", out pString, MAIL_STRING_SIZE * IMP_SKILLS_SPECIAL_AMBI, MAIL_STRING_SIZE);
+                files.LoadEncryptedDataFromFile("BINARYDATA\\Impass.edt", out pString, MAIL_STRING_SIZE * IMP_SKILLS_SPECIAL_AMBI, MAIL_STRING_SIZE);
 
                 // add to list
                 this.AddEmailRecordToList(pString);
@@ -3641,7 +3641,7 @@ public class Emails
             if ((gMercProfiles[PLAYER_GENERATED_CHARACTER_ID + LaptopSaveInfo.iVoiceId].bSkillTrait == SkillTrait.THIEF) || (gMercProfiles[PLAYER_GENERATED_CHARACTER_ID + LaptopSaveInfo.iVoiceId].bSkillTrait2 == SkillTrait.THIEF))
             {
                 // read one record from email file
-                this.files.LoadEncryptedDataFromFile("BINARYDATA\\Impass.edt", out pString, MAIL_STRING_SIZE * IMP_SKILLS_SPECIAL_THIEF, MAIL_STRING_SIZE);
+                files.LoadEncryptedDataFromFile("BINARYDATA\\Impass.edt", out pString, MAIL_STRING_SIZE * IMP_SKILLS_SPECIAL_THIEF, MAIL_STRING_SIZE);
 
                 // add to list
                 this.AddEmailRecordToList(pString);
@@ -3650,7 +3650,7 @@ public class Emails
             if ((gMercProfiles[PLAYER_GENERATED_CHARACTER_ID + LaptopSaveInfo.iVoiceId].bSkillTrait == SkillTrait.MARTIALARTS) || (gMercProfiles[PLAYER_GENERATED_CHARACTER_ID + LaptopSaveInfo.iVoiceId].bSkillTrait2 == SkillTrait.MARTIALARTS))
             {
                 // read one record from email file
-                this.files.LoadEncryptedDataFromFile("BINARYDATA\\Impass.edt", out pString, MAIL_STRING_SIZE * IMP_SKILLS_SPECIAL_MARTIAL, MAIL_STRING_SIZE);
+                files.LoadEncryptedDataFromFile("BINARYDATA\\Impass.edt", out pString, MAIL_STRING_SIZE * IMP_SKILLS_SPECIAL_MARTIAL, MAIL_STRING_SIZE);
 
                 // add to list
                 this.AddEmailRecordToList(pString);
@@ -3666,7 +3666,7 @@ public class Emails
             while (iEndOfSection > iCounter)
             {
                 // read one record from email file
-                this.files.LoadEncryptedDataFromFile("BINARYDATA\\Impass.edt", out pString, (uint)(MAIL_STRING_SIZE * (iOffSet + iCounter)), MAIL_STRING_SIZE);
+                files.LoadEncryptedDataFromFile("BINARYDATA\\Impass.edt", out pString, (uint)(MAIL_STRING_SIZE * (iOffSet + iCounter)), MAIL_STRING_SIZE);
 
                 // add to list
                 this.AddEmailRecordToList(pString);
@@ -3726,7 +3726,7 @@ public class Emails
             while (iEndOfSection > iCounter)
             {
                 // read one record from email file
-                this.files.LoadEncryptedDataFromFile("BINARYDATA\\Impass.edt", out pString, (uint)(MAIL_STRING_SIZE * (iOffSet + iCounter)), MAIL_STRING_SIZE);
+                files.LoadEncryptedDataFromFile("BINARYDATA\\Impass.edt", out pString, (uint)(MAIL_STRING_SIZE * (iOffSet + iCounter)), MAIL_STRING_SIZE);
 
                 // add to list
                 this.AddEmailRecordToList(pString);
@@ -3738,7 +3738,7 @@ public class Emails
             if (fSufficientHlth)
             {
                 // read one record from email file
-                this.files.LoadEncryptedDataFromFile("BINARYDATA\\Impass.edt", out pString, MAIL_STRING_SIZE * IMP_PHYSICAL_SUPER_HEALTH, MAIL_STRING_SIZE);
+                files.LoadEncryptedDataFromFile("BINARYDATA\\Impass.edt", out pString, MAIL_STRING_SIZE * IMP_PHYSICAL_SUPER_HEALTH, MAIL_STRING_SIZE);
 
                 // add to list
                 this.AddEmailRecordToList(pString);
@@ -3748,7 +3748,7 @@ public class Emails
             if (fSufficientDex)
             {
                 // read one record from email file
-                this.files.LoadEncryptedDataFromFile("BINARYDATA\\Impass.edt", out pString, MAIL_STRING_SIZE * IMP_PHYSICAL_SUPER_DEXTERITY, MAIL_STRING_SIZE);
+                files.LoadEncryptedDataFromFile("BINARYDATA\\Impass.edt", out pString, MAIL_STRING_SIZE * IMP_PHYSICAL_SUPER_DEXTERITY, MAIL_STRING_SIZE);
 
                 // add to list
                 this.AddEmailRecordToList(pString);
@@ -3757,7 +3757,7 @@ public class Emails
             if (fSufficientStr)
             {
                 // read one record from email file
-                this.files.LoadEncryptedDataFromFile("BINARYDATA\\Impass.edt", out pString, MAIL_STRING_SIZE * IMP_PHYSICAL_SUPER_STRENGTH, MAIL_STRING_SIZE);
+                files.LoadEncryptedDataFromFile("BINARYDATA\\Impass.edt", out pString, MAIL_STRING_SIZE * IMP_PHYSICAL_SUPER_STRENGTH, MAIL_STRING_SIZE);
 
                 // add to list
                 this.AddEmailRecordToList(pString);
@@ -3766,7 +3766,7 @@ public class Emails
             if (fSufficientAgi)
             {
                 // read one record from email file
-                this.files.LoadEncryptedDataFromFile("BINARYDATA\\Impass.edt", out pString, MAIL_STRING_SIZE * IMP_PHYSICAL_SUPER_AGILITY, MAIL_STRING_SIZE);
+                files.LoadEncryptedDataFromFile("BINARYDATA\\Impass.edt", out pString, MAIL_STRING_SIZE * IMP_PHYSICAL_SUPER_AGILITY, MAIL_STRING_SIZE);
 
                 // add to list
                 this.AddEmailRecordToList(pString);
@@ -3775,7 +3775,7 @@ public class Emails
             if (fSufficientWis)
             {
                 // read one record from email file
-                this.files.LoadEncryptedDataFromFile("BINARYDATA\\Impass.edt", out pString, MAIL_STRING_SIZE * IMP_PHYSICAL_SUPER_WISDOM, MAIL_STRING_SIZE);
+                files.LoadEncryptedDataFromFile("BINARYDATA\\Impass.edt", out pString, MAIL_STRING_SIZE * IMP_PHYSICAL_SUPER_WISDOM, MAIL_STRING_SIZE);
 
                 // add to list
                 this.AddEmailRecordToList(pString);
@@ -3784,7 +3784,7 @@ public class Emails
             if (fSufficientLdr)
             {
                 // read one record from email file
-                this.files.LoadEncryptedDataFromFile("BINARYDATA\\Impass.edt", out pString, MAIL_STRING_SIZE * IMP_PHYSICAL_SUPER_LEADERSHIP, MAIL_STRING_SIZE);
+                files.LoadEncryptedDataFromFile("BINARYDATA\\Impass.edt", out pString, MAIL_STRING_SIZE * IMP_PHYSICAL_SUPER_LEADERSHIP, MAIL_STRING_SIZE);
 
                 // add to list
                 this.AddEmailRecordToList(pString);
@@ -3848,7 +3848,7 @@ public class Emails
             while (iEndOfSection > iCounter)
             {
                 // read one record from email file
-                this.files.LoadEncryptedDataFromFile("BINARYDATA\\Impass.edt", out pString, (uint)(MAIL_STRING_SIZE * (iOffSet + iCounter)), MAIL_STRING_SIZE);
+                files.LoadEncryptedDataFromFile("BINARYDATA\\Impass.edt", out pString, (uint)(MAIL_STRING_SIZE * (iOffSet + iCounter)), MAIL_STRING_SIZE);
 
                 // add to list
                 this.AddEmailRecordToList(pString);
@@ -3860,7 +3860,7 @@ public class Emails
             if (fSufficientHlth)
             {
                 // read one record from email file
-                this.files.LoadEncryptedDataFromFile("BINARYDATA\\Impass.edt", out pString, MAIL_STRING_SIZE * IMP_PHYSICAL_LOW_HEALTH, MAIL_STRING_SIZE);
+                files.LoadEncryptedDataFromFile("BINARYDATA\\Impass.edt", out pString, MAIL_STRING_SIZE * IMP_PHYSICAL_LOW_HEALTH, MAIL_STRING_SIZE);
 
                 // add to list
                 this.AddEmailRecordToList(pString);
@@ -3870,7 +3870,7 @@ public class Emails
             if (fSufficientDex)
             {
                 // read one record from email file
-                this.files.LoadEncryptedDataFromFile("BINARYDATA\\Impass.edt", out pString, MAIL_STRING_SIZE * IMP_PHYSICAL_LOW_DEXTERITY, MAIL_STRING_SIZE);
+                files.LoadEncryptedDataFromFile("BINARYDATA\\Impass.edt", out pString, MAIL_STRING_SIZE * IMP_PHYSICAL_LOW_DEXTERITY, MAIL_STRING_SIZE);
 
                 // add to list
                 this.AddEmailRecordToList(pString);
@@ -3879,7 +3879,7 @@ public class Emails
             if (fSufficientStr)
             {
                 // read one record from email file
-                this.files.LoadEncryptedDataFromFile("BINARYDATA\\Impass.edt", out pString, MAIL_STRING_SIZE * IMP_PHYSICAL_LOW_STRENGTH, MAIL_STRING_SIZE);
+                files.LoadEncryptedDataFromFile("BINARYDATA\\Impass.edt", out pString, MAIL_STRING_SIZE * IMP_PHYSICAL_LOW_STRENGTH, MAIL_STRING_SIZE);
 
                 // add to list
                 this.AddEmailRecordToList(pString);
@@ -3890,7 +3890,7 @@ public class Emails
             if (fSufficientAgi)
             {
                 // read one record from email file
-                this.files.LoadEncryptedDataFromFile("BINARYDATA\\Impass.edt", out pString, MAIL_STRING_SIZE * IMP_PHYSICAL_LOW_AGILITY, MAIL_STRING_SIZE);
+                files.LoadEncryptedDataFromFile("BINARYDATA\\Impass.edt", out pString, MAIL_STRING_SIZE * IMP_PHYSICAL_LOW_AGILITY, MAIL_STRING_SIZE);
 
                 // add to list
                 this.AddEmailRecordToList(pString);
@@ -3899,7 +3899,7 @@ public class Emails
             if (fSufficientWis)
             {
                 // read one record from email file
-                this.files.LoadEncryptedDataFromFile("BINARYDATA\\Impass.edt", out pString, MAIL_STRING_SIZE * IMP_PHYSICAL_LOW_WISDOM, MAIL_STRING_SIZE);
+                files.LoadEncryptedDataFromFile("BINARYDATA\\Impass.edt", out pString, MAIL_STRING_SIZE * IMP_PHYSICAL_LOW_WISDOM, MAIL_STRING_SIZE);
 
                 // add to list
                 this.AddEmailRecordToList(pString);
@@ -3908,7 +3908,7 @@ public class Emails
             if (fSufficientLdr)
             {
                 // read one record from email file
-                this.files.LoadEncryptedDataFromFile("BINARYDATA\\Impass.edt", out pString, MAIL_STRING_SIZE * IMP_PHYSICAL_LOW_LEADERSHIP, MAIL_STRING_SIZE);
+                files.LoadEncryptedDataFromFile("BINARYDATA\\Impass.edt", out pString, MAIL_STRING_SIZE * IMP_PHYSICAL_LOW_LEADERSHIP, MAIL_STRING_SIZE);
 
                 // add to list
                 this.AddEmailRecordToList(pString);
@@ -3972,7 +3972,7 @@ public class Emails
             while (iEndOfSection > iCounter)
             {
                 // read one record from email file
-                this.files.LoadEncryptedDataFromFile("BINARYDATA\\Impass.edt", out pString, (uint)(MAIL_STRING_SIZE * (iOffSet + iCounter)), MAIL_STRING_SIZE);
+                files.LoadEncryptedDataFromFile("BINARYDATA\\Impass.edt", out pString, (uint)(MAIL_STRING_SIZE * (iOffSet + iCounter)), MAIL_STRING_SIZE);
 
                 // add to list
                 this.AddEmailRecordToList(pString);
@@ -3984,7 +3984,7 @@ public class Emails
             if (fSufficientHlth)
             {
                 // read one record from email file
-                this.files.LoadEncryptedDataFromFile("BINARYDATA\\Impass.edt", out pString, MAIL_STRING_SIZE * IMP_PHYSICAL_VERY_LOW_HEALTH, MAIL_STRING_SIZE);
+                files.LoadEncryptedDataFromFile("BINARYDATA\\Impass.edt", out pString, MAIL_STRING_SIZE * IMP_PHYSICAL_VERY_LOW_HEALTH, MAIL_STRING_SIZE);
 
                 // add to list
                 this.AddEmailRecordToList(pString);
@@ -3995,7 +3995,7 @@ public class Emails
             if (fSufficientDex)
             {
                 // read one record from email file
-                this.files.LoadEncryptedDataFromFile("BINARYDATA\\Impass.edt", out pString, MAIL_STRING_SIZE * IMP_PHYSICAL_VERY_LOW_DEXTERITY, MAIL_STRING_SIZE);
+                files.LoadEncryptedDataFromFile("BINARYDATA\\Impass.edt", out pString, MAIL_STRING_SIZE * IMP_PHYSICAL_VERY_LOW_DEXTERITY, MAIL_STRING_SIZE);
 
                 // add to list
                 this.AddEmailRecordToList(pString);
@@ -4004,7 +4004,7 @@ public class Emails
             if (fSufficientStr)
             {
                 // read one record from email file
-                this.files.LoadEncryptedDataFromFile("BINARYDATA\\Impass.edt", out pString, MAIL_STRING_SIZE * IMP_PHYSICAL_VERY_LOW_STRENGTH, MAIL_STRING_SIZE);
+                files.LoadEncryptedDataFromFile("BINARYDATA\\Impass.edt", out pString, MAIL_STRING_SIZE * IMP_PHYSICAL_VERY_LOW_STRENGTH, MAIL_STRING_SIZE);
 
                 // add to list
                 this.AddEmailRecordToList(pString);
@@ -4015,7 +4015,7 @@ public class Emails
             if (fSufficientAgi)
             {
                 // read one record from email file
-                this.files.LoadEncryptedDataFromFile("BINARYDATA\\Impass.edt", out pString, MAIL_STRING_SIZE * IMP_PHYSICAL_VERY_LOW_AGILITY, MAIL_STRING_SIZE);
+                files.LoadEncryptedDataFromFile("BINARYDATA\\Impass.edt", out pString, MAIL_STRING_SIZE * IMP_PHYSICAL_VERY_LOW_AGILITY, MAIL_STRING_SIZE);
 
                 // add to list
                 this.AddEmailRecordToList(pString);
@@ -4026,7 +4026,7 @@ public class Emails
             if (fSufficientWis)
             {
                 // read one record from email file
-                this.files.LoadEncryptedDataFromFile("BINARYDATA\\Impass.edt", out pString, MAIL_STRING_SIZE * IMP_PHYSICAL_VERY_LOW_WISDOM, MAIL_STRING_SIZE);
+                files.LoadEncryptedDataFromFile("BINARYDATA\\Impass.edt", out pString, MAIL_STRING_SIZE * IMP_PHYSICAL_VERY_LOW_WISDOM, MAIL_STRING_SIZE);
 
                 // add to list
                 this.AddEmailRecordToList(pString);
@@ -4042,7 +4042,7 @@ public class Emails
             if (fSufficientLdr)
             {
                 // read one record from email file
-                this.files.LoadEncryptedDataFromFile("BINARYDATA\\Impass.edt", out pString, MAIL_STRING_SIZE * IMP_PHYSICAL_VERY_LOW_LEADERSHIP, MAIL_STRING_SIZE);
+                files.LoadEncryptedDataFromFile("BINARYDATA\\Impass.edt", out pString, MAIL_STRING_SIZE * IMP_PHYSICAL_VERY_LOW_LEADERSHIP, MAIL_STRING_SIZE);
 
                 // add to list
                 this.AddEmailRecordToList(pString);
@@ -4056,7 +4056,7 @@ public class Emails
             while (iEndOfSection > iCounter)
             {
                 // read one record from email file
-                this.files.LoadEncryptedDataFromFile("BINARYDATA\\Impass.edt", out pString, (uint)(MAIL_STRING_SIZE * (iOffSet + iCounter)), MAIL_STRING_SIZE);
+                files.LoadEncryptedDataFromFile("BINARYDATA\\Impass.edt", out pString, (uint)(MAIL_STRING_SIZE * (iOffSet + iCounter)), MAIL_STRING_SIZE);
 
                 // add to list
                 this.AddEmailRecordToList(pString);
@@ -4120,7 +4120,7 @@ public class Emails
             while (iEndOfSection > iCounter)
             {
                 // read one record from email file
-                this.files.LoadEncryptedDataFromFile("BINARYDATA\\Impass.edt", out pString, (uint)(MAIL_STRING_SIZE * (iOffSet + iCounter)), MAIL_STRING_SIZE);
+                files.LoadEncryptedDataFromFile("BINARYDATA\\Impass.edt", out pString, (uint)(MAIL_STRING_SIZE * (iOffSet + iCounter)), MAIL_STRING_SIZE);
 
                 // add to list
                 this.AddEmailRecordToList(pString);
@@ -4136,7 +4136,7 @@ public class Emails
             while (iEndOfSection > iCounter)
             {
                 // read one record from email file
-                this.files.LoadEncryptedDataFromFile("BINARYDATA\\Impass.edt", out pString, (uint)(MAIL_STRING_SIZE * (iOffSet + iCounter)), MAIL_STRING_SIZE);
+                files.LoadEncryptedDataFromFile("BINARYDATA\\Impass.edt", out pString, (uint)(MAIL_STRING_SIZE * (iOffSet + iCounter)), MAIL_STRING_SIZE);
 
                 // add to list
                 this.AddEmailRecordToList(pString);
@@ -4470,7 +4470,7 @@ public class Emails
             while (pMail.usLength > iCounter)
             {
                 // read one record from email file
-                this.files.LoadEncryptedDataFromFile("BINARYDATA\\Email.edt", out pString, (uint)(MAIL_STRING_SIZE * (iOffSet + iCounter)), MAIL_STRING_SIZE);
+                files.LoadEncryptedDataFromFile("BINARYDATA\\Email.edt", out pString, (uint)(MAIL_STRING_SIZE * (iOffSet + iCounter)), MAIL_STRING_SIZE);
 
                 // add to list
                 this.AddEmailRecordToList(pString);
@@ -4694,7 +4694,7 @@ public class Emails
         for (ubCnt = 0; ubCnt < ubNumberOfRecords; ubCnt++)
         {
             // read one record from email file
-            this.files.LoadEncryptedDataFromFile("BINARYDATA\\Email.edt", out string pString, (uint)(MAIL_STRING_SIZE * usMessageId), MAIL_STRING_SIZE);
+            files.LoadEncryptedDataFromFile("BINARYDATA\\Email.edt", out string pString, (uint)(MAIL_STRING_SIZE * usMessageId), MAIL_STRING_SIZE);
 
             //Replace the $MERCNAME$ and $AMOUNT$ with the mercs name and the amountm if the string contains the keywords.
             ReplaceMercNameAndAmountWithProperData(pString, pMail);

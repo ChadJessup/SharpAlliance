@@ -7,6 +7,7 @@ using SharpAlliance.Core.Interfaces;
 using SixLabors.ImageSharp;
 using SixLabors.ImageSharp.PixelFormats;
 using System.Collections.Generic;
+using SharpAlliance.Core.Screens;
 
 namespace SharpAlliance.Core.SubSystems;
 
@@ -410,6 +411,16 @@ public class Laptop
                 VideoObjectManager.BltVideoObject(SurfaceType.FRAME_BUFFER, hHandle, 1, LAPTOP_TITLE_ICONS_X, LAPTOP_TITLE_ICONS_Y, VO_BLT.SRCTRANSPARENCY, null);
                 break;
         }
+    }
+
+    public static void SetLaptopExitScreen(ScreenName exitScreen)
+    {
+        guiExitScreen = exitScreen;
+    }
+
+    internal static void SetLaptopNewGameFlag()
+    {
+        LaptopSaveInfo.gfNewGameLaptop = true;
     }
 }
 

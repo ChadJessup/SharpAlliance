@@ -35,6 +35,7 @@ public partial class Globals
 
     public static bool gfEstimatePath { get; internal set; }
     public static int gubScreenCount { get; internal set; }
+    public static bool fPausedReDrawScreenFlag { get; internal set; }
 
     internal static void gprintf(int x, int y, string format, params object?[] arguments)
     {

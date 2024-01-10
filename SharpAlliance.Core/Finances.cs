@@ -1713,7 +1713,7 @@ public class Finances
         Stream hFileHandle;
         FinanceEvent ubCode = FinanceEvent.UNKNOWN;
         NPCID ubSecondCode = 0;
-        int iBalanceToDate;
+        int iBalanceToDate = 0;
         uint uiDate = 0;
         int iAmount = 0;
         int iBytesRead = 0;
@@ -2094,7 +2094,7 @@ public class Finances
         byte ubSecondCode = 0;
         uint uiDate = 0;
         int iAmount = 0;
-        int iBalanceToDate;
+        int iBalanceToDate = 0;
         bool fGoneTooFar = false;
         int iTotalPreviousIncome = 0;
 
@@ -2186,7 +2186,7 @@ public class Finances
         byte ubSecondCode = 0;
         uint uiDate = 0;
         int iAmount = 0;
-        int iBalanceToDate;
+        int iBalanceToDate = 0;
         bool fGoneTooFar = false;
         int iTotalIncome = 0;
 

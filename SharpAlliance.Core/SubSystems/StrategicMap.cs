@@ -801,6 +801,11 @@ public class StrategicMap
 
         return false;
     }
+
+    internal static void SetupNewStrategicGame()
+    {
+        throw new NotImplementedException();
+    }
 }
 
 public class StrategicMapElement

@@ -20,5 +20,8 @@ namespace SharpAlliance.Platform.Interfaces
         FileAttributes FileGetAttributes(string filePath);
         bool MakeFileManDirectory(string saveDir);
         bool FileDelete(string filePath);
+        int FileGetSize(Stream hFileHandle);
+        void FileGetPos(Stream hFileHandle);
+        void FileClearAttributes(string fINANCES_DATA_FILE);
     }
 }

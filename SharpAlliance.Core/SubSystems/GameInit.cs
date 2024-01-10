@@ -213,17 +213,17 @@ public class GameInit
             InitStrategicLayer();
 
             // Set new game flag
-            SetLaptopNewGameFlag();
+            Laptop.SetLaptopNewGameFlag();
 
             // this is for the "mercs climbing down from a rope" animation, NOT Skyrider!!
             ResetHeliSeats();
 
             // Setup two new messages!
-            this.emails.AddPreReadEmail(OLD_ENRICO_1, OLD_ENRICO_1_LENGTH, EmailAddresses.MAIL_ENRICO, GameClock.GetWorldTotalMin());
-            this.emails.AddPreReadEmail(OLD_ENRICO_2, OLD_ENRICO_2_LENGTH, EmailAddresses.MAIL_ENRICO, GameClock.GetWorldTotalMin());
-            this.emails.AddPreReadEmail(RIS_REPORT, RIS_REPORT_LENGTH, EmailAddresses.RIS_EMAIL, GameClock.GetWorldTotalMin());
-            this.emails.AddPreReadEmail(OLD_ENRICO_3, OLD_ENRICO_3_LENGTH, EmailAddresses.MAIL_ENRICO, GameClock.GetWorldTotalMin());
-            this.emails.AddEmail(IMP_EMAIL_INTRO, IMP_EMAIL_INTRO_LENGTH, EmailAddresses.CHAR_PROFILE_SITE, GameClock.GetWorldTotalMin());
+            Emails.AddPreReadEmail(OLD_ENRICO_1, OLD_ENRICO_1_LENGTH, EmailAddresses.MAIL_ENRICO, GameClock.GetWorldTotalMin());
+            Emails.AddPreReadEmail(OLD_ENRICO_2, OLD_ENRICO_2_LENGTH, EmailAddresses.MAIL_ENRICO, GameClock.GetWorldTotalMin());
+            Emails.AddPreReadEmail(RIS_REPORT, RIS_REPORT_LENGTH, EmailAddresses.RIS_EMAIL, GameClock.GetWorldTotalMin());
+            Emails.AddPreReadEmail(OLD_ENRICO_3, OLD_ENRICO_3_LENGTH, EmailAddresses.MAIL_ENRICO, GameClock.GetWorldTotalMin());
+            Emails.AddEmail(IMP_EMAIL_INTRO, IMP_EMAIL_INTRO_LENGTH, EmailAddresses.CHAR_PROFILE_SITE, GameClock.GetWorldTotalMin());
             //AddEmail(ENRICO_CONGRATS,ENRICO_CONGRATS_LENGTH,MAIL_ENRICO, GetWorldTotalMin() );
 
             // ATE: Set starting cash....
@@ -260,7 +260,7 @@ public class GameInit
                 GameEvents.AddFutureDayStrategicEvent(EVENT.DAY3_ADD_EMAIL_FROM_SPECK, 60 * 7, 0, uiDaysTimeMercSiteAvailable);
             }
 
-            SetLaptopExitScreen(ScreenName.InitScreen);
+            Laptop.SetLaptopExitScreen(ScreenName.InitScreen);
             await this.screens.SetPendingNewScreen(ScreenName.LAPTOP_SCREEN);
             gubScreenCount = 1;
 
@@ -319,5 +319,55 @@ public class GameInit
             */
 
         return true;
+    }
+
+    private void InitStrategicLayer()
+    {
+        // Clear starategic layer!
+        StrategicMap.SetupNewStrategicGame();
+        Quests.InitQuestEngine();
+
+        Campaign.
+        //Setup a new campaign via the enemy perspective.
+        InitNewCampaign();
+        // Init Squad Lists
+        InitSquads();
+        // Init vehicles
+        InitVehicles();
+        // init town loyalty
+        InitTownLoyalty();
+        // init the mine management system
+        InitializeMines();
+        // initialize map screen flags
+        InitMapScreenFlags();
+        // initialize NPCs, select alternate maps, etc
+        InitNPCs();
+        // init Skyrider and his helicopter
+        InitializeHelicopter();
+        //Clear out the vehicle list
+        ClearOutVehicleList();
+
+        InitBloodCatSectors();
+
+        InitializeSAMSites();
+
+        // make Orta, Tixa, SAM sites not found
+        InitMapSecrets();
+
+
+        // free up any leave list arrays that were left allocated
+        ShutDownLeaveList();
+        // re-set up leave list arrays for dismissed mercs
+        InitLeaveList();
+
+        // reset time compression mode to X0 (this will also pause it)
+        SetGameTimeCompressionLevel(TIME_COMPRESS_X0);
+
+        // select A9 Omerta as the initial selected sector
+        ChangeSelectedMapSector(9, 1, 0);
+
+        // Reset these flags or mapscreen could be disabled and cause major headache.
+        fDisableDueToBattleRoster = false;
+        fDisableMapInterfaceDueToBattle = false;
     }
 }

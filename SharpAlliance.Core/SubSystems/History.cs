@@ -678,15 +678,15 @@ public class History
         FontSubSystem.SetFontShadow(FontShadow.NO_SHADOW);
 
         // the date header
-        this.fonts.FindFontCenterCoordinates(RECORD_DATE_X + 5, 0, RECORD_DATE_WIDTH, 0, pHistoryHeaders[0], Globals.HISTORY_TEXT_FONT, out int usX, out int usY);
+        FontSubSystem.FindFontCenterCoordinates(RECORD_DATE_X + 5, 0, RECORD_DATE_WIDTH, 0, pHistoryHeaders[0], Globals.HISTORY_TEXT_FONT, out int usX, out int usY);
         mprintf(usX, RECORD_HEADER_Y, pHistoryHeaders[0]);
 
         // the date header
-        this.fonts.FindFontCenterCoordinates(RECORD_DATE_X + RECORD_DATE_WIDTH + 5, 0, RECORD_LOCATION_WIDTH, 0, pHistoryHeaders[3], Globals.HISTORY_TEXT_FONT, out usX, out usY);
+        FontSubSystem.FindFontCenterCoordinates(RECORD_DATE_X + RECORD_DATE_WIDTH + 5, 0, RECORD_LOCATION_WIDTH, 0, pHistoryHeaders[3], Globals.HISTORY_TEXT_FONT, out usX, out usY);
         mprintf(usX, RECORD_HEADER_Y, pHistoryHeaders[3]);
 
         // event header
-        this.fonts.FindFontCenterCoordinates(RECORD_DATE_X + RECORD_DATE_WIDTH + RECORD_LOCATION_WIDTH + 5, 0, RECORD_LOCATION_WIDTH, 0, pHistoryHeaders[3], Globals.HISTORY_TEXT_FONT, out usX, out usY);
+        FontSubSystem.FindFontCenterCoordinates(RECORD_DATE_X + RECORD_DATE_WIDTH + RECORD_LOCATION_WIDTH + 5, 0, RECORD_LOCATION_WIDTH, 0, pHistoryHeaders[3], Globals.HISTORY_TEXT_FONT, out usX, out usY);
         mprintf(usX, RECORD_HEADER_Y, pHistoryHeaders[4]);
         // reset shadow
         FontSubSystem.SetFontShadow(FontShadow.DEFAULT_SHADOW);
@@ -751,7 +751,7 @@ public class History
             }
             // get and write the date
             sString = wprintf("%d", pCurHistory.uiDate / (24 * 60));
-            this.fonts.FindFontCenterCoordinates(Globals.RECORD_DATE_X + 5, 0, Globals.RECORD_DATE_WIDTH, 0, sString, HISTORY_TEXT_FONT, out int usX, out int usY);
+            FontSubSystem.FindFontCenterCoordinates(Globals.RECORD_DATE_X + 5, 0, Globals.RECORD_DATE_WIDTH, 0, sString, HISTORY_TEXT_FONT, out int usX, out int usY);
             mprintf(usX, Globals.RECORD_Y + (iCounter * Globals.BOX_HEIGHT) + 3, sString);
 
             // now the actual history text
@@ -770,7 +770,7 @@ public class History
             else
             {
                 StrategicMap.GetSectorIDString(pCurHistory.sSectorX, pCurHistory.sSectorY, pCurHistory.bSectorZ, out sString, true);
-                this.fonts.FindFontCenterCoordinates(RECORD_DATE_X + RECORD_DATE_WIDTH, 0, RECORD_LOCATION_WIDTH + 10, 0, sString, Globals.HISTORY_TEXT_FONT, out sX, out sY);
+                FontSubSystem.FindFontCenterCoordinates(RECORD_DATE_X + RECORD_DATE_WIDTH, 0, RECORD_LOCATION_WIDTH + 10, 0, sString, Globals.HISTORY_TEXT_FONT, out sX, out sY);
 
                 WordWrap.ReduceStringLength(sString, RECORD_LOCATION_WIDTH + 10, Globals.HISTORY_TEXT_FONT);
 

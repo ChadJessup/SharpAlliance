@@ -636,6 +636,11 @@ public class Quests
             gMercProfiles[NPCID.MADAME].bNPCData2 = 0;
         }
     }
+
+    internal static void InitQuestEngine()
+    {
+        throw new NotImplementedException();
+    }
 }
 
 public enum MERC_TYPE

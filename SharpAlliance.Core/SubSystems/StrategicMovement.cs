@@ -538,14 +538,10 @@ public class StrategicMovement
 
     //Enemy grouping functions -- private use by the strategic AI.
     //............................................................
-    public static GROUP? CreateNewEnemyGroupDepartingFromSector(SEC uiSector, int ubNumAdmins, int ubNumTroops, int ubNumElites)
+    public static GROUP CreateNewEnemyGroupDepartingFromSector(SEC uiSector, int ubNumAdmins, int ubNumTroops, int ubNumElites)
     {
-        GROUP pNew = new GROUP
+        GROUP pNew = new()
         {
-            //AssertMsg(uiSector >= 0 && uiSector <= 255, String("CreateNewEnemyGroup with out of range value of %d", uiSector));
-            //AssertMsg(pNew, "MemAlloc failure during CreateNewEnemyGroup.");
-            //memset(pNew, 0, sizeof(GROUP));
-            //AssertMsg(pNew.pEnemyGroup, "MemAlloc failure during enemy group creation.");
             pWaypoints = null,
             ubSectorX = SECTORINFO.SECTORX(uiSector),
             ubSectorY = SECTORINFO.SECTORY(uiSector),
@@ -556,15 +552,15 @@ public class StrategicMovement
             ubFatigueLevel = 100,
             ubRestAtFatigueLevel = 0,
 
-            pEnemyGroup = new List<ENEMYGROUP>
-            {
+            pEnemyGroup =
+            [
                 new()
                 {
                     ubNumAdmins = ubNumAdmins,
                     ubNumTroops = ubNumTroops,
                     ubNumElites = ubNumElites,
                 }
-            },
+            ],
             ubGroupSize = (int)(ubNumTroops + ubNumElites),
             ubTransportationMask = VehicleTypes.FOOT,
             fVehicle = false,
@@ -572,14 +568,9 @@ public class StrategicMovement
             ubSectorIDOfLastReassignment = (SEC)255,
         };
 
+        AddGroupToList(pNew);
 
-
-        if (AddGroupToList(pNew) > 0)
-        {
-            return pNew;
-        }
-
-        return null;
+        return pNew;
     }
 
     //INTERNAL LIST MANIPULATION FUNCTIONS
@@ -588,9 +579,9 @@ public class StrategicMovement
     //1)  Find the first unused ID (unique)
     //2)  Assign that ID to the new group
     //3)  Insert the group at the end of the list.
-    public static int AddGroupToList(GROUP? pGroup)
+    public static int AddGroupToList(GROUP pGroup)
     {
-        GROUP? curr;
+        GROUP curr;
         int bit, index, mask;
         int ID = 0;
         //First, find a unique ID
