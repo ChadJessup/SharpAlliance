@@ -645,7 +645,7 @@ public class Overhead
             {
                 // DebugMsg(TOPIC_JA2, DBG_LEVEL_3, String("!!!!!!! &&&&&&& Problem with attacker busy count decrementing past 0.... preventing wrap-around."));
 # if JA2BETAVERSION
-                ScreenMsg(FONT_MCOLOR_LTYELLOW, MSG.BETAVERSION, L"Attack busy problem. Save, exit and send debug.txt + save file to Sir-Tech.");
+                ScreenMsg(FONT_MCOLOR_LTYELLOW, MSG.BETAVERSION, "Attack busy problem. Save, exit and send debug.txt + save file to Sir-Tech.");
 #endif
             }
         }

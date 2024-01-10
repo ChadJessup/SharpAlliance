@@ -165,7 +165,7 @@ public partial class Globals
         { MAP_ROW.I, "I" },
         { MAP_ROW.J, "J" },
         { MAP_ROW.K, "K" },
-        { MAP_ROW.L, "L" },
+        { MAP_ROW.L, "" },
         { MAP_ROW.M, "M" },
         { MAP_ROW.N, "N" },
         { MAP_ROW.O, "O" },

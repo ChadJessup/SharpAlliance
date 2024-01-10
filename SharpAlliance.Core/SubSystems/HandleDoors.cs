@@ -21,7 +21,7 @@ public class HandleDoors
         if (pStructure == null)
         {
 # if JA2TESTVERSION
-            Messages.ScreenMsg(FONT_MCOLOR_LTYELLOW, MSG.TESTVERSION, L"ERROR: Told to handle door that does not exist at %d.", sGridNo);
+            Messages.ScreenMsg(FONT_MCOLOR_LTYELLOW, MSG.TESTVERSION, "ERROR: Told to handle door that does not exist at %d.", sGridNo);
 #endif
             return;
         }
@@ -38,7 +38,7 @@ public class HandleDoors
         if (pDoorStatus == null)
         {
 # if JA2TESTVERSION
-            ScreenMsg(FONT_MCOLOR_LTYELLOW, MSG.TESTVERSION, L"ERROR: Told to set door busy but can't get door status at %d!", sGridNo);
+            ScreenMsg(FONT_MCOLOR_LTYELLOW, MSG.TESTVERSION, "ERROR: Told to set door busy but can't get door status at %d!", sGridNo);
 #endif
             return;
         }

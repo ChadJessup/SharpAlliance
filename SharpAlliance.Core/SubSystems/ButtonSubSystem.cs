@@ -868,6 +868,7 @@ public class ButtonSubSystem : ISharpAllianceManager
         }
     }
 
+    public static void MSYS_SetBtnUserData(GUI_BUTTON btn, int index, object value) => btn.UserData[index] = value;
     public static object MSYS_GetBtnUserData(GUI_BUTTON btn, int index) => btn.UserData[index];
 
     private static void DrawCheckBoxButton(ref GUI_BUTTON b, int id = 0)
@@ -2287,11 +2288,6 @@ public class ButtonSubSystem : ISharpAllianceManager
     }
 
     public ValueTask<bool> Initialize() => this.Initialize(mouse, inputs);
-
-    internal static void MSYS_SetBtnUserData(int v1, int v2, int cnt)
-    {
-        throw new NotImplementedException();
-    }
 }
 
 // GUI_BUTTON callback function type

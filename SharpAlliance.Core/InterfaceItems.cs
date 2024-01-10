@@ -2713,7 +2713,7 @@ public class InterfaceItems
                 //Status
                 // This is gross, but to get the % to work out right...
                 wprintf(pStr, "%2d%%", gpItemDescObject.bStatus[gubItemDescStatusIndex]);
-                this.fonts.FindFontRightCoordinates((int)(gMapWeaponStats[1].sX + gsInvDescX + gMapWeaponStats[1].sValDx + 6), (int)(gMapWeaponStats[1].sY + gsInvDescY), ITEM_STATS_WIDTH, ITEM_STATS_HEIGHT, pStr, FontStyle.BLOCKFONT2, out usX, out usY);
+                FontSubSystem.FindFontRightCoordinates((int)(gMapWeaponStats[1].sX + gsInvDescX + gMapWeaponStats[1].sValDx + 6), (int)(gMapWeaponStats[1].sY + gsInvDescY), ITEM_STATS_WIDTH, ITEM_STATS_HEIGHT, pStr, FontStyle.BLOCKFONT2, out usX, out usY);
                 wcscat(pStr, "%%");
                 mprintf(usX, usY, pStr);
 
@@ -2728,7 +2728,7 @@ public class InterfaceItems
                 }
                 //Weight
                 wprintf(pStr, "%1.1f", fWeight);
-                this.fonts.FindFontRightCoordinates((int)(gMapWeaponStats[0].sX + gsInvDescX + gMapWeaponStats[0].sValDx + 6), (int)(gMapWeaponStats[0].sY + gsInvDescY), ITEM_STATS_WIDTH, ITEM_STATS_HEIGHT, pStr, FontStyle.BLOCKFONT2, out usX, out usY);
+                FontSubSystem.FindFontRightCoordinates((int)(gMapWeaponStats[0].sX + gsInvDescX + gMapWeaponStats[0].sValDx + 6), (int)(gMapWeaponStats[0].sY + gsInvDescY), ITEM_STATS_WIDTH, ITEM_STATS_HEIGHT, pStr, FontStyle.BLOCKFONT2, out usX, out usY);
                 mprintf(usX, usY, pStr);
 
                 if (Item[gpItemDescObject.usItem].usItemClass.HasFlag(IC.GUN | IC.LAUNCHER))
@@ -2745,7 +2745,7 @@ public class InterfaceItems
 
                     //Range
                     //                    wprintf(pStr, "%2d", (GunRange(gpItemDescObject)) / 10);
-                    this.fonts.FindFontRightCoordinates(gMapWeaponStats[3].sX + gsInvDescX + gMapWeaponStats[3].sValDx, (int)(gMapWeaponStats[3].sY + gsInvDescY), ITEM_STATS_WIDTH, ITEM_STATS_HEIGHT, pStr, FontStyle.BLOCKFONT2, out usX, out usY);
+                    FontSubSystem.FindFontRightCoordinates(gMapWeaponStats[3].sX + gsInvDescX + gMapWeaponStats[3].sValDx, (int)(gMapWeaponStats[3].sY + gsInvDescY), ITEM_STATS_WIDTH, ITEM_STATS_HEIGHT, pStr, FontStyle.BLOCKFONT2, out usX, out usY);
                     mprintf(usX, usY, pStr);
                 }
 
@@ -2763,7 +2763,7 @@ public class InterfaceItems
 
                     //Damage
                     //                    wprintf(pStr, "%2d", Weapon[gpItemDescObject.usItem].ubImpact);
-                    this.fonts.FindFontRightCoordinates((int)(gMapWeaponStats[4].sX + gsInvDescX + gMapWeaponStats[4].sValDx), (int)(gMapWeaponStats[4].sY + gsInvDescY), ITEM_STATS_WIDTH, ITEM_STATS_HEIGHT, pStr, FontStyle.BLOCKFONT2, out usX, out usY);
+                    FontSubSystem.FindFontRightCoordinates((int)(gMapWeaponStats[4].sX + gsInvDescX + gMapWeaponStats[4].sValDx), (int)(gMapWeaponStats[4].sY + gsInvDescY), ITEM_STATS_WIDTH, ITEM_STATS_HEIGHT, pStr, FontStyle.BLOCKFONT2, out usX, out usY);
                     mprintf(usX, usY, pStr);
                 }
 
@@ -2780,7 +2780,7 @@ public class InterfaceItems
 
                 //Ap's
                 wprintf(pStr, "%2d", ubAttackAPs);
-                this.fonts.FindFontRightCoordinates((int)(gMapWeaponStats[5].sX + gsInvDescX + gMapWeaponStats[5].sValDx), (int)(gMapWeaponStats[5].sY + gsInvDescY), ITEM_STATS_WIDTH, ITEM_STATS_HEIGHT, pStr, FontStyle.BLOCKFONT2, out usX, out usY);
+                FontSubSystem.FindFontRightCoordinates((int)(gMapWeaponStats[5].sX + gsInvDescX + gMapWeaponStats[5].sValDx), (int)(gMapWeaponStats[5].sY + gsInvDescY), ITEM_STATS_WIDTH, ITEM_STATS_HEIGHT, pStr, FontStyle.BLOCKFONT2, out usX, out usY);
                 mprintf(usX, usY, pStr);
 
                 //               if (Weapon[gpItemDescObject.usItem].ubShotsPerBurst > 0)
@@ -2796,7 +2796,7 @@ public class InterfaceItems
                     }
 
                     //                    wprintf(pStr, "%2d", ubAttackAPs + CalcAPsToBurst(DEFAULT_APS, gpItemDescObject));
-                    this.fonts.FindFontRightCoordinates((int)(gMapWeaponStats[6].sX + gsInvDescX + gMapWeaponStats[6].sValDx), (int)(gMapWeaponStats[6].sY + gsInvDescY), ITEM_STATS_WIDTH, ITEM_STATS_HEIGHT, pStr, FontStyle.BLOCKFONT2, out usX, out usY);
+                    FontSubSystem.FindFontRightCoordinates((int)(gMapWeaponStats[6].sX + gsInvDescX + gMapWeaponStats[6].sValDx), (int)(gMapWeaponStats[6].sY + gsInvDescY), ITEM_STATS_WIDTH, ITEM_STATS_HEIGHT, pStr, FontStyle.BLOCKFONT2, out usX, out usY);
                     mprintf(usX, usY, pStr);
                 }
 
@@ -2912,7 +2912,7 @@ public class InterfaceItems
                     //                    wprintf(pStr, "%d/%d", gpItemDescObject.ubShotsLeft[0], Magazine[Item[gpItemDescObject.usItem].ubClassIndex].ubMagSize);
                     uiStringLength = FontSubSystem.StringPixLength(pStr, ITEMDESC_FONT);
                     //			sStrX =  gMapWeaponStats[ 0 ].sX + gsInvDescX + gMapWeaponStats[ 0 ].sValDx + ( uiRightLength - uiStringLength );
-                    this.fonts.FindFontRightCoordinates((int)(gMapWeaponStats[2].sX + gsInvDescX + gMapWeaponStats[2].sValDx + 6), (int)(gMapWeaponStats[2].sY + gsInvDescY), ITEM_STATS_WIDTH, ITEM_STATS_HEIGHT, pStr, FontStyle.BLOCKFONT2, out sStrX, out usY);
+                    FontSubSystem.FindFontRightCoordinates((int)(gMapWeaponStats[2].sX + gsInvDescX + gMapWeaponStats[2].sValDx + 6), (int)(gMapWeaponStats[2].sY + gsInvDescY), ITEM_STATS_WIDTH, ITEM_STATS_HEIGHT, pStr, FontStyle.BLOCKFONT2, out sStrX, out usY);
                     mprintf(sStrX, gMapWeaponStats[2].sY + gsInvDescY, pStr);
                 }
                 else
@@ -2921,7 +2921,7 @@ public class InterfaceItems
                     wprintf(pStr, "%2d%%", gpItemDescObject.bStatus[gubItemDescStatusIndex]);
                     uiStringLength = FontSubSystem.StringPixLength(pStr, ITEMDESC_FONT);
                     //			sStrX =  gMapWeaponStats[ 1 ].sX + gsInvDescX + gMapWeaponStats[ 1 ].sValDx + ( uiRightLength - uiStringLength );
-                    this.fonts.FindFontRightCoordinates((int)(gMapWeaponStats[1].sX + gsInvDescX + gMapWeaponStats[1].sValDx + 6), (int)(gMapWeaponStats[1].sY + gsInvDescY), ITEM_STATS_WIDTH, ITEM_STATS_HEIGHT, pStr, FontStyle.BLOCKFONT2, out sStrX, out usY);
+                    FontSubSystem.FindFontRightCoordinates((int)(gMapWeaponStats[1].sX + gsInvDescX + gMapWeaponStats[1].sValDx + 6), (int)(gMapWeaponStats[1].sY + gsInvDescY), ITEM_STATS_WIDTH, ITEM_STATS_HEIGHT, pStr, FontStyle.BLOCKFONT2, out sStrX, out usY);
                     wcscat(pStr, "%%");
                     mprintf(sStrX, gMapWeaponStats[1].sY + gsInvDescY, pStr);
                 }
@@ -2930,7 +2930,7 @@ public class InterfaceItems
                 wprintf(pStr, "%1.1f", fWeight);
                 uiStringLength = FontSubSystem.StringPixLength(pStr, ITEMDESC_FONT);
                 //			sStrX =  gMapWeaponStats[ 0 ].sX + gsInvDescX + gMapWeaponStats[ 0 ].sValDx + ( uiRightLength - uiStringLength );
-                this.fonts.FindFontRightCoordinates((int)(gMapWeaponStats[0].sX + gsInvDescX + gMapWeaponStats[0].sValDx + 6), (int)(gMapWeaponStats[0].sY + gsInvDescY), ITEM_STATS_WIDTH, ITEM_STATS_HEIGHT, pStr, FontStyle.BLOCKFONT2, out sStrX, out usY);
+                FontSubSystem.FindFontRightCoordinates((int)(gMapWeaponStats[0].sX + gsInvDescX + gMapWeaponStats[0].sValDx + 6), (int)(gMapWeaponStats[0].sY + gsInvDescY), ITEM_STATS_WIDTH, ITEM_STATS_HEIGHT, pStr, FontStyle.BLOCKFONT2, out sStrX, out usY);
                 mprintf(sStrX, gMapWeaponStats[0].sY + gsInvDescY, pStr);
 
                 if (this.InKeyRingPopup() || Item[gpItemDescObject.usItem].usItemClass.HasFlag(IC.KEY))
@@ -2947,7 +2947,7 @@ public class InterfaceItems
                     FontSubSystem.SetFontForeground((FontColor)5);
                     //                    GetShortSectorString((int)SECTORX(KeyTable[gpItemDescObject.ubKeyID].usSectorFound), (int)SECTORY(KeyTable[gpItemDescObject.ubKeyID].usSectorFound), sTempString);
 //                    wprintf(pStr, "%s", sTempString);
-                    this.fonts.FindFontRightCoordinates((int)(gMapWeaponStats[4].sX + gsInvDescX), (int)(gMapWeaponStats[4].sY + gsInvDescY), 110, ITEM_STATS_HEIGHT, pStr, FontStyle.BLOCKFONT2, out usX, out usY);
+                    FontSubSystem.FindFontRightCoordinates((int)(gMapWeaponStats[4].sX + gsInvDescX), (int)(gMapWeaponStats[4].sY + gsInvDescY), 110, ITEM_STATS_HEIGHT, pStr, FontStyle.BLOCKFONT2, out usX, out usY);
                     mprintf(usX, usY, pStr);
 
                     //                    wprintf(pStr, "%d", KeyTable[gpItemDescObject.ubKeyID].usDateFound);
@@ -3080,7 +3080,7 @@ public class InterfaceItems
                     //                    wprintf(pStr, "%s %s", AmmoCaliber[Weapon[gpItemDescObject.usItem].ubCalibre], WeaponType[Weapon[gpItemDescObject.usItem].ubWeaponType]);
                 }
 
-                this.fonts.FindFontRightCoordinates((int)ITEMDESC_CALIBER_X, (int)ITEMDESC_CALIBER_Y, ITEMDESC_CALIBER_WIDTH, ITEM_STATS_HEIGHT, pStr, ITEMDESC_FONT, out usX, out usY);
+                FontSubSystem.FindFontRightCoordinates((int)ITEMDESC_CALIBER_X, (int)ITEMDESC_CALIBER_Y, ITEMDESC_CALIBER_WIDTH, ITEM_STATS_HEIGHT, pStr, ITEMDESC_FONT, out usX, out usY);
                 mprintf(usX, usY, pStr);
 
                 FontSubSystem.SetFontForeground(FontColor.FONT_MCOLOR_DKWHITE2);
@@ -3174,13 +3174,13 @@ public class InterfaceItems
 
                 //Status
                 wprintf(pStr, "%2d%%", gpItemDescObject.bGunStatus);
-                this.fonts.FindFontRightCoordinates((int)(gWeaponStats[1].sX + gsInvDescX + gWeaponStats[1].sValDx), (int)(gWeaponStats[1].sY + gsInvDescY), ITEM_STATS_WIDTH, ITEM_STATS_HEIGHT, pStr, FontStyle.BLOCKFONT2, out usX, out usY);
+                FontSubSystem.FindFontRightCoordinates((int)(gWeaponStats[1].sX + gsInvDescX + gWeaponStats[1].sValDx), (int)(gWeaponStats[1].sY + gsInvDescY), ITEM_STATS_WIDTH, ITEM_STATS_HEIGHT, pStr, FontStyle.BLOCKFONT2, out usX, out usY);
                 wcscat(pStr, "%%");
                 mprintf(usX, usY, pStr);
 
                 //Wieght
                 wprintf(pStr, "%1.1f", fWeight);
-                this.fonts.FindFontRightCoordinates((int)(gWeaponStats[0].sX + gsInvDescX + gWeaponStats[0].sValDx), (int)(gWeaponStats[0].sY + gsInvDescY), ITEM_STATS_WIDTH, ITEM_STATS_HEIGHT, pStr, FontStyle.BLOCKFONT2, out usX, out usY);
+                FontSubSystem.FindFontRightCoordinates((int)(gWeaponStats[0].sX + gsInvDescX + gWeaponStats[0].sValDx), (int)(gWeaponStats[0].sY + gsInvDescY), ITEM_STATS_WIDTH, ITEM_STATS_HEIGHT, pStr, FontStyle.BLOCKFONT2, out usX, out usY);
                 mprintf(usX, usY, pStr);
 
                 if (Item[gpItemDescObject.usItem].usItemClass.HasFlag(IC.GUN | IC.LAUNCHER))
@@ -3195,7 +3195,7 @@ public class InterfaceItems
                     }
 
                     //                    wprintf(pStr, "%2d", (GunRange(gpItemDescObject)) / 10);
-                    this.fonts.FindFontRightCoordinates((int)(gWeaponStats[3].sX + gsInvDescX + gWeaponStats[3].sValDx), (int)(gWeaponStats[3].sY + gsInvDescY), ITEM_STATS_WIDTH, ITEM_STATS_HEIGHT, pStr, FontStyle.BLOCKFONT2, out usX, out usY);
+                    FontSubSystem.FindFontRightCoordinates((int)(gWeaponStats[3].sX + gsInvDescX + gWeaponStats[3].sValDx), (int)(gWeaponStats[3].sY + gsInvDescY), ITEM_STATS_WIDTH, ITEM_STATS_HEIGHT, pStr, FontStyle.BLOCKFONT2, out usX, out usY);
                     mprintf(usX, usY, pStr);
                 }
 
@@ -3212,7 +3212,7 @@ public class InterfaceItems
                     }
 
                     //                    wprintf(pStr, "%2d", Weapon[gpItemDescObject.usItem].ubImpact);
-                    this.fonts.FindFontRightCoordinates((int)(gWeaponStats[4].sX + gsInvDescX + gWeaponStats[4].sValDx), (int)(gWeaponStats[4].sY + gsInvDescY), ITEM_STATS_WIDTH, ITEM_STATS_HEIGHT, pStr, FontStyle.BLOCKFONT2, out usX, out usY);
+                    FontSubSystem.FindFontRightCoordinates((int)(gWeaponStats[4].sX + gsInvDescX + gWeaponStats[4].sValDx), (int)(gWeaponStats[4].sY + gsInvDescY), ITEM_STATS_WIDTH, ITEM_STATS_HEIGHT, pStr, FontStyle.BLOCKFONT2, out usX, out usY);
                     mprintf(usX, usY, pStr);
                 }
 
@@ -3228,7 +3228,7 @@ public class InterfaceItems
                 }
 
                 wprintf(pStr, "%2d", ubAttackAPs);
-                this.fonts.FindFontRightCoordinates((int)(gWeaponStats[5].sX + gsInvDescX + gWeaponStats[5].sValDx), (int)(gWeaponStats[5].sY + gsInvDescY), ITEM_STATS_WIDTH, ITEM_STATS_HEIGHT, pStr, FontStyle.BLOCKFONT2, out usX, out usY);
+                FontSubSystem.FindFontRightCoordinates((int)(gWeaponStats[5].sX + gsInvDescX + gWeaponStats[5].sValDx), (int)(gWeaponStats[5].sY + gsInvDescY), ITEM_STATS_WIDTH, ITEM_STATS_HEIGHT, pStr, FontStyle.BLOCKFONT2, out usX, out usY);
                 mprintf(usX, usY, pStr);
 
                 //                if (Weapon[gpItemDescObject.usItem].ubShotsPerBurst > 0)
@@ -3290,7 +3290,7 @@ public class InterfaceItems
                 wprintf(pStr, "%d", gRemoveMoney.uiTotalAmount);
                 //                InsertCommasForDollarFigure(pStr);
                 //                InsertDollarSignInToString(pStr);
-                this.fonts.FindFontRightCoordinates((int)ITEMDESC_NAME_X, (int)ITEMDESC_NAME_Y, 295, ITEM_STATS_HEIGHT, pStr, FontStyle.BLOCKFONT2, out usX, out usY);
+                FontSubSystem.FindFontRightCoordinates((int)ITEMDESC_NAME_X, (int)ITEMDESC_NAME_Y, 295, ITEM_STATS_HEIGHT, pStr, FontStyle.BLOCKFONT2, out usX, out usY);
                 mprintf(usX, usY, pStr);
 
                 FontSubSystem.SetFontForeground((FontColor)6);
@@ -3320,14 +3320,14 @@ public class InterfaceItems
                 wprintf(pStr, "%ld", gRemoveMoney.uiMoneyRemaining);
                 //                InsertCommasForDollarFigure(pStr);
                 //                InsertDollarSignInToString(pStr);
-                this.fonts.FindFontRightCoordinates((int)(gMoneyStats[1].sX + gsInvDescX + gMoneyStats[1].sValDx), (int)(gMoneyStats[1].sY + gsInvDescY), (int)(ITEM_STATS_WIDTH - 3), ITEM_STATS_HEIGHT, pStr, FontStyle.BLOCKFONT2, out usX, out usY);
+                FontSubSystem.FindFontRightCoordinates((int)(gMoneyStats[1].sX + gsInvDescX + gMoneyStats[1].sValDx), (int)(gMoneyStats[1].sY + gsInvDescY), (int)(ITEM_STATS_WIDTH - 3), ITEM_STATS_HEIGHT, pStr, FontStyle.BLOCKFONT2, out usX, out usY);
                 mprintf(usX, usY, pStr);
 
                 //Display the total amount of money removing
                 wprintf(pStr, "%ld", gRemoveMoney.uiMoneyRemoving);
                 //                InsertCommasForDollarFigure(pStr);
                 //                InsertDollarSignInToString(pStr);
-                this.fonts.FindFontRightCoordinates((int)(gMoneyStats[3].sX + gsInvDescX + gMoneyStats[3].sValDx), (int)(gMoneyStats[3].sY + gsInvDescY), (int)(ITEM_STATS_WIDTH - 3), ITEM_STATS_HEIGHT, pStr, FontStyle.BLOCKFONT2, out usX, out usY);
+                FontSubSystem.FindFontRightCoordinates((int)(gMoneyStats[3].sX + gsInvDescX + gMoneyStats[3].sValDx), (int)(gMoneyStats[3].sY + gsInvDescY), (int)(ITEM_STATS_WIDTH - 3), ITEM_STATS_HEIGHT, pStr, FontStyle.BLOCKFONT2, out usX, out usY);
                 mprintf(usX, usY, pStr);
 
             }
@@ -3372,14 +3372,14 @@ public class InterfaceItems
                     // Ammo - print amount
                     //Status
                     //                    wprintf(pStr, "%d/%d", gpItemDescObject.ubShotsLeft[0], Magazine[Item[gpItemDescObject.usItem].ubClassIndex].ubMagSize);
-                    this.fonts.FindFontRightCoordinates((int)(gWeaponStats[2].sX + gsInvDescX + gWeaponStats[2].sValDx), (int)(gWeaponStats[2].sY + gsInvDescY), ITEM_STATS_WIDTH, ITEM_STATS_HEIGHT, pStr, FontStyle.BLOCKFONT2, out usX, out usY);
+                    FontSubSystem.FindFontRightCoordinates((int)(gWeaponStats[2].sX + gsInvDescX + gWeaponStats[2].sValDx), (int)(gWeaponStats[2].sY + gsInvDescY), ITEM_STATS_WIDTH, ITEM_STATS_HEIGHT, pStr, FontStyle.BLOCKFONT2, out usX, out usY);
                     mprintf(usX, usY, pStr);
                 }
                 //                else
                 {
                     //Status
                     wprintf(pStr, "%2d%%", gpItemDescObject.bStatus[gubItemDescStatusIndex]);
-                    this.fonts.FindFontRightCoordinates((int)(gWeaponStats[1].sX + gsInvDescX + gWeaponStats[1].sValDx), (int)(gWeaponStats[1].sY + gsInvDescY), ITEM_STATS_WIDTH, ITEM_STATS_HEIGHT, pStr, FontStyle.BLOCKFONT2, out usX, out usY);
+                    FontSubSystem.FindFontRightCoordinates((int)(gWeaponStats[1].sX + gsInvDescX + gWeaponStats[1].sValDx), (int)(gWeaponStats[1].sY + gsInvDescY), ITEM_STATS_WIDTH, ITEM_STATS_HEIGHT, pStr, FontStyle.BLOCKFONT2, out usX, out usY);
                     wcscat(pStr, "%%");
                     mprintf(usX, usY, pStr);
                 }
@@ -3411,7 +3411,7 @@ public class InterfaceItems
 
                 //Weight
                 wprintf(pStr, "%1.1f", fWeight);
-                this.fonts.FindFontRightCoordinates((int)(gWeaponStats[0].sX + gsInvDescX + gWeaponStats[0].sValDx), (int)(gWeaponStats[0].sY + gsInvDescY), ITEM_STATS_WIDTH, ITEM_STATS_HEIGHT, pStr, FontStyle.BLOCKFONT2, out usX, out usY);
+                FontSubSystem.FindFontRightCoordinates((int)(gWeaponStats[0].sX + gsInvDescX + gWeaponStats[0].sValDx), (int)(gWeaponStats[0].sY + gsInvDescY), ITEM_STATS_WIDTH, ITEM_STATS_HEIGHT, pStr, FontStyle.BLOCKFONT2, out usX, out usY);
                 mprintf(usX, usY, pStr);
             }
 

@@ -4592,7 +4592,6 @@ public struct GENERAL_SAVE_INFO
     public Dictionary<SquadEnum, Dictionary<int, NPCID>> sDeadMercs;// [NUMBER_OF_SQUADS][NUMBER_OF_SOLDIERS_PER_SQUAD];
                               // levels of publicly known noises
     public int[] gbPublicNoiseLevel;// [MAXTEAMS];
-    public int gubScreenCount;
     public MEANWHILEFLAGS usOldMeanWhileFlags;
     public int iPortraitNumber;
     public int sWorldSectorLocationOfFirstBattle;

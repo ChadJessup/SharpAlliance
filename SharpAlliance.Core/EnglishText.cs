@@ -238,6 +238,18 @@ public static class EnglishText
         "leadership.",
     };
 
+    public static string[] pFinanceHeaders =
+    {
+        "Day", 				// the day column
+    	"Credit", 			// the credits column (to ADD money to your account)
+    	"Debit",				// the debits column (to SUBTRACT money from your account)
+    	"Transaction", // transaction type - see TransactionText below
+    	"Balance", 		// balance at this point in time
+    	"Page", 				// page number
+    	"Day(s)", 			// the day(s) of transactions this page displays 
+    };
+
+
     public static string[] pMessageStrings2 =
     {
         "Exit Game?",
@@ -874,6 +886,71 @@ public static class EnglishText
         { TOWNS.BALIME , "Balime" },
         { TOWNS.MEDUNA , "Meduna" },
         { TOWNS.CHITZENA , "Chitzena" },
+    };
+
+    // the financial screen strings
+    public static string[] pFinanceTitle =
+    {
+        "Bookkeeper Plus",		//the name we made up for the financial program in the game
+    };
+
+
+    public static string[] pFinanceSummary =
+    {
+        "Credit:", 				// credit (subtract from) to player's account
+    	"Debit:", 				// debit (add to) to player's account
+    	"Yesterday's Actual Income:",
+        "Yesterday's Other Deposits:",
+        "Yesterday's Debits:",
+        "Balance At Day's End:",
+        "Today's Actual Income:",
+        "Today's Other Deposits:",
+        "Today's Debits:",
+        "Current Balance:",
+        "Forecasted Income:",
+        "Projected Balance:", 		// projected balance for player for tommorow
+    };
+
+
+    public static string[] pTransactionAlternateText =
+    {
+        "Insurance for", 				// insurance for a merc
+    	"Ext. %s's contract by one day.", 				// entend mercs contract by a day
+    	"Ext. %s contract by 1 week.",
+        "Ext. %s contract by 2 weeks.",
+    };
+
+
+    public static Dictionary<FinanceEvent, string> pTransactionText = new()
+    {
+        { FinanceEvent.ACCRUED_INTEREST , "Accrued Interest" },			// interest the player has accumulated so far
+    	{ FinanceEvent.ANONYMOUS_DEPOSIT , "Anonymous Deposit" },
+        { FinanceEvent.TRANSACTION_FEE , "Transaction Fee" },
+        { FinanceEvent.HIRED_MERC , "Hired" }, 				// Merc was hired
+    	{ FinanceEvent.BOBBYR_PURCHASE , "Bobby Ray Purchase" }, 		// Bobby Ray is the name of an arms dealer
+    	{ FinanceEvent.PAY_SPECK_FOR_MERC, "Settled Accounts at M.E.R.C." },
+        { FinanceEvent.MEDICAL_DEPOSIT , "Medical Deposit for %s" }, 		// medical deposit for merc
+    	{ FinanceEvent.IMP_PROFILE , "IMP Profile Analysis" }, 		// IMP is the acronym for International Mercenary Profiling
+    	{ FinanceEvent.PURCHASED_INSURANCE , "Purchased Insurance for %s" },
+        { FinanceEvent.REDUCED_INSURANCE , "Reduced Insurance for %s" },
+        { FinanceEvent.EXTENDED_INSURANCE , "Extended Insurance for %s" }, 				// johnny contract extended
+    	{ FinanceEvent.CANCELLED_INSURANCE , "Canceled Insurance for %s" },
+        { FinanceEvent.INSURANCE_PAYOUT , "Insurance Claim for %s" }, 		// insurance claim for merc
+    	{ FinanceEvent.EXTENDED_CONTRACT_BY_1_DAY , "a day" }, 				// merc's contract extended for a day
+    	{ FinanceEvent.EXTENDED_CONTRACT_BY_1_WEEK , "1 week" }, 				// merc's contract extended for a week
+    	{ FinanceEvent.EXTENDED_CONTRACT_BY_2_WEEKS , "2 weeks" }, 				// ... for 2 weeks
+    	{ FinanceEvent.DEPOSIT_FROM_GOLD_MINE , "Mine income" },
+        { FinanceEvent.DEPOSIT_FROM_SILVER_MINE , "" }, //String nuked
+    	{ FinanceEvent.PURCHASED_FLOWERS , "Purchased Flowers" },
+        { FinanceEvent.FULL_MEDICAL_REFUND , "Full Medical Refund for %s" },
+        { FinanceEvent.PARTIAL_MEDICAL_REFUND , "Partial Medical Refund for %s" },
+        { FinanceEvent.NO_MEDICAL_REFUND , "No Medical Refund for %s" },
+        { FinanceEvent.PAYMENT_TO_NPC , "Payment to %s" },		// %s is the name of the npc being paid
+    	{ FinanceEvent.TRANSFER_FUNDS_TO_MERC , "Transfer Funds to %s" }, 			// transfer funds to a merc
+    	{ FinanceEvent.TRANSFER_FUNDS_FROM_MERC , "Transfer Funds from %s" }, 		// transfer funds from a merc
+    	{ FinanceEvent.TRAIN_TOWN_MILITIA , "Equip militia in %s" }, // initial cost to equip a town's militia
+    	{ FinanceEvent.PURCHASED_ITEM_FROM_DEALER , "Purchased items from %s." },	//is used for the Shop keeper interface.  The dealers name will be appended to the end of the string.
+    	{ FinanceEvent.MERC_DEPOSITED_MONEY_TO_PLAYER_ACCOUNT , "%s deposited money." },
     };
 }
 

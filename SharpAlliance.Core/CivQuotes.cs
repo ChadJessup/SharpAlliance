@@ -370,7 +370,7 @@ public class CivQuotes
         }
 
 # if TAIWANESE
-        wprintf(gzCivQuote, L"%s", zQuote);
+        wprintf(gzCivQuote, "%s", zQuote);
 #else
 //        wprintf(gzCivQuote, "\"%s\"", zQuote);
 #endif

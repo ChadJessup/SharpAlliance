@@ -22,6 +22,8 @@ public class GameInit
     private readonly TacticalSaveSubSystem tacticalSave;
     private readonly SoldierCreate soldierCreate;
     private readonly Overhead overhead;
+    private readonly Finances finances;
+    private readonly ScreenManager screens;
     private readonly Messages messages;
     private readonly Emails emails;
     private readonly Laptop laptop;
@@ -48,9 +50,11 @@ public class GameInit
         SoldierProfileSubSystem soldierProfile,
         Messages messages,
         TurnBasedInput tbi,
+        Finances finances,
         Cheats cheats,
         GameEvents gameEvents,
         NPC npc,
+        ScreenManager screenManager,
         ShopKeeper shopKeeper,
         World world,
         HelpScreenSubSystem helpScreen,
@@ -58,10 +62,12 @@ public class GameInit
         DialogControl dialogs,
         AirRaid airRaid)
     {
+        this.screens = screenManager;
         this.messages = messages;
         this.bobby = bobbyR;
         this.clock = clock;
         this.strategicMap = strategicMap;
+        this.finances = finances;
         this.sound = soundManager;
         this.tacticalSave = tacticalSaveSubSystem;
         this.soldierCreate = soldierCreate;
@@ -158,7 +164,7 @@ public class GameInit
         Globals.gubCheatLevel = Cheats.STARTING_CHEAT_LEVEL;
     }
 
-    public bool InitNewGame(bool fReset)
+    public async ValueTask<bool> InitNewGame(bool fReset)
     {
         int iStartingCash;
 
@@ -213,11 +219,11 @@ public class GameInit
             ResetHeliSeats();
 
             // Setup two new messages!
-            this.emails.AddPreReadEmail(OLD_ENRICO_1, OLD_ENRICO_1_LENGTH, EmailAddresses.MAIL_ENRICO, GetWorldTotalMin());
-            this.emails.AddPreReadEmail(OLD_ENRICO_2, OLD_ENRICO_2_LENGTH, EmailAddresses.MAIL_ENRICO, GetWorldTotalMin());
-            this.emails.AddPreReadEmail(RIS_REPORT, RIS_REPORT_LENGTH, EmailAddresses.RIS_EMAIL, GetWorldTotalMin());
-            this.emails.AddPreReadEmail(OLD_ENRICO_3, OLD_ENRICO_3_LENGTH, EmailAddresses.MAIL_ENRICO, GetWorldTotalMin());
-            this.emails.AddEmail(IMP_EMAIL_INTRO, IMP_EMAIL_INTRO_LENGTH, EmailAddresses.CHAR_PROFILE_SITE, GetWorldTotalMin());
+            this.emails.AddPreReadEmail(OLD_ENRICO_1, OLD_ENRICO_1_LENGTH, EmailAddresses.MAIL_ENRICO, GameClock.GetWorldTotalMin());
+            this.emails.AddPreReadEmail(OLD_ENRICO_2, OLD_ENRICO_2_LENGTH, EmailAddresses.MAIL_ENRICO, GameClock.GetWorldTotalMin());
+            this.emails.AddPreReadEmail(RIS_REPORT, RIS_REPORT_LENGTH, EmailAddresses.RIS_EMAIL, GameClock.GetWorldTotalMin());
+            this.emails.AddPreReadEmail(OLD_ENRICO_3, OLD_ENRICO_3_LENGTH, EmailAddresses.MAIL_ENRICO, GameClock.GetWorldTotalMin());
+            this.emails.AddEmail(IMP_EMAIL_INTRO, IMP_EMAIL_INTRO_LENGTH, EmailAddresses.CHAR_PROFILE_SITE, GameClock.GetWorldTotalMin());
             //AddEmail(ENRICO_CONGRATS,ENRICO_CONGRATS_LENGTH,MAIL_ENRICO, GetWorldTotalMin() );
 
             // ATE: Set starting cash....
@@ -244,18 +250,18 @@ public class GameInit
             }
 
             // Setup initial money
-            AddTransactionToPlayersBook(ANONYMOUS_DEPOSIT, 0, GetWorldTotalMin(), iStartingCash);
+            this.finances.AddTransactionToPlayersBook(FinanceEvent.ANONYMOUS_DEPOSIT, 0, GameClock.GetWorldTotalMin(), iStartingCash);
 
 
             {
-                int uiDaysTimeMercSiteAvailable = Random(2) + 1;
+                uint uiDaysTimeMercSiteAvailable = (uint)Globals.Random.GetRandom(2) + 1;
 
                 // schedule email for message from spec at 7am 3 days in the future
-                AddFutureDayStrategicEvent(EVENT_DAY3_ADD_EMAIL_FROM_SPECK, 60 * 7, 0, uiDaysTimeMercSiteAvailable);
+                GameEvents.AddFutureDayStrategicEvent(EVENT.DAY3_ADD_EMAIL_FROM_SPECK, 60 * 7, 0, uiDaysTimeMercSiteAvailable);
             }
 
             SetLaptopExitScreen(ScreenName.InitScreen);
-            SetPendingNewScreen(ScreenName.LAPTOP_SCREEN);
+            await this.screens.SetPendingNewScreen(ScreenName.LAPTOP_SCREEN);
             gubScreenCount = 1;
 
             //Set the fact the game is in progress

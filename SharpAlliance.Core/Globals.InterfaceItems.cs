@@ -223,7 +223,7 @@ public partial class Globals
     public static MOUSE_REGION[] gItemDescAttachmentRegions = new MOUSE_REGION[4];
     public static MOUSE_REGION[] gProsAndConsRegions = new MOUSE_REGION[2];
 
-    public static int[] guiMoneyButtonBtn = new int[MAX_ATTACHMENTS];
+    public static GUI_BUTTON[] guiMoneyButtonBtn = new GUI_BUTTON[MAX_ATTACHMENTS];
     public static int guiMoneyButtonImage;
     public static int guiMoneyDoneButtonImage;
 

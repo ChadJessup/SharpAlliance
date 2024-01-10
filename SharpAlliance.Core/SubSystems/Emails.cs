@@ -25,7 +25,6 @@ public class Emails
     bool fDisplayMessageFlag = false;
     bool fOldDisplayMessageFlag = false;
     bool fReDraw = false;
-    private bool fPausedReDrawScreenFlag;
     bool fDeleteMailFlag = false;
     bool fReDrawMessageFlag = false;
     bool fOnLastPageFlag = false;
@@ -413,7 +412,7 @@ public class Emails
         return;
     }
 
-    public static void AddEmail(int iMessageOffset, int iMessageLength, EmailAddresses ubSender, uint iDate)
+    public void AddEmail(int iMessageOffset, int iMessageLength, EmailAddresses ubSender, uint iDate)
     {
         string pSubject = string.Empty;
         //MessagePtr pMessageList;
@@ -4391,7 +4390,7 @@ public class Emails
 
         FontSubSystem.SetFontDestBuffer(SurfaceType.FRAME_BUFFER, 0, 0, 640, 480, false);
 
-        this.fonts.FindFontCenterCoordinates(VIEWER_X + INDENT_X_OFFSET, 0, INDENT_X_WIDTH, 0, sString, FontStyle.FONT12ARIAL, out int sX, out int sY);
+        FontSubSystem.FindFontCenterCoordinates(VIEWER_X + INDENT_X_OFFSET, 0, INDENT_X_WIDTH, 0, sString, FontStyle.FONT12ARIAL, out int sX, out int sY);
         mprintf(sX, VIEWER_Y + iViewerY + INDENT_Y_OFFSET - 2, sString);
 
 

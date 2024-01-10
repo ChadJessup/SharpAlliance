@@ -134,7 +134,7 @@ public class FontSubSystem : ISharpAllianceManager
         FontDefault = fontStyle;
     }
 
-    public void FindFontRightCoordinates(int sLeft, int sTop, int sWidth, int sHeight, string pStr, FontStyle iFontIndex, out int psNewX, out int psNewY)
+    public static void FindFontRightCoordinates(int sLeft, int sTop, int sWidth, int sHeight, string pStr, FontStyle iFontIndex, out int psNewX, out int psNewY)
     {
         int xp, yp;
 
@@ -1067,10 +1067,10 @@ public class FontSubSystem : ISharpAllianceManager
         //vwprintf(string, pFontString, argptr);  // process gprintf string (get output str)
         //va_end(argptr);
         //
-        this.FindFontCenterCoordinates(sLeft, sTop, sWidth, sHeight, pFontString, iFontIndex, out psNewX, out psNewY);
+        FindFontCenterCoordinates(sLeft, sTop, sWidth, sHeight, pFontString, iFontIndex, out psNewX, out psNewY);
     }
 
-    public void FindFontCenterCoordinates(int sLeft, int sTop, int sWidth, int sHeight, string pStr, FontStyle iFontIndex, out int psNewX, out int psNewY)
+    public static void FindFontCenterCoordinates(int sLeft, int sTop, int sWidth, int sHeight, string pStr, FontStyle iFontIndex, out int psNewX, out int psNewY)
     {
         int xp, yp;
 
