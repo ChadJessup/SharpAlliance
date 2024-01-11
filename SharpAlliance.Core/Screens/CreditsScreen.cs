@@ -180,11 +180,11 @@ public class CreditsScreen : IScreen
         string? pzNewCode = null;
         uint uiCodeType = 0;
         CRDT_FLAG__ uiNodeType = 0;
-        uint uiStartLoc = 0;
+        int uiStartLoc = 0;
         CRDT_FLAG__ uiFlags = 0;
 
         //Get the current Credit record
-        uiStartLoc = CREDITS_LINESIZE * (uint)Globals.guiCurrentCreditRecord;
+        uiStartLoc = CREDITS_LINESIZE * Globals.guiCurrentCreditRecord;
         if (!this.files.LoadEncryptedDataFromFile(CRDT_NAME_OF_CREDIT_FILE, out string zOriginalString, uiStartLoc, CREDITS_LINESIZE))
         {
             //there are no more credits
@@ -884,7 +884,7 @@ public class CreditsScreen : IScreen
 
     private const string CRDT_NAME_OF_CREDIT_FILE = "BINARYDATA\\Credits.edt";
 
-    private const uint CREDITS_LINESIZE = 80 * 2;
+    private const int CREDITS_LINESIZE = 80 * 2;
 
     public struct CDRT_FACE
     {

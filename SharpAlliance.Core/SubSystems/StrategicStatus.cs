@@ -12,12 +12,12 @@ namespace SharpAlliance.Core.SubSystems;
 
 public class StrategicStatus
 {
-    void InitStrategicStatus()
+    public static void InitStrategicStatus()
     {
         gStrategicStatus = new STRATEGIC_STATUS();
         //Add special non-zero start conditions here...
 
-//        InitArmyGunTypes();
+        InventoryChoosing.InitArmyGunTypes();
     }
 
     bool SaveStrategicStatusToSaveGameFile(Stream hFile)

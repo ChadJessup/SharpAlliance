@@ -613,7 +613,8 @@ public partial class Globals
     public static int gTopRightWorldLimitX, gTopRightWorldLimitY;
     public static int gBottomLeftWorldLimitX, gBottomLeftWorldLimitY;
     public static int gBottomRightWorldLimitX, gBottomRightWorldLimitY;
-    public static int gCenterWorldX, gCenterWorldY;
+    public static int gCenterWorldX;
+    public static MAP_ROW gCenterWorldY;
     public static int gsTLX, gsTLY, gsTRX, gsTRY;
     public static int gsBLX, gsBLY, gsBRX, gsBRY;
     public static int gsCX, gsCY;
@@ -1543,7 +1544,7 @@ public partial class Globals
     public const int WORKIMPROVERATE = 2;      // increase to make working  mercs improve more
     public const int TRAINIMPROVERATE = 2;      // increase to make training mercs improve more
 
-    public static STRATEGIC_STATUS gStrategicStatus;
+    public static STRATEGIC_STATUS gStrategicStatus = new();
 
     // stat change causes
     public const int FROM_SUCCESS = 0;

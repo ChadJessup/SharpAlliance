@@ -2253,6 +2253,10 @@ public class SDL2VideoManager : IVideoManager
 
     public void BlitSurfaceToSurface(Image<Rgba32> src, SurfaceType dst, Point dstPoint, VO_BLT bltFlags = VO_BLT.SRCTRANSPARENCY, bool debug = false)
     {
+        if(debug)
+        {
+
+        }
         var dstSurface = this.Surfaces.SurfaceByTypes[dst];
 
         Rectangle dstRectangle = new()
@@ -2296,7 +2300,7 @@ public class SDL2VideoManager : IVideoManager
         var dst = this.Surfaces[dstSurf];
         var src = this.Surfaces[srcSurf];
 
-        this.BlitSurfaceToSurface(src, dstSurf, sDest, VO_BLT.DESTTRANSPARENCY, debug: true);
+        this.BlitSurfaceToSurface(src, dstSurf, sDest, VO_BLT.DESTTRANSPARENCY, debug: false);
     }
 
     public void StartFrameBufferRender()

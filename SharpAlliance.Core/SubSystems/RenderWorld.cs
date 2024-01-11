@@ -46,7 +46,7 @@ public class RenderWorld : IDisposable
     }
 
 
-    public static void SetRenderCenter(int sNewX, int sNewY)
+    public static void SetRenderCenter(int sNewX, MAP_ROW sNewY)
     {
         if (gfIgnoreScrolling)
         {
@@ -82,7 +82,7 @@ public class RenderWorld : IDisposable
     }
 
     // Appy? HEahehahehahehae.....
-    public static bool ApplyScrolling(int sTempRenderCenterX, int sTempRenderCenterY, bool fForceAdjust, bool fCheckOnly)
+    public static bool ApplyScrolling(int sTempRenderCenterX, MAP_ROW sTempRenderCenterY, bool fForceAdjust, bool fCheckOnly)
     {
         bool fScrollGood = false;
         bool fOutLeft = false;
@@ -97,7 +97,8 @@ public class RenderWorld : IDisposable
         int sTopRightWorldX, sTopRightWorldY;
         int sBottomLeftWorldX, sBottomLeftWorldY;
         int sBottomRightWorldX, sBottomRightWorldY;
-        int sTempPosX_W = 0, sTempPosY_W = 0;
+        int sTempPosX_W = 0;
+        MAP_ROW sTempPosY_W = 0;
 
 
         // For debug text for all 4 angles
@@ -105,7 +106,8 @@ public class RenderWorld : IDisposable
 
         int sX_S, sY_S;
         int sScreenCenterX = 0, sScreenCenterY = 0;
-        int sDistToCenterY, sDistToCenterX;
+        MAP_ROW sDistToCenterY;
+        int sDistToCenterX;
         int sNewScreenX, sNewScreenY;
         int sMult;
 
@@ -115,13 +117,13 @@ public class RenderWorld : IDisposable
         sTempRenderCenterX = (sMult * CELL_X_SIZE) + (CELL_X_SIZE / 2);
 
         //Makesure it's a multiple of 5
-        sMult = sTempRenderCenterY / CELL_X_SIZE;
-        sTempRenderCenterY = (sMult * CELL_Y_SIZE) + (CELL_Y_SIZE / 2);
+        sMult = (int)sTempRenderCenterY / CELL_X_SIZE;
+        sTempRenderCenterY = (MAP_ROW)(sMult * CELL_Y_SIZE) + (CELL_Y_SIZE / 2);
 
 
         // Find the diustance from render center to true world center
         sDistToCenterX = sTempRenderCenterX - gCenterWorldX;
-        sDistToCenterY = sTempRenderCenterY - gCenterWorldY;
+        sDistToCenterY = (MAP_ROW)(sTempRenderCenterY - gCenterWorldY);
 
         // From render center in world coords, convert to render center in "screen" coords
 //        FromCellToScreenCoordinates(sDistToCenterX, sDistToCenterY, out sScreenCenterX, out sScreenCenterY);
@@ -339,7 +341,7 @@ public class RenderWorld : IDisposable
                 gsRenderCenterX = (sMult * CELL_X_SIZE) + (CELL_X_SIZE / 2);
 
                 //Makesure it's a multiple of 5
-                sMult = sTempRenderCenterY / CELL_X_SIZE;
+                sMult = (int)sTempRenderCenterY / CELL_X_SIZE;
                 gsRenderCenterY = (sMult * CELL_Y_SIZE) + (CELL_Y_SIZE / 2);
 
                 //gsRenderCenterX = sTempRenderCenterX;

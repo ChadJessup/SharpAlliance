@@ -29,11 +29,6 @@ public class StrategicMap
         this.aiMain = aiMain;
     }
 
-    public ValueTask<bool> InitStrategicMovementCosts()
-    {
-        return ValueTask.FromResult(true);
-    }
-
     public ValueTask<bool> InitStrategicEngine()
     {
         return ValueTask.FromResult(true);
@@ -803,6 +798,16 @@ public class StrategicMap
     }
 
     internal static void SetupNewStrategicGame()
+    {
+        throw new NotImplementedException();
+    }
+
+    internal static void UpdateMercInSector(SOLDIERTYPE sOLDIERTYPE, int v1, int v2, int v3)
+    {
+        throw new NotImplementedException();
+    }
+
+    internal static void InitializeSAMSites()
     {
         throw new NotImplementedException();
     }

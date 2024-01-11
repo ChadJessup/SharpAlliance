@@ -185,7 +185,7 @@ public class UNDERGROUND_SECTORINFO
                                     //a sector.
     public uint uiTimeCurrentSectorWasLastLoaded;        //Specifies the last time the player was in the sector
     public UNDERGROUND_SECTORINFO? next;
-	public byte ubAdjacentSectors;    //mask containing which sectors are adjacent
+	public SECTOR_ADJACENT ubAdjacentSectors;    //mask containing which sectors are adjacent
     public byte ubCreatureHabitat;    //determines how creatures live in this sector (see creature spreading.c)
     public byte ubElitesInBattle, ubTroopsInBattle, ubAdminsInBattle, ubCreaturesInBattle;
 

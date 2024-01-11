@@ -245,7 +245,8 @@ public class FindLocations
         int iMyPosValue, iHisPosValue, iCoverValue;
         int iReductionFactor, iThisScale;
         int sHisGridNo, sMyRealGridNo = NOWHERE, sHisRealGridNo = NOWHERE;
-        int sTempX, sTempY;
+        int sTempX;
+        MAP_ROW sTempY;
         float dMyX, dMyY, dHisX, dHisY;
         int bHisBestCTGT, bHisActualCTGT = 0, bHisCTGT, bMyCTGT;
         int iRangeChange, iRangeFactor, iRangeFactorMultiplier = 0;

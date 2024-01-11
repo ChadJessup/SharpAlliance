@@ -12,6 +12,9 @@ namespace SharpAlliance.Core.SubSystems;
 
 public class Overhead
 {
+    private static bool gfPauseAllAI;
+    private static int giPauseAllAITimer;
+
     public static void InitOverhead()
     {
     }
@@ -1441,7 +1444,8 @@ public class Overhead
     public static void LocateSoldier(int usID, int fSetLocator)
     {
         SOLDIERTYPE? pSoldier;
-        int sNewCenterWorldX, sNewCenterWorldY;
+        int sNewCenterWorldX;
+        MAP_ROW sNewCenterWorldY;
 
         //if (!bCenter && SoldierOnScreen(usID))
         //return;
@@ -1455,7 +1459,7 @@ public class Overhead
 
             // Center on guy
             sNewCenterWorldX = (int)pSoldier.dXPos;
-            sNewCenterWorldY = (int)pSoldier.dYPos;
+            sNewCenterWorldY = (MAP_ROW)pSoldier.dYPos;
 
             RenderWorld.SetRenderCenter(sNewCenterWorldX, sNewCenterWorldY);
 
@@ -1486,7 +1490,7 @@ public class Overhead
     private static void InternalLocateGridNo(int sGridNo, bool fForce)
     {
 
-        IsometricUtils.ConvertGridNoToCenterCellXY(sGridNo, out int sNewCenterWorldX, out int sNewCenterWorldY);
+        IsometricUtils.ConvertGridNoToCenterCellXY(sGridNo, out int sNewCenterWorldX, out var sNewCenterWorldY);
 
         // FIRST CHECK IF WE ARE ON SCREEN
         if (SoldierFind.GridNoOnScreen(sGridNo) && !fForce)
@@ -1520,6 +1524,12 @@ public class Overhead
         {
             return false;
         }
+    }
+
+    public static void PauseAIUntilManuallyUnpaused()
+    {
+        gfPauseAllAI = true;
+        giPauseAllAITimer = 0;
     }
 }
 

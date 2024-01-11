@@ -249,7 +249,7 @@ public class StrategicAI
     {
     }
 
-    void InitStrategicAI()
+    public static void InitStrategicAI()
     {
         int cnt, iRandom;
         int iEliteChance, iTroopChance, iAdminChance;

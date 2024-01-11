@@ -50,9 +50,9 @@ public class TextUtils
         using var stream = this.files.FileOpen(ITEMSTRINGFILENAME, FileAccess.Read, false);
 
         // Get current mercs bio info
-        uint uiStartSeekAmount = (uint)((SIZE_SHORT_ITEM_NAME + SIZE_ITEM_NAME + SIZE_ITEM_INFO) * ubIndex);
+        int uiStartSeekAmount = ((SIZE_SHORT_ITEM_NAME + SIZE_ITEM_NAME + SIZE_ITEM_INFO) * ubIndex);
 
-        this.files.FileSeek(stream, ref uiStartSeekAmount, SeekOrigin.Begin);
+        this.files.FileSeek(stream, uiStartSeekAmount, SeekOrigin.Begin);
 
         Span<byte> itemNameBuffer = stackalloc byte[SIZE_ITEM_NAME];
         this.files.FileRead(stream, itemNameBuffer, out _);
@@ -67,9 +67,9 @@ public class TextUtils
         using var stream = this.files.FileOpen(ITEMSTRINGFILENAME, FileAccess.Read, false);
 
         // Get current mercs bio info
-        uint uiStartSeekAmount = (uint)((SIZE_SHORT_ITEM_NAME + SIZE_ITEM_NAME + SIZE_ITEM_INFO) * ubIndex);
+        int uiStartSeekAmount = ((SIZE_SHORT_ITEM_NAME + SIZE_ITEM_NAME + SIZE_ITEM_INFO) * ubIndex);
 
-        this.files.FileSeek(stream, ref uiStartSeekAmount, SeekOrigin.Begin);
+        this.files.FileSeek(stream, uiStartSeekAmount, SeekOrigin.Begin);
 
         Span<byte> shortItemNameBuffer = stackalloc byte[SIZE_ITEM_NAME];
         this.files.FileRead(stream, shortItemNameBuffer, out _);
@@ -86,7 +86,7 @@ public class TextUtils
 
         // Get the additional info
 //            uiStartSeekAmount = (uint)((Text.SIZE_ITEM_NAME + Text.SIZE_SHORT_ITEM_NAME + Text.SIZE_ITEM_INFO) * ubIndex) + Text.SIZE_ITEM_NAME + Text.SIZE_SHORT_ITEM_NAME;
-        this.files.FileSeek(stream, ref uiStartSeekAmount, SeekOrigin.Begin);
+        this.files.FileSeek(stream, uiStartSeekAmount, SeekOrigin.Begin);
 
         Span<byte> itemInfoBuffer = stackalloc byte[SIZE_ITEM_INFO];
         this.files.FileRead(stream, itemInfoBuffer, out _);

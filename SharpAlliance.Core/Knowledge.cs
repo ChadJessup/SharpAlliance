@@ -15,7 +15,7 @@ public partial class Globals
 
 public class Knowledge
 {
-    void CallAvailableEnemiesTo(int sGridNo)
+    public static void CallAvailableEnemiesTo(int sGridNo)
     {
         TEAM iLoop;
         int iLoop2;

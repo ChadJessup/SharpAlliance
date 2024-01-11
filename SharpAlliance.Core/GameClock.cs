@@ -411,8 +411,7 @@ public class GameClock
         }
     }
 
-
-    void SetGameTimeCompressionLevel(TIME_COMPRESS uiCompressionRate)
+    public static void SetGameTimeCompressionLevel(TIME_COMPRESS uiCompressionRate)
     {
         Debug.Assert(uiCompressionRate < TIME_COMPRESS.NUM_TIME_COMPRESS_SPEEDS);
 

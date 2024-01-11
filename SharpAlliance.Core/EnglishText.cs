@@ -9,7 +9,7 @@ namespace SharpAlliance.Core;
 public static class EnglishText
 {
     public static string[] Message =
-    {
+    [
         "",
     
     	// In the following 8 strings, the %s is the merc's name, and the %d (if any) is a number.
@@ -102,7 +102,7 @@ public static class EnglishText
         "To travel in Skyrider's chopper, you'll have to ASSIGN mercs to VEHICLE/HELICOPTER first.",
         "%s only had enough time to reload ONE gun",
         "Bloodcats' turn",
-    };
+    ];
 
     public static string[] gzCopyrightText = new string[]
     {
@@ -355,8 +355,8 @@ public static class EnglishText
     };
 
     //option Text
-    public static string[] zOptionsToggleText = new string[]
-    {
+    public static string[] zOptionsToggleText =
+    [
         "Speech",
         "Mute Confirmations",
         "SubTitles",
@@ -377,7 +377,7 @@ public static class EnglishText
         "Show Tree Tops",
         "Show Wireframes",
         "Show 3D Cursor",
-    };
+    ];
 
     public static Dictionary<GameInitOptionScreenText, string> gzGIOScreenText = new()
     {

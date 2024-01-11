@@ -369,6 +369,9 @@ public class StrategicMovement
 
     //Appends a waypoint to the end of the list.  Waypoint MUST be on the
     //same horizontal or vertical level as the last waypoint added.
+    public static bool AddWaypointToPGroup(GROUP? pGroup, int ubSectorX, int ubSectorY) //Same, but overloaded
+        => AddWaypointToPGroup(pGroup, ubSectorX, (MAP_ROW)ubSectorY);
+
     public static bool AddWaypointToPGroup(GROUP? pGroup, int ubSectorX, MAP_ROW ubSectorY) //Same, but overloaded
     {
         List<WAYPOINT> pWay;
@@ -2292,7 +2295,7 @@ public class StrategicMovement
         RemovePGroup(pGroup);
     }
 
-    bool gfRemovingAllGroups = false;
+    private static bool gfRemovingAllGroups = false;
 
     public static void RemovePGroup(GROUP? pGroup)
     {
@@ -2361,15 +2364,15 @@ public class StrategicMovement
         pGroup = null;
     }
 
-    void RemoveAllGroups()
+    public static void RemoveAllGroups()
     {
-        this.gfRemovingAllGroups = true;
+        gfRemovingAllGroups = true;
         while (gpGroupList is not null)
         {
             //            RemovePGroup(gpGroupList);
         }
 
-        this.gfRemovingAllGroups = false;
+        gfRemovingAllGroups = false;
     }
 
     public static void SetGroupSectorValue(int sSectorX, MAP_ROW sSectorY, int sSectorZ, int ubGroupID)

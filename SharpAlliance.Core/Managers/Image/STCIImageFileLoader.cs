@@ -97,7 +97,7 @@ public class STCIImageFileLoader : ImageDecoder, IImageFormatDetector, IImageFil
 
         Image<TPixel> image = new(options.Configuration, pHeader.usWidth, pHeader.usHeight);
 
-        uint uiFileSectionSize;
+        int uiFileSectionSize;
         int uiBytesRead;
         byte[]? pSTCIPalette = null;
 
@@ -110,7 +110,7 @@ public class STCIImageFileLoader : ImageDecoder, IImageFormatDetector, IImageFil
                 return null;
             }
 
-            uiFileSectionSize = pHeader.Indexed.uiNumberOfColours * STCI_PALETTE_ELEMENT_SIZE;
+            uiFileSectionSize = (int)pHeader.Indexed.uiNumberOfColours * STCI_PALETTE_ELEMENT_SIZE;
             pSTCIPalette = new byte[uiFileSectionSize];
 
             // ATE: Memset: Jan 16/99
@@ -137,8 +137,8 @@ public class STCIImageFileLoader : ImageDecoder, IImageFormatDetector, IImageFil
         else if (fContents.HasFlag(HIMAGECreateFlags.IMAGE_BITMAPDATA | HIMAGECreateFlags.IMAGE_APPDATA))
         {
             // seek past the palette
-            uiFileSectionSize = pHeader.Indexed.uiNumberOfColours * STCI_PALETTE_ELEMENT_SIZE;
-            if (fileManager.FileSeek(stream, ref uiFileSectionSize, SeekOrigin.Current) == false)
+            uiFileSectionSize = (int)pHeader.Indexed.uiNumberOfColours * STCI_PALETTE_ELEMENT_SIZE;
+            if (fileManager.FileSeek(stream, uiFileSectionSize, SeekOrigin.Current) == false)
             {
                 // DbgMessage(TOPIC_HIMAGE, DBG_LEVEL_3, "Problem seeking past palette!");
                 // FileClose(hFile);
@@ -152,7 +152,7 @@ public class STCIImageFileLoader : ImageDecoder, IImageFormatDetector, IImageFil
             {
                 // load data for the subimage (object) structures
                 hImage.usNumberOfObjects = pHeader.Indexed.usNumberOfSubImages;
-                uiFileSectionSize = (uint)hImage.usNumberOfObjects * STCI_SUBIMAGE_SIZE;
+                uiFileSectionSize = hImage.usNumberOfObjects * STCI_SUBIMAGE_SIZE;
 
                 if (!fileManager.FileRead(stream, ref hImage.pETRLEObject, (int)uiFileSectionSize, out uiBytesRead)
                     || uiBytesRead != uiFileSectionSize)
@@ -174,7 +174,7 @@ public class STCIImageFileLoader : ImageDecoder, IImageFormatDetector, IImageFil
         }
         else if (fContents.HasFlag(HIMAGECreateFlags.IMAGE_APPDATA)) // then there's a point in seeking ahead
         {
-            if (fileManager.FileSeek(stream, ref pHeader.uiStoredSize, SeekOrigin.Current) == false)
+            if (fileManager.FileSeek(stream, (int)pHeader.uiStoredSize, SeekOrigin.Current) == false)
             {
                 // DbgMessage(TOPIC_HIMAGE, DBG_LEVEL_3, "Problem seeking past image data!");
                 // FileClose(hFile);

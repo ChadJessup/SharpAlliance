@@ -458,8 +458,8 @@ public class MercTextBox
         var borderFilePath = Utils.FilenameForBPP(this.zMercBorderPopupFilenames[(int)ubBorderIndex]);
         var borderImage = this.video.GetVideoObject(borderFilePath, out var key);
 
-        VObjectDesc.Images[0].SaveAsPng($@"C:\temp\vobj.png");
-        borderImage.Images[0].SaveAsPng($@"C:\temp\borderImage.png");
+        //VObjectDesc.Images[0].SaveAsPng($@"C:\temp\vobj.png");
+        //borderImage.Images[0].SaveAsPng($@"C:\temp\borderImage.png");
 
         this.gPopUpTextBox.uiMercTextPopUpBorder = key;
         this.gPopUpTextBox.fMercTextPopupInitialized = true;

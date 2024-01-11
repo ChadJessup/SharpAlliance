@@ -368,6 +368,11 @@ public class DialogControl
     {
         throw new NotImplementedException();
     }
+
+    internal static void SayQuoteFromAnyBodyInSector(QUOTE eNEMY_PRESENCE)
+    {
+        throw new NotImplementedException();
+    }
 }
 
 public enum ExternalFaces

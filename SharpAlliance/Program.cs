@@ -79,7 +79,9 @@ namespace SharpAlliance
             builder.AddDependency<ISurfaceManager, SurfaceManager>();
 
             builder.Services.AddSingleton<Cars>();
+            builder.Services.AddSingleton<BobbyR>();
             builder.Services.AddSingleton<Globals>();
+            builder.Services.AddSingleton<Finances>();
             builder.Services.AddSingleton<Messages>();
             builder.Services.AddSingleton<TileCache>();
             builder.Services.AddSingleton<GuiManager>();

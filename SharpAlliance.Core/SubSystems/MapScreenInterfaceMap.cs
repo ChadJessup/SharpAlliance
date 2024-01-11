@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using SharpAlliance.Core.Interfaces;
 using SharpAlliance.Core.Managers;
 using SharpAlliance.Core.Managers.Image;
@@ -15,10 +16,10 @@ public class MapScreenInterfaceMap
     private FASTHELPREGION[] pFastHelpMapScreenList = new FASTHELPREGION[Globals.MAX_MAPSCREEN_FAST_HELP];
 
     // the leave item list
-    private List<MERC_LEAVE_ITEM?> gpLeaveList = new(Globals.NUM_LEAVE_LIST_SLOTS);
+    private static List<MERC_LEAVE_ITEM?> gpLeaveList = new(Globals.NUM_LEAVE_LIST_SLOTS);
 
     // holds ids of mercs who left stuff behind
-    private int[] guiLeaveListOwnerProfileId = new int[Globals.NUM_LEAVE_LIST_SLOTS];
+    private static int[] guiLeaveListOwnerProfileId = new int[Globals.NUM_LEAVE_LIST_SLOTS];
 
     // the palettes
     private ushort?[] pMapLTRedPalette;
@@ -398,13 +399,13 @@ public class MapScreenInterfaceMap
         }
     }
 
-    public void InitLeaveList()
+    public static void InitLeaveList()
     {
         // init leave list with nullS/zeroes
         for (int iCounter = 0; iCounter < Globals.NUM_LEAVE_LIST_SLOTS; iCounter++)
         {
-            this.gpLeaveList[iCounter] = null;
-            this.guiLeaveListOwnerProfileId[iCounter] = (int)NO_PROFILE;
+            gpLeaveList[iCounter] = null;
+            guiLeaveListOwnerProfileId[iCounter] = (int)NO_PROFILE;
         }
     }
 
@@ -442,6 +443,11 @@ public class MapScreenInterfaceMap
 
 
         return;
+    }
+
+    internal static void InitMapSecrets()
+    {
+        throw new NotImplementedException();
     }
 }
 

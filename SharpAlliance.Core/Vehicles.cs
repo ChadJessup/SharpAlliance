@@ -23,6 +23,16 @@ public class Vehicles
 
     }
 
+    internal static void InitVehicles()
+    {
+        throw new NotImplementedException();
+    }
+
+    internal static void ClearOutVehicleList()
+    {
+        throw new NotImplementedException();
+    }
+
     // the mvt groups associated with vehcile types
     public VehicleTypes[] iMvtTypes =
     {

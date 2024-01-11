@@ -1588,7 +1588,7 @@ public class History
     {
         sQuestString = "QUESTSTARTED";
         // open the file and copy the string
-        files.LoadEncryptedDataFromFile("BINARYDATA\\quests.edt", out sQuestString, (uint)(160 * ubQuestValue * 2), 160);
+        files.LoadEncryptedDataFromFile("BINARYDATA\\quests.edt", out sQuestString, (160 * ubQuestValue * 2), 160);
     }
 
 
@@ -1596,7 +1596,7 @@ public class History
     {
         sQuestString = "QUESTENDED";
         // open the file and copy the string
-        files.LoadEncryptedDataFromFile("BINARYDATA\\quests.edt", out sQuestString, (uint)(160 * ((ubQuestValue * 2) + 1)), 160);
+        files.LoadEncryptedDataFromFile("BINARYDATA\\quests.edt", out sQuestString, (160 * ((ubQuestValue * 2) + 1)), 160);
     }
 
     int GetNumberOfHistoryPages()

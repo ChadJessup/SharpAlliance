@@ -23,7 +23,7 @@ public class StrategicMines
     };
     */
 
-    void InitializeMines()
+    public static void InitializeMines()
     {
         MINE ubMineIndex;
         MINE_STATUS_TYPE pMineStatus;

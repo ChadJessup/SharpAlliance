@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using SharpAlliance.Core.Interfaces;
 using SharpAlliance.Core.Managers;
@@ -54,7 +55,7 @@ public class MapScreen : IScreen
         this.mapScreenInterface.SetUpMapScreenFastHelpText();
 
         // set up leave list arrays for dismissed mercs
-        this.mapScreenInterface.InitLeaveList();
+        MapScreenInterfaceMap.InitLeaveList();
 
         this.video.GetVideoObject("INTERFACE\\group_confirm.sti", out var idx1);
         this.mapScreenInterface.guiUpdatePanel = idx1;
@@ -154,6 +155,16 @@ public class MapScreen : IScreen
                 ButtonSubSystem.UnMarkButtonDirty(Globals.giMapBorderButtons[(int)MAP_BORDER.TOWN_BTN]);
             }
         }
+    }
+
+    internal static void ShutDownLeaveList()
+    {
+        throw new NotImplementedException();
+    }
+
+    internal static void ChangeSelectedMapSector(int v1, MAP_ROW a, int v2)
+    {
+        throw new NotImplementedException();
     }
 }
 

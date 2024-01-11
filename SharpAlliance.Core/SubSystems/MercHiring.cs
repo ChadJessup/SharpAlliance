@@ -9,6 +9,10 @@ namespace SharpAlliance.Core.SubSystems;
 
 public class MercHiring
 {
+    internal static void HandleMercArrivesQuotes(SOLDIERTYPE sOLDIERTYPE)
+    {
+        throw new NotImplementedException();
+    }
 }
 
 public class MERC_HIRE_STRUCT

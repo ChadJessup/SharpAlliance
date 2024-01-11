@@ -1,4 +1,5 @@
-﻿using static SharpAlliance.Core.Globals;
+﻿using System;
+using static SharpAlliance.Core.Globals;
 
 namespace SharpAlliance.Core.SubSystems;
 
@@ -68,6 +69,11 @@ public class MapScreenHelicopter
         }
 
         return true;
+    }
+
+    internal static void InitializeHelicopter()
+    {
+        throw new NotImplementedException();
     }
 }
 

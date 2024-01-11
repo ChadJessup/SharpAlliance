@@ -1,15 +1,9 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Diagnostics;
-using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
+using SharpAlliance.Core.Interfaces;
 using SharpAlliance.Core.Managers;
 using SharpAlliance.Core.Screens;
-using SharpAlliance.Platform;
-using SharpAlliance.Platform.Interfaces;
-
-using static SharpAlliance.Core.Globals;
 
 namespace SharpAlliance.Core.SubSystems;
 
@@ -23,7 +17,7 @@ public class GameInit
     private readonly SoldierCreate soldierCreate;
     private readonly Overhead overhead;
     private readonly Finances finances;
-    private readonly ScreenManager screens;
+    private readonly IScreenManager screens;
     private readonly Messages messages;
     private readonly Emails emails;
     private readonly Laptop laptop;
@@ -54,7 +48,7 @@ public class GameInit
         Cheats cheats,
         GameEvents gameEvents,
         NPC npc,
-        ScreenManager screenManager,
+        IScreenManager screenManager,
         ShopKeeper shopKeeper,
         World world,
         HelpScreenSubSystem helpScreen,
@@ -216,7 +210,7 @@ public class GameInit
             Laptop.SetLaptopNewGameFlag();
 
             // this is for the "mercs climbing down from a rope" animation, NOT Skyrider!!
-            ResetHeliSeats();
+            MercEntering.ResetHeliSeats();
 
             // Setup two new messages!
             Emails.AddPreReadEmail(OLD_ENRICO_1, OLD_ENRICO_1_LENGTH, EmailAddresses.MAIL_ENRICO, GameClock.GetWorldTotalMin());
@@ -327,47 +321,56 @@ public class GameInit
         StrategicMap.SetupNewStrategicGame();
         Quests.InitQuestEngine();
 
-        Campaign.
         //Setup a new campaign via the enemy perspective.
-        InitNewCampaign();
+        CampaignInit.InitNewCampaign();
         // Init Squad Lists
-        InitSquads();
+        Squads.InitSquads();
         // Init vehicles
-        InitVehicles();
+        Vehicles.InitVehicles();
         // init town loyalty
-        InitTownLoyalty();
+        StrategicTownLoyalty.InitTownLoyalty();
         // init the mine management system
-        InitializeMines();
+        StrategicMines.InitializeMines();
         // initialize map screen flags
-        InitMapScreenFlags();
+        MapScreenInterfaceBorder.InitMapScreenFlags();
         // initialize NPCs, select alternate maps, etc
         InitNPCs();
         // init Skyrider and his helicopter
-        InitializeHelicopter();
+        MapScreenHelicopter.InitializeHelicopter();
         //Clear out the vehicle list
-        ClearOutVehicleList();
+        Vehicles.ClearOutVehicleList();
 
         InitBloodCatSectors();
 
-        InitializeSAMSites();
+        StrategicMap.InitializeSAMSites();
 
         // make Orta, Tixa, SAM sites not found
-        InitMapSecrets();
+        MapScreenInterfaceMap.InitMapSecrets();
 
 
         // free up any leave list arrays that were left allocated
-        ShutDownLeaveList();
+        MapScreen.ShutDownLeaveList();
         // re-set up leave list arrays for dismissed mercs
-        InitLeaveList();
+        MapScreenInterfaceMap.InitLeaveList();
 
         // reset time compression mode to X0 (this will also pause it)
-        SetGameTimeCompressionLevel(TIME_COMPRESS_X0);
+        GameClock.SetGameTimeCompressionLevel(TIME_COMPRESS.TIME_COMPRESS_X0);
 
         // select A9 Omerta as the initial selected sector
-        ChangeSelectedMapSector(9, 1, 0);
+        MapScreen.ChangeSelectedMapSector(9, MAP_ROW.A, 0);
 
         // Reset these flags or mapscreen could be disabled and cause major headache.
         fDisableDueToBattleRoster = false;
         fDisableMapInterfaceDueToBattle = false;
+    }
+
+    private void InitBloodCatSectors()
+    {
+        throw new NotImplementedException();
+    }
+
+    private void InitNPCs()
+    {
+        throw new NotImplementedException();
     }
 }

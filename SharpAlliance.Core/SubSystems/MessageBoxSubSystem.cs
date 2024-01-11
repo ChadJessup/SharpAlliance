@@ -281,7 +281,7 @@ public class MessageBoxSubSystem : ISharpAllianceManager
               new(0, 0),
               gMsgBox.Location,
               new(usTextBoxWidth, usTextBoxHeight),
-              debug: true);
+              debug: false);
 
         // Create top-level mouse region
         MouseSubSystem.MSYS_DefineRegion(

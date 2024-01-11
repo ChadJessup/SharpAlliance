@@ -53,7 +53,7 @@ public class Squads
         return bSquadCount;
     }
 
-    void InitSquads()
+    public static void InitSquads()
     {
         // init the squad lists to null ptrs.
         int iCounterB = 0;
@@ -793,7 +793,7 @@ public class Squads
         return true;
     }
 
-    void RebuildCurrentSquad()
+    public static void RebuildCurrentSquad()
     {
         // rebuilds current squad to reset faces in tactical
         int iCounter = 0;
@@ -808,7 +808,7 @@ public class Squads
         }
 
         // set default squad..just inc ase we no longer have a valid squad
-        this.SetDefaultSquadOnSectorEntry(true);
+        SetDefaultSquadOnSectorEntry(true);
 
         // cleat list
         InterfacePanel.RemoveAllPlayersFromSlot();
@@ -903,7 +903,7 @@ public class Squads
     }
 
 
-    bool IsSquadOnCurrentTacticalMap(SquadEnum iCurrentSquad)
+    private static bool IsSquadOnCurrentTacticalMap(SquadEnum iCurrentSquad)
     {
         int iCounter = 0;
         // check to see if this squad is on the current map
@@ -930,14 +930,12 @@ public class Squads
 
         return false;
     }
-
-
-    void SetDefaultSquadOnSectorEntry(bool fForce)
+    private static void SetDefaultSquadOnSectorEntry(bool fForce)
     {
         SquadEnum iCounter = 0;
         // check if selected squad is in current sector, if so, do nothing, if not...first first case that they are
 
-        if (this.IsSquadOnCurrentTacticalMap(iCurrentTacticalSquad) == true)
+        if (IsSquadOnCurrentTacticalMap(iCurrentTacticalSquad) == true)
         {
             // is in sector, leave
             return;
@@ -948,7 +946,7 @@ public class Squads
         // find first squad availiable
         for (iCounter = 0; iCounter < NUMBER_OF_SQUADS; iCounter++)
         {
-            if (this.IsSquadOnCurrentTacticalMap(iCounter) == true)
+            if (IsSquadOnCurrentTacticalMap(iCounter) == true)
             {
                 // squad in sector...set as current
                 SetCurrentSquad(iCounter, fForce);

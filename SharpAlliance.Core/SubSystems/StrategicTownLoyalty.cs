@@ -77,4 +77,9 @@ public class StrategicTownLoyalty
 
         return ubSectorsControlled;
     }
+
+    internal static void InitTownLoyalty()
+    {
+        throw new NotImplementedException();
+    }
 }

@@ -107,7 +107,7 @@ public class IsometricUtils
 
         // Find the diustance from render center to true world center
         sDistToCenterX = (sWorldCellX * Globals.CELL_X_SIZE) - Globals.gCenterWorldX;
-        sDistToCenterY = (sWorldCellY * Globals.CELL_Y_SIZE) - Globals.gCenterWorldY;
+        sDistToCenterY = (int)(sWorldCellY * Globals.CELL_Y_SIZE) - (int)Globals.gCenterWorldY;
 
 
         // From render center in world coords, convert to render center in "screen" coords
@@ -171,12 +171,12 @@ public class IsometricUtils
         sXPos = sGridNo - (sYPos * Globals.WORLD_COLS);
     }
 
-    public static void ConvertGridNoToCenterCellXY(int sGridNo, out int sXPos, out int sYPos)
+    public static void ConvertGridNoToCenterCellXY(int sGridNo, out int sXPos, out MAP_ROW sYPos)
     {
-        sYPos = sGridNo / Globals.WORLD_COLS;
-        sXPos = sGridNo - (sYPos * Globals.WORLD_COLS);
+        sYPos = (MAP_ROW)(sGridNo / Globals.WORLD_COLS);
+        sXPos = sGridNo - ((int)sYPos * Globals.WORLD_COLS);
 
-        sYPos = (sYPos * Globals.CELL_Y_SIZE) + (Globals.CELL_Y_SIZE / 2);
+        sYPos = (MAP_ROW)(((int)sYPos * Globals.CELL_Y_SIZE) + (Globals.CELL_Y_SIZE / 2));
         sXPos = (sXPos * Globals.CELL_X_SIZE) + (Globals.CELL_X_SIZE / 2);
     }
 

@@ -241,7 +241,7 @@ public class InitScreen : IScreen
         }
 
         //needs to be called here to init the SectorInfo struct
-        await this.strategicMap.InitStrategicMovementCosts();
+        StrategicMovementCosts.InitStrategicMovementCosts();
 
         // Init tactical engine
         if (!await Overhead.InitTacticalEngine())
