@@ -196,11 +196,11 @@ public partial class Globals
     // Specific Dealer Flags
     // NOTE: Each dealer has 8 flags, but different dealers can and SHOULD share the same flag #s!
     //
-
-    // Alex Fredo
-    public const int ARMS_DEALER_FLAG__FREDO_HAS_SAID_ROCKET_RIFLE_QUOTE = 0x00000001;	// Alex Fredo has already repaired the Rocket Rifle
-    // Franz Hinkle
-    public const int ARMS_DEALER_FLAG__FRANZ_HAS_SOLD_VIDEO_CAMERA_TO_PLAYER = 0x00000001;	// Franz Hinkle has sold the video camera to the player
+    public enum ARMS_DEALER_FLAG
+    {
+        FREDO_HAS_SAID_ROCKET_RIFLE_QUOTE = 0x00000001, // Alex Fredo has already repaired the Rocket Rifle
+        FRANZ_HAS_SOLD_VIDEO_CAMERA_TO_PLAYER = 0x00000001, // Franz Hinkle has sold the video camera to the player
+    };
 
     public static int gsRecompileAreaTop { get; set; } = 0;
     public static int gsRecompileAreaLeft { get; set; } = 0;

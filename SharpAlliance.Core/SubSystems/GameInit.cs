@@ -194,7 +194,7 @@ public class GameInit
         if (gubScreenCount == 0)
         {
             //Init all the arms dealers inventory
-            InitAllArmsDealers();
+            ArmsDealerInit.InitAllArmsDealers();
             this.bobby.InitBobbyRayInventory();
         }
 

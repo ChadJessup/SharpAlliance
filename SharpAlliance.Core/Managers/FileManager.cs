@@ -264,7 +264,7 @@ public class FileManager : IFileManager
         return true;
     }
 
-    public bool FileSeek(Stream stream, ref uint uiStoredSize, SeekOrigin current)
+    public bool FileSeek(Stream stream, int uiStoredSize, SeekOrigin current)
     {
         stream.Seek(uiStoredSize, current);
 
@@ -299,9 +299,9 @@ public class FileManager : IFileManager
     }
 
     public bool LoadEncryptedDataFromFile(string pFileName, out string pDestString, int seekFrom, int uiSeekAmount)
-        => this.LoadEncryptedDataFromFile(pFileName, out pDestString, (uint)seekFrom, (uint)uiSeekAmount);
+        => this.LoadEncryptedDataFromFile(pFileName, out pDestString, seekFrom, (uint)uiSeekAmount);
 
-    public bool LoadEncryptedDataFromFile(string pFileName, out string pDestString, uint seekFrom, uint uiSeekAmount)
+    public bool LoadEncryptedDataFromFile(string pFileName, out string pDestString, int seekFrom, uint uiSeekAmount)
     {
         pDestString = string.Empty;
 
@@ -312,7 +312,7 @@ public class FileManager : IFileManager
             return false;
         }
 
-        if (this.FileSeek(stream, ref seekFrom, SeekOrigin.Begin) == false)
+        if (this.FileSeek(stream, seekFrom, SeekOrigin.Begin) == false)
         {
             this.FileClose(stream);
             // DebugMsg(TOPIC_JA2, DBG_LEVEL_3, "LoadEncryptedDataFromFile: Failed FileSeek");
@@ -372,5 +372,20 @@ public class FileManager : IFileManager
         File.Delete(filePath);
 
         return File.Exists(filePath);
+    }
+
+    public long FileGetSize(Stream hFileHandle)
+    {
+        return hFileHandle.Length;
+    }
+
+    public void FileClearAttributes(string path)
+    {
+
+    }
+
+    public long FileGetPos(Stream hFileHandle)
+    {
+        return hFileHandle.Position;
     }
 }

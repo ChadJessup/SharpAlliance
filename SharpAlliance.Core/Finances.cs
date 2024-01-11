@@ -1057,7 +1057,7 @@ public class Finances
             return;
 
         // open file
-        hFileHandle = this.files.FileOpen(FINANCES_DATA_FILE, (FILE_OPEN_EXISTING | FILE_ACCESS_READ), false);
+        hFileHandle = this.files.FileOpen(FINANCES_DATA_FILE, FileAccess.Read, false);
 
         // make sure file is more than 0 length
         if (this.files.FileGetSize(hFileHandle) == 0)
@@ -1230,7 +1230,7 @@ public class Finances
         if (reason.HasFlag(MSYS_CALLBACK_REASON.LBUTTON_UP))
         {
 
-            btn.uiFlags &= ~(BUTTON_CLICKED_ON);
+            btn.uiFlags &= ~(ButtonFlags.BUTTON_CLICKED_ON);
 
             // if greater than page zero, we can move back, decrement iCurrentPage counter
             LoadPreviousPage();
@@ -1247,7 +1247,7 @@ public class Finances
     {
         if (reason.HasFlag(MSYS_CALLBACK_REASON.LBUTTON_UP))
         {
-            btn.uiFlags &= ~(BUTTON_CLICKED_ON);
+            btn.uiFlags &= ~(ButtonFlags.BUTTON_CLICKED_ON);
             // increment currentPage
             //IncrementCurrentPageFinancialDisplay( );
             LoadNextPage();
@@ -1267,7 +1267,7 @@ public class Finances
         {
             uint uiButton = (uint)ButtonSubSystem.MSYS_GetBtnUserData(btn, 0);
 
-            btn.uiFlags &= ~(BUTTON_CLICKED_ON);
+            btn.uiFlags &= ~(ButtonFlags.BUTTON_CLICKED_ON);
 
             //if its the first page button
             if (uiButton == 0)
@@ -1520,7 +1520,7 @@ public class Finances
 
 
         // open file
-        hFileHandle = this.files.FileOpen(FINANCES_DATA_FILE, FILE_ACCESS_WRITE | FILE_CREATE_ALWAYS, false);
+        hFileHandle = this.files.FileOpen(FINANCES_DATA_FILE, FileAccess.Write, false);
 
         // write balance to disk
         this.files.FileWrite(hFileHandle, (LaptopSaveInfo.iCurrentBalance), sizeof(int), out var _);
@@ -1541,10 +1541,10 @@ public class Finances
         int iBytesRead = 0;
 
         // open file
-        hFileHandle = this.files.FileOpen(FINANCES_DATA_FILE, (FILE_OPEN_EXISTING | FILE_ACCESS_READ), false);
+        hFileHandle = this.files.FileOpen(FINANCES_DATA_FILE, FileAccess.Read, false);
 
         // start at beginning 
-        this.files.FileSeek(hFileHandle, 0, FILE_SEEK_FROM_START);
+        this.files.FileSeek(hFileHandle, 0, SeekOrigin.Begin);
 
         // get balance from disk first
         this.files.FileRead(hFileHandle, ref LaptopSaveInfo.iCurrentBalance, sizeof(int), out iBytesRead);
@@ -1567,10 +1567,10 @@ public class Finances
 
 
         // open file
-        hFileHandle = this.files.FileOpen(FINANCES_DATA_FILE, FILE_ACCESS_WRITE | FILE_OPEN_ALWAYS, false);
+        hFileHandle = this.files.FileOpen(FINANCES_DATA_FILE, FileAccess.Write, false);
 
         // go to the end
-        if (this.files.FileSeek(hFileHandle, 0, FILE_SEEK_FROM_END) == false)
+        if (this.files.FileSeek(hFileHandle, 0, SeekOrigin.End) == false)
         {
             // error
             this.files.FileClose(hFileHandle);
@@ -1598,14 +1598,14 @@ public class Finances
 
         Stream hFileHandle;
         int iBytesRead = 0;
-        int iFileSize = 0;
+        long iFileSize = 0;
 
         // no file, return
         if (!(this.files.FileExists(FINANCES_DATA_FILE)))
             return 0;
 
         // open file
-        hFileHandle = this.files.FileOpen(FINANCES_DATA_FILE, (FILE_OPEN_EXISTING | FILE_ACCESS_READ), false);
+        hFileHandle = this.files.FileOpen(FINANCES_DATA_FILE, FileAccess.Read, false);
 
         // make sure file is more than balance size + length of 1 record - 1 byte
         if (this.files.FileGetSize(hFileHandle) < sizeof(int) + sizeof(uint) + sizeof(byte) + sizeof(byte) + sizeof(int))
@@ -1621,7 +1621,7 @@ public class Finances
         this.files.FileClose(hFileHandle);
 
         // file size -1 / sizeof record in bytes is id
-        return ((iFileSize - 1) / (sizeof(int) + sizeof(uint) + sizeof(byte) + sizeof(byte) + sizeof(int)));
+        return (((int)iFileSize - 1) / (sizeof(int) + sizeof(uint) + sizeof(byte) + sizeof(byte) + sizeof(int)));
 
     }
 
@@ -1636,7 +1636,7 @@ public class Finances
             return;
 
         // open file
-        hFileHandle = this.files.FileOpen(FINANCES_DATA_FILE, (FILE_OPEN_EXISTING | FILE_ACCESS_READ), false);
+        hFileHandle = this.files.FileOpen(FINANCES_DATA_FILE, FileAccess.Read, false);
 
         // make sure file is more than 0 length
         if (this.files.FileGetSize(hFileHandle) == 0)
@@ -1730,7 +1730,7 @@ public class Finances
             return (false);
 
         // open file
-        hFileHandle = this.files.FileOpen(FINANCES_DATA_FILE, (FILE_OPEN_EXISTING | FILE_ACCESS_READ), false);
+        hFileHandle = this.files.FileOpen(FINANCES_DATA_FILE, FileAccess.Read, false);
 
         // make sure file is more than 0 length
         if (this.files.FileGetSize(hFileHandle) == 0)
@@ -1747,7 +1747,7 @@ public class Finances
             return (false);
         }
 
-        this.files.FileSeek(hFileHandle, sizeof(int) + (uiPage - 1) * NUM_RECORDS_PER_PAGE * (sizeof(int) + sizeof(uint) + sizeof(byte) + sizeof(byte) + sizeof(int)), FILE_SEEK_FROM_START);
+        this.files.FileSeek(hFileHandle, sizeof(int) + (uiPage - 1) * NUM_RECORDS_PER_PAGE * (sizeof(int) + sizeof(uint) + sizeof(byte) + sizeof(byte) + sizeof(int)), SeekOrigin.Begin);
 
         uiByteCount = sizeof(int) + (uiPage - 1) * NUM_RECORDS_PER_PAGE * (sizeof(int) + sizeof(uint) + sizeof(byte) + sizeof(byte) + sizeof(int));
         // file exists, read in data, continue until end of page
@@ -1903,7 +1903,7 @@ public class Finances
             return 0;
 
         // open file
-        hFileHandle = this.files.FileOpen(FINANCES_DATA_FILE, (FILE_OPEN_EXISTING | FILE_ACCESS_READ), false);
+        hFileHandle = this.files.FileOpen(FINANCES_DATA_FILE, FileAccess.Read, false);
 
         if (this.files.FileGetSize(hFileHandle) < sizeof(int) + sizeof(uint) + sizeof(byte) + sizeof(byte) + sizeof(int))
         {
@@ -1911,7 +1911,7 @@ public class Finances
             return 0;
         }
 
-        this.files.FileSeek(hFileHandle, (sizeof(int)), FILE_SEEK_FROM_END);
+        this.files.FileSeek(hFileHandle, (sizeof(int)), SeekOrigin.End);
 
         // get balnce to date
         this.files.FileRead(hFileHandle, ref iBalanceToDate, sizeof(int), out iBytesRead);
@@ -1949,14 +1949,14 @@ public class Finances
             return 0;
 
         // open file
-        hFileHandle = this.files.FileOpen(FINANCES_DATA_FILE, (FILE_OPEN_EXISTING | FILE_ACCESS_READ), false);
+        hFileHandle = this.files.FileOpen(FINANCES_DATA_FILE, FileAccess.Read, false);
 
         // start at the end, move back until Date / 24 * 60 on the record is =  ( iDateInMinutes /  ( 24 * 60 ) ) - 2
         iByteCount += sizeof(int);
         // loop, make sure we don't pass beginning of file, if so, we have an error, and check for condifition above
         while ((iByteCount < this.files.FileGetSize(hFileHandle)) && (!fOkToContinue) && (!fGoneTooFar))
         {
-            this.files.FileSeek(hFileHandle, RECORD_SIZE * iCounter, FILE_SEEK_FROM_END);
+            this.files.FileSeek(hFileHandle, RECORD_SIZE * iCounter, SeekOrigin.End);
 
             // incrment byte count
             iByteCount += RECORD_SIZE;
@@ -2034,7 +2034,7 @@ public class Finances
             return 0;
 
         // open file
-        hFileHandle = this.files.FileOpen(FINANCES_DATA_FILE, (FILE_OPEN_EXISTING | FILE_ACCESS_READ), false);
+        hFileHandle = this.files.FileOpen(FINANCES_DATA_FILE, FileAccess.Read, false);
 
         // start at the end, move back until Date / 24 * 60 on the record is =  ( iDateInMinutes /  ( 24 * 60 ) ) - 2
         iByteCount += sizeof(int);
@@ -2042,7 +2042,7 @@ public class Finances
         // loop, make sure we don't pass beginning of file, if so, we have an error, and check for condifition above
         while ((iByteCount < this.files.FileGetSize(hFileHandle)) && (!fOkToContinue) && (!fGoneTooFar))
         {
-            this.files.FileSeek(hFileHandle, RECORD_SIZE * iCounter, FILE_SEEK_FROM_END);
+            this.files.FileSeek(hFileHandle, RECORD_SIZE * iCounter, SeekOrigin.End);
 
             // incrment byte count
             iByteCount += RECORD_SIZE;
@@ -2107,7 +2107,7 @@ public class Finances
             return 0;
 
         // open file
-        hFileHandle = this.files.FileOpen(FINANCES_DATA_FILE, (FILE_OPEN_EXISTING | FILE_ACCESS_READ), false);
+        hFileHandle = this.files.FileOpen(FINANCES_DATA_FILE, FileAccess.Read, false);
 
         // start at the end, move back until Date / 24 * 60 on the record is =  ( iDateInMinutes /  ( 24 * 60 ) ) - 2
         iByteCount += sizeof(int);
@@ -2117,7 +2117,7 @@ public class Finances
         {
             this.files.FileGetPos(hFileHandle);
 
-            this.files.FileSeek(hFileHandle, RECORD_SIZE * iCounter, FILE_SEEK_FROM_END);
+            this.files.FileSeek(hFileHandle, RECORD_SIZE * iCounter, SeekOrigin.End);
 
             // incrment byte count
             iByteCount += RECORD_SIZE;
@@ -2199,7 +2199,7 @@ public class Finances
             return 0;
 
         // open file
-        hFileHandle = this.files.FileOpen(FINANCES_DATA_FILE, (FILE_OPEN_EXISTING | FILE_ACCESS_READ), false);
+        hFileHandle = this.files.FileOpen(FINANCES_DATA_FILE, FileAccess.Read, false);
 
         // start at the end, move back until Date / 24 * 60 on the record is =  ( iDateInMinutes /  ( 24 * 60 ) ) - 2
         iByteCount += sizeof(int);
@@ -2207,7 +2207,7 @@ public class Finances
         // loop, make sure we don't pass beginning of file, if so, we have an error, and check for condifition above
         while ((iByteCount < this.files.FileGetSize(hFileHandle)) && (!fOkToContinue) && (!fGoneTooFar))
         {
-            this.files.FileSeek(hFileHandle, RECORD_SIZE * iCounter, FILE_SEEK_FROM_END);
+            this.files.FileSeek(hFileHandle, RECORD_SIZE * iCounter, SeekOrigin.End);
 
             // incrment byte count
             iByteCount += RECORD_SIZE;
@@ -2322,7 +2322,7 @@ public class Finances
             return 0;
 
         // open file
-        hFileHandle = this.files.FileOpen(FINANCES_DATA_FILE, (FILE_OPEN_EXISTING | FILE_ACCESS_READ), false);
+        hFileHandle = this.files.FileOpen(FINANCES_DATA_FILE, FileAccess.Read, false);
 
         // start at the end, move back until Date / 24 * 60 on the record is =  ( iDateInMinutes /  ( 24 * 60 ) ) - 2
         iByteCount += sizeof(int);
@@ -2330,7 +2330,7 @@ public class Finances
         // loop, make sure we don't pass beginning of file, if so, we have an error, and check for condifition above
         while ((iByteCount < this.files.FileGetSize(hFileHandle)) && (!fOkToContinue) && (!fGoneTooFar))
         {
-            this.files.FileSeek(hFileHandle, RECORD_SIZE * iCounter, FILE_SEEK_FROM_END);
+            this.files.FileSeek(hFileHandle, RECORD_SIZE * iCounter, SeekOrigin.End);
 
             // incrment byte count
             iByteCount += RECORD_SIZE;
@@ -2411,7 +2411,7 @@ public class Finances
             return 0;
 
         // open file
-        hFileHandle = this.files.FileOpen(FINANCES_DATA_FILE, (FILE_OPEN_EXISTING | FILE_ACCESS_READ), false);
+        hFileHandle = this.files.FileOpen(FINANCES_DATA_FILE, FileAccess.Read, false);
 
         // start at the end, move back until Date / 24 * 60 on the record is =  ( iDateInMinutes /  ( 24 * 60 ) ) - 2
         iByteCount += sizeof(int);
@@ -2419,7 +2419,7 @@ public class Finances
         // loop, make sure we don't pass beginning of file, if so, we have an error, and check for condifition above
         while ((iByteCount < this.files.FileGetSize(hFileHandle)) && (!fOkToContinue) && (!fGoneTooFar))
         {
-            this.files.FileSeek(hFileHandle, RECORD_SIZE * iCounter, FILE_SEEK_FROM_END);
+            this.files.FileSeek(hFileHandle, RECORD_SIZE * iCounter, SeekOrigin.End);
 
             // incrment byte count
             iByteCount += RECORD_SIZE;
@@ -2502,9 +2502,9 @@ public class Finances
         }
 
         // open file
-        hFileHandle = this.files.FileOpen(FINANCES_DATA_FILE, (FILE_OPEN_EXISTING | FILE_ACCESS_READ), false);
+        hFileHandle = this.files.FileOpen(FINANCES_DATA_FILE, FileAccess.Read, false);
 
-        this.files.FileSeek(hFileHandle, 0, FILE_SEEK_FROM_START);
+        this.files.FileSeek(hFileHandle, 0, SeekOrigin.Begin);
         this.files.FileRead(hFileHandle, ref LaptopSaveInfo.iCurrentBalance, sizeof(int), out iBytesRead);
 
         //AssertMsg(iBytesRead, "Failed To Read Data Entry");

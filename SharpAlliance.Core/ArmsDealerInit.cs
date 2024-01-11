@@ -1,7 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Diagnostics;
+using System.Formats.Asn1;
 using SharpAlliance.Core.SubSystems;
+using static System.Runtime.InteropServices.JavaScript.JSType;
 using static SharpAlliance.Core.Globals;
 
 namespace SharpAlliance.Core;
@@ -97,7 +100,7 @@ public class ArmsDealerInit
     }
 
 
-    public static DEALER_POSSIBLE_INV[]? GetPointerToDealersPossibleInventory(ARMS_DEALER ubArmsDealerID)
+    public static DEALER_POSSIBLE_INV[] GetPointerToDealersPossibleInventory(ARMS_DEALER ubArmsDealerID)
     {
         switch (ubArmsDealerID)
         {
@@ -159,7 +162,7 @@ public class ArmsDealerInit
                 return gMannyInventory;
 
             default:
-                return null;
+                throw new ArgumentNullException();
         }
     }
 
@@ -521,23 +524,23 @@ public class ArmsDealerInit
         pInvSlot1 = pArg1;
         pInvSlot2 = pArg2;
 
-//        Debug.Assert(pInvSlot1.sSpecialItemElement != -1);
-//        Debug.Assert(pInvSlot2.sSpecialItemElement != -1);
-//
-//        uiRepairTime1 = gArmsDealersInventory[gbSelectedArmsDealerID][pInvSlot1.sItemIndex].SpecialItem[pInvSlot1.sSpecialItemElement].uiRepairDoneTime;
-//        uiRepairTime2 = gArmsDealersInventory[gbSelectedArmsDealerID][pInvSlot2.sItemIndex].SpecialItem[pInvSlot2.sSpecialItemElement].uiRepairDoneTime;
+        //        Debug.Assert(pInvSlot1.sSpecialItemElement != -1);
+        //        Debug.Assert(pInvSlot2.sSpecialItemElement != -1);
+        //
+        //        uiRepairTime1 = gArmsDealersInventory[gbSelectedArmsDealerID][pInvSlot1.sItemIndex].SpecialItem[pInvSlot1.sSpecialItemElement].uiRepairDoneTime;
+        //        uiRepairTime2 = gArmsDealersInventory[gbSelectedArmsDealerID][pInvSlot2.sItemIndex].SpecialItem[pInvSlot2.sSpecialItemElement].uiRepairDoneTime;
 
 
         // lower reapir time first
-//        if (uiRepairTime1 < uiRepairTime2)
-//        {
-//            return (-1);
-//        }
-//        else if (uiRepairTime1 > uiRepairTime2)
-//        {
-//            return (1);
-//        }
-//        else
+        //        if (uiRepairTime1 < uiRepairTime2)
+        //        {
+        //            return (-1);
+        //        }
+        //        else if (uiRepairTime1 > uiRepairTime2)
+        //        {
+        //            return (1);
+        //        }
+        //        else
         {
             return 0;
         }
@@ -935,7 +938,7 @@ public class ArmsDealerInit
         // if (pDealerItem->SpecialItem == null)
         // {
         //     Assert(0);
-        //     return (FALSE);
+        //     return (false);
         // }
         // 
         // // if adding more elements
@@ -1046,6 +1049,839 @@ public class ArmsDealerInit
         }
     }
 
+    internal static void InitAllArmsDealers()
+    {
+        ARMS_DEALER ubArmsDealer;
+
+        //Memset all dealers' status tables to zeroes
+        gArmsDealerStatus = new();
+        gArmsDealersInventory = new();
+
+        //Initialize the initial status & inventory for each of the arms dealers
+        for (ubArmsDealer = 0; ubArmsDealer < ARMS_DEALER.NUM_ARMS_DEALERS; ubArmsDealer++)
+        {
+            InitializeOneArmsDealer(ubArmsDealer);
+        }
+
+        //make sure certain items are in stock and certain limits are respected
+        AdjustCertainDealersInventory();
+
+    }
+
+    private static bool AdjustCertainDealersInventory()
+    {
+        //Adjust Tony's items (this restocks *instantly* 1/day, doesn't use the reorder system)
+        GuaranteeAtLeastOneItemOfType(ARMS_DEALER.TONY, ARMS_DEALER_ITEMS.BIG_GUNS);
+        LimitArmsDealersInventory(ARMS_DEALER.TONY, ARMS_DEALER_ITEMS.BIG_GUNS, 2);
+        LimitArmsDealersInventory(ARMS_DEALER.TONY, ARMS_DEALER_ITEMS.HANDGUNCLASS, 3);
+        LimitArmsDealersInventory(ARMS_DEALER.TONY, ARMS_DEALER_ITEMS.AMMO, 8);
+
+        //Adjust all bartenders' alcohol levels to a minimum
+        GuaranteeMinimumAlcohol(ARMS_DEALER.FRANK);
+        GuaranteeMinimumAlcohol(ARMS_DEALER.BAR_BRO_1);
+        GuaranteeMinimumAlcohol(ARMS_DEALER.BAR_BRO_2);
+        GuaranteeMinimumAlcohol(ARMS_DEALER.BAR_BRO_3);
+        GuaranteeMinimumAlcohol(ARMS_DEALER.BAR_BRO_4);
+        GuaranteeMinimumAlcohol(ARMS_DEALER.ELGIN);
+        GuaranteeMinimumAlcohol(ARMS_DEALER.MANNY);
+
+        //make sure Sam (hardware guy) has at least one empty jar
+        GuaranteeAtLeastXItemsOfIndex(ARMS_DEALER.SAM, Items.JAR, 1);
+
+        if (Facts.CheckFact(FACT.ESTONI_REFUELLING_POSSIBLE, 0))
+        {
+            // gas is restocked regularly, unlike most items
+            GuaranteeAtLeastXItemsOfIndex(ARMS_DEALER.JAKE, Items.GAS_CAN, (4 + Globals.Random.GetRandom(3)));
+        }
+
+        //If the player hasn't bought a video camera from Franz yet, make sure Franz has one to sell
+        if (!(gArmsDealerStatus[ARMS_DEALER.FRANZ].ubSpecificDealerFlags.HasFlag(ARMS_DEALER_FLAG.FRANZ_HAS_SOLD_VIDEO_CAMERA_TO_PLAYER)))
+        {
+            GuaranteeAtLeastXItemsOfIndex(ARMS_DEALER.FRANZ, Items.VIDEO_CAMERA, 1);
+        }
+
+        return true;
+    }
+
+    private static void GuaranteeMinimumAlcohol(ARMS_DEALER ubArmsDealer)
+    {
+        GuaranteeAtLeastXItemsOfIndex(ubArmsDealer, Items.BEER, (GetDealersMaxItemAmount(ubArmsDealer, Items.BEER) / 3));
+        GuaranteeAtLeastXItemsOfIndex(ubArmsDealer, Items.WINE, (GetDealersMaxItemAmount(ubArmsDealer, Items.WINE) / 3));
+        GuaranteeAtLeastXItemsOfIndex(ubArmsDealer, Items.ALCOHOL, (GetDealersMaxItemAmount(ubArmsDealer, Items.ALCOHOL) / 3));
+    }
+
+    private static void LimitArmsDealersInventory(ARMS_DEALER ubArmsDealer, ARMS_DEALER_ITEMS uiDealerItemType, int ubMaxNumberOfItemType)
+    {
+        Items usItemIndex = 0;
+        int uiItemsToRemove = 0;
+        SPECIAL_ITEM_INFO SpclItemInfo;
+
+        Items[] usAvailableItem = new Items[(int)Items.MAXITEMS];
+        int[] ubNumberOfAvailableItem = new int[(int)Items.MAXITEMS];
+        int uiTotalNumberOfItems = 0, uiRandomChoice;
+        int uiNumAvailableItems = 0, uiIndex;
+
+        // not permitted for repair dealers - would take extra code to avoid counting items under repair!
+        Debug.Assert(!DoesDealerDoRepairs(ubArmsDealer));
+
+        if (gArmsDealerStatus[ubArmsDealer].fOutOfBusiness)
+        {
+            return;
+        }
+
+        //loop through all items of the same class and count the number in stock
+        for (usItemIndex = (Items)1; usItemIndex < Items.MAXITEMS; usItemIndex++)
+        {
+            //if there is some items in stock
+            if (gArmsDealersInventory[ubArmsDealer][usItemIndex].ubTotalItems > 0)
+            {
+                //if the item is of the same dealer item type
+                if (uiDealerItemType.HasFlag(GetArmsDealerItemTypeFromItemNumber(usItemIndex)))
+                {
+                    usAvailableItem[uiNumAvailableItems] = usItemIndex;
+
+                    //if the dealer item type is ammo
+                    if (uiDealerItemType == ARMS_DEALER_ITEMS.AMMO)
+                    {
+                        // all ammo of same type counts as only one item
+                        ubNumberOfAvailableItem[uiNumAvailableItems] = 1;
+                        uiTotalNumberOfItems++;
+                    }
+                    else
+                    {
+                        // items being repaired don't count against the limit
+                        ubNumberOfAvailableItem[uiNumAvailableItems] = gArmsDealersInventory[ubArmsDealer][usItemIndex].ubTotalItems;
+                        uiTotalNumberOfItems += ubNumberOfAvailableItem[uiNumAvailableItems];
+                    }
+                    uiNumAvailableItems++;
+                }
+            }
+        }
+
+        //if there is more of the given type than we want
+        if (uiNumAvailableItems > ubMaxNumberOfItemType)
+        {
+            uiItemsToRemove = uiNumAvailableItems - ubMaxNumberOfItemType;
+
+            do
+            {
+                uiRandomChoice = Globals.Random.GetRandom(uiTotalNumberOfItems);
+
+                for (uiIndex = 0; uiIndex < uiNumAvailableItems; uiIndex++)
+                {
+                    if (uiRandomChoice <= ubNumberOfAvailableItem[uiIndex])
+                    {
+                        usItemIndex = usAvailableItem[uiIndex];
+                        if (uiDealerItemType == ARMS_DEALER_ITEMS.AMMO)
+                        {
+                            // remove all of them, since each ammo item counts as only one "item" here
+                            // create item info describing a perfect item
+                            SetSpecialItemInfoToDefaults(out SpclItemInfo);
+                            // ammo will always be only condition 100, there's never any in special slots
+                            RemoveItemFromArmsDealerInventory(ubArmsDealer, usItemIndex, SpclItemInfo, gArmsDealersInventory[ubArmsDealer][usItemIndex].ubTotalItems);
+                        }
+                        else
+                        {
+                            // pick 1 random one, don't care about its condition
+                            RemoveRandomItemFromArmsDealerInventory(ubArmsDealer, usItemIndex, 1);
+                        }
+
+                        // now remove entry from the array by replacing it with the last and decrementing
+                        // the size of the array
+                        usAvailableItem[uiIndex] = usAvailableItem[uiNumAvailableItems - 1];
+                        ubNumberOfAvailableItem[uiIndex] = ubNumberOfAvailableItem[uiNumAvailableItems - 1];
+                        uiNumAvailableItems--;
+
+                        // decrement count of # of items to remove
+                        uiItemsToRemove--;
+                        break; // and out of 'for' loop
+
+                    }
+                    else
+                    {
+                        // next item!
+                        uiRandomChoice -= ubNumberOfAvailableItem[uiIndex];
+                    }
+                }
+
+                /*
+                //loop through all items of the same type
+                for( usItemIndex = 1; usItemIndex < MAXITEMS; usItemIndex++ )
+                {
+                    //if there are some non-repairing items in stock
+                    if( gArmsDealersInventory[ ubArmsDealer ][ usItemIndex ].ubTotalItems )
+                    {
+                        //if the item is of the same dealer item type
+                        if( uiDealerItemType & GetArmsDealerItemTypeFromItemNumber( usItemIndex ) )
+                        {
+                            // a random chance that the item will be removed
+                            if( Random( 100 ) < 30 )
+                            {
+                                //remove the item
+
+                                //if the dealer item type is ammo
+                                if( uiDealerItemType == ARMS_DEALER_AMMO )
+                                {
+                                    // remove all of them, since each ammo item counts as only one "item" here
+
+                                    // create item info describing a perfect item
+                                    SetSpecialItemInfoToDefaults( &SpclItemInfo );
+                                    // ammo will always be only condition 100, there's never any in special slots
+                                    RemoveItemFromArmsDealerInventory( ubArmsDealer, usItemIndex, &SpclItemInfo, gArmsDealersInventory[ ubArmsDealer ][ usItemIndex ].ubTotalItems );
+                                }
+                                else
+                                {
+                                    // pick 1 random one, don't care about its condition
+                                    RemoveRandomItemFromArmsDealerInventory( ubArmsDealer, usItemIndex, 1 );
+                                }
+
+                                uiItemsToRemove--;
+                                if( uiItemsToRemove == 0)
+                                    break;
+                            }
+                        }
+                    }
+                }
+                */
+            } while (uiItemsToRemove > 0);
+        }
+    }
+
+    private static void RemoveRandomItemFromArmsDealerInventory(ARMS_DEALER ubArmsDealer, Items usItemIndex, int ubHowMany)
+    {
+        int ubWhichOne;
+        int ubSkippedAlready;
+        bool fFoundIt;
+        int ubElement;
+        SPECIAL_ITEM_INFO SpclItemInfo;
+
+
+        // not permitted for repair dealers - would take extra code to subtract items under repair from ubTotalItems!!!
+        Debug.Assert(!DoesDealerDoRepairs(ubArmsDealer));
+        // Can't remove any items in for repair, though!
+        Debug.Assert(ubHowMany <= gArmsDealersInventory[ubArmsDealer][usItemIndex].ubTotalItems);
+
+        while (ubHowMany > 0)
+        {
+            // pick a random one to get rid of
+            ubWhichOne = Globals.Random.GetRandom(gArmsDealersInventory[ubArmsDealer][usItemIndex].ubTotalItems);
+
+            // if we picked one of the perfect ones...
+            if (ubWhichOne < gArmsDealersInventory[ubArmsDealer][usItemIndex].ubPerfectItems)
+            {
+                // create item info describing a perfect item
+                SetSpecialItemInfoToDefaults(out SpclItemInfo);
+                // then that's easy, its condition is 100, so remove one of those
+                RemoveItemFromArmsDealerInventory(ubArmsDealer, usItemIndex, SpclItemInfo, 1);
+            }
+            else
+            {
+                // Yikes!  Gotta look through the special items.  We already know it's not any of the perfect ones, subtract those
+                ubWhichOne -= gArmsDealersInventory[ubArmsDealer][usItemIndex].ubPerfectItems;
+                ubSkippedAlready = 0;
+
+                fFoundIt = false;
+
+                for (ubElement = 0; ubElement < gArmsDealersInventory[ubArmsDealer][usItemIndex].ubElementsAlloced; ubElement++)
+                {
+                    // if this is an active special item, not in repair
+                    if (gArmsDealersInventory[ubArmsDealer][usItemIndex].SpecialItem[ubElement].fActive) // &&
+                                                                                                         //					 ( gArmsDealersInventory[ ubArmsDealer ][ usItemIndex ].SpecialItem[ ubElement ].Info.bItemCondition > 0 ) )
+                    {
+                        // if we skipped the right amount of them
+                        if (ubSkippedAlready == ubWhichOne)
+                        {
+                            // then this one is it!  That's the one we're gonna remove
+                            RemoveSpecialItemFromArmsDealerInventoryAtElement(ubArmsDealer, usItemIndex, ubElement);
+                            fFoundIt = true;
+                            break;
+                        }
+                        else
+                        {
+                            // keep looking...
+                            ubSkippedAlready++;
+                        }
+                    }
+                }
+
+                // this HAS to work, or the data structure is corrupt!
+                Debug.Assert(fFoundIt);
+            }
+
+            ubHowMany--;
+        }
+    }
+
+    private static void RemoveItemFromArmsDealerInventory(ARMS_DEALER ubArmsDealer, Items usItemIndex, SPECIAL_ITEM_INFO pSpclItemInfo, int ubHowMany)
+    {
+        DEALER_SPECIAL_ITEM pSpecialItem;
+        int ubElement;
+
+        Debug.Assert(ubHowMany <= gArmsDealersInventory[ubArmsDealer][usItemIndex].ubTotalItems);
+
+        if (ubHowMany == 0)
+        {
+            return;
+        }
+
+
+        // decide whether this item is "special" or not
+        if (IsItemInfoSpecial(pSpclItemInfo))
+        {
+            // look through the elements, trying to find special items matching the specifications
+            for (ubElement = 0; ubElement < gArmsDealersInventory[ubArmsDealer][usItemIndex].ubElementsAlloced; ubElement++)
+            {
+                pSpecialItem = (gArmsDealersInventory[ubArmsDealer][usItemIndex].SpecialItem[ubElement]);
+
+                // if this element is in use
+                if (pSpecialItem.fActive)
+                {
+                    // and its contents are exactly what we're looking for
+                    if (gArmsDealersInventory[ubArmsDealer][usItemIndex].SpecialItem[ubElement].Info == pSpclItemInfo)
+                    {
+                        // Got one!  Remove it
+                        RemoveSpecialItemFromArmsDealerInventoryAtElement(ubArmsDealer, usItemIndex, ubElement);
+
+                        ubHowMany--;
+                        if (ubHowMany == 0)
+                        {
+                            break;
+                        }
+                    }
+                }
+            }
+
+            // when we've searched all the special item elements, we'd better not have any more items to remove!
+            Debug.Assert(ubHowMany == 0);
+        }
+        else    // removing perfect item(s)
+        {
+            // then it's stored as a "perfect" item, simply subtract from tha counter!
+            Debug.Assert(ubHowMany <= gArmsDealersInventory[ubArmsDealer][usItemIndex].ubPerfectItems);
+            gArmsDealersInventory[ubArmsDealer][usItemIndex].ubPerfectItems -= ubHowMany;
+            // decrease total items of this type
+            gArmsDealersInventory[ubArmsDealer][usItemIndex].ubTotalItems -= ubHowMany;
+        }
+    }
+
+    private static void RemoveSpecialItemFromArmsDealerInventoryAtElement(ARMS_DEALER ubArmsDealer, Items usItemIndex, int ubElement)
+    {
+        Debug.Assert(gArmsDealersInventory[ubArmsDealer][usItemIndex].ubTotalItems > 0);
+        Debug.Assert(ubElement < gArmsDealersInventory[ubArmsDealer][usItemIndex].ubElementsAlloced);
+        Debug.Assert(gArmsDealersInventory[ubArmsDealer][usItemIndex].SpecialItem[ubElement].fActive == true);
+
+        // wipe it out (turning off fActive)
+        gArmsDealersInventory[ubArmsDealer][usItemIndex].SpecialItem[ubElement] = new();
+
+        // one fewer item remains...
+        gArmsDealersInventory[ubArmsDealer][usItemIndex].ubTotalItems--;
+    }
+
+    private static void GuaranteeAtLeastOneItemOfType(ARMS_DEALER ubArmsDealer, ARMS_DEALER_ITEMS uiDealerItemType)
+    {
+        Items usItemIndex;
+        int ubChance;
+        bool fFoundEligibleItemOfSameType = false;
+        bool fItemHasBeenAdded = false;
+        bool fFailedOnce = false;
+        Items[] usAvailableItem = new Items[(int)Items.MAXITEMS];
+        int[] ubChanceForAvailableItem = new int[(int)Items.MAXITEMS];
+        int uiTotalChances = 0;
+        int uiNumAvailableItems = 0, uiIndex, uiRandomChoice;
+
+        // not permitted for repair dealers - would take extra code to avoid counting items under repair!
+        Debug.Assert(!DoesDealerDoRepairs(ubArmsDealer));
+
+        if (gArmsDealerStatus[ubArmsDealer].fOutOfBusiness)
+            return;
+
+        //loop through all items of the same type
+        for (usItemIndex = (Items)1; usItemIndex < Items.MAXITEMS; usItemIndex++)
+        {
+            //if the item is of the same dealer item type
+            if (uiDealerItemType.HasFlag(GetArmsDealerItemTypeFromItemNumber(usItemIndex)))
+            {
+                //if there are any of these in stock
+                if (gArmsDealersInventory[ubArmsDealer][usItemIndex].ubTotalItems > 0)
+                {
+                    //there is already at least 1 item of that type, return
+                    return;
+                }
+
+                // if he can stock it (it appears in his inventory list)
+                if (GetDealersMaxItemAmount(ubArmsDealer, usItemIndex) > 0)
+                {
+                    // and the stage of the game gives him a chance to have it (assume new)
+                    ubChance = ChanceOfItemTransaction(ubArmsDealer, usItemIndex, DEALER_BUYING, 0);
+                    if (ubChance > 0)
+                    {
+                        usAvailableItem[uiNumAvailableItems] = usItemIndex;
+                        ubChanceForAvailableItem[uiNumAvailableItems] = ubChance;
+                        uiNumAvailableItems++;
+                        uiTotalChances += ubChance;
+                    }
+                }
+            }
+        }
+
+        // if there aren't any such items, the following loop would never finish, so quit before trying it!
+        if (uiNumAvailableItems == 0)
+        {
+            return;
+        }
+
+
+        // CJC: randomly pick one of available items by weighted random selection.
+
+        // randomize number within uiTotalChances and then loop forwards till we find that item
+        uiRandomChoice = Globals.Random.GetRandom(uiTotalChances);
+
+        for (uiIndex = 0; uiIndex < uiNumAvailableItems; uiIndex++)
+        {
+            if (uiRandomChoice <= ubChanceForAvailableItem[uiIndex])
+            {
+                ArmsDealerGetsFreshStock(ubArmsDealer, usAvailableItem[uiIndex], 1);
+                return;
+            }
+            else
+            {
+                // next item!
+                uiRandomChoice -= ubChanceForAvailableItem[uiIndex];
+            }
+        }
+
+        // internal logic failure!
+    }
+
+    private static ARMS_DEALER_ITEMS GetArmsDealerItemTypeFromItemNumber(Items usItem)
+    {
+        switch (Item[usItem].usItemClass)
+        {
+            case IC.NONE:
+                return (0);
+
+            case IC.GUN:
+                switch (WeaponTypes.Weapon[(Items)Item[usItem].ubClassIndex].ubWeaponClass)
+                {
+                    case WeaponClass.HANDGUNCLASS:
+                        return (ARMS_DEALER_ITEMS.HANDGUNCLASS);
+                        break;
+                    case WeaponClass.RIFLECLASS:
+                        if (ItemIsARocketRifle(usItem))
+                        {
+                            return (ARMS_DEALER_ITEMS.ROCKET_RIFLE);
+                        }
+                        else
+                        {
+                            return (ARMS_DEALER_ITEMS.RIFLECLASS);
+                        }
+                    case WeaponClass.SHOTGUNCLASS:
+                        return (ARMS_DEALER_ITEMS.SHOTGUNCLASS);
+                        break;
+                    case WeaponClass.SMGCLASS:
+                        return (ARMS_DEALER_ITEMS.SMGCLASS);
+                        break;
+                    case WeaponClass.MGCLASS:
+                        return (ARMS_DEALER_ITEMS.MGCLASS);
+                        break;
+                    case WeaponClass.MONSTERCLASS:
+                        return (0);
+                        break;
+                    case WeaponClass.KNIFECLASS:
+                        return (ARMS_DEALER_ITEMS.KNIFECLASS);
+                        break;
+                }
+
+                break;
+
+            case IC.PUNCH:
+                if (usItem == NOTHING)
+                {
+                    return (0);
+                }
+                break;
+            // else treat as blade
+            case IC.BLADE:
+            case IC.THROWING_KNIFE:
+                return (ARMS_DEALER_ITEMS.BLADE);
+                break;
+            case IC.LAUNCHER:
+                return (ARMS_DEALER_ITEMS.LAUNCHER);
+                break;
+            case IC.ARMOUR:
+                return (ARMS_DEALER_ITEMS.ARMOUR);
+                break;
+            case IC.MEDKIT:
+                return (ARMS_DEALER_ITEMS.MEDKIT);
+                break;
+            case IC.KIT:
+                return (ARMS_DEALER_ITEMS.KIT);
+                break;
+            case IC.MISC:
+                {
+                    //switch on the type of item
+                    switch (usItem)
+                    {
+                        case Items.BEER:
+                        case Items.WINE:
+                        case Items.ALCOHOL:
+                            return (ARMS_DEALER_ITEMS.ALCOHOL);
+                            break;
+
+                        case Items.METALDETECTOR:
+                        case Items.LASERSCOPE:
+                            //				case REMDETONATOR:
+                            return (ARMS_DEALER_ITEMS.ELECTRONICS);
+                            break;
+
+                        case Items.CANTEEN:
+                        case Items.CROWBAR:
+                        case Items.WIRECUTTERS:
+                            return (ARMS_DEALER_ITEMS.HARDWARE);
+                            break;
+
+                        case Items.ADRENALINE_BOOSTER:
+                        case Items.REGEN_BOOSTER:
+                        case Items.SYRINGE_3:
+                        case Items.SYRINGE_4:
+                        case Items.SYRINGE_5:
+                            return (ARMS_DEALER_ITEMS.MEDICAL);
+                            break;
+
+                        case Items.SILENCER:
+                        case Items.SNIPERSCOPE:
+                        case Items.BIPOD:
+                        case Items.DUCKBILL:
+                            return (ARMS_DEALER_ITEMS.ATTACHMENTS);
+                            break;
+
+                        case Items.DETONATOR:
+                        case Items.REMDETONATOR:
+                        case Items.REMOTEBOMBTRIGGER:
+                            return (ARMS_DEALER_ITEMS.DETONATORS);
+                            break;
+
+                        default:
+                            return (ARMS_DEALER_ITEMS.MISC);
+                    }
+
+                }
+                break;
+            case IC.AMMO:
+                return (ARMS_DEALER_ITEMS.AMMO);
+                break;
+            case IC.FACE:
+                switch (usItem)
+                {
+                    case Items.EXTENDEDEAR:
+                    case Items.NIGHTGOGGLES:
+                    case Items.ROBOT_REMOTE_CONTROL:
+                        return (ARMS_DEALER_ITEMS.ELECTRONICS);
+                        break;
+
+                    default:
+                        return (ARMS_DEALER_ITEMS.FACE);
+                }
+                break;
+            case IC.THROWN:
+                return (0);
+                //			return( ARMS_DEALER_THROWN );
+
+                break;
+            case IC.KEY:
+                return (0);
+                //			return( ARMS_DEALER_KEY );
+                break;
+            case IC.GRENADE:
+                return (ARMS_DEALER_ITEMS.GRENADE);
+                break;
+            case IC.BOMB:
+                return (ARMS_DEALER_ITEMS.BOMB);
+                break;
+            case IC.EXPLOSV:
+                return (ARMS_DEALER_ITEMS.EXPLOSV);
+                break;
+            case IC.TENTACLES:
+            case IC.MONEY:
+                return (0);
+
+                //	case IC.APPLIABLE:
+                break;
+            default:
+                throw new ArgumentException($"GetArmsDealerItemTypeFromItemNumber(), invalid class {Item[usItem].usItemClass} for item {usItem}.  DF 0.");
+        }
+        return (0);
+    }
+
+    private static bool ItemIsARocketRifle(Items usItem)
+    {
+        return usItem == Items.ROCKET_RIFLE || usItem == Items.AUTO_ROCKET_RIFLE;
+    }
+
+    private static void InitializeOneArmsDealer(ARMS_DEALER ubArmsDealer)
+    {
+        Items usItemIndex;
+        int ubNumItems = 0;
+
+
+        gArmsDealerStatus[ubArmsDealer] = new();
+        gArmsDealersInventory[ubArmsDealer] = [];
+
+        //Reset the arms dealers cash on hand to the default initial value
+        gArmsDealerStatus[ubArmsDealer].uiArmsDealersCash = ArmsDealerInfo[ubArmsDealer].iInitialCash;
+
+        //if the arms dealer isn't supposed to have any items (includes all repairmen)
+        if (ArmsDealerInfo[ubArmsDealer].uiFlags.HasFlag(ARMS_DEALER_ITEM.HAS_NO_INVENTORY))
+        {
+            return;
+        }
+
+
+        //loop through all the item types
+        for (usItemIndex = (Items)1; usItemIndex < Items.MAXITEMS; usItemIndex++)
+        {
+            //Can the item be sold by the arms dealer
+            if (CanDealerTransactItem(ubArmsDealer, usItemIndex, false))
+            {
+                //Setup an initial amount for the items (treat items as new, how many are used isn't known yet)
+                ubNumItems = DetermineInitialInvItems(ubArmsDealer, usItemIndex, GetDealersMaxItemAmount(ubArmsDealer, usItemIndex), BOBBY_RAY.NEW);
+
+                //if there are any initial items
+                if (ubNumItems > 0)
+                {
+                    ArmsDealerGetsFreshStock(ubArmsDealer, usItemIndex, ubNumItems);
+                }
+            }
+        }
+    }
+
+    private static bool CanDealerTransactItem(ARMS_DEALER ubArmsDealer, Items usItemIndex, bool fPurchaseFromPlayer)
+    {
+        switch (ArmsDealerInfo[ubArmsDealer].ubTypeOfArmsDealer)
+        {
+            case ARMS_DEALER_KINDS.SELLS_ONLY:
+                if (fPurchaseFromPlayer)
+                {
+                    // this dealer only sells stuff to player, so he can't buy anything from him
+                    return (false);
+                }
+                break;
+
+            case ARMS_DEALER_KINDS.BUYS_ONLY:
+                if (!fPurchaseFromPlayer)
+                {
+                    // this dealer only buys stuff from player, so he can't sell anything to him
+                    return (false);
+                }
+                break;
+
+            case ARMS_DEALER_KINDS.BUYS_SELLS:
+                switch (ubArmsDealer)
+                {
+                    case ARMS_DEALER.JAKE:
+                    case ARMS_DEALER.KEITH:
+                    case ARMS_DEALER.FRANZ:
+                        if (fPurchaseFromPlayer)
+                        {
+                            // these guys will buy nearly anything from the player, regardless of what they carry for sale!
+                            return (CalcValueOfItemToDealer(ubArmsDealer, usItemIndex, false) > 0);
+                        }
+                        //else selling inventory uses their inventory list
+                        break;
+
+                    default:
+                        // the others go by their inventory list
+                        break;
+                }
+                break;
+
+            case ARMS_DEALER_KINDS.REPAIRS:
+                // repairmen don't have a complete list of what they'll repair in their inventory,
+                // so we must check the item's properties instead.
+                return (CanDealerRepairItem(ubArmsDealer, usItemIndex));
+
+            default:
+                //AssertMsg(false, String("CanDealerTransactItem(), type of dealer %d.  AM 0.", ArmsDealerInfo[ubArmsDealer].ubTypeOfArmsDealer));
+                return (false);
+        }
+
+        return (DoesItemAppearInDealerInventoryList(ubArmsDealer, usItemIndex, fPurchaseFromPlayer));
+    }
+
+    private static bool CanDealerRepairItem(ARMS_DEALER ubArmsDealer, Items usItemIndex)
+    {
+        var uiFlags = Item[usItemIndex].fFlags;
+
+        // can't repair anything that's not repairable!
+        if (!(uiFlags.HasFlag(ItemAttributes.ITEM_REPAIRABLE)))
+        {
+            return (false);
+        }
+
+        switch (ubArmsDealer)
+        {
+            case ARMS_DEALER.ARNIE:
+            case ARMS_DEALER.PERKO:
+                // repairs ANYTHING non-electronic
+                if (!(uiFlags.HasFlag(ItemAttributes.ITEM_ELECTRONIC)))
+                {
+                    return (true);
+                }
+                break;
+
+            case ARMS_DEALER.FREDO:
+                // repairs ONLY electronics
+                if (uiFlags.HasFlag(ItemAttributes.ITEM_ELECTRONIC))
+                {
+                    return (true);
+                }
+                break;
+
+            default:
+                throw new ArgumentNullException($"CanDealerRepairItem(), Arms Dealer {ubArmsDealer} is not a recognized repairman!.  AM 1.");
+        }
+
+        // can't repair this...
+        return (false);
+    }
+
+    private static int CalcValueOfItemToDealer(ARMS_DEALER ubArmsDealer, Items usItemIndex, bool fDealerSelling)
+    {
+        int usBasePrice;
+        int ubItemPriceClass;
+        int ubDealerPriceClass;
+        int usValueToThisDealer;
+
+
+        usBasePrice = Item[usItemIndex].usPrice;
+
+        if (usBasePrice == 0)
+        {
+            // worthless to any dealer
+            return (0);
+        }
+
+
+        // figure out the price class this dealer prefers
+        switch (ubArmsDealer)
+        {
+            case ARMS_DEALER.JAKE:
+                ubDealerPriceClass = PRICE_CLASS_JUNK;
+                break;
+            case ARMS_DEALER.KEITH:
+                ubDealerPriceClass = PRICE_CLASS_CHEAP;
+                break;
+            case ARMS_DEALER.FRANZ:
+                ubDealerPriceClass = PRICE_CLASS_EXPENSIVE;
+                break;
+
+            // other dealers don't use this system
+            default:
+                if (DoesItemAppearInDealerInventoryList(ubArmsDealer, usItemIndex, true))
+                {
+                    return (usBasePrice);
+                }
+                else
+                {
+                    return (0);
+                }
+        }
+
+
+        // the rest of this function applies only to the "general" dealers ( Jake, Keith, and Franz )
+
+        // Micky & Gabby specialize in creature parts & such, the others don't buy these at all (exception: jars)
+        if ((usItemIndex != Items.JAR)
+            && (DoesItemAppearInDealerInventoryList(ARMS_DEALER.MICKY, usItemIndex, true)
+            || DoesItemAppearInDealerInventoryList(ARMS_DEALER.GABBY, usItemIndex, true)))
+        {
+            return (0);
+        }
+
+        if ((ubArmsDealer == ARMS_DEALER.KEITH) && (Item[usItemIndex].usItemClass.HasFlag(IC.GUN | IC.LAUNCHER)))
+        {
+            // Keith won't buy guns until the Hillbillies are vanquished
+            if (Facts.CheckFact(FACT.HILLBILLIES_KILLED, NPCID.KEITH) == false)
+            {
+                return (0);
+            }
+        }
+
+
+        // figure out which price class it belongs to
+        if (usBasePrice < 100)
+        {
+            ubItemPriceClass = PRICE_CLASS_JUNK;
+        }
+        else
+        if (usBasePrice < 1000)
+        {
+            ubItemPriceClass = PRICE_CLASS_CHEAP;
+        }
+        else
+        {
+            ubItemPriceClass = PRICE_CLASS_EXPENSIVE;
+        }
+
+
+        if (!fDealerSelling)
+        {
+            // junk dealer won't buy expensive stuff at all, expensive dealer won't buy junk at all
+            if (Math.Abs(ubDealerPriceClass - ubItemPriceClass) == 2)
+            {
+                return (0);
+            }
+        }
+
+        // start with the base price
+        usValueToThisDealer = usBasePrice;
+
+        // if it's out of their preferred price class
+        if (ubDealerPriceClass != ubItemPriceClass)
+        {
+            // exception: Gas (Jake's)
+            if (usItemIndex != Items.GAS_CAN)
+            {
+                // they pay only 1/3 of true value!
+                usValueToThisDealer /= 3;
+            }
+        }
+
+        // minimum bet $1 !
+        if (usValueToThisDealer == 0)
+        {
+            usValueToThisDealer = 1;
+        }
+
+        return (usValueToThisDealer);
+    }
+
+    private static bool DoesItemAppearInDealerInventoryList(ARMS_DEALER ubArmsDealer, Items usItemIndex, bool fPurchaseFromPlayer)
+    {
+        // the others will buy only things that appear in their own "for sale" inventory lists
+        DEALER_POSSIBLE_INV[] pDealerInv = GetPointerToDealersPossibleInventory(ubArmsDealer);
+        //Assert(pDealerInv != NULL);
+
+        // loop through the dealers' possible inventory and see if the item exists there
+        int usCnt = 0;
+        while (pDealerInv[usCnt].sItemIndex != LAST_DEALER_ITEM)
+        {
+            //if the initial dealer inv contains the required item, the dealer can sell the item
+            if (pDealerInv[usCnt].sItemIndex == usItemIndex)
+            {
+                // if optimal quantity listed is 0, it means dealer won't sell it himself, but will buy it from the player!
+                if ((pDealerInv[usCnt].ubOptimalNumber > 0) || fPurchaseFromPlayer)
+                {
+                    return (true);
+                }
+            }
+
+            usCnt++;
+        }
+
+        return (false);
+    }
+
     // THIS STRUCTURE HAS UNCHANGING INFO THAT DOESN'T GET SAVED/RESTORED/RESET
     public static Dictionary<ARMS_DEALER, ARMS_DEALER_INFO> ArmsDealerInfo = new()
     {
@@ -1076,6 +1912,61 @@ public class ArmsDealerInit
 										//Speed		Cost
 
 };
+}
+
+[Flags]
+public enum ARMS_DEALER_ITEMS : uint
+{
+    //The following defines indicate what items can be sold by the arms dealer
+    HANDGUNCLASS = 0x00000001,
+    SMGCLASS = 0x00000002,
+    RIFLECLASS = 0x00000004,
+    MGCLASS = 0x00000008,
+    SHOTGUNCLASS = 0x00000010,
+
+    KNIFECLASS = 0x00000020,
+
+    BLADE = 0x00000040,
+    LAUNCHER = 0x00000080,
+
+    ARMOUR = 0x00000100,
+    MEDKIT = 0x00000200,
+    MISC = 0x00000400,
+    AMMO = 0x00000800,
+
+    GRENADE = 0x00001000,
+    BOMB = 0x00002000,
+    EXPLOSV = 0x00004000,
+
+    KIT = 0x00008000,
+
+    FACE = 0x00010000,
+    //THROWN						0x00020000
+    //KEY								0x00040000
+
+    //VIDEO_CAMERA			0x00020000
+
+    DETONATORS = 0x00040000,
+
+    ATTACHMENTS = 0x00080000,
+    ALCOHOL = 0x00100000,
+    ELECTRONICS = 0x00200000,
+    HARDWARE = 0x00400000 | KIT,
+    MEDICAL = 0x00800000 | MEDKIT,
+
+    //EMPTY_JAR					0x01000000
+    CREATURE_PARTS = 0x02000000,
+    ROCKET_RIFLE = 0x04000000,
+
+    ONLY_USED_ITEMS = 0x08000000,
+    GIVES_CHANGE = 0x10000000,  //The arms dealer will give the required change when doing a transaction
+    ACCEPTS_GIFTS = 0x20000000,     //The arms dealer is the kind of person who will accept gifts
+    SOME_USED_ITEMS = 0x40000000,   //The arms dealer can have used items in his inventory
+    HAS_NO_INVENTORY = 0x80000000,      //The arms dealer does not carry any inventory
+
+    ALL_GUNS = HANDGUNCLASS | SMGCLASS | RIFLECLASS | MGCLASS | SHOTGUNCLASS,
+    BIG_GUNS = SMGCLASS | RIFLECLASS | MGCLASS | SHOTGUNCLASS,
+    ALL_WEAPONS = ALL_GUNS | BLADE | LAUNCHER | KNIFECLASS,
 }
 
 //enums for the various arms dealers
@@ -1139,7 +2030,7 @@ public record ARMS_DEALER_INFO(
 public class ARMS_DEALER_STATUS
 {
     public int uiArmsDealersCash;           // How much money the arms dealer currently has
-    public int ubSpecificDealerFlags;    // Misc state flags for specific dealers
+    public ARMS_DEALER_FLAG ubSpecificDealerFlags;    // Misc state flags for specific dealers
     public bool fOutOfBusiness;                 // Set when a dealer has been killed, etc.
     public bool fRepairDelayBeenUsed;       // Set when a repairman has missed his repair time estimate & given his excuse for it
     public bool fUnusedKnowsPlayer;         // Set if the shopkeeper has met with the player before [UNUSED]

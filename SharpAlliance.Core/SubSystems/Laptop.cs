@@ -413,14 +413,14 @@ public class Laptop
         }
     }
 
+    public static void SetLaptopNewGameFlag()
+    {
+        LaptopSaveInfo.gfNewGameLaptop = true;
+    }
+
     public static void SetLaptopExitScreen(ScreenName exitScreen)
     {
         guiExitScreen = exitScreen;
-    }
-
-    internal static void SetLaptopNewGameFlag()
-    {
-        LaptopSaveInfo.gfNewGameLaptop = true;
     }
 }
 
