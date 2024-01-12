@@ -107,7 +107,7 @@ public class QueenCommand
         }
 
         // don't count roadblocks as stationary garrison, we want to see how many enemies are in them, not question marks
-        if (gGarrisonGroup[pSector.ubGarrisonID].ubComposition == Garrisons.ROADBLOCK)
+        if (gGarrisonGroup[(int)pSector.ubGarrisonID].ubComposition == Garrisons.ROADBLOCK)
         {
             // pretend they're not stationary
             return 0;

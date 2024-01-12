@@ -218,7 +218,7 @@ public class GameInitOptionsScreen : IScreen
 
             usPosY += GIO_GAP_BN_SETTINGS;
         }
-        if (this.gGameOptions.SciFi)
+        if (this.gGameOptions.fSciFi)
         {
             this.guiGameStyleToggles[GameStyle.GIO_SCI_FI].uiFlags |= ButtonFlags.BUTTON_CLICKED_ON;
         }
@@ -271,7 +271,7 @@ public class GameInitOptionsScreen : IScreen
             usPosY += GIO_GAP_BN_SETTINGS;
         }
 
-        if (this.gGameOptions.GunNut)
+        if (this.gGameOptions.fGunNut)
         {
             this.guiGunOptionToggles[GunOption.GIO_GUN_NUT].uiFlags |= ButtonFlags.BUTTON_CLICKED_ON;
         }
@@ -470,8 +470,8 @@ public class GameInitOptionsScreen : IScreen
     private void DoneFadeOutForExitGameInitOptionScreen()
     {
         // loop through and get the status of all the buttons
-        this.gGameOptions.GunNut = this.GetCurrentGunButtonSetting();
-        this.gGameOptions.SciFi = this.GetCurrentGameStyleButtonSetting();
+        this.gGameOptions.fGunNut = this.GetCurrentGunButtonSetting();
+        this.gGameOptions.fSciFi = this.GetCurrentGameStyleButtonSetting();
         this.gGameOptions.ubDifficultyLevel = this.GetCurrentDifficultyButtonSetting() + 1;
         // JA2Gold: no more timed turns setting
         //gGameOptions.fTurnTimeLimit = GetCurrentTimedTurnsButtonSetting();

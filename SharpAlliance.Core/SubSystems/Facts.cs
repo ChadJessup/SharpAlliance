@@ -452,7 +452,7 @@ public class Facts
                 break;
 
             case FACT.FATHER_DRUNK_AND_SCIFI_OPTION_ON:
-                gubFact[usFact] = (Globals.gMercProfiles[NPCID.FATHER].bNPCData >= 5) && Globals.gGameOptions.SciFi;
+                gubFact[usFact] = (Globals.gMercProfiles[NPCID.FATHER].bNPCData >= 5) && Globals.gGameOptions.fSciFi;
                 break;
 
             case FACT.BLOODCAT_QUEST_STARTED_TWO_DAYS_AGO:

@@ -23,9 +23,19 @@ public class Vehicles
 
     }
 
-    internal static void InitVehicles()
+    public static void InitVehicles()
     {
-        throw new NotImplementedException();
+        GROUP? pGroup = null;
+
+        for (int cnt = 0; cnt < MAX_VEHICLES; cnt++)
+        {
+            // create mvt groups
+            gubVehicleMovementGroups[cnt] = StrategicMovement.CreateNewVehicleGroupDepartingFromSector(1, MAP_ROW.A, cnt);
+
+            // Set persistent....
+            pGroup = StrategicMovement.GetGroup(gubVehicleMovementGroups[cnt]);
+            pGroup.fPersistant = true;
+        }
     }
 
     internal static void ClearOutVehicleList()

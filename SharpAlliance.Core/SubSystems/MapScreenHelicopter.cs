@@ -5,6 +5,26 @@ namespace SharpAlliance.Core.SubSystems;
 
 public class MapScreenHelicopter
 {
+    private static SOLDIERTYPE SoldierSkyRider;
+    private static bool fHelicopterIsAirBorne;
+    private static bool fHeliReturnStraightToBase;
+    private static bool fHoveringHelicopter;
+    private static int uiStartHoverTime;
+    private static bool fPlotForHelicopter;
+    private static Path? pTempHelicopterPath;
+    private static int iTotalAccumulatedCostByPlayer;
+    private static bool fHelicopterDestroyed;
+    private static bool fSkyRiderSetUp;
+    private static SOLDIERTYPE? pSkyRider;
+    private static bool fHelicopterAvailable;
+    private static bool fShowEstoniRefuelHighLight;
+    private static bool fShowOtherSAMHighLight;
+    private static bool fShowDrassenSAMHighLight;
+    private static bool fShowCambriaHospitalHighLight;
+    private static bool gfSkyriderEmptyHelpGiven;
+    private static int gubHelicopterHitsTaken;
+    private static bool gfSkyriderSaidCongratsOnTakingSAM;
+    private static int gubPlayerProgressSkyriderLastCommentedOn;
 
     public static void CheckAndHandleSkyriderMonologues()
     {
@@ -73,7 +93,43 @@ public class MapScreenHelicopter
 
     internal static void InitializeHelicopter()
     {
-        throw new NotImplementedException();
+        // must be called whenever a new game starts up!
+        fHelicopterAvailable = false;
+        iHelicopterVehicleId = -1;
+
+        fSkyRiderAvailable = false;
+        fSkyRiderSetUp = false;
+        pSkyRider = null;
+        SoldierSkyRider = new SOLDIERTYPE();
+
+        fHelicopterIsAirBorne = false;
+        fHeliReturnStraightToBase = false;
+
+        fHoveringHelicopter = false;
+        uiStartHoverTime = 0;
+
+        fPlotForHelicopter = false;
+        pTempHelicopterPath = null;
+
+        //	iTotalHeliDistanceSinceRefuel = 0;
+        iTotalAccumulatedCostByPlayer = 0;
+
+        fHelicopterDestroyed = false;
+
+        guiHelicopterSkyriderTalkState = 0;
+        guiTimeOfLastSkyriderMonologue = 0;
+
+        fShowEstoniRefuelHighLight = false;
+        fShowOtherSAMHighLight = false;
+        fShowDrassenSAMHighLight = false;
+        fShowCambriaHospitalHighLight = false;
+
+        gfSkyriderEmptyHelpGiven = false;
+
+        gubHelicopterHitsTaken = 0;
+
+        gfSkyriderSaidCongratsOnTakingSAM = false;
+        gubPlayerProgressSkyriderLastCommentedOn = 0;
     }
 }
 

@@ -102,7 +102,7 @@ public class ItemSubSystem
     public static bool ItemIsLegal(Items usItemIndex)
     {
         //if the user has selected the reduced gun list
-        if (!Globals.gGameOptions.GunNut)
+        if (!Globals.gGameOptions.fGunNut)
         {
             //if the item is a gun, or ammo
             if ((Item[usItemIndex].usItemClass == IC.GUN) || (Item[usItemIndex].usItemClass == IC.AMMO))

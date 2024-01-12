@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Diagnostics;
+using System.Reflection.Metadata;
 using System.Threading.Tasks;
 using SharpAlliance.Core.Interfaces;
 using SharpAlliance.Core.Managers;
@@ -364,13 +365,202 @@ public class GameInit
         fDisableMapInterfaceDueToBattle = false;
     }
 
-    private void InitBloodCatSectors()
-    {
-        throw new NotImplementedException();
-    }
-
     private void InitNPCs()
     {
-        throw new NotImplementedException();
+        MERCPROFILESTRUCT? pProfile;
+
+        // add the pilot at a random location!
+        pProfile = (gMercProfiles[NPCID.SKYRIDER]);
+        switch (Globals.Random.GetRandom(4))
+        {
+            case 0:
+                pProfile.sSectorX = 15;
+                pProfile.sSectorY = MAP_ROW.B;
+                pProfile.bSectorZ = 0;
+                break;
+            case 1:
+                pProfile.sSectorX = 14;
+                pProfile.sSectorY = MAP_ROW.E;
+                pProfile.bSectorZ = 0;
+                break;
+            case 2:
+                pProfile.sSectorX = 12;
+                pProfile.sSectorY = MAP_ROW.D;
+                pProfile.bSectorZ = 0;
+                break;
+            case 3:
+                pProfile.sSectorX = 16;
+                pProfile.sSectorY = MAP_ROW.C;
+                pProfile.bSectorZ = 0;
+                break;
+        }
+
+        // use alternate map, with Skyrider's shack, in this sector
+        SectorInfo[SECTORINFO.SECTOR(pProfile.sSectorX, pProfile.sSectorY)].uiFlags |= SF.USE_ALTERNATE_MAP;
+
+
+        // set up Madlab's secret lab (he'll be added when the meanwhile scene occurs)
+
+        switch (Globals.Random.GetRandom(4))
+        {
+            case 0:
+                // use alternate map in this sector
+                SectorInfo[SECTORINFO.SECTOR(7, MAP_ROW.H)].uiFlags |= SF.USE_ALTERNATE_MAP;
+                break;
+            case 1:
+                SectorInfo[SECTORINFO.SECTOR(16, MAP_ROW.H)].uiFlags |= SF.USE_ALTERNATE_MAP;
+                break;
+            case 2:
+                SectorInfo[SECTORINFO.SECTOR(11, MAP_ROW.I)].uiFlags |= SF.USE_ALTERNATE_MAP;
+                break;
+            case 3:
+                SectorInfo[SECTORINFO.SECTOR(4, MAP_ROW.E)].uiFlags |= SF.USE_ALTERNATE_MAP;
+                break;
+        }
+
+        // add Micky in random location
+
+        pProfile = (gMercProfiles[NPCID.MICKY]);
+        switch (Globals.Random.GetRandom(5))
+        {
+            case 0:
+                pProfile.sSectorX = 9;
+                pProfile.sSectorY = MAP_ROW.G;
+                pProfile.bSectorZ = 0;
+                break;
+            case 1:
+                pProfile.sSectorX = 13;
+                pProfile.sSectorY = MAP_ROW.D;
+                pProfile.bSectorZ = 0;
+                break;
+            case 2:
+                pProfile.sSectorX = 5;
+                pProfile.sSectorY = MAP_ROW.C;
+                pProfile.bSectorZ = 0;
+                break;
+            case 3:
+                pProfile.sSectorX = 2;
+                pProfile.sSectorY = MAP_ROW.H;
+                pProfile.bSectorZ = 0;
+                break;
+            case 4:
+                pProfile.sSectorX = 6;
+                pProfile.sSectorY = MAP_ROW.C;
+                pProfile.bSectorZ = 0;
+                break;
+        }
+
+        // use alternate map in this sector
+        //SectorInfo[ SECTOR( pProfile.sSectorX, pProfile.sSectorY ) ].uiFlags |= SF_USE_ALTERNATE_MAP;
+
+        gfPlayerTeamSawJoey = false;
+
+
+        if (gGameOptions.fSciFi)
+        {
+            // add Bob
+            pProfile = (gMercProfiles[NPCID.BOB]);
+            pProfile.sSectorX = 8;
+            pProfile.sSectorY = MAP_ROW.F;
+            pProfile.bSectorZ = 0;
+
+            // add Gabby in random location
+            pProfile = (gMercProfiles[NPCID.GABBY]);
+            switch (Globals.Random.GetRandom(2))
+            {
+                case 0:
+                    pProfile.sSectorX = 11;
+                    pProfile.sSectorY = MAP_ROW.H;
+                    pProfile.bSectorZ = 0;
+                    break;
+                case 1:
+                    pProfile.sSectorX = 4;
+                    pProfile.sSectorY = MAP_ROW.I;
+                    pProfile.bSectorZ = 0;
+                    break;
+            }
+
+            // use alternate map in this sector
+            SectorInfo[SECTORINFO.SECTOR(pProfile.sSectorX, pProfile.sSectorY)].uiFlags |= SF.USE_ALTERNATE_MAP;
+        }
+        else
+        { //not scifi, so use alternate map in Tixa's b1 level that doesn't have the stairs going down to the caves.
+            UNDERGROUND_SECTORINFO? pSector;
+            pSector = QueenCommand.FindUnderGroundSector(9, MAP_ROW.J, 1); //j9_b1
+            if (pSector is not null)
+            {
+                pSector.uiFlags |= SF.USE_ALTERNATE_MAP;
+            }
+        }
+
+        // init hospital variables
+        giHospitalTempBalance = 0;
+        giHospitalRefund = 0;
+        gbHospitalPriceModifier = 0;
+
+        // set up Devin so he will be placed ASAP
+        gMercProfiles[NPCID.DEVIN].bNPCData = 3;
+    }
+
+    void InitBloodCatSectors()
+    {
+        //Hard coded table of bloodcat populations.  We don't have
+        //access to the real population (if different) until we physically 
+        //load the map.  If the real population is different, then an error
+        //will be reported.
+        for (SEC i = 0; i < (SEC)255; i++)
+        {
+            SectorInfo[i].bBloodCats = -1;
+        }
+
+        SectorInfo[SEC.A15].bBloodCatPlacements = 9;
+        SectorInfo[SEC.B4].bBloodCatPlacements = 9;
+        SectorInfo[SEC.B16].bBloodCatPlacements = 8;
+        SectorInfo[SEC.C3].bBloodCatPlacements = 12;
+        SectorInfo[SEC.C8].bBloodCatPlacements = 13;
+        SectorInfo[SEC.C11].bBloodCatPlacements = 7;
+        SectorInfo[SEC.D4].bBloodCatPlacements = 8;
+        SectorInfo[SEC.D9].bBloodCatPlacements = 12;
+        SectorInfo[SEC.E11].bBloodCatPlacements = 10;
+        SectorInfo[SEC.E13].bBloodCatPlacements = 14;
+        SectorInfo[SEC.F3].bBloodCatPlacements = 13;
+        SectorInfo[SEC.F5].bBloodCatPlacements = 7;
+        SectorInfo[SEC.F7].bBloodCatPlacements = 12;
+        SectorInfo[SEC.F12].bBloodCatPlacements = 9;
+        SectorInfo[SEC.F14].bBloodCatPlacements = 14;
+        SectorInfo[SEC.F15].bBloodCatPlacements = 8;
+        SectorInfo[SEC.G6].bBloodCatPlacements = 7;
+        SectorInfo[SEC.G10].bBloodCatPlacements = 12;
+        SectorInfo[SEC.G12].bBloodCatPlacements = 11;
+        SectorInfo[SEC.H5].bBloodCatPlacements = 9;
+        SectorInfo[SEC.I4].bBloodCatPlacements = 8;
+        SectorInfo[SEC.I15].bBloodCatPlacements = 8;
+        SectorInfo[SEC.J6].bBloodCatPlacements = 11;
+        SectorInfo[SEC.K3].bBloodCatPlacements = 12;
+        SectorInfo[SEC.K6].bBloodCatPlacements = 14;
+        SectorInfo[SEC.K10].bBloodCatPlacements = 12;
+        SectorInfo[SEC.K14].bBloodCatPlacements = 14;
+
+        switch (gGameOptions.ubDifficultyLevel)
+        {
+            case DifficultyLevel.Easy: //50%
+                SectorInfo[SEC.I16].bBloodCatPlacements = 14;
+                SectorInfo[SEC.I16].bBloodCats = 14;
+                SectorInfo[SEC.N5].bBloodCatPlacements = 8;
+                SectorInfo[SEC.N5].bBloodCats = 8;
+                break;
+            case DifficultyLevel.Medium: //75%
+                SectorInfo[SEC.I16].bBloodCatPlacements = 19;
+                SectorInfo[SEC.I16].bBloodCats = 19;
+                SectorInfo[SEC.N5].bBloodCatPlacements = 10;
+                SectorInfo[SEC.N5].bBloodCats = 10;
+                break;
+            case DifficultyLevel.Hard: //100%
+                SectorInfo[SEC.I16].bBloodCatPlacements = 26;
+                SectorInfo[SEC.I16].bBloodCats = 26;
+                SectorInfo[SEC.N5].bBloodCatPlacements = 12;
+                SectorInfo[SEC.N5].bBloodCats = 12;
+                break;
+        }
     }
 }

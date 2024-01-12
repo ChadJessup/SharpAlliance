@@ -33,7 +33,7 @@ public partial class Globals
             gubFact[fact] = false;
         }
 
-        foreach(var quest in Enum.GetValues<QUEST>())
+        foreach (var quest in Enum.GetValues<QUEST>())
         {
             gubQuest[quest] = 0;
         }
@@ -255,7 +255,79 @@ public partial class Globals
     public static int[] gubWorldRoomHidden = new int[MAX_ROOMS];
 
     public static StrategicMapElement[] strategicMap = new StrategicMapElement[(Globals.MAP_WORLD_X * Globals.MAP_WORLD_Y) + 2];
-    public static Dictionary<Garrisons, GARRISON_GROUP> gGarrisonGroup = new();
+    public static GARRISON_GROUP[] gGarrisonGroup =
+    {   //SECTOR	    MILITARY								WEIGHT
+	    //				COMPOSITION											GROUP ID
+	    new(SEC.P3,     Garrisons.QUEEN_DEFENCE,                  0,          0),
+        new(SEC.O3,     Garrisons.MEDUNA_DEFENCE,                 0,          0),
+        new(SEC.O4,     Garrisons.MEDUNA_DEFENCE,                 0,          0),
+        new(SEC.N3,     Garrisons.MEDUNA_DEFENCE,                 0,          0),
+        new(SEC.N4,     Garrisons.MEDUNA_SAMSITE,                 0,          0),
+	    //5
+	    new(SEC.N5,     Garrisons.MEDUNA_DEFENCE,                 0,          0),
+        new(SEC.M3,     Garrisons.LEVEL1_DEFENCE,                 0,          0),
+        new(SEC.M4,     Garrisons.LEVEL1_DEFENCE,                 0,          0),
+        new(SEC.M5,     Garrisons.LEVEL1_DEFENCE,                 0,          0),
+        new(SEC.N6,     Garrisons.LEVEL1_DEFENCE,                 0,          0),
+	    //10
+	    new(SEC.M2,     Garrisons.LEVEL2_DEFENCE,                 0,          0),
+        new(SEC.L3,     Garrisons.LEVEL2_DEFENCE,                 0,          0),
+        new(SEC.L4,     Garrisons.LEVEL2_DEFENCE,                 0,          0),
+        new(SEC.L5,     Garrisons.LEVEL2_DEFENCE,                 0,          0),
+        new(SEC.M6,     Garrisons.LEVEL2_DEFENCE,                 0,          0),
+	    //15
+	    new(SEC.N7,     Garrisons.LEVEL1_DEFENCE,                 0,          0),
+        new(SEC.L2,     Garrisons.LEVEL3_DEFENCE,                 0,          0),
+        new(SEC.K3,     Garrisons.LEVEL3_DEFENCE,                 0,          0),
+        new(SEC.K5,     Garrisons.LEVEL3_DEFENCE,                 0,          0),
+        new(SEC.L6,     Garrisons.LEVEL3_DEFENCE,                 0,          0),
+	    //20
+	    new(SEC.M7,     Garrisons.LEVEL3_DEFENCE,                 0,          0),
+        new(SEC.N8,     Garrisons.LEVEL3_DEFENCE,                 0,          0),
+        new(SEC.K4,     Garrisons.ORTA_DEFENCE,                       0,          0),
+        new(SEC.G1,     Garrisons.WEST_GRUMM_DEFENCE,         0,          0),
+        new(SEC.G2,     Garrisons.EAST_GRUMM_DEFENCE,         0,          0),
+	    //25
+	    new(SEC.H1,     Garrisons.WEST_GRUMM_DEFENCE,         0,          0),
+        new(SEC.H2,     Garrisons.EAST_GRUMM_DEFENCE,         0,          0),
+        new(SEC.H3,     Garrisons.GRUMM_MINE,                         0,          0),
+        new(SEC.A9,     Garrisons.OMERTA_WELCOME_WAGON,       0,          0),
+        new(SEC.L11,    Garrisons.BALIME_DEFENCE,                 0,          0),
+	    //30
+	    new(SEC.L12,    Garrisons.BALIME_DEFENCE,                 0,          0),
+        new(SEC.J9,     Garrisons.TIXA_PRISON,                        0,          0),
+        new(SEC.I8,     Garrisons.TIXA_SAMSITE,                       0,          0),
+        new(SEC.H13,    Garrisons.ALMA_DEFENCE,                       0,          0),
+        new(SEC.H14,    Garrisons.ALMA_DEFENCE,                       0,          0),
+	    //35
+	    new(SEC.I13,    Garrisons.ALMA_DEFENCE,                       0,          0),
+        new(SEC.I14,    Garrisons.ALMA_MINE,                          0,          0),
+        new(SEC.F8,     Garrisons.CAMBRIA_DEFENCE,                0,          0),
+        new(SEC.F9,     Garrisons.CAMBRIA_DEFENCE,                0,          0),
+        new(SEC.G8,     Garrisons.CAMBRIA_DEFENCE,                0,          0),
+	    //40
+	    new(SEC.G9,     Garrisons.CAMBRIA_DEFENCE,                0,          0),
+        new(SEC.H8,     Garrisons.CAMBRIA_MINE,                       0,          0),
+        new(SEC.A2,     Garrisons.CHITZENA_DEFENCE,               0,          0),
+        new(SEC.B2,     Garrisons.CHITZENA_MINE,                  0,          0),
+        new(SEC.D2,     Garrisons.CHITZENA_SAMSITE,               0,          0),
+	    //45
+	    new(SEC.B13,    Garrisons.DRASSEN_AIRPORT,                0,          0),
+        new(SEC.C13,    Garrisons.DRASSEN_DEFENCE,                0,          0),
+        new(SEC.D13,    Garrisons.DRASSEN_MINE,                       0,          0),
+        new(SEC.D15,    Garrisons.DRASSEN_SAMSITE,                0,          0),
+        new(SEC.G12,    Garrisons.ROADBLOCK,                          0,          0),
+	    //50
+	    new(SEC.M10,    Garrisons.ROADBLOCK,                          0,          0),
+        new(SEC.G6,     Garrisons.ROADBLOCK,                          0,          0),
+        new(SEC.C9,     Garrisons.ROADBLOCK,                          0,          0),
+        new(SEC.K10,    Garrisons.ROADBLOCK,                          0,          0),
+        new(SEC.G7,     Garrisons.ROADBLOCK,                          0,          0),
+	    //55
+	    new(SEC.G3,     Garrisons.ROADBLOCK,                          0,          0),
+        new(SEC.C5,     Garrisons.SANMONA_SMALL,                  0,          0),
+	    //57
+    };
 
     public static bool gfApplyChangesToTempFile { get; set; } = false;
 
@@ -1013,7 +1085,7 @@ public partial class Globals
 
     public static uint guiBOTTOMPANEL { get; set; }
     public static uint guiRIGHTPANEL { get; set; }
-//    public static Surfaces guiRENDERBUFFER { get; set; }
+    //    public static Surfaces guiRENDERBUFFER { get; set; }
     //public static Surfaces Surfaces.SAVE_BUFFER { get; set; }
     public static SurfaceType guiEXTRABUFFER { get; set; }
     public static bool gfExtraBuffer { get; set; }
@@ -1411,8 +1483,8 @@ public partial class Globals
     public static bool gfPrintFrameBuffer;
     public static int guiPrintFrameBufferIndex;
 
-//    public static Image<Rgba32> gpFrameBuffer;
-//    public static Image<Rgba32> gpPrimarySurface;
+    //    public static Image<Rgba32> gpFrameBuffer;
+    //    public static Image<Rgba32> gpPrimarySurface;
 
     public static int gusScreenWidth = 640;
     public static int gusScreenHeight = 480;
@@ -2076,7 +2148,7 @@ public partial class Globals
     public static Dictionary<TEAM, int> gbPublicNoiseLevel = new();
     public static int gfKnowAboutOpponents;
 
-    public static int gfPlayerTeamSawJoey;
+    public static bool gfPlayerTeamSawJoey;
     public static int gfMikeShouldSayHi;
 
     public static int[,] gsWatchedLoc = new int[TOTAL_SOLDIERS, NUM_WATCHED_LOCS];

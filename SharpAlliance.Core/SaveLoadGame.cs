@@ -4480,12 +4480,12 @@ void LoadGameFilePosition(int iPos, STR pMsg)
         uiEncryptionSet = uiEncryptionSet % 19;
 
         // now pick a different set of #s depending on what game options we've chosen
-        if (pSaveGameHeader.sInitialGameOptions.GunNut)
+        if (pSaveGameHeader.sInitialGameOptions.fGunNut)
         {
             uiEncryptionSet += BASE_NUMBER_OF_ROTATION_ARRAYS * 6;
         }
 
-        if (pSaveGameHeader.sInitialGameOptions.SciFi)
+        if (pSaveGameHeader.sInitialGameOptions.fSciFi)
         {
             uiEncryptionSet += BASE_NUMBER_OF_ROTATION_ARRAYS * 3;
         }
@@ -4638,7 +4638,7 @@ public struct GENERAL_SAVE_INFO
     public int[] bUnused2;// [2];
     public int iHospitalTempBalance;
     public int iHospitalRefund;
-    public int fPlayerTeamSawJoey;
+    public bool fPlayerTeamSawJoey;
     public int fMikeShouldSayHi;
     public int[] ubFiller;// [550];		//This structure should be 1024 bytes
 }

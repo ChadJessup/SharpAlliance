@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace SharpAlliance.Core;
 
@@ -41,6 +42,11 @@ public static class RandomHelpers
 {
     // Maximum value that can be returned by the rand function:
     private const int RAND_MAX = 0x7fff;
+
+    public static bool Chance(this Random rand, int uiChance)
+    {
+        return (rand.GetRandom(100) < uiChance);
+    }
 
     // Returns a pseudo-random integer between 0 and uiRange
     public static int GetRandom(this Random rand, int uiRange)

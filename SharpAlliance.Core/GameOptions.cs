@@ -2,16 +2,16 @@
 
 public class GameOptions
 {
-    public bool GunNut { get; set; } = false;
-    public bool SciFi { get; set; } = true;
+    public bool fGunNut { get; set; } = false;
+    public bool fSciFi { get; set; } = true;
     public DifficultyLevel ubDifficultyLevel { get; set; } = DifficultyLevel.Easy;
     public bool TurnTimeLimit { get; set; } = false;
     public bool IronManMode { get; set; } = false;
 
     public void InitGameOptions()
     {
-        Globals.gGameOptions.GunNut = false;
-        Globals.gGameOptions.SciFi = true;
+        Globals.gGameOptions.fGunNut = false;
+        Globals.gGameOptions.fSciFi = true;
         Globals.gGameOptions.ubDifficultyLevel = DifficultyLevel.Easy;
         Globals.gGameOptions.IronManMode = false;
     }

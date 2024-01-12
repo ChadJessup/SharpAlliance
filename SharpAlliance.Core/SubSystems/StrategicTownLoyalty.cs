@@ -78,8 +78,21 @@ public class StrategicTownLoyalty
         return ubSectorsControlled;
     }
 
-    internal static void InitTownLoyalty()
+    public static void InitTownLoyalty()
     {
-        throw new NotImplementedException();
+        // set up town loyalty table
+        for (TOWNS ubTown = FIRST_TOWN; ubTown < TOWNS.NUM_TOWNS; ubTown++)
+        {
+            gTownLoyalty[ubTown] = new()
+            {
+                ubRating = 0,
+                sChange = 0,
+                fStarted = false,
+                //		gTownLoyalty[ ubTown ].ubRebelSentiment = gubTownRebelSentiment[ ubTown ];
+                fLiberatedAlready = false
+            };
+        }
+
+        return;
     }
 }

@@ -140,7 +140,7 @@ public class SoldierProfileSubSystem
             // Default is the ubCharNum
             gMercProfiles[npcId].ubFaceIndex = (int)uiLoop;
 
-            if (!Globals.gGameOptions.GunNut)
+            if (!Globals.gGameOptions.fGunNut)
             {
                 // CJC: replace guns in profile if they aren't available
                 for (uiLoop2 = 0; uiLoop2 < InventorySlot.NUM_INV_SLOTS; uiLoop2++)

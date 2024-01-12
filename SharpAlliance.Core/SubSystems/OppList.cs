@@ -1854,10 +1854,10 @@ public class OppList
                     DialogControl.TacticalCharacterDialogue(pSoldier, QUOTE.AIM_SEEN_MIKE);
                     pSoldier.usQuoteSaidExtFlags |= SOLDIER_QUOTE.SAID_EXT_MIKE;
                 }
-                else if (pOpponent.ubProfile == NPCID.JOEY && gfPlayerTeamSawJoey == 0)
+                else if (pOpponent.ubProfile == NPCID.JOEY && !gfPlayerTeamSawJoey)
                 {
                     DialogControl.TacticalCharacterDialogue(pSoldier, QUOTE.SPOTTED_JOEY);
-                    gfPlayerTeamSawJoey = 1;
+                    gfPlayerTeamSawJoey = true;
                 }
             }
 

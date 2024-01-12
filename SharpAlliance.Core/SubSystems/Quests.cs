@@ -642,7 +642,7 @@ public class Quests
         // semi-hack to make the letter quest start right away
         CheckForQuests(1);
 
-        if (gGameOptions.SciFi)
+        if (gGameOptions.fSciFi)
         {
             // 3 medical boosters
             gubCambriaMedicalObjects = 21;

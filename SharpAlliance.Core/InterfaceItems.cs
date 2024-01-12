@@ -6641,7 +6641,7 @@ public class InterfaceItems
         }
         else if (usItem != NOTHING)
         {
-            if (!gGameOptions.GunNut
+            if (!gGameOptions.fGunNut
                 && Item[usItem].usItemClass == IC.GUN
                 && usItem != Items.ROCKET_LAUNCHER
                 && usItem != Items.ROCKET_RIFLE)

@@ -617,7 +617,7 @@ public class GROUP
     public int[] bPadding = new int[29];                      //***********************************************//
 
     public List<PLAYERGROUP> pPlayerList = new();       //list of players in the group
-    public List<ENEMYGROUP> pEnemyGroup = new();        //a structure containing general enemy info
+    public ENEMYGROUP pEnemyGroup = new();        //a structure containing general enemy info
     public GROUP? next;						//next group
 }
 

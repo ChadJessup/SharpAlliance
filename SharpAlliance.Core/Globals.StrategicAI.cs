@@ -128,7 +128,7 @@ public partial class Globals
     //she would send would be considered too weak.  So, instead, she will send that force to the sector's adjacent sector,
     //and stage, while 
     public static Dictionary<Garrisons, int> gubGarrisonReinforcementsDenied = new();
-    public static int? gubPatrolReinforcementsDenied = null;
+    public static int[] gubPatrolReinforcementsDenied = null;
 
     //Unsaved vars
     public static bool gfDisplayStrategicAILogs = false;
