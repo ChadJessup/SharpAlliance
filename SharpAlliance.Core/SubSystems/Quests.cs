@@ -639,7 +639,23 @@ public class Quests
 
     internal static void InitQuestEngine()
     {
-        throw new NotImplementedException();
+        // semi-hack to make the letter quest start right away
+        CheckForQuests(1);
+
+        if (gGameOptions.SciFi)
+        {
+            // 3 medical boosters
+            gubCambriaMedicalObjects = 21;
+        }
+        else
+        {
+            gubCambriaMedicalObjects = 18;
+        }
+
+        gubBoxingMatchesWon = 0;
+        gubBoxersRests = 0;
+        gfBoxersResting = false;
+
     }
 }
 

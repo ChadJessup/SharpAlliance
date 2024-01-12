@@ -76,7 +76,7 @@ public partial class Globals
     //Saved vars
     public static int[] gbPadding2 = { 0, 0, 0 };   //NOT USED
     public static bool gfExtraElites = false;  //Set when queen compositions are augmented with bonus elites.
-    public static Garrisons giGarrisonArraySize = 0;
+    public static int giGarrisonArraySize = 0;
     public static int giPatrolArraySize = 0;
     public static int giForcePercentage = 0;    //Modifies the starting group sizes relative by percentage
     public static int giArmyAlertness = 0;  //The chance the group will spot an adjacent player/militia
@@ -135,36 +135,36 @@ public partial class Globals
 
     //If you change the MAX_STRATEGIC_TEAM_SIZE, then all the garrison sizes (start, desired) will have to be changed accordingly.
 
-    public static ARMY_COMPOSITION[] gOrigArmyComp = new ARMY_COMPOSITION[NUM_ARMY_COMPOSITIONS]
+    public static Dictionary<Garrisons, ARMY_COMPOSITION> gOrigArmyComp = new()
     {	//COMPOSITION					PRIORITY	ELITE%	TROOP%	ADMIN 	DESIRED#	START#		PADDING
     	//																							START%
-    	new(Garrisons.QUEEN_DEFENCE,              100,            100,        0,          0,          32,             32),
-        new(Garrisons.MEDUNA_DEFENCE,             95,             55,         45,         0,          16,             20),
-        new(Garrisons.MEDUNA_SAMSITE,             96,             65,         35,         0,          20,             20),
-        new(Garrisons.LEVEL1_DEFENCE,             40,             20,         80,         0,          12,             20),
-        new(Garrisons.LEVEL2_DEFENCE,             30,             10,         90,         0,          10,             20),
-        new(Garrisons.LEVEL3_DEFENCE,             20,             5,          95,         0,          8,              20),
-        new(Garrisons.ORTA_DEFENCE,                   90,             50,         50,         0,          18,             19),
-        new(Garrisons.EAST_GRUMM_DEFENCE,     80,             20,         80,         0,          15,             15),
-        new(Garrisons.WEST_GRUMM_DEFENCE,     70,             0,          100,        40,         15,             15),
-        new(Garrisons.GRUMM_MINE,                     85,             25,         75,         45,         15,             15),
-        new(Garrisons.OMERTA_WELCOME_WAGON,   0,              0,          100,        0,          0,              3),
-        new(Garrisons.BALIME_DEFENCE,             60,             45,         55,         20,         10,             4),
-        new(Garrisons.TIXA_PRISON,                    80,             10,         90,         15,         15,             15),
-        new(Garrisons.TIXA_SAMSITE,                   85,             10,         90,         0,          12,             12),
-        new(Garrisons.ALMA_DEFENCE,                   74,             15,         85,         0,          11,             20),
-        new(Garrisons.ALMA_MINE,                      80,             20,         80,         45,         15,             20),
-        new(Garrisons.CAMBRIA_DEFENCE,            50,             0,          100,        30,         10,             6),
-        new(Garrisons.CAMBRIA_MINE,                   60,             15,         90,         40,         11,             6),
-        new(Garrisons.CHITZENA_DEFENCE,           30,             0,          100,        75,         12,             10),
-        new(Garrisons.CHITZENA_MINE,              40,             0,          100,        75,         10,             10),
-        new(Garrisons.CHITZENA_SAMSITE,           75,             10,         90,         0,          9,              9),
-        new(Garrisons.DRASSEN_AIRPORT,            30,             0,          100,        85,         12,             10),
-        new(Garrisons.DRASSEN_DEFENCE,            20,             0,          100,        80,         10,             8),
-        new(Garrisons.DRASSEN_MINE,                   35,             0,          100,        75,         11,             9),
-        new(Garrisons.DRASSEN_SAMSITE,            50,             0,          100,        0,          10,             10),
-        new(Garrisons.ROADBLOCK,                      20,             2,          98,         0,          8,              0),
-        new(Garrisons.SANMONA_SMALL,              0,              0,          0,          0,          0,              0),
+    	{ Garrisons.QUEEN_DEFENCE,       new(Garrisons.QUEEN_DEFENCE,              100,            100,        0,          0,          32,             32)},
+        { Garrisons.MEDUNA_DEFENCE,      new(Garrisons.MEDUNA_DEFENCE,             95,             55,         45,         0,          16,             20)},
+        { Garrisons.MEDUNA_SAMSITE,      new(Garrisons.MEDUNA_SAMSITE,             96,             65,         35,         0,          20,             20)},
+        { Garrisons.LEVEL1_DEFENCE,      new(Garrisons.LEVEL1_DEFENCE,             40,             20,         80,         0,          12,             20)},
+        { Garrisons.LEVEL2_DEFENCE,      new(Garrisons.LEVEL2_DEFENCE,             30,             10,         90,         0,          10,             20)},
+        { Garrisons.LEVEL3_DEFENCE,      new(Garrisons.LEVEL3_DEFENCE,             20,             5,          95,         0,          8,              20)},
+        { Garrisons.ORTA_DEFENCE,        new(Garrisons.ORTA_DEFENCE,                   90,             50,         50,         0,          18,             19)},
+        { Garrisons.EAST_GRUMM_DEFENCE,  new(Garrisons.EAST_GRUMM_DEFENCE,     80,             20,         80,         0,          15,             15)},
+        { Garrisons.WEST_GRUMM_DEFENCE,  new(Garrisons.WEST_GRUMM_DEFENCE,     70,             0,          100,        40,         15,             15)},
+        { Garrisons.GRUMM_MINE,          new(Garrisons.GRUMM_MINE,                     85,             25,         75,         45,         15,             15)},
+        { Garrisons.OMERTA_WELCOME_WAGON,new(Garrisons.OMERTA_WELCOME_WAGON,   0,              0,          100,        0,          0,              3)},
+        { Garrisons.BALIME_DEFENCE,      new(Garrisons.BALIME_DEFENCE,             60,             45,         55,         20,         10,             4)},
+        { Garrisons.TIXA_PRISON,         new(Garrisons.TIXA_PRISON,                    80,             10,         90,         15,         15,             15)},
+        { Garrisons.TIXA_SAMSITE,        new(Garrisons.TIXA_SAMSITE,                   85,             10,         90,         0,          12,             12)},
+        { Garrisons.ALMA_DEFENCE,        new(Garrisons.ALMA_DEFENCE,                   74,             15,         85,         0,          11,             20)},
+        { Garrisons.ALMA_MINE,           new(Garrisons.ALMA_MINE,                      80,             20,         80,         45,         15,             20)},
+        { Garrisons.CAMBRIA_DEFENCE,     new(Garrisons.CAMBRIA_DEFENCE,            50,             0,          100,        30,         10,             6)},
+        { Garrisons.CAMBRIA_MINE,        new(Garrisons.CAMBRIA_MINE,                   60,             15,         90,         40,         11,             6)},
+        { Garrisons.CHITZENA_DEFENCE,    new(Garrisons.CHITZENA_DEFENCE,           30,             0,          100,        75,         12,             10)},
+        { Garrisons.CHITZENA_MINE,       new(Garrisons.CHITZENA_MINE,              40,             0,          100,        75,         10,             10)},
+        { Garrisons.CHITZENA_SAMSITE,    new(Garrisons.CHITZENA_SAMSITE,           75,             10,         90,         0,          9,              9)},
+        { Garrisons.DRASSEN_AIRPORT,     new(Garrisons.DRASSEN_AIRPORT,            30,             0,          100,        85,         12,             10)},
+        { Garrisons.DRASSEN_DEFENCE,     new(Garrisons.DRASSEN_DEFENCE,            20,             0,          100,        80,         10,             8)},
+        { Garrisons.DRASSEN_MINE,        new(Garrisons.DRASSEN_MINE,                   35,             0,          100,        75,         11,             9)},
+        { Garrisons.DRASSEN_SAMSITE,     new(Garrisons.DRASSEN_SAMSITE,            50,             0,          100,        0,          10,             10)},
+        { Garrisons.ROADBLOCK,           new(Garrisons.ROADBLOCK,                      20,             2,          98,         0,          8,              0)},
+        { Garrisons.SANMONA_SMALL,       new(Garrisons.SANMONA_SMALL,              0,              0,          0,          0,          0,              0) },
     };
 
     //Patrol definitions

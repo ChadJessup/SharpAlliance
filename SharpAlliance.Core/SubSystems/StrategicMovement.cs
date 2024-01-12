@@ -2301,59 +2301,42 @@ public class StrategicMovement
     {
         int bit, index, mask;
 
-        //        if (pGroup.fPersistant && !gfRemovingAllGroups)
-        //        {
-        //            CancelEmptyPersistentGroupMovement(pGroup);
-        //            return;
-        ////            DoScreenIndependantMessageBox("Strategic Info Warning:  Attempting to delete a persistant group.", MSG.BOX_FLAG_OK, null);
-        //        }
-        //        //if removing head, then advance head first.
-        //        if (pGroup == gpGroupList)
-        //        {
-        //            gpGroupList = gpGroupList.next;
-        //        }
-        //        else
-        //        { //detach this node from the list.
-        //            GROUP? curr;
-        //            curr = gpGroupList;
-        //            while (curr.next && curr.next != pGroup)
-        //            {
-        //                curr = curr.next;
-        //            }
-        //            //AssertMsg(curr.next == pGroup, "Trying to remove a strategic group that isn't in the list!");
-        //            curr.next = pGroup.next;
-        //        }
-
+        if (pGroup.fPersistant && !gfRemovingAllGroups)
+        {
+            CancelEmptyPersistentGroupMovement(pGroup);
+            return;
+        //      DoScreenIndependantMessageBox("Strategic Info Warning:  Attempting to delete a persistant group.", MSG.BOX_FLAG_OK, null);
+        }
 
         //Remove the waypoints.
         RemovePGroupWaypoints(pGroup);
 
         //Remove the arrival event if applicable.
-        //        DeleteStrategicEvent(EVENT.GROUP_ARRIVAL, pGroup.ubGroupID);
+        GameEvents.DeleteStrategicEvent(EVENT.GROUP_ARRIVAL, pGroup.ubGroupID);
 
         //Determine what type of group we have (because it requires different methods)
-        //        if (pGroup.fPlayer)
-        //        { //Remove player group
-        //            PLAYERGROUP? pPlayer;
-        //            while (pGroup.pPlayerList)
-        //            {
-        //                pPlayer = pGroup.pPlayerList;
-        //                pGroup.pPlayerList = pGroup.pPlayerList.next;
-        //                MemFree(pPlayer);
-        //            }
-        //        }
-        //        else
-        //        {
-        //            RemoveGroupFromStrategicAILists(pGroup.ubGroupID);
-        //            MemFree(pGroup.pEnemyGroup);
-        //        }
+        if (pGroup.fPlayer)
+        { //Remove player group
+            List<PLAYERGROUP> pPlayer;
+            while (pGroup.pPlayerList.Any())
+            {
+                pPlayer = pGroup.pPlayerList;
+                //pGroup.pPlayerList = pGroup.pPlayerList;
+                //MemFree(pPlayer);
+            }
+        }
+        else
+        {
+            StrategicAI.RemoveGroupFromStrategicAILists(pGroup.ubGroupID);
+            MemFree(pGroup.pEnemyGroup);
+        }
 
         //clear the unique group ID
         index = pGroup.ubGroupID / 32;
         bit = pGroup.ubGroupID % 32;
         mask = 1 << bit;
 
-        //        if (!(uniqueIDMask[index] & mask))
+        if ((uniqueIDMask[index] & mask) == 0)
         {
             mask = mask;
         }
@@ -2367,9 +2350,9 @@ public class StrategicMovement
     public static void RemoveAllGroups()
     {
         gfRemovingAllGroups = true;
-        while (gpGroupList is not null)
+        foreach(var pGroup in gpGroupList)
         {
-            //            RemovePGroup(gpGroupList);
+            RemovePGroup(pGroup);
         }
 
         gfRemovingAllGroups = false;

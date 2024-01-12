@@ -118,7 +118,7 @@ public class History
     }
 
 
-    void GameInitHistory()
+    public void GameInitHistory()
     {
         if (files.FileExists(HISTORY_DATA_FILE))
         {
@@ -1460,21 +1460,21 @@ public class History
 
 
         // open file
-        //        hFileHandle = files.FileOpen(HISTORY_DATA_FILE, FILE_ACCESS_WRITE | FILE_OPEN_ALWAYS, false);
+        hFileHandle = files.FileOpen(HISTORY_DATA_FILE, FileAccess.Write, false);
 
         // if no file exits, do nothing
-        //        if (!hFileHandle)
-        //        {
-        //            return (false);
-        //        }
+        if (hFileHandle == Stream.Null)
+        {
+            return (false);
+        }
 
         // go to the end
-        //        if (files.FileSeek(hFileHandle, 0, FILE_SEEK_FROM_END) == false)
-        //        {
-        //            // error
-        //            files.FileClose(hFileHandle);
-        //            return (false);
-        //        }
+        if (files.FileSeek(hFileHandle, 0, SeekOrigin.End) == false)
+        {
+            // error
+            files.FileClose(hFileHandle);
+            return (false);
+        }
 
         // now write date and amount, and code
         files.FileWrite(hFileHandle, pHistoryList.ubCode, sizeof(int), out int doncare);

@@ -29,7 +29,7 @@ public class GameClock
         GameClock.mercTextBox = mercTextBox;
     }
 
-    void InitNewGameClock()
+    public static void InitNewGameClock()
     {
         guiGameClock = STARTING_TIME;
         guiPreviousGameClock = STARTING_TIME;

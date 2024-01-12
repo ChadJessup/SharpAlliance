@@ -461,6 +461,7 @@ public class BobbyR
             //if Bobby Ray sells this, it can be sold, and it's allowed into this game (some depend on e.g. gun-nut option)
             if ((storeInventory[(int)i, (int)BOBBY_RAY.NEW] != 0) && !Item[i].fFlags.HasFlag(ItemAttributes.ITEM_NOT_BUYABLE) && ItemSubSystem.ItemIsLegal(i))
             {
+                LaptopSaveInfo.BobbyRayInventory.Add(new());
                 LaptopSaveInfo.BobbyRayInventory[usBobbyrIndex].usItemIndex = i;
                 usBobbyrIndex++;
             }
@@ -472,10 +473,14 @@ public class BobbyR
             //qsort(LaptopSaveInfo.BobbyRayInventory, usBobbyrIndex, sizeof(STORE_INVENTORY), BobbyRayItemQsortCompare);
         }
 
-
         // remember how many entries in the list are valid
         LaptopSaveInfo.usInventoryListLength[BOBBY_RAY.NEW] = usBobbyrIndex;
         // also mark the end of the list of valid item entries
+        LaptopSaveInfo.BobbyRayInventory.Add(new()
+        {
+            usItemIndex = BOBBYR_NO_ITEMS,
+        });
+
         LaptopSaveInfo.BobbyRayInventory[usBobbyrIndex].usItemIndex = BOBBYR_NO_ITEMS;
 
         return true;
@@ -501,6 +506,7 @@ public class BobbyR
                     // in case his store inventory list is wrong, make sure this category of item can be sold used
                     if (ArmsDealerInit.CanDealerItemBeSoldUsed(i))
                     {
+                        LaptopSaveInfo.BobbyRayUsedInventory.Add(new());
                         LaptopSaveInfo.BobbyRayUsedInventory[usBobbyrIndex].usItemIndex = i;
                         usBobbyrIndex++;
                     }
@@ -516,7 +522,9 @@ public class BobbyR
 
         // remember how many entries in the list are valid
         LaptopSaveInfo.usInventoryListLength[BOBBY_RAY.USED] = usBobbyrIndex;
+
         // also mark the end of the list of valid item entries
+        LaptopSaveInfo.BobbyRayUsedInventory.Add(new());
         LaptopSaveInfo.BobbyRayUsedInventory[usBobbyrIndex].usItemIndex = BOBBYR_NO_ITEMS;
 
         return true;

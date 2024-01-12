@@ -323,7 +323,7 @@ public class StrategicAI
 
         //copy over the original army composition as it does get modified during the campaign.  This
         //bulletproofs starting the game over again.
-        //memcpy(gArmyComp, gOrigArmyComp, sizeof(gArmyComp));
+        gArmyComp = gOrigArmyComp;
 
         //Eliminate more perimeter defenses on the easier levels.
         switch (gGameOptions.ubDifficultyLevel)
@@ -339,220 +339,223 @@ public class StrategicAI
                 gArmyComp[Garrisons.LEVEL3_DEFENCE].bStartPopulation = 0;
                 break;
         }
+
         //initialize the patrol group definitions
-        //giPatrolArraySize = sizeof(gOrigPatrolGroup) / sizeof(PATROL_GROUP);
-        //        if (!gPatrolGroup)
-        //        { //Allocate it (otherwise, we just overwrite it because the size never changes)
-        //            gPatrolGroup = (PATROL_GROUP?)MemAlloc(sizeof(gOrigPatrolGroup));
-        //            Debug.Assert(gPatrolGroup);
-        //        }
-        //        memcpy(gPatrolGroup, gOrigPatrolGroup, sizeof(gOrigPatrolGroup));
-        //
-        //        gubPatrolReinforcementsDenied = (int?)MemAlloc(giPatrolArraySize);
-        //memset(gubPatrolReinforcementsDenied, 0, giPatrolArraySize);
+        giPatrolArraySize = sizeof(gOrigPatrolGroup) / sizeof(PATROL_GROUP);
+        if (!gPatrolGroup)
+        { //Allocate it (otherwise, we just overwrite it because the size never changes)
+            gPatrolGroup = (PATROL_GROUP?)MemAlloc(sizeof(gOrigPatrolGroup));
+            Debug.Assert(gPatrolGroup);
+        }
+        memcpy(gPatrolGroup, gOrigPatrolGroup, sizeof(gOrigPatrolGroup));
+
+        gubPatrolReinforcementsDenied = (int?)MemAlloc(giPatrolArraySize);
+        memset(gubPatrolReinforcementsDenied, 0, giPatrolArraySize);
 
         //initialize the garrison group definitions
-        //        giGarrisonArraySize = sizeof(gOrigGarrisonGroup) / sizeof(GARRISON_GROUP);
-        //        if (!gGarrisonGroup)
-        //        {
-        //            gGarrisonGroup = (GARRISON_GROUP?)MemAlloc(sizeof(gOrigGarrisonGroup));
-        //            Debug.Assert(gGarrisonGroup);
-        //        }
-        //        memcpy(gGarrisonGroup, gOrigGarrisonGroup, sizeof(gOrigGarrisonGroup));
+        giGarrisonArraySize = sizeof(gOrigGarrisonGroup) / sizeof(GARRISON_GROUP);
+        if (!gGarrisonGroup)
+        {
+            gGarrisonGroup = (GARRISON_GROUP?)MemAlloc(sizeof(gOrigGarrisonGroup));
+            Debug.Assert(gGarrisonGroup);
+        }
+        memcpy(gGarrisonGroup, gOrigGarrisonGroup, sizeof(gOrigGarrisonGroup));
 
-        //        gubGarrisonReinforcementsDenied = (int?)MemAlloc(giGarrisonArraySize);
-        //memset(gubGarrisonReinforcementsDenied, 0, giGarrisonArraySize);
+        gubGarrisonReinforcementsDenied = (int?)MemAlloc(giGarrisonArraySize);
+        memset(gubGarrisonReinforcementsDenied, 0, giGarrisonArraySize);
 
         //Modify initial force sizes?
-        //        if (giForcePercentage != 100)
-        //        { //The initial force sizes are being modified, so go through each of the army compositions
-        //          //and adjust them accordingly.
-        //            for (i = 0; i < NUM_ARMY_COMPOSITIONS; i++)
-        //            {
-        //                if (i != QUEEN_DEFENCE)
-        //                {
-        //                    gArmyComp[i].bDesiredPopulation = (int)Math.Min(MAX_STRATEGIC_TEAM_SIZE, (gArmyComp[i].bDesiredPopulation * giForcePercentage / 100));
-        //                    if (gArmyComp[i].bStartPopulation != MAX_STRATEGIC_TEAM_SIZE)
-        //                    { //if the value is MAX_STRATEGIC_TEAM_SIZE, then that means the particular sector is a spawning location.  
-        //                      //Don't modify the value if it is MAX_STRATEGIC_TEAM_SIZE.  Everything else is game.
-        //                        gArmyComp[i].bStartPopulation = (int)Math.Min(MAX_STRATEGIC_TEAM_SIZE, (gArmyComp[i].bStartPopulation * giForcePercentage / 100));
-        //                    }
-        //                }
-        //                else
-        //                {
-        //                    gArmyComp[i].bDesiredPopulation = (int)Math.Min(32, (gArmyComp[i].bDesiredPopulation * giForcePercentage / 100));
-        //                    gArmyComp[i].bStartPopulation = gArmyComp[i].bDesiredPopulation;
-        //                }
-        //            }
-        //            for (i = 0; i < giPatrolArraySize; i++)
-        //            { //force modified range within 1-MAX_STRATEGIC_TEAM_SIZE.
-        //                gPatrolGroup[i].bSize = (int)Math.Max(gubMinEnemyGroupSize, Math.Min(MAX_STRATEGIC_TEAM_SIZE, (gPatrolGroup[i].bSize * giForcePercentage / 100)));
-        //            }
-        //        }
-        //
-        //        //Now, initialize the garrisons based on the initial sizes (all variances are plus or minus 1).
-        //        for (i = 0; i < giGarrisonArraySize; i++)
-        //        {
-        //            pSector = SectorInfo[gGarrisonGroup[i].ubSectorID];
-        //            pSector.ubGarrisonID = (int)i;
-        //            iStartPop = gArmyComp[gGarrisonGroup[i].ubComposition].bStartPopulation;
-        //            iDesiredPop = gArmyComp[gGarrisonGroup[i].ubComposition].bDesiredPopulation;
-        //            iPriority = gArmyComp[gGarrisonGroup[i].ubComposition].bPriority;
-        //            iEliteChance = gArmyComp[gGarrisonGroup[i].ubComposition].bElitePercentage;
-        //            iTroopChance = gArmyComp[gGarrisonGroup[i].ubComposition].bTroopPercentage + iEliteChance;
-        //            iAdminChance = gArmyComp[gGarrisonGroup[i].ubComposition].bAdminPercentage;
-        //
-        //            switch (gGarrisonGroup[i].ubComposition)
-        //            {
-        //                case Garrisons.ROADBLOCK:
-        //                    pSector.uiFlags |= SF.ENEMY_AMBUSH_LOCATION;
-        //                    if (Chance(20))
-        //                    {
-        //                        iStartPop = gArmyComp[gGarrisonGroup[i].ubComposition].bDesiredPopulation;
-        //                    }
-        //                    else
-        //                    {
-        //                        iStartPop = 0;
-        //                    }
-        //
-        //                    break;
-        //                case Garrisons.SANMONA_SMALL:
-        //                    iStartPop = 0; //not appropriate until Kingpin is killed.
-        //                    break;
-        //            }
-        //
-        //            if (iStartPop)
-        //            {
-        //                if (gGarrisonGroup[i].ubSectorID != SEC.P3)
-        //                {
-        //                    // if population is less than maximum
-        //                    if (iStartPop != MAX_STRATEGIC_TEAM_SIZE)
-        //                    {
-        //                        // then vary it a bit (+/- 25%)
-        //                        iStartPop = iStartPop * (100 + (Globals.Random.Next(51) - 25)) / 100;
-        //                    }
-        //
-        //                    iStartPop = Math.Max(gubMinEnemyGroupSize, Math.Min(MAX_STRATEGIC_TEAM_SIZE, iStartPop));
-        //                }
-        //                cnt = iStartPop;
-        //
-        //                if (iAdminChance)
-        //                {
-        //                    pSector.ubNumAdmins = iAdminChance * iStartPop / 100;
-        //                }
-        //                else
-        //                {
-        //                    while (cnt-- > 0)
-        //                    { //for each person, randomly determine the types of each soldier.
-        //                        {
-        //                            iRandom = Globals.Random.Next(100);
-        //                            if (iRandom < iEliteChance)
-        //                            {
-        //                                pSector.ubNumElites++;
-        //                            }
-        //                            else if (iRandom < iTroopChance)
-        //                            {
-        //                                pSector.ubNumTroops++;
-        //                            }
-        //                        }
-        //                    }
-        //                }
-        //
-        //                switch (gGarrisonGroup[i].ubComposition)
-        //                {
-        //                    case Garrisons.CAMBRIA_DEFENCE:
-        //                    case Garrisons.CAMBRIA_MINE:
-        //                    case Garrisons.ALMA_MINE:
-        //                    case Garrisons.GRUMM_MINE:
-        //                        //Fill up extra start slots with troops
-        //                        pSector.ubNumTroops = (int)(iStartPop -= pSector.ubNumAdmins);
-        //                        break;
-        //                    case Garrisons.DRASSEN_AIRPORT:
-        //                    case Garrisons.DRASSEN_DEFENCE:
-        //                    case Garrisons.DRASSEN_MINE:
-        //                        pSector.ubNumAdmins = (int)Math.Max(5, pSector.ubNumAdmins);
-        //                        break;
-        //                    case Garrisons.TIXA_PRISON:
-        //                        pSector.ubNumAdmins = (int)Math.Max(8, pSector.ubNumAdmins);
-        //                        break;
-        //
-        //                }
-        //            }
-        //            if (iAdminChance > 0 && pSector.ubNumAdmins < gubMinEnemyGroupSize)
-        //            {
-        //                pSector.ubNumAdmins = gubMinEnemyGroupSize;
-        //            }
-        //            //Calculate weight (range is -20 to +20 before multiplier).
-        //            //The multiplier of 3 brings it to a range of -96 to +96 which is
-        //            //close enough to a plus/minus 100%.  The resultant percentage is then
-        //            //converted based on the priority.
-        //            iWeight = (iDesiredPop - iStartPop) * 3;
-        //            if (iWeight > 0)
-        //            { //modify it by it's priority.
-        //              //generates a value between 2 and 100
-        //                iWeight = iWeight * iPriority / 96;
-        //                iWeight = Math.Max(iWeight, 2);
-        //                giRequestPoints += iWeight;
-        //            }
-        //            else if (iWeight < 0)
-        //            { //modify it by it's reverse priority 
-        //              //generates a value between -2 and -100
-        //                iWeight = iWeight * (100 - iPriority) / 96;
-        //                iWeight = Math.Min(iWeight, -2);
-        //                giReinforcementPoints -= iWeight;
-        //            }
-        //            gGarrisonGroup[i].bWeight = (int)iWeight;
-        //
-        //            //Now post an event which allows them to check adjacent sectors periodically.
-        //            //Spread them out so that they process at different times.
-        //            AddPeriodStrategicEventWithOffset(EVENT.CHECK_ENEMY_CONTROLLED_SECTOR, 140 - 20 * gGameOptions.ubDifficultyLevel + Globals.Random.Next(4), 475 + i, gGarrisonGroup[i].ubSectorID);
-        //        }
-        //Now, initialize each of the patrol groups
-        //        for (i = 0; i < giPatrolArraySize; i++)
-        //        {   // IGNORE COMMENT, FEATURE REMOVED!
-        //            //Some of the patrol groups aren't there at the beginning of the game.  This is 
-        //            //based on the difficulty settings in the above patrol table.
-        //            //if( gPatrolGroup[ i ].ubUNUSEDStartIfDifficulty <= gGameOptions.ubDifficultyLevel )
-        //            { //Add this patrol group now.
-        //                ubNumTroops = (int)(gPatrolGroup[i].bSize + Globals.Random.Next(3) - 1);
-        //                ubNumTroops = (int)Math.Max(gubMinEnemyGroupSize, Math.Min(MAX_STRATEGIC_TEAM_SIZE, ubNumTroops));
-        //                //ubNumTroops = (int)Math.Max( gubMinEnemyGroupSize, Math.Min( MAX_STRATEGIC_TEAM_SIZE, gPatrolGroup[ i ].bSize + Globals.Random.Next( 3 ) - 1 ) );
-        //                //Note on adding patrol groups...
-        //                //The patrol group can't actually start on the first waypoint, so we set it to the second way
-        //                //point for initialization, and then add the waypoints from 0 up
-        //                pGroup = CreateNewEnemyGroupDepartingFromSector(gPatrolGroup[i].ubSectorID[1], 0, ubNumTroops, 0);
-        //                Debug.Assert(pGroup);
-        //
-        //                if (i == 3 || i == 4)
-        //                { //Special case:  Two patrol groups are administrator groups -- rest are troops
-        //                    pGroup.pEnemyGroup.ubNumAdmins = pGroup.pEnemyGroup.ubNumTroops;
-        //                    pGroup.pEnemyGroup.ubNumTroops = 0;
-        //                }
-        //                gPatrolGroup[i].ubGroupID = pGroup.ubGroupID;
-        //                pGroup.pEnemyGroup.ubIntention = PATROL;
-        //                pGroup.ubMoveType = ENDTOEND_FORWARDS;
-        //                AddWaypointIDToPGroup(pGroup, gPatrolGroup[i].ubSectorID[0]);
-        //                AddWaypointIDToPGroup(pGroup, gPatrolGroup[i].ubSectorID[1]);
-        //                if (gPatrolGroup[i].ubSectorID[2])
-        //                { //Add optional waypoints if included.
-        //                    AddWaypointIDToPGroup(pGroup, gPatrolGroup[i].ubSectorID[2]);
-        //                    if (gPatrolGroup[i].ubSectorID[3])
-        //                    {
-        //                        AddWaypointIDToPGroup(pGroup, gPatrolGroup[i].ubSectorID[3]);
-        //                    }
-        //                }
-        //                RandomizePatrolGroupLocation(pGroup);
-        //                ValidateGroup(pGroup);
-        //            }
-        //            //else
-        //            //{ //we aren't creating this patrol group at the beginning of the game, so we
-        //            //need to set up the weighting values to prioritize it's reinforcement request so that
-        //            //it gets filled up later in the game.
-        //            //	iWeight = gPatrolGroup[ i ].bSize * 3 * gPatrolGroup[ i ].bPriority / 96;
-        //            //	gPatrolGroup[ i ].bWeight = (int)iWeight;
-        //            //	giRequestPoints += iWeight;
-        //            //}
-        //        }
+        if (giForcePercentage != 100)
+        { //The initial force sizes are being modified, so go through each of the army compositions
+          //and adjust them accordingly.
+            for (Garrisons i = 0; i < Garrisons.NUM_ARMY_COMPOSITIONS; i++)
+            {
+                if (i != Garrisons.QUEEN_DEFENCE)
+                {
+                    gArmyComp[i].bDesiredPopulation = (int)Math.Min(MAX_STRATEGIC_TEAM_SIZE, (gArmyComp[i].bDesiredPopulation * giForcePercentage / 100));
+                    if (gArmyComp[i].bStartPopulation != MAX_STRATEGIC_TEAM_SIZE)
+                    { //if the value is MAX_STRATEGIC_TEAM_SIZE, then that means the particular sector is a spawning location.  
+                      //Don't modify the value if it is MAX_STRATEGIC_TEAM_SIZE.  Everything else is game.
+                        gArmyComp[i].bStartPopulation = (int)Math.Min(MAX_STRATEGIC_TEAM_SIZE, (gArmyComp[i].bStartPopulation * giForcePercentage / 100));
+                    }
+                }
+                else
+                {
+                    gArmyComp[i].bDesiredPopulation = (int)Math.Min(32, (gArmyComp[i].bDesiredPopulation * giForcePercentage / 100));
+                    gArmyComp[i].bStartPopulation = gArmyComp[i].bDesiredPopulation;
+                }
+            }
+            for (int i = 0; i < giPatrolArraySize; i++)
+            { //force modified range within 1-MAX_STRATEGIC_TEAM_SIZE.
+                gPatrolGroup[i].bSize = (int)Math.Max(gubMinEnemyGroupSize, Math.Min(MAX_STRATEGIC_TEAM_SIZE, (gPatrolGroup[i].bSize * giForcePercentage / 100)));
+            }
+        }
+
+        //Now, initialize the garrisons based on the initial sizes (all variances are plus or minus 1).
+        for (Garrisons i = 0; i < (Garrisons)giGarrisonArraySize; i++)
+        {
+            pSector = SectorInfo[gGarrisonGroup[i].ubSectorID];
+            pSector.ubGarrisonID = i;
+            iStartPop = gArmyComp[gGarrisonGroup[i].ubComposition].bStartPopulation;
+            iDesiredPop = gArmyComp[gGarrisonGroup[i].ubComposition].bDesiredPopulation;
+            iPriority = gArmyComp[gGarrisonGroup[i].ubComposition].bPriority;
+            iEliteChance = gArmyComp[gGarrisonGroup[i].ubComposition].bElitePercentage;
+            iTroopChance = gArmyComp[gGarrisonGroup[i].ubComposition].bTroopPercentage + iEliteChance;
+            iAdminChance = gArmyComp[gGarrisonGroup[i].ubComposition].bAdminPercentage;
+
+            switch (gGarrisonGroup[i].ubComposition)
+            {
+                case Garrisons.ROADBLOCK:
+                    pSector.uiFlags |= SF.ENEMY_AMBUSH_LOCATION;
+                    if (Chance(20))
+                    {
+                        iStartPop = gArmyComp[gGarrisonGroup[i].ubComposition].bDesiredPopulation;
+                    }
+                    else
+                    {
+                        iStartPop = 0;
+                    }
+
+                    break;
+                case Garrisons.SANMONA_SMALL:
+                    iStartPop = 0; //not appropriate until Kingpin is killed.
+                    break;
+            }
+
+            if (iStartPop != 0)
+            {
+                if (gGarrisonGroup[i].ubSectorID != SEC.P3)
+                {
+                    // if population is less than maximum
+                    if (iStartPop != MAX_STRATEGIC_TEAM_SIZE)
+                    {
+                        // then vary it a bit (+/- 25%)
+                        iStartPop = iStartPop * (100 + (Globals.Random.Next(51) - 25)) / 100;
+                    }
+
+                    iStartPop = Math.Max(gubMinEnemyGroupSize, Math.Min(MAX_STRATEGIC_TEAM_SIZE, iStartPop));
+                }
+                cnt = iStartPop;
+
+                if (iAdminChance != 0)
+                {
+                    pSector.ubNumAdmins = iAdminChance * iStartPop / 100;
+                }
+                else
+                {
+                    while (cnt-- > 0)
+                    { //for each person, randomly determine the types of each soldier.
+                        {
+                            iRandom = Globals.Random.Next(100);
+                            if (iRandom < iEliteChance)
+                            {
+                                pSector.ubNumElites++;
+                            }
+                            else if (iRandom < iTroopChance)
+                            {
+                                pSector.ubNumTroops++;
+                            }
+                        }
+                    }
+                }
+
+                switch (gGarrisonGroup[i].ubComposition)
+                {
+                    case Garrisons.CAMBRIA_DEFENCE:
+                    case Garrisons.CAMBRIA_MINE:
+                    case Garrisons.ALMA_MINE:
+                    case Garrisons.GRUMM_MINE:
+                        //Fill up extra start slots with troops
+                        pSector.ubNumTroops = (int)(iStartPop -= pSector.ubNumAdmins);
+                        break;
+                    case Garrisons.DRASSEN_AIRPORT:
+                    case Garrisons.DRASSEN_DEFENCE:
+                    case Garrisons.DRASSEN_MINE:
+                        pSector.ubNumAdmins = (int)Math.Max(5, pSector.ubNumAdmins);
+                        break;
+                    case Garrisons.TIXA_PRISON:
+                        pSector.ubNumAdmins = (int)Math.Max(8, pSector.ubNumAdmins);
+                        break;
+
+                }
+            }
+            if (iAdminChance > 0 && pSector.ubNumAdmins < gubMinEnemyGroupSize)
+            {
+                pSector.ubNumAdmins = gubMinEnemyGroupSize;
+            }
+            //Calculate weight (range is -20 to +20 before multiplier).
+            //The multiplier of 3 brings it to a range of -96 to +96 which is
+            //close enough to a plus/minus 100%.  The resultant percentage is then
+            //converted based on the priority.
+            iWeight = (iDesiredPop - iStartPop) * 3;
+            if (iWeight > 0)
+            { //modify it by it's priority.
+              //generates a value between 2 and 100
+                iWeight = iWeight * iPriority / 96;
+                iWeight = Math.Max(iWeight, 2);
+                giRequestPoints += iWeight;
+            }
+            else if (iWeight < 0)
+            { //modify it by it's reverse priority 
+              //generates a value between -2 and -100
+                iWeight = iWeight * (100 - iPriority) / 96;
+                iWeight = Math.Min(iWeight, -2);
+                giReinforcementPoints -= iWeight;
+            }
+            gGarrisonGroup[i].bWeight = (int)iWeight;
+
+            //Now post an event which allows them to check adjacent sectors periodically.
+            //Spread them out so that they process at different times.
+            GameEvents.AddPeriodStrategicEventWithOffset(EVENT.CHECK_ENEMY_CONTROLLED_SECTOR, (uint)(140 - 20 * (int)gGameOptions.ubDifficultyLevel + Globals.Random.Next(4)), 475 + (uint)i, (int)gGarrisonGroup[(Garrisons)i].ubSectorID);
+        }
+
+        // Now, initialize each of the patrol groups
+        for (int i = 0; i < giPatrolArraySize; i++)
+        {   // IGNORE COMMENT, FEATURE REMOVED!
+            //Some of the patrol groups aren't there at the beginning of the game.  This is 
+            //based on the difficulty settings in the above patrol table.
+            //if( gPatrolGroup[ i ].ubUNUSEDStartIfDifficulty <= gGameOptions.ubDifficultyLevel )
+            { //Add this patrol group now.
+                ubNumTroops = (int)(gPatrolGroup[i].bSize + Globals.Random.Next(3) - 1);
+                ubNumTroops = (int)Math.Max(gubMinEnemyGroupSize, Math.Min(MAX_STRATEGIC_TEAM_SIZE, ubNumTroops));
+                //ubNumTroops = (int)Math.Max( gubMinEnemyGroupSize, Math.Min( MAX_STRATEGIC_TEAM_SIZE, gPatrolGroup[ i ].bSize + Globals.Random.Next( 3 ) - 1 ) );
+                //Note on adding patrol groups...
+                //The patrol group can't actually start on the first waypoint, so we set it to the second way
+                //point for initialization, and then add the waypoints from 0 up
+                pGroup = CreateNewEnemyGroupDepartingFromSector(gPatrolGroup[i].ubSectorID[1], 0, ubNumTroops, 0);
+                Debug.Assert(pGroup is not null);
+
+                if (i == 3 || i == 4)
+                { //Special case:  Two patrol groups are administrator groups -- rest are troops
+                    pGroup.pEnemyGroup[i].ubNumAdmins = pGroup.pEnemyGroup[i].ubNumTroops;
+                    pGroup.pEnemyGroup[i].ubNumTroops = 0;
+                }
+                gPatrolGroup[i].ubGroupID = pGroup.ubGroupID;
+                pGroup.pEnemyGroup.ubIntention = PATROL;
+                pGroup.ubMoveType = ENDTOEND_FORWARDS;
+                AddWaypointIDToPGroup(pGroup, gPatrolGroup[i].ubSectorID[0]);
+                AddWaypointIDToPGroup(pGroup, gPatrolGroup[i].ubSectorID[1]);
+                if (gPatrolGroup[i].ubSectorID[2])
+                { //Add optional waypoints if included.
+                    AddWaypointIDToPGroup(pGroup, gPatrolGroup[i].ubSectorID[2]);
+                    if (gPatrolGroup[i].ubSectorID[3])
+                    {
+                        AddWaypointIDToPGroup(pGroup, gPatrolGroup[i].ubSectorID[3]);
+                    }
+                }
+
+                RandomizePatrolGroupLocation(pGroup);
+                ValidateGroup(pGroup);
+            }
+            //else
+            //{ //we aren't creating this patrol group at the beginning of the game, so we
+            //need to set up the weighting values to prioritize it's reinforcement request so that
+            //it gets filled up later in the game.
+            //	iWeight = gPatrolGroup[ i ].bSize * 3 * gPatrolGroup[ i ].bPriority / 96;
+            //	gPatrolGroup[ i ].bWeight = (int)iWeight;
+            //	giRequestPoints += iWeight;
+            //}
+        }
 
         //Setup the flags for the four sam sites.
         SectorInfo[SEC.D2].uiFlags |= SF.SAM_SITE;
@@ -1011,7 +1014,7 @@ public class StrategicAI
         //        else if (pGroup.pEnemyGroup.ubIntention == REINFORCEMENTS)
         { //The group has arrived at the location where he is supposed to reinforce.
           //Step 1 -- Check for matching garrison location
-            for (i = 0; i < giGarrisonArraySize; i++)
+            for (i = 0; i < (Garrisons)giGarrisonArraySize; i++)
             {
                 if (gGarrisonGroup[i].ubSectorID == SECTORINFO.SECTOR(pGroup.ubSectorX, pGroup.ubSectorY) &&
                         gGarrisonGroup[i].ubPendingGroupID == pGroup.ubGroupID)
@@ -1483,7 +1486,7 @@ public class StrategicAI
     }
 
 
-    void RemoveGroupFromStrategicAILists(int ubGroupID)
+    public static void RemoveGroupFromStrategicAILists(int ubGroupID)
     {
         for (int i = 0; i < giPatrolArraySize; i++)
         {
@@ -1499,7 +1502,7 @@ public class StrategicAI
                 return;
             }
         }
-        for (Garrisons i = 0; i < giGarrisonArraySize; i++)
+        for (Garrisons i = 0; i < (Garrisons)giGarrisonArraySize; i++)
         {
             if (gGarrisonGroup[i].ubPendingGroupID == ubGroupID)
             { //Group never arrived to reinforce.
@@ -1599,7 +1602,7 @@ public class StrategicAI
     public static void RecalculateSectorWeight(SEC ubSectorID)
     {
         Garrisons i;
-        for (i = 0; i < giGarrisonArraySize; i++)
+        for (i = 0; i < (Garrisons)giGarrisonArraySize; i++)
         {
             if (gGarrisonGroup[i].ubSectorID == ubSectorID)
             {
@@ -1653,7 +1656,7 @@ public class StrategicAI
                             //reinforcements will be primarily sent from Alma whenever possible.
 
                 //find which the first sector that contains Alma soldiers.
-                for (i = 0; i < giGarrisonArraySize; i++)
+                for (i = 0; i < (Garrisons)giGarrisonArraySize; i++)
                 {
                     if (gGarrisonGroup[i].ubComposition == Garrisons.ALMA_DEFENCE)
                     {
@@ -1688,7 +1691,7 @@ public class StrategicAI
 
         //The Alma case either wasn't applicable or failed to have the right reinforcements.  Do a general weighted search.
         iRandom = Globals.Random.Next(giReinforcementPoints);
-        for (iSrcGarrisonID = 0; iSrcGarrisonID < giGarrisonArraySize; iSrcGarrisonID++)
+        for (iSrcGarrisonID = 0; iSrcGarrisonID < (Garrisons)giGarrisonArraySize; iSrcGarrisonID++)
         { //go through the garrisons
             RecalculateGarrisonWeight(iSrcGarrisonID);
             iWeight = -gGarrisonGroup[iSrcGarrisonID].bWeight;
@@ -1708,7 +1711,7 @@ public class StrategicAI
 
         //So far we have failed on all accounts.  Now, simply process all the garrisons, and return the first garrison that can 
         //provide the reinforcements.
-        for (iSrcGarrisonID = 0; iSrcGarrisonID < giGarrisonArraySize; iSrcGarrisonID++)
+        for (iSrcGarrisonID = 0; iSrcGarrisonID < (Garrisons)giGarrisonArraySize; iSrcGarrisonID++)
         { //go through the garrisons
             RecalculateGarrisonWeight(iSrcGarrisonID);
             iWeight = -gGarrisonGroup[iSrcGarrisonID].bWeight;
@@ -1724,7 +1727,7 @@ public class StrategicAI
 
         //Well, if we get this far, the queen must be low on troops.  Send whatever we can.
         iRandom = Globals.Random.Next(giReinforcementPoints);
-        for (iSrcGarrisonID = 0; iSrcGarrisonID < giGarrisonArraySize; iSrcGarrisonID++)
+        for (iSrcGarrisonID = 0; iSrcGarrisonID < (Garrisons)giGarrisonArraySize; iSrcGarrisonID++)
         { //go through the garrisons
             RecalculateGarrisonWeight(iSrcGarrisonID);
             iWeight = -gGarrisonGroup[iSrcGarrisonID].bWeight;
@@ -2000,7 +2003,7 @@ public class StrategicAI
         else
         {
             iRandom -= giReinforcementPool;
-            for (iSrcGarrisonID = 0; iSrcGarrisonID < giGarrisonArraySize; iSrcGarrisonID++)
+            for (iSrcGarrisonID = 0; iSrcGarrisonID < (Garrisons)giGarrisonArraySize; iSrcGarrisonID++)
             { //go through the garrisons
                 RecalculateGarrisonWeight(iSrcGarrisonID);
                 iWeight = -gGarrisonGroup[iSrcGarrisonID].bWeight;
@@ -2981,7 +2984,7 @@ public class StrategicAI
         //memset(ubTotal, 0, NUM_ARMY_COMPOSITIONS);
 
         //Record the values required to calculate the percentage of each composition type that the queen controls.
-        for (i = 0; i < giGarrisonArraySize; i++)
+        for (i = 0; i < (Garrisons)giGarrisonArraySize; i++)
         {
             index = gGarrisonGroup[i].ubComposition;
             if (strategicMap[SECTOR_INFO_TO_STRATEGIC_INDEX(gGarrisonGroup[i].ubSectorID)].fEnemyControlled)
@@ -3055,7 +3058,7 @@ public class StrategicAI
             //Turn off the flag so that this doesn't happen everytime this function is called!
             gfExtraElites = false;
 
-            for (i = 0; i < giGarrisonArraySize; i++)
+            for (i = 0; i < (Garrisons)giGarrisonArraySize; i++)
             {
                 //if we are dealing with extra elites, then augment elite compositions (but only if they exist in the sector).  
                 //If the queen still owns the town by more than 65% (iFactor >= 15), then upgrade troops to elites in those sectors.
@@ -3118,7 +3121,7 @@ public class StrategicAI
             }
         }
         //Recalculate all of the weights.
-        for (i = 0; i < giGarrisonArraySize; i++)
+        for (i = 0; i < (Garrisons)giGarrisonArraySize; i++)
         {
             RecalculateGarrisonWeight(i);
         }
@@ -3726,7 +3729,7 @@ public class StrategicAI
         SECTORINFO? pSector;
         GROUP? pGroup;
         int ubNumTroops, ubDesiredTroops;
-        for (i = 0; i < giGarrisonArraySize; i++)
+        for (i = 0; i < (Garrisons)giGarrisonArraySize; i++)
         {
             pSector = SectorInfo[gGarrisonGroup[i].ubSectorID];
             ubNumTroops = pSector.ubNumAdmins + pSector.ubNumTroops + pSector.ubNumElites;
@@ -4137,7 +4140,7 @@ public class StrategicAI
     {
         Garrisons sGarrisonIndex;
 
-        for (sGarrisonIndex = 0; sGarrisonIndex < giGarrisonArraySize; sGarrisonIndex++)
+        for (sGarrisonIndex = 0; sGarrisonIndex < (Garrisons)giGarrisonArraySize; sGarrisonIndex++)
         {
             if (gGarrisonGroup[sGarrisonIndex].ubPendingGroupID == ubGroupID)
             {

@@ -81,6 +81,7 @@ namespace SharpAlliance
             builder.Services.AddSingleton<Cars>();
             builder.Services.AddSingleton<BobbyR>();
             builder.Services.AddSingleton<Globals>();
+            builder.Services.AddSingleton<History>();
             builder.Services.AddSingleton<Finances>();
             builder.Services.AddSingleton<Messages>();
             builder.Services.AddSingleton<TileCache>();

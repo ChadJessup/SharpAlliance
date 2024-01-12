@@ -14,17 +14,32 @@ namespace SharpAlliance.Core.SubSystems;
 public class Laptop
 {
     private static IVideoManager video;
+    private readonly History history;
     private static readonly IEnumerable<GUI_BUTTON> buttonList;
 
-    public Laptop(IVideoManager videoManager) => video = videoManager;
+    public Laptop(IVideoManager videoManager, History history)
+    {
+        video = videoManager;
+        this.history = history;
+    }
+
     internal void LaptopScreenInit()
     {
         throw new NotImplementedException();
     }
 
-    internal void InitLaptopAndLaptopScreens()
+    public bool InitLaptopAndLaptopScreens()
     {
-        throw new NotImplementedException();
+        Finances.GameInitFinances();
+        this.history.GameInitHistory();
+
+        //Reset the flag so we can create a new IMP character
+        LaptopSaveInfo.fIMPCompletedFlag = false;
+
+        //Reset the flag so that BOBBYR's isnt available at the begining of the game
+        LaptopSaveInfo.fBobbyRSiteCanBeAccessed = false;
+
+        return true;
     }
 
     public static bool DrawLapTopIcons()

@@ -1,10 +1,6 @@
-﻿using Microsoft.Extensions.FileSystemGlobbing;
-using Microsoft.Extensions.Logging;
+﻿using Microsoft.Extensions.Logging;
 using SharpAlliance.Core.Screens;
-using System;
 using System.Collections.Generic;
-using Veldrid;
-using static SharpAlliance.Core.Globals;
 
 namespace SharpAlliance.Core.SubSystems;
 
@@ -13,7 +9,6 @@ public class Facts
     public const int MAX_FACTS = 65536;
     public const int NUM_FACTS = 500;	//If you increase this number, add entries to the fact text list in QuestText.c
 
-    public static Dictionary<FACT, bool> gubFact = new(); // this has to be updated when we figure out how many facts we have
     private readonly ILogger<Facts> logger;
 
     public Facts(ILogger<Facts> logger)

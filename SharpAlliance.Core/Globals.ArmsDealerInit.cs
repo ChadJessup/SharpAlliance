@@ -31,7 +31,7 @@ public partial class Globals
 
     // THESE GET SAVED/RESTORED/RESET
     public static Dictionary<ARMS_DEALER, ARMS_DEALER_STATUS> gArmsDealerStatus = new();
-    public static Dictionary<ARMS_DEALER, Dictionary<Items, DEALER_ITEM_HEADER>> gArmsDealersInventory = new();
+    public static Dictionary<ARMS_DEALER, Dictionary<Items, DEALER_ITEM_HEADER>> gArmsDealersInventory = [];
 
     //
     // Setup the inventory arrays for each of the arms dealers

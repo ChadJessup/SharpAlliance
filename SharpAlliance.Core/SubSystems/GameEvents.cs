@@ -503,7 +503,7 @@ public class GameEvents
         return AddRangedStrategicEventUsingSeconds(ubCallbackID, uiStartSeconds + GameClock.GetFutureDayInMinutes(GameClock.GetWorldDay() + uiNumDaysFromPresent) * 60, uiLengthSeconds, uiParam);
     }
 
-    public static bool AddEveryDayStrategicEvent(EVENT ubCallbackID, uint uiStartMin, int uiParam)
+    public static bool AddEveryDayStrategicEvent(EVENT ubCallbackID, uint uiStartMin, object uiParam)
     {
         if (AddAdvancedStrategicEvent(EVENTPERIOD.EVERYDAY_EVENT, ubCallbackID, GameClock.GetWorldDayInSeconds() + uiStartMin * 60, uiParam) is not null)
         {

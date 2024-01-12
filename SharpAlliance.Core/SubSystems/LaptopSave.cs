@@ -179,7 +179,7 @@ public class LaptopSaveInfoStruct
     public int iCurrentBalance;                                  // current players balance
 
     //IMP Information
-    bool fIMPCompletedFlag;                      // Has the player Completed the IMP process
+    public bool fIMPCompletedFlag;                      // Has the player Completed the IMP process
     bool fSentImpWarningAlready;             // Has the Imp email warning already been sent
 
 
@@ -192,8 +192,8 @@ public class LaptopSaveInfoStruct
 
 
     // BobbyRay Site
-    public List<STORE_INVENTORY> BobbyRayInventory = new();
-    public List<STORE_INVENTORY> BobbyRayUsedInventory = new();
+    public List<STORE_INVENTORY> BobbyRayInventory = [];
+    public List<STORE_INVENTORY> BobbyRayUsedInventory = [];
     public List<BobbyRayOrderStruct> BobbyRayOrdersOnDeliveryArray;
     public int usNumberOfBobbyRayOrderItems;             // The number of elements in the array
     public int usNumberOfBobbyRayOrderUsed;              // The number of items in the array that are used

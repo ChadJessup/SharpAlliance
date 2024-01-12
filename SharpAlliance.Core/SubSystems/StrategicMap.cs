@@ -9,6 +9,12 @@ namespace SharpAlliance.Core.SubSystems;
 
 public class StrategicMap
 {
+    public const int QUEST_CHECK_EVENT_TIME = (8 * 60);
+    public const int BOBBYRAY_UPDATE_TIME = (9 * 60);
+    public const int INSURANCE_UPDATE_TIME = 0;
+    public const int EARLY_MORNING_TIME = (4 * 60);
+    public const int ENRICO_MAIL_TIME = (7 * 60);
+
     private static IFileManager files;
     private IScreenManager screens;
     private Keys keys;
@@ -22,7 +28,8 @@ public class StrategicMap
         Keys keys,
         AIMain aiMain)
     {
-        this.music = this.music;
+        this.music = musicManager;
+
         this.keys = keys;
         files = fileManager;
         this.screens = screenManager;
@@ -42,7 +49,7 @@ public class StrategicMap
         // ATE: Zero out accounting functions
         gbMercIsNewInThisSector = new int[MAX_NUM_SOLDIERS];
 
-//        SyncStrategicTurnTimes();
+        //        SyncStrategicTurnTimes();
 
         // is the sector already loaded?
         if ((gWorldSectorX == sMapX) && (sMapY == gWorldSectorY) && (bMapZ == gbWorldSectorZ))
@@ -52,35 +59,35 @@ public class StrategicMap
             //do something else in a case where no enemies are present.
 
             this.screens.SetPendingNewScreen(ScreenName.GAME_SCREEN);
-//            if (!NumEnemyInSector())
-//            {
-//                PrepareEnemyForSectorBattle();
-//            }
+            //            if (!NumEnemyInSector())
+            //            {
+            //                PrepareEnemyForSectorBattle();
+            //            }
 
             if (gubNumCreaturesAttackingTown > 0
                 && gbWorldSectorZ == 0
                 && gubSectorIDOfCreatureAttack == SECTORINFO.SECTOR(gWorldSectorX, gWorldSectorY))
             {
-//                PrepareCreaturesForBattle();
+                //                PrepareCreaturesForBattle();
             }
 
             if (gfGotoSectorTransition)
             {
-//                BeginLoadScreen();
+                //                BeginLoadScreen();
                 gfGotoSectorTransition = false;
             }
 
             // Check for helicopter being on the ground in this sector...
-//            HandleHelicopterOnGroundGraphic();
+            //            HandleHelicopterOnGroundGraphic();
 
-//            ResetMilitia();
+            //            ResetMilitia();
             OppList.AllTeamsLookForAll(1);
             return true;
         }
 
         if (gWorldSectorX > 0 && gWorldSectorY > 0 && gbWorldSectorZ != -1)
         {
-//            HandleDefiniteUnloadingOfWorld(ABOUT_TO_LOAD_NEW_MAP);
+            //            HandleDefiniteUnloadingOfWorld(ABOUT_TO_LOAD_NEW_MAP);
         }
 
         // make this the currently loaded sector
@@ -89,18 +96,18 @@ public class StrategicMap
         gbWorldSectorZ = bMapZ;
 
         // update currently selected map sector to match
-//        ChangeSelectedMapSector(sMapX, sMapY, bMapZ);
+        //        ChangeSelectedMapSector(sMapX, sMapY, bMapZ);
 
 
         //Check to see if the sector we are loading is the cave sector under Tixa.  If so
         //then we will set up the meanwhile scene to start the creature quest.
         if (!gTacticalStatus.uiFlags.HasFlag(TacticalEngineStatus.LOADING_SAVED_GAME))
         {
-//            StopAnyCurrentlyTalkingSpeech();
+            //            StopAnyCurrentlyTalkingSpeech();
 
             if (gWorldSectorX == 9 && gWorldSectorY == MAP_ROW.J /*10*/ && gbWorldSectorZ == 2)
             {
-//                InitCreatureQuest(); //Ignored if already active.
+                //                InitCreatureQuest(); //Ignored if already active.
             }
         }
 
@@ -153,54 +160,54 @@ public class StrategicMap
             gTacticalStatus.uiTimeSinceLastInTactical = GameClock.GetWorldTotalMin();
 
             // init some AI stuff
-//            InitializeTacticalStatusAtBattleStart();
+            //            InitializeTacticalStatusAtBattleStart();
 
             // CJC: delay this until after entering the sector!
             //InitAI();
 
             // Check for helicopter being on the ground in this sector...
-//            HandleHelicopterOnGroundSkyriderProfile();
+            //            HandleHelicopterOnGroundSkyriderProfile();
         }
 
         //Load and enter the new sector
-//        if (EnterSector(gWorldSectorX, gWorldSectorY, bMapZ))
-//        {
-//            // CJC: moved this here Feb 17
-//            if (!(gTacticalStatus.uiFlags.HasFlag(TacticalEngineStatus.LOADING_SAVED_GAME)))
-//            {
-//                aiMain.InitAI();
-//            }
-//
-//            //If there are any people with schedules, now is the time to process them.
-//            //CJC: doesn't work here if we're going through the tactical placement GUI; moving
-//            // this call to PrepareLoadedSector()
-//            //PostSchedules();
-//
-//            // ATE: OK, add code here to update the states of doors if they should 
-//            // be closed......
-//            if (!(gTacticalStatus.uiFlags.HasFlag(TacticalEngineStatus.LOADING_SAVED_GAME)))
-//            {
-//                keys.ExamineDoorsOnEnteringSector();
-//            }
-//
-//            // Update all the doors in the sector according to the temp file previously
-//            // loaded, and any changes made by the schedules
-//            keys.UpdateDoorGraphicsFromStatus(true, false);
-//
-//            //Set the fact we have visited the  sector
-//            TacticalSaveSubSystem.SetSectorFlag(gWorldSectorX, gWorldSectorY, gbWorldSectorZ, SF.ALREADY_LOADED);
-//
-//            // Check for helicopter being on the ground in this sector...
-//            HandleHelicopterOnGroundGraphic();
-//        }
-//        else
-//            return (false);
+        //        if (EnterSector(gWorldSectorX, gWorldSectorY, bMapZ))
+        //        {
+        //            // CJC: moved this here Feb 17
+        //            if (!(gTacticalStatus.uiFlags.HasFlag(TacticalEngineStatus.LOADING_SAVED_GAME)))
+        //            {
+        //                aiMain.InitAI();
+        //            }
+        //
+        //            //If there are any people with schedules, now is the time to process them.
+        //            //CJC: doesn't work here if we're going through the tactical placement GUI; moving
+        //            // this call to PrepareLoadedSector()
+        //            //PostSchedules();
+        //
+        //            // ATE: OK, add code here to update the states of doors if they should 
+        //            // be closed......
+        //            if (!(gTacticalStatus.uiFlags.HasFlag(TacticalEngineStatus.LOADING_SAVED_GAME)))
+        //            {
+        //                keys.ExamineDoorsOnEnteringSector();
+        //            }
+        //
+        //            // Update all the doors in the sector according to the temp file previously
+        //            // loaded, and any changes made by the schedules
+        //            keys.UpdateDoorGraphicsFromStatus(true, false);
+        //
+        //            //Set the fact we have visited the  sector
+        //            TacticalSaveSubSystem.SetSectorFlag(gWorldSectorX, gWorldSectorY, gbWorldSectorZ, SF.ALREADY_LOADED);
+        //
+        //            // Check for helicopter being on the ground in this sector...
+        //            HandleHelicopterOnGroundGraphic();
+        //        }
+        //        else
+        //            return (false);
 
         if (!gTacticalStatus.uiFlags.HasFlag(TacticalEngineStatus.LOADING_SAVED_GAME))
         {
             if (gubMusicMode != MusicMode.TACTICAL_ENEMYPRESENT
                 && gubMusicMode != MusicMode.TACTICAL_BATTLE
-//                || (!NumHostilesInSector(sMapX, sMapY, bMapZ) && gubMusicMode == MusicMode.TACTICAL_ENEMYPRESENT)
+                //                || (!NumHostilesInSector(sMapX, sMapY, bMapZ) && gubMusicMode == MusicMode.TACTICAL_ENEMYPRESENT)
                 )
             {
                 // ATE; Fade FA.T....
@@ -210,7 +217,7 @@ public class StrategicMap
             }
 
             // ATE: Check what sector we are in, to show description if we have an RPC.....
-//            HandleRPCDescriptionOfSector(sMapX, sMapY, bMapZ);
+            //            HandleRPCDescriptionOfSector(sMapX, sMapY, bMapZ);
 
 
 
@@ -272,7 +279,7 @@ public class StrategicMap
 
         // the gfUseAlternateMap flag is set in the loading saved games.  When starting a new game the underground sector
         //info has not been initialized, so we need the flag to load an alternate sector.
-//        if (gfUseAlternateMap | GetSectorFlagStatus(sMapX, sMapY, bSectorZ, SF.USE_ALTERNATE_MAP))
+        //        if (gfUseAlternateMap | GetSectorFlagStatus(sMapX, sMapY, bSectorZ, SF.USE_ALTERNATE_MAP))
         {
             gfUseAlternateMap = false;
 
@@ -415,16 +422,16 @@ public class StrategicMap
                     ubNumMercs++;
                 }
 
-//                if (SoldierOKForSectorExit(pSoldier, bExitDirection, usAdditionalData))
-//                {
-//                    fAtLeastOneMercControllable++;
-//
-//                    if (cnt == Globals.gusSelectedSoldier)
-//                    {
-//                        fOnlySelectedGuy = true;
-//                    }
-//                }
-//                else
+                //                if (SoldierOKForSectorExit(pSoldier, bExitDirection, usAdditionalData))
+                //                {
+                //                    fAtLeastOneMercControllable++;
+                //
+                //                    if (cnt == Globals.gusSelectedSoldier)
+                //                    {
+                //                        fOnlySelectedGuy = true;
+                //                    }
+                //                }
+                //                else
                 {
                     GROUP? pGroup;
 
@@ -432,16 +439,16 @@ public class StrategicMap
                     if (bExitDirection != (StrategicMove)(-1))
                     {
                         //Now, determine if this is a valid path.
-//                        pGroup = GetGroup(pValidSoldier.ubGroupID);
+                        //                        pGroup = GetGroup(pValidSoldier.ubGroupID);
                         //AssertMsg(pGroup, string.Format("%S is not in a valid group (pSoldier.ubGroupID is %d)", pValidSoldier.name, pValidSoldier.ubGroupID));
                         if (Globals.gbWorldSectorZ == 0)
                         {
-//                            puiTraverseTimeInMinutes = GetSectorMvtTimeForGroup(SECTORINFO.SECTOR(pGroup.ubSectorX, pGroup.ubSectorY), bExitDirection, pGroup);
+                            //                            puiTraverseTimeInMinutes = GetSectorMvtTimeForGroup(SECTORINFO.SECTOR(pGroup.ubSectorX, pGroup.ubSectorY), bExitDirection, pGroup);
                         }
                         else if (Globals.gbWorldSectorZ > 1)
                         { //We are attempting to traverse in an underground environment.  We need to use a complete different
                           //method.  When underground, all sectors are instantly adjacent.
-//                            puiTraverseTimeInMinutes = UndergroundTacticalTraversalTime(bExitDirection);
+                          //                            puiTraverseTimeInMinutes = UndergroundTacticalTraversalTime(bExitDirection);
                         }
                         if (puiTraverseTimeInMinutes == 0xffffffff)
                         {
@@ -449,7 +456,7 @@ public class StrategicMap
                             return 0;
                         }
                     }
-//                    else
+                    //                    else
                     {
                         puiTraverseTimeInMinutes = 0; //exit grid travel is instantaneous
                     }
@@ -460,7 +467,7 @@ public class StrategicMap
         // If we are here, at least one guy is controllable in this sector, at least he can go!
         if (fAtLeastOneMercControllable > 0)
         {
-//            ubPlayerControllableMercsInSquad = NumberOfPlayerControllableMercsInSquad(Globals.MercPtrs[Globals.gusSelectedSoldier].bAssignment);
+            //            ubPlayerControllableMercsInSquad = NumberOfPlayerControllableMercsInSquad(Globals.MercPtrs[Globals.gusSelectedSoldier].bAssignment);
             if (fAtLeastOneMercControllable <= ubPlayerControllableMercsInSquad)
             { //if the selected merc is an EPC and we can only leave with that merc, then prevent it
               //as EPCs aren't allowed to leave by themselves.  Instead of restricting this in the 
@@ -492,16 +499,16 @@ public class StrategicMap
             {
                 GROUP? pGroup = null;
                 //Now, determine if this is a valid path.
-//                pGroup = GetGroup(pValidSoldier.ubGroupID);
+                //                pGroup = GetGroup(pValidSoldier.ubGroupID);
                 //AssertMsg(pGroup, string.Format("%S is not in a valid group (pSoldier.ubGroupID is %d)", pValidSoldier.name, pValidSoldier.ubGroupID));
                 if (Globals.gbWorldSectorZ == 0)
                 {
-//                    puiTraverseTimeInMinutes = GetSectorMvtTimeForGroup(SECTORINFO.SECTOR(pGroup.ubSectorX, pGroup.ubSectorY), bExitDirection, pGroup);
+                    //                    puiTraverseTimeInMinutes = GetSectorMvtTimeForGroup(SECTORINFO.SECTOR(pGroup.ubSectorX, pGroup.ubSectorY), bExitDirection, pGroup);
                 }
                 else if (Globals.gbWorldSectorZ > 0)
                 { //We are attempting to traverse in an underground environment.  We need to use a complete different
                   //method.  When underground, all sectors are instantly adjacent.
-//                    puiTraverseTimeInMinutes = UndergroundTacticalTraversalTime(bExitDirection);
+                  //                    puiTraverseTimeInMinutes = UndergroundTacticalTraversalTime(bExitDirection);
                 }
                 if (puiTraverseTimeInMinutes == 0xffffffff)
                 {
@@ -690,14 +697,14 @@ public class StrategicMap
 
                         break;
                     case SEC.J9: //Tixa
-//                        if (!fFoundTixa)
-//                        {
-//                            wcscat(zString, pLandTypeStrings[Traversability.SAND]);
-//                        }
-//                        else
-//                        {
-//                            wcscat(zString, pTownNames[TOWNS.TIXA]);
-//                        }
+                                 //                        if (!fFoundTixa)
+                                 //                        {
+                                 //                            wcscat(zString, pLandTypeStrings[Traversability.SAND]);
+                                 //                        }
+                                 //                        else
+                                 //                        {
+                                 //                            wcscat(zString, pTownNames[TOWNS.TIXA]);
+                                 //                        }
 
                         break;
                     case SEC.K4: //Orta
@@ -797,9 +804,56 @@ public class StrategicMap
         return false;
     }
 
-    internal static void SetupNewStrategicGame()
+    public static void SetupNewStrategicGame()
     {
-        throw new NotImplementedException();
+        // Set all sectors as enemy controlled
+        for (int sSectorX = 0; sSectorX < MAP_WORLD_X; sSectorX++)
+        {
+            for (int sSectorY = 0; sSectorY < MAP_WORLD_Y; sSectorY++)
+            {
+                var index = CALCULATE_STRATEGIC_INDEX(sSectorX, (MAP_ROW)sSectorY);
+                strategicMap[index] = new()
+                {
+                    fEnemyControlled = true,
+                };
+            }
+        }
+
+        //Initialize the game time
+        GameClock.InitNewGameClock();
+        //Remove all events
+        GameEvents.DeleteAllStrategicEvents();
+
+        //Set up all events that get processed daily...
+        //.............................................
+        Environment.BuildDayLightLevels();
+        // Check for quests each morning
+        GameEvents.AddEveryDayStrategicEvent(EVENT.CHECKFORQUESTS, QUEST_CHECK_EVENT_TIME, 0);
+        // Some things get updated in the very early morning
+        GameEvents.AddEveryDayStrategicEvent(EVENT.DAILY_EARLY_MORNING_EVENTS, EARLY_MORNING_TIME, 0);
+        //Daily Update BobbyRay Inventory
+        GameEvents.AddEveryDayStrategicEvent(EVENT.DAILY_UPDATE_BOBBY_RAY_INVENTORY, BOBBYRAY_UPDATE_TIME, 0);
+        //Daily Update of the M.E.R.C. site.
+        GameEvents.AddEveryDayStrategicEvent(EVENT.DAILY_UPDATE_OF_MERC_SITE, 0, 0);
+        //Daily update of insured mercs
+        GameEvents.AddEveryDayStrategicEvent(EVENT.HANDLE_INSURED_MERCS, INSURANCE_UPDATE_TIME, 0);
+        //Daily update of mercs
+        GameEvents.AddEveryDayStrategicEvent(EVENT.MERC_DAILY_UPDATE, 0, 0);
+        // Daily mine production processing events
+        GameEvents.AddEveryDayStrategicEvent(EVENT.SETUP_MINE_INCOME, 0, 0);
+        // Daily merc reputation processing events
+        GameEvents.AddEveryDayStrategicEvent(EVENT.SETUP_TOWN_OPINION, 0, 0);
+        // Daily checks for E-mail from Enrico
+        GameEvents.AddEveryDayStrategicEvent(EVENT.ENRICO_MAIL, ENRICO_MAIL_TIME, 0);
+
+        // Hourly update of all sorts of things
+        GameEvents.AddPeriodStrategicEvent(EVENT.HOURLY_UPDATE, 60, 0);
+        GameEvents.AddPeriodStrategicEvent(EVENT.QUARTER_HOUR_UPDATE, 15, 0);
+
+        //Clear any possible battle locator
+        gfBlitBattleSectorLocator = false;
+
+        StrategicTurns.StrategicTurnsNewGame();
     }
 
     internal static void UpdateMercInSector(SOLDIERTYPE sOLDIERTYPE, int v1, int v2, int v3)

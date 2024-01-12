@@ -11,6 +11,7 @@ using static SharpAlliance.Core.Globals;
 using System;
 using SixLabors.ImageSharp.PixelFormats;
 using SixLabors.ImageSharp;
+using SharpAlliance.Core.Managers.VideoSurfaces;
 
 namespace SharpAlliance.Core.Screens;
 
@@ -138,7 +139,7 @@ public class InitScreen : IScreen
             //vs_desc.fCreateFlags = VideoObjectCreateFlags.VOBJECT_CREATE_FROMFILE;// | VSurfaceCreateFlags.VSURFACE_SYSTEM_MEM_USAGE;
 
             // vs_desc.ImageFile = "ja2_logo.STI";
-            // hVObject = this.video.AddVideoObject(ref vs_desc, out var key);
+            //var hVObject = this.video.GetVideoObject("ja2_logo.STI", out var key);
             // 
             // if (hVObject is null)
             // {
@@ -146,7 +147,7 @@ public class InitScreen : IScreen
             //     return ScreenName.ERROR_SCREEN;
             // }
 
-            //BltVideoSurfaceToVideoSurface( ghFrameBuffer, hVSurface, 0, 0, 0, VS_BLT_FAST, null );
+            //this.video.BlitSurfaceToSurface(hVObject.Images[0], SurfaceType.FRAME_BUFFER, new(0, 0), VO_BLT.DESTTRANSPARENCY, false);
             ubCurrentScreen = 1;
 
             // Init screen
@@ -207,7 +208,7 @@ public class InitScreen : IScreen
         {
             CursorSubSystem.SetCurrentCursorFromDatabase(CURSOR.VIDEO_NO_CURSOR);
             // TODO: Strategic stuff
-            this.gameInit.InitNewGame(false);
+            await this.gameInit.InitNewGame(false);
         }
 
         return ScreenName.InitScreen;

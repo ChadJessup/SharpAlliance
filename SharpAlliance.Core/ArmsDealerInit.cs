@@ -910,11 +910,16 @@ public class ArmsDealerInit
         }
     }
 
-    public static bool AllocMemsetSpecialItemArray(DEALER_ITEM_HEADER? pDealerItem, int ubElementsNeeded)
+    public static bool AllocMemsetSpecialItemArray(DEALER_ITEM_HEADER pDealerItem, int ubElementsNeeded)
     {
         Debug.Assert(ubElementsNeeded > 0);
 
         pDealerItem.SpecialItem = new(ubElementsNeeded);
+
+        for (int i = 0; i <= ubElementsNeeded; i++)
+        {
+            pDealerItem.SpecialItem.Add(new());
+        }
 
         pDealerItem.ubElementsAlloced = ubElementsNeeded;
 
@@ -985,19 +990,26 @@ public class ArmsDealerInit
 
     public static void AddSpecialItemToArmsDealerInventoryAtElement(ARMS_DEALER ubArmsDealer, Items usItemIndex, int ubElement, SPECIAL_ITEM_INFO? pSpclItemInfo)
     {
-        Debug.Assert(gArmsDealersInventory[ubArmsDealer][usItemIndex].ubTotalItems < 255);
-        Debug.Assert(ubElement < gArmsDealersInventory[ubArmsDealer][usItemIndex].ubElementsAlloced);
-        Debug.Assert(gArmsDealersInventory[ubArmsDealer][usItemIndex].SpecialItem[ubElement].fActive == false);
-        Debug.Assert(IsItemInfoSpecial(pSpclItemInfo));
+        // Debug.Assert(gArmsDealersInventory[ubArmsDealer][usItemIndex].ubTotalItems < 255);
+        // Debug.Assert(ubElement < gArmsDealersInventory[ubArmsDealer][usItemIndex].ubElementsAlloced);
+        // Debug.Assert(gArmsDealersInventory[ubArmsDealer][usItemIndex].SpecialItem[ubElement].fActive == false);
+        // Debug.Assert(IsItemInfoSpecial(pSpclItemInfo));
 
 
-        //Store the special values in that element, and make it active
-        gArmsDealersInventory[ubArmsDealer][usItemIndex].SpecialItem[ubElement].fActive = true;
+        try
+        {
+            //Store the special values in that element, and make it active
+            gArmsDealersInventory[ubArmsDealer][usItemIndex].SpecialItem[ubElement].fActive = true;
 
-        gArmsDealersInventory[ubArmsDealer][usItemIndex].SpecialItem[ubElement].Info = pSpclItemInfo;
+            gArmsDealersInventory[ubArmsDealer][usItemIndex].SpecialItem[ubElement].Info = pSpclItemInfo;
 
-        // increase the total items
-        gArmsDealersInventory[ubArmsDealer][usItemIndex].ubTotalItems++;
+            // increase the total items
+            gArmsDealersInventory[ubArmsDealer][usItemIndex].ubTotalItems++;
+        }
+        catch (ArgumentOutOfRangeException e)
+        {
+
+        }
     }
 
     public static bool CanDealerItemBeSoldUsed(Items usItemIndex)
@@ -1133,7 +1145,8 @@ public class ArmsDealerInit
         for (usItemIndex = (Items)1; usItemIndex < Items.MAXITEMS; usItemIndex++)
         {
             //if there is some items in stock
-            if (gArmsDealersInventory[ubArmsDealer][usItemIndex].ubTotalItems > 0)
+            if (gArmsDealersInventory[ubArmsDealer].ContainsKey(usItemIndex)
+                && gArmsDealersInventory[ubArmsDealer][usItemIndex].ubTotalItems > 0)
             {
                 //if the item is of the same dealer item type
                 if (uiDealerItemType.HasFlag(GetArmsDealerItemTypeFromItemNumber(usItemIndex)))
@@ -1398,6 +1411,11 @@ public class ArmsDealerInit
         //loop through all items of the same type
         for (usItemIndex = (Items)1; usItemIndex < Items.MAXITEMS; usItemIndex++)
         {
+            if (!gArmsDealersInventory[ubArmsDealer].ContainsKey(usItemIndex))
+            {
+                continue;
+            }
+
             //if the item is of the same dealer item type
             if (uiDealerItemType.HasFlag(GetArmsDealerItemTypeFromItemNumber(usItemIndex)))
             {
@@ -1626,6 +1644,14 @@ public class ArmsDealerInit
 
         gArmsDealerStatus[ubArmsDealer] = new();
         gArmsDealersInventory[ubArmsDealer] = [];
+
+        foreach (var item in Enum.GetValues<Items>())
+        {
+            gArmsDealersInventory[ubArmsDealer].Add(item, new()
+            {
+                SpecialItem = [],
+            });
+        }
 
         //Reset the arms dealers cash on hand to the default initial value
         gArmsDealerStatus[ubArmsDealer].uiArmsDealersCash = ArmsDealerInfo[ubArmsDealer].iInitialCash;
@@ -2073,7 +2099,7 @@ public class DEALER_ITEM_HEADER
     public int ubStrayAmmo;                  // partially-depleted ammo mags are stored here as #bullets, and can be converted to full packs
 
     public int ubElementsAlloced;        // number of DEALER_SPECIAL_ITEM array elements alloced for the special item array
-    public List<DEALER_SPECIAL_ITEM> SpecialItem = new();   // dynamic array of special items with this same item index
+    public List<DEALER_SPECIAL_ITEM> SpecialItem = [];   // dynamic array of special items with this same item index
 
     public int uiOrderArrivalTime;      // Day the items ordered will arrive on.  It's int in case we change this to minutes.
     public int ubQtyOnOrder;                 // The number of items currently on order

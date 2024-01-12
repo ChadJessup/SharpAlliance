@@ -9,7 +9,6 @@ global using static SharpAlliance.Core.EnglishText;
 
 using static SharpAlliance.Core.InteractiveTiles;
 using static SharpAlliance.Core.Screens.CreditsScreen;
-using static SharpAlliance.Core.SubSystems.StrategicAI;
 
 using System;
 using System.Collections.Generic;
@@ -20,8 +19,6 @@ using SharpAlliance.Core.Screens;
 
 using SixLabors.ImageSharp;
 using SixLabors.ImageSharp.PixelFormats;
-using Veldrid;
-using System.Diagnostics;
 using ThreadState = SharpAlliance.Core.Managers.ThreadState;
 
 namespace SharpAlliance.Core;
@@ -34,6 +31,11 @@ public partial class Globals
         foreach (var fact in Enum.GetValues<FACT>())
         {
             gubFact[fact] = false;
+        }
+
+        foreach(var quest in Enum.GetValues<QUEST>())
+        {
+            gubQuest[quest] = 0;
         }
     }
 
@@ -252,7 +254,7 @@ public partial class Globals
     public static int[] gubWorldRoomInfo = new int[WORLD_MAX];
     public static int[] gubWorldRoomHidden = new int[MAX_ROOMS];
 
-    public static StrategicMapElement[] strategicMap = new StrategicMapElement[Globals.MAP_WORLD_X * Globals.MAP_WORLD_Y];
+    public static StrategicMapElement[] strategicMap = new StrategicMapElement[(Globals.MAP_WORLD_X * Globals.MAP_WORLD_Y) + 2];
     public static Dictionary<Garrisons, GARRISON_GROUP> gGarrisonGroup = new();
 
     public static bool gfApplyChangesToTempFile { get; set; } = false;
@@ -662,8 +664,8 @@ public partial class Globals
     public static int gsFoodQuestSectorX;
     public static int gsFoodQuestSectorY;
 
-    public static int MAP_WORLD_X = 18;
-    public static int MAP_WORLD_Y = 18;
+    public const int MAP_WORLD_X = 18;
+    public const int MAP_WORLD_Y = 18;
 
     public static int guiUITargetSoldierId = NOBODY;
 
