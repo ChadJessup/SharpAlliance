@@ -40,7 +40,37 @@ public class Vehicles
 
     internal static void ClearOutVehicleList()
     {
-        throw new NotImplementedException();
+        // empty out the vehicle list
+        if (pVehicleList.Any())
+        {
+            for (int iCounter = 0; iCounter < ubNumberOfVehicles; iCounter++)
+            {
+                // if there is a valid vehicle
+                if (pVehicleList[iCounter].fValid)
+                {
+                    //if the vehicle has a valid path
+                    if (pVehicleList[iCounter].pMercPath is not null)
+                    {
+                        //toast the vehicle path
+                        pVehicleList[iCounter].pMercPath = StrategicPathing.ClearStrategicPathList(pVehicleList[iCounter].pMercPath, 0);
+                    }
+                }
+            }
+
+            MemFree(pVehicleList);
+            pVehicleList.Clear();
+            ubNumberOfVehicles = 0;
+        }
+
+        /*	
+            // empty out the vehicle list
+            if( pVehicleList )
+            {
+                MemFree( pVehicleList );
+                pVehicleList = NULL;
+                ubNumberOfVehicles = 0;
+            }
+        */
     }
 
     // the mvt groups associated with vehcile types
@@ -159,7 +189,7 @@ public enum HIT_LOCATION
 // struct for vehicles
 public class VEHICLETYPE
 {
-    public Path pMercPath;  // vehicle's stategic path list
+    public Path? pMercPath;  // vehicle's stategic path list
     public int ubMovementGroup; // the movement group this vehicle belongs to
     public int ubVehicleType; // type of vehicle 
     public int sSectorX;   // X position on the Stategic Map

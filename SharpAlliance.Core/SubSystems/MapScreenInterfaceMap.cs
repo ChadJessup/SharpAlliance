@@ -26,7 +26,8 @@ public class MapScreenInterfaceMap
     private ushort?[] pMapDKRedPalette;
     private ushort?[] pMapLTGreenPalette;
     private ushort?[] pMapDKGreenPalette;
-
+    // destination plotting character
+    public static int bSelectedDestChar = -1;
 
     public MapScreenInterfaceMap(IVideoManager videoManager)
     {
@@ -66,8 +67,11 @@ public class MapScreenInterfaceMap
     };
 
     // list of map sectors that player isn't allowed to even highlight
-    private bool[,] sBadSectorsList = new bool[Globals.WORLD_MAP_X, Globals.WORLD_MAP_X];
+    private static bool[,] sBadSectorsList = new bool[Globals.WORLD_MAP_X, Globals.WORLD_MAP_X];
     private static IVideoManager video;
+    internal static MAP_ROW sSelMapY;
+    internal static int sSelMapX;
+    internal static int iCurrentMapSectorZ;
 
     public void SetUpBadSectorsList()
     {
@@ -79,37 +83,37 @@ public class MapScreenInterfaceMap
         // the border regions
         for (bY = 0; bY < Globals.WORLD_MAP_X; bY++)
         {
-            this.sBadSectorsList[0, bY]
-                = this.sBadSectorsList[Globals.WORLD_MAP_X - 1, bY]
-                = this.sBadSectorsList[bY, 0]
-                = this.sBadSectorsList[bY, Globals.WORLD_MAP_X - 1]
+            sBadSectorsList[0, bY]
+                = sBadSectorsList[Globals.WORLD_MAP_X - 1, bY]
+                = sBadSectorsList[bY, 0]
+                = sBadSectorsList[bY, Globals.WORLD_MAP_X - 1]
                 = true;
         }
 
-        this.sBadSectorsList[4, 1] = true;
-        this.sBadSectorsList[5, 1] = true;
-        this.sBadSectorsList[16, 1] = true;
-        this.sBadSectorsList[16, 5] = true;
-        this.sBadSectorsList[16, 6] = true;
+        sBadSectorsList[4, 1] = true;
+        sBadSectorsList[5, 1] = true;
+        sBadSectorsList[16, 1] = true;
+        sBadSectorsList[16, 5] = true;
+        sBadSectorsList[16, 6] = true;
 
-        this.sBadSectorsList[16, 10] = true;
-        this.sBadSectorsList[16, 11] = true;
-        this.sBadSectorsList[16, 12] = true;
-        this.sBadSectorsList[16, 13] = true;
-        this.sBadSectorsList[16, 14] = true;
-        this.sBadSectorsList[16, 15] = true;
-        this.sBadSectorsList[16, 16] = true;
+        sBadSectorsList[16, 10] = true;
+        sBadSectorsList[16, 11] = true;
+        sBadSectorsList[16, 12] = true;
+        sBadSectorsList[16, 13] = true;
+        sBadSectorsList[16, 14] = true;
+        sBadSectorsList[16, 15] = true;
+        sBadSectorsList[16, 16] = true;
 
-        this.sBadSectorsList[15, 13] = true;
-        this.sBadSectorsList[15, 14] = true;
-        this.sBadSectorsList[15, 15] = true;
-        this.sBadSectorsList[15, 16] = true;
+        sBadSectorsList[15, 13] = true;
+        sBadSectorsList[15, 14] = true;
+        sBadSectorsList[15, 15] = true;
+        sBadSectorsList[15, 16] = true;
 
-        this.sBadSectorsList[14, 14] = true;
-        this.sBadSectorsList[14, 15] = true;
-        this.sBadSectorsList[14, 16] = true;
+        sBadSectorsList[14, 14] = true;
+        sBadSectorsList[14, 15] = true;
+        sBadSectorsList[14, 16] = true;
 
-        this.sBadSectorsList[13, 14] = true;
+        sBadSectorsList[13, 14] = true;
     }
 
     public void InitializePalettesForMap()
@@ -404,6 +408,7 @@ public class MapScreenInterfaceMap
         // init leave list with nullS/zeroes
         for (int iCounter = 0; iCounter < Globals.NUM_LEAVE_LIST_SLOTS; iCounter++)
         {
+            gpLeaveList.Add(null);
             gpLeaveList[iCounter] = null;
             guiLeaveListOwnerProfileId[iCounter] = (int)NO_PROFILE;
         }
@@ -447,7 +452,28 @@ public class MapScreenInterfaceMap
 
     internal static void InitMapSecrets()
     {
-        throw new NotImplementedException();
+        fFoundTixa = false;
+        fFoundOrta = false;
+
+        for (int ubSamIndex = 0; ubSamIndex < NUMBER_OF_SAMS; ubSamIndex++)
+        {
+            fSamSiteFound[(SAM_SITE)ubSamIndex] = false;
+        }
+    }
+
+    internal static bool IsTheCursorAllowedToHighLightThisSector(int sSectorX, MAP_ROW sSectorY)
+    {
+        // check to see if this sector is a blocked out sector?
+
+        if (sBadSectorsList[sSectorX, (int)sSectorY])
+        {
+            return (false);
+        }
+        else
+        {
+            // return cursor is allowed to highlight this sector
+            return (true);
+        }
     }
 }
 

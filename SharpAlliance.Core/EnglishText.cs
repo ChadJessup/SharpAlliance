@@ -131,6 +131,31 @@ public static class EnglishText
         "Pause Game (|P|a|u|s|e)",
     };
 
+    // help text used when moving the merc arrival sector
+    public static string[] pBullseyeStrings =
+    {
+        "Click on the sector where you would like the mercs to arrive instead.",
+        "OK.  Arriving mercs will be dropped off in %s",
+        "Mercs can't be flown there, the airspace isn't secured!",
+        "Canceled.  Arrival sector unchanged",
+        "Airspace over %s is no longer secure!  Arrival sector was moved to %s.",
+    };
+
+    // helicopter pilot payment 
+
+    public static string[] pSkyriderText =
+    {
+        "Skyrider was paid $%d", 			// skyrider was paid an amount of money
+    	"Skyrider is still owed $%d", 		// skyrider is still owed an amount of money
+    	"Skyrider has finished refueling",	// skyrider has finished refueling
+    	"",//unused
+    	"",//unused
+    	"Skyrider is ready to fly once more.", // Skyrider was grounded but has been freed
+    	"Skyrider has no passengers.  If it is your intention to transport mercs in this sector, assign them to Vehicle/Helicopter first.",
+    };
+
+
+
     // Mine strings
 
     public static string[] pwMineStrings =

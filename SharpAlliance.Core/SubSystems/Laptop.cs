@@ -437,6 +437,11 @@ public class Laptop
     {
         guiExitScreen = exitScreen;
     }
+
+    internal static void DoLapTopSystemMessageBoxWithRect(MessageBoxStyle mSG_BOX_LAPTOP_DEFAULT, string zString, ScreenName lAPTOP_SCREEN, MSG_BOX_FLAG usFlags, MSGBOX_CALLBACK? returnCallback, Rectangle? pCenteringRect)
+    {
+        throw new NotImplementedException();
+    }
 }
 
 // icons text id's

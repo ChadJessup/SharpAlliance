@@ -879,7 +879,7 @@ public class StrategicPathing
         return pHeadOfPathList;
     }
 
-    Path? ClearStrategicPathList(Path? pHeadOfPath, int sMvtGroup)
+    public static Path? ClearStrategicPathList(Path? pHeadOfPath, int sMvtGroup)
     {
         // will clear out a strategic path and return head of list as null
         Path? pNode = pHeadOfPath;
@@ -990,7 +990,7 @@ public class StrategicPathing
         else
         {
             // clear head, return null
-            pHeadOfPath = this.ClearStrategicPathList(pHeadOfPath, sMvtGroup);
+            pHeadOfPath = ClearStrategicPathList(pHeadOfPath, sMvtGroup);
 
             return null;
         }
@@ -1250,7 +1250,7 @@ public class StrategicPathing
 
 
         // null out dest path
-        pDestNode = this.ClearStrategicPathList(pDestNode, -1);
+        pDestNode = ClearStrategicPathList(pDestNode, -1);
         Debug.Assert(pDestNode == null);
 
 
@@ -1710,7 +1710,7 @@ void VerifyAllMercsInGroupAreOnSameSquad(GROUP* pGroup)
         this.RebuildWayPointsForGroupPath(pNode, ubGroupID);
 
         // now clear out the mess
-        pNode = this.ClearStrategicPathList(pNode, -1);
+        pNode = ClearStrategicPathList(pNode, -1);
 
         return true;
     }
@@ -1737,7 +1737,7 @@ void VerifyAllMercsInGroupAreOnSameSquad(GROUP* pGroup)
         this.RebuildWayPointsForGroupPath(pNode, ubGroupID);
 
         // now clear out the mess
-        pNode = this.ClearStrategicPathList(pNode, -1);
+        pNode = ClearStrategicPathList(pNode, -1);
 
         return true;
     }
@@ -1779,7 +1779,7 @@ void VerifyAllMercsInGroupAreOnSameSquad(GROUP* pGroup)
         this.RebuildWayPointsForGroupPath(pNode, ubGroupID);
 
         // now clear out the mess
-        pNode = this.ClearStrategicPathList(pNode, -1);
+        pNode = ClearStrategicPathList(pNode, -1);
 
         return true;
     }
@@ -1824,7 +1824,7 @@ void VerifyAllMercsInGroupAreOnSameSquad(GROUP* pGroup)
         this.RebuildWayPointsForGroupPath(pNode, ubGroupID);
 
         // now clear out the mess
-        pNode = this.ClearStrategicPathList(pNode, -1);
+        pNode = ClearStrategicPathList(pNode, -1);
 
         return true;
     }
@@ -2000,7 +2000,7 @@ void VerifyAllMercsInGroupAreOnSameSquad(GROUP* pGroup)
             pVehicle = pVehicleList[iVehicleId];
 
             // clear the path for that vehicle
-            pVehicle.pMercPath = this.ClearStrategicPathList(pVehicle.pMercPath, pVehicle.ubMovementGroup);
+            pVehicle.pMercPath = ClearStrategicPathList(pVehicle.pMercPath, pVehicle.ubMovementGroup);
         }
 
         // clear the waypoints for this group too - no mercpath = no waypoints!
@@ -2018,7 +2018,7 @@ void VerifyAllMercsInGroupAreOnSameSquad(GROUP* pGroup)
 
 
         // clear the soldier's mercpath
-        pSoldier.pMercPath = this.ClearStrategicPathList(pSoldier.pMercPath, pSoldier.ubGroupID);
+        pSoldier.pMercPath = ClearStrategicPathList(pSoldier.pMercPath, pSoldier.ubGroupID);
 
         // if a vehicle
         if (pSoldier.uiStatusFlags.HasFlag(SOLDIER.VEHICLE))
@@ -2035,7 +2035,7 @@ void VerifyAllMercsInGroupAreOnSameSquad(GROUP* pGroup)
         if (pVehicle != null)
         {
             // clear its mercpath, too
-            pVehicle.pMercPath = this.ClearStrategicPathList(pVehicle.pMercPath, pVehicle.ubMovementGroup);
+            pVehicle.pMercPath = ClearStrategicPathList(pVehicle.pMercPath, pVehicle.ubMovementGroup);
         }
     }
 

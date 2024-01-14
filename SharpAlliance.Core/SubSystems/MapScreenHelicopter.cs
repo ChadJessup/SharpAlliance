@@ -1,4 +1,5 @@
 ﻿using System;
+using SharpAlliance.Core.Screens;
 using static SharpAlliance.Core.Globals;
 
 namespace SharpAlliance.Core.SubSystems;
@@ -10,7 +11,7 @@ public class MapScreenHelicopter
     private static bool fHeliReturnStraightToBase;
     private static bool fHoveringHelicopter;
     private static int uiStartHoverTime;
-    private static bool fPlotForHelicopter;
+    public static bool fPlotForHelicopter;
     private static Path? pTempHelicopterPath;
     private static int iTotalAccumulatedCostByPlayer;
     private static bool fHelicopterDestroyed;
@@ -25,6 +26,14 @@ public class MapScreenHelicopter
     private static int gubHelicopterHitsTaken;
     private static bool gfSkyriderSaidCongratsOnTakingSAM;
     private static int gubPlayerProgressSkyriderLastCommentedOn;
+
+    // list of sector locations where SkyRider can be refueled
+    private static int[,] ubRefuelList =
+    {
+    	{ 13, 2 },		// Drassen airport
+    	{  6, 9 },		// Estoni
+    };
+
 
     public static void CheckAndHandleSkyriderMonologues()
     {
@@ -131,6 +140,41 @@ public class MapScreenHelicopter
         gfSkyriderSaidCongratsOnTakingSAM = false;
         gubPlayerProgressSkyriderLastCommentedOn = 0;
     }
+
+    internal static void UpdateRefuelSiteAvailability()
+    {
+        // Generally, only Drassen is initially available for refuelling
+        // Estoni must first be captured (although player may already have it when he gets Skyrider!)
+
+        for (int iCounter = 0; iCounter < (int)REFUELING_SITE.NUMBER_OF_REFUEL_SITES; iCounter++)
+        {
+            // if enemy controlled sector (ground OR air, don't want to fly into enemy air territory)
+            if ((strategicMap[CALCULATE_STRATEGIC_INDEX(ubRefuelList[iCounter,0], (MAP_ROW)ubRefuelList[iCounter,1])].fEnemyControlled == true)
+                || (strategicMap[CALCULATE_STRATEGIC_INDEX(ubRefuelList[iCounter,0], (MAP_ROW)ubRefuelList[iCounter,1])].fEnemyAirControlled == true)
+                || ((iCounter == (int)REFUELING_SITE.ESTONI_REFUELING_SITE) && (Facts.CheckFact(FACT.ESTONI_REFUELLING_POSSIBLE, 0) == false)))
+            {
+                // mark refueling site as unavailable
+                fRefuelingSiteAvailable[iCounter] = false;
+            }
+            else
+            {
+                // mark refueling site as available
+                fRefuelingSiteAvailable[iCounter] = true;
+
+                // reactivate a grounded helicopter, if here
+                if (!fHelicopterAvailable && !fHelicopterDestroyed && fSkyRiderAvailable && (iHelicopterVehicleId != -1))
+                {
+                    if ((pVehicleList[iHelicopterVehicleId].sSectorX == ubRefuelList[iCounter, 0]) &&
+                          (pVehicleList[iHelicopterVehicleId].sSectorY == (MAP_ROW)ubRefuelList[iCounter, 1]))
+                    {
+                        // no longer grounded
+                       MessageBoxScreen.DoScreenIndependantMessageBox(pSkyriderText[5], MSG_BOX_FLAG.OK, null);
+                    }
+                }
+            }
+        }
+
+    }
 }
 
 // the sam site enums
@@ -141,4 +185,11 @@ public enum SAM_SITE
     THREE,             // near Cambria
     FOUR,              // near Meduna
     NUMBER_OF_SAM_SITES,
+};
+
+public enum REFUELING_SITE
+{
+    DRASSEN_REFUELING_SITE = 0,
+    ESTONI_REFUELING_SITE,
+    NUMBER_OF_REFUEL_SITES,
 };

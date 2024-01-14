@@ -4,6 +4,7 @@ using SharpAlliance.Core.Screens;
 using SharpAlliance.Core.Managers;
 using SharpAlliance.Platform.Interfaces;
 using SharpAlliance.Core.Interfaces;
+using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace SharpAlliance.Core.SubSystems;
 
@@ -863,7 +864,91 @@ public class StrategicMap
 
     internal static void InitializeSAMSites()
     {
-        throw new NotImplementedException();
+        // move the landing zone over to Omerta
+        Globals.gsMercArriveSectorX = 9;
+        Globals.gsMercArriveSectorY = MAP_ROW.A;
+
+        // all SAM sites start game in perfect working condition
+        strategicMap[(int)(SAM.SAM_1_X) + (MAP_WORLD_X * (int)(SAM.SAM_1_Y))].bSAMCondition = 100;
+        strategicMap[(int)(SAM.SAM_2_X) + (MAP_WORLD_X * (int)(SAM.SAM_2_Y))].bSAMCondition = 100;
+        strategicMap[(int)(SAM.SAM_3_X) + (MAP_WORLD_X * (int)(SAM.SAM_3_Y))].bSAMCondition = 100;
+        strategicMap[(int)(SAM.SAM_4_X) + (MAP_WORLD_X * (int)(SAM.SAM_4_Y))].bSAMCondition = 100;
+
+        UpdateAirspaceControl();
+    }
+
+    private static void UpdateAirspaceControl()
+    {
+        int ubControllingSAM;
+        StrategicMapElement? pSAMStrategicMap = null;
+        bool fEnemyControlsAir;
+
+
+        for (int iCounterA = 1; iCounterA < (MAP_WORLD_X - 1); iCounterA++)
+        {
+            for (MAP_ROW iCounterB = MAP_ROW.A; iCounterB < (MAP_ROW)(MAP_WORLD_Y - 1); iCounterB++)
+            {
+                // IMPORTANT: B and A are reverse here, since the table is stored transposed
+                ubControllingSAM = ubSAMControlledSectors[(int)iCounterB, iCounterA];
+
+                if ((ubControllingSAM >= 1) && (ubControllingSAM <= NUMBER_OF_SAMS))
+                {
+                    pSAMStrategicMap = (strategicMap[SECTOR_INFO_TO_STRATEGIC_INDEX(pSamList[ubControllingSAM - 1])]);
+
+                    // if the enemies own the controlling SAM site, and it's in working condition
+                    if ((pSAMStrategicMap.fEnemyControlled) && (pSAMStrategicMap.bSAMCondition >= MIN_CONDITION_FOR_SAM_SITE_TO_WORK))
+                    {
+                        fEnemyControlsAir = true;
+                    }
+                    else
+                    {
+                        fEnemyControlsAir = false;
+                    }
+                }
+                else
+                {
+                    // no controlling SAM site
+                    fEnemyControlsAir = false;
+                }
+
+                strategicMap[CALCULATE_STRATEGIC_INDEX(iCounterA, iCounterB)].fEnemyAirControlled = fEnemyControlsAir;
+            }
+        }
+
+
+        // check if currently selected arrival sector still has secure airspace
+
+        // if it's not enemy air controlled
+        if (strategicMap[CALCULATE_STRATEGIC_INDEX(gsMercArriveSectorX, gsMercArriveSectorY)].fEnemyAirControlled == true)
+        {
+            // NOPE!
+            string sMsgString, sMsgSubString1, sMsgSubString2;
+
+            // get the name of the old sector
+            GetSectorIDString(gsMercArriveSectorX, gsMercArriveSectorY, 0, out sMsgSubString1, false);
+
+            // move the landing zone over to Omerta
+            gsMercArriveSectorX = 9;
+            gsMercArriveSectorY = MAP_ROW.A;
+
+            // get the name of the new sector
+            GetSectorIDString(gsMercArriveSectorX, gsMercArriveSectorY, 0, out sMsgSubString2, false);
+
+            // now build the string
+            sMsgString = wprintf(pBullseyeStrings[4], sMsgSubString1, sMsgSubString2);
+
+            // confirm the change with overlay message
+            MessageBoxScreen.DoScreenIndependantMessageBox(sMsgString, MSG_BOX_FLAG.OK, null);
+
+            // update position of bullseye
+            fMapPanelDirty = true;
+
+            // update destination column for any mercs in transit
+            fTeamPanelDirty = true;
+        }
+
+        // ARM: airspace control now affects refueling site availability, so update that too with every change!
+       MapScreenHelicopter.UpdateRefuelSiteAvailability();
     }
 }
 

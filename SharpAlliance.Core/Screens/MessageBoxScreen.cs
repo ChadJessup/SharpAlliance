@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using SharpAlliance.Core.Interfaces;
@@ -13,7 +14,7 @@ public class MessageBoxScreen : IScreen
 {
     private readonly IInputManager inputs;
     private readonly ILogger<MessageBoxScreen> logger;
-    private readonly MessageBoxSubSystem messageBoxSubSystem;
+    private static MessageBoxSubSystem messageBoxSubSystem;
     private static IVideoManager video;
     private readonly MercTextBox mercTextBox;
     private readonly List<GUI_BUTTON> buttonList = [];
@@ -29,7 +30,7 @@ public class MessageBoxScreen : IScreen
     {
         this.inputs = inputManager;
         this.logger = logger;
-        this.messageBoxSubSystem = messageBoxSubSystem;
+        messageBoxSubSystem = messageBoxSubSystem;
         video = videoManager;
         this.mercTextBox = mercTextBox;
     }
@@ -444,5 +445,56 @@ public class MessageBoxScreen : IScreen
         }
 
         return gMsgBox.uiExitScreen;
+    }
+
+    internal static void DoScreenIndependantMessageBox(string zString, MSG_BOX_FLAG usFlags, MSGBOX_CALLBACK returnCallback)
+    {
+        Rectangle CenteringRect = new(0, 0, 640, INV_INTERFACE_START_Y);
+        DoScreenIndependantMessageBoxWithRect(zString, usFlags, returnCallback, CenteringRect);
+    }
+
+    private static void DoScreenIndependantMessageBoxWithRect(string zString, MSG_BOX_FLAG usFlags, MSGBOX_CALLBACK? ReturnCallback, Rectangle? pCenteringRect)
+    {
+        /// which screen are we in?
+        // Map Screen (excluding AI Viewer)
+            if ((guiTacticalInterfaceFlags.HasFlag(INTERFACE.MAPSCREEN)))
+            {
+
+                // auto resolve is a special case
+                if (guiCurrentScreen == ScreenName.AUTORESOLVE_SCREEN)
+                {
+                    messageBoxSubSystem.DoMessageBox(MessageBoxStyle.MSG_BOX_BASIC_STYLE, zString, ScreenName.AUTORESOLVE_SCREEN, usFlags, ReturnCallback, ref pCenteringRect);
+                }
+                else
+                {
+                    // set up for mapscreen
+                    MapScreenInterface.DoMapMessageBoxWithRect(MessageBoxStyle.MSG_BOX_BASIC_STYLE, zString, ScreenName.MAP_SCREEN, usFlags, ReturnCallback, pCenteringRect);
+                }
+            }
+
+            //Laptop
+            else if (guiCurrentScreen == ScreenName.LAPTOP_SCREEN)
+            {
+                // set up for laptop
+                Laptop.DoLapTopSystemMessageBoxWithRect(MessageBoxStyle.MSG_BOX_LAPTOP_DEFAULT, zString, ScreenName.LAPTOP_SCREEN, usFlags, ReturnCallback, pCenteringRect);
+            }
+
+            //Save Load Screen
+            else if (guiCurrentScreen == ScreenName.SAVE_LOAD_SCREEN)
+            {
+                SaveLoadScreen.DoSaveLoadMessageBoxWithRect(MessageBoxStyle.MSG_BOX_BASIC_STYLE, zString, ScreenName.SAVE_LOAD_SCREEN, usFlags, ReturnCallback, pCenteringRect);
+            }
+
+            //Options Screen
+            else if (guiCurrentScreen == ScreenName.OPTIONS_SCREEN)
+            {
+            OptionsScreen.DoOptionsMessageBoxWithRect(MessageBoxStyle.MSG_BOX_BASIC_STYLE, zString, ScreenName.OPTIONS_SCREEN, usFlags, ReturnCallback, pCenteringRect);
+            }
+
+            // Tactical
+            else if (guiCurrentScreen == ScreenName.GAME_SCREEN)
+            {
+               messageBoxSubSystem.DoMessageBox(MessageBoxStyle.MSG_BOX_BASIC_STYLE, zString, guiCurrentScreen, usFlags, ReturnCallback, ref pCenteringRect);
+            }
     }
 }

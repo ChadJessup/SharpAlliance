@@ -15,6 +15,7 @@ public class MapScreen : IScreen
     private readonly IVideoManager video;
     private readonly MapScreenInterfaceMap mapScreenInterface;
     private readonly MessageSubSystem messages;
+    public static List<MERC_LEAVE_ITEM?> gpLeaveListHead = [];
 
     public MapScreen(
         MapScreenInterfaceMap mapScreenInterfaceMap,
@@ -28,7 +29,6 @@ public class MapScreen : IScreen
 
     public bool IsInitialized { get; set; }
     public ScreenState State { get; set; }
-    public bool fMapPanelDirty { get; set; }
     public static IEnumerable<GUI_BUTTON> buttonList { get; private set; }
 
     public ValueTask Activate()
@@ -159,12 +159,51 @@ public class MapScreen : IScreen
 
     internal static void ShutDownLeaveList()
     {
-        throw new NotImplementedException();
+        gpLeaveListHead.Clear();
     }
 
-    internal static void ChangeSelectedMapSector(int v1, MAP_ROW a, int v2)
+    internal static void ChangeSelectedMapSector(int sMapX, MAP_ROW sMapY, int bMapZ)
     {
-        throw new NotImplementedException();
+        // ignore while map inventory pool is showing, or else items can be replicated, since sector inventory always applies
+        // only to the currently selected sector!!!
+        if (fShowMapInventoryPool)
+        {
+            return;
+        }
+
+        if (gfPreBattleInterfaceActive)
+        {
+            return;
+        }
+
+        if (!MapScreenInterfaceMap.IsTheCursorAllowedToHighLightThisSector(sMapX, sMapY))
+        {
+            return;
+        }
+
+        // disallow going underground while plotting (surface) movement
+        if ((bMapZ != 0) && ((MapScreenInterfaceMap.bSelectedDestChar != -1) || MapScreenHelicopter.fPlotForHelicopter))
+        {
+            return;
+        }
+
+
+        MapScreenInterfaceMap.sSelMapX = sMapX;
+        MapScreenInterfaceMap.sSelMapY = sMapY;
+        MapScreenInterfaceMap.iCurrentMapSectorZ = bMapZ;
+
+        // if going underground while in airspace mode
+        if ((bMapZ > 0) && (MapScreenInterfaceBorder.fShowAircraftFlag == true))
+        {
+            // turn off airspace mode
+            MapScreenInterfaceBorder.ToggleAirspaceMode();
+        }
+
+        fMapPanelDirty = true;
+        fMapScreenBottomDirty = true;
+
+        // also need this, to update the text coloring of mercs in this sector
+        fTeamPanelDirty = true;
     }
 }
 

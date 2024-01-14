@@ -56,6 +56,7 @@ public partial class Globals
     public static bool gfUseAlternateMap = false;
     // whether or not we have found Orta yet
     public static bool fFoundOrta = false;
+    public static bool fFoundTixa = false;
 
     // have any of the sam sites been found
     public static Dictionary<SAM_SITE, bool> fSamSiteFound = new()
@@ -103,7 +104,7 @@ public partial class Globals
     // the amount of time that a soldier will wait to return to desired/old squad
     public const int DESIRE_SQUAD_RESET_DELAY = 12 * 60;
 
-    public int[,] ubSAMControlledSectors =
+    public static int[,] ubSAMControlledSectors =
     {
     //     1  2  3  4  5  6  7  8  9  10 11 12 13 14 15 16
       { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 },

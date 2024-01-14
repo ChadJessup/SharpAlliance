@@ -32,6 +32,10 @@ public partial class Globals
     public static SOLDIERINITNODE? gSoldierInitTail;
     public static Rectangle giClip;
     public static int giImageWidth;
+    internal static int gsMercArriveSectorX;
+    internal static MAP_ROW gsMercArriveSectorY;
+    internal static bool[] fRefuelingSiteAvailable = new bool[(int)REFUELING_SITE.NUMBER_OF_REFUEL_SITES];
+    internal static bool gfPreBattleInterfaceActive;
 
     public static bool gfEstimatePath { get; internal set; }
     public static int gubScreenCount { get; internal set; }

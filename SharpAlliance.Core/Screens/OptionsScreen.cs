@@ -1365,6 +1365,11 @@ public class OptionsScreen : IScreen
     {
         return ValueTask.CompletedTask;
     }
+
+    internal static void DoOptionsMessageBoxWithRect(MessageBoxStyle mSG_BOX_BASIC_STYLE, string zString, ScreenName oPTIONS_SCREEN, MSG_BOX_FLAG usFlags, MSGBOX_CALLBACK? returnCallback, Rectangle? pCenteringRect)
+    {
+        throw new NotImplementedException();
+    }
 }
 
 // defines used for the zOptionsText
