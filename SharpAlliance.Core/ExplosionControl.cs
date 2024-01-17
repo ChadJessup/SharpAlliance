@@ -13,6 +13,14 @@ namespace SharpAlliance.Core;
 
 public partial class Globals
 {
+    // max number of characters and vehicles
+    //Character List Length
+    public const int MAX_CHARACTER_COUNT = 20;
+    public const int MAX_VEHICLE_COUNT = 20;
+}
+
+public partial class Globals
+{
     public const int GASMASK_MIN_STATUS = 70;
 }
 

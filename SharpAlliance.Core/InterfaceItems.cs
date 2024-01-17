@@ -453,7 +453,7 @@ public class InterfaceItems
     {
         InventorySlot cnt;
 
-        if (this.InItemDescriptionBox() || this.InItemStackPopup() || this.InKeyRingPopup())
+        if (this.InItemDescriptionBox() || InItemStackPopup() || this.InKeyRingPopup())
         {
 
         }
@@ -4577,14 +4577,10 @@ public class InterfaceItems
         }
     }
 
-
-
-
-    bool InItemStackPopup()
+    public static bool InItemStackPopup()
     {
         return gfInItemStackPopup;
     }
-
 
     bool InKeyRingPopup()
     {
@@ -5392,7 +5388,7 @@ public class InterfaceItems
 
         if (iReason.HasFlag(MSYS_CALLBACK_REASON.LBUTTON_UP))
         {
-            if (this.InItemStackPopup())
+            if (InItemStackPopup())
             {
                 // End stack popup and retain pointer
                 this.EndItemStackPopupWithItemInHand();
@@ -5407,7 +5403,7 @@ public class InterfaceItems
         }
         else if (iReason.HasFlag(MSYS_CALLBACK_REASON.RBUTTON_UP))
         {
-            if (this.InItemStackPopup())
+            if (InItemStackPopup())
             {
                 this.DeleteItemStackPopup();
                 fTeamPanelDirty = true;

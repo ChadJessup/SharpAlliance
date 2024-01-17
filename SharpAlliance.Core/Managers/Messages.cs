@@ -684,7 +684,7 @@ public class Messages
         return;
     }
 
-    private static void MapScreenMessage(FontColor usColor, MSG ubPriority, params object?[] pStringA)
+    public static void MapScreenMessage(FontColor usColor, MSG ubPriority, params object?[] pStringA)
     {
         // this function sets up the string into several single line structures
 

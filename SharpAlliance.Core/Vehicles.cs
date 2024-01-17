@@ -52,7 +52,7 @@ public class Vehicles
                     if (pVehicleList[iCounter].pMercPath is not null)
                     {
                         //toast the vehicle path
-                        pVehicleList[iCounter].pMercPath = StrategicPathing.ClearStrategicPathList(pVehicleList[iCounter].pMercPath, 0);
+                        pVehicleList[iCounter].pMercPath = StrategicPathing.ClearStrategicPathList(ref pVehicleList[iCounter].pMercPath, 0);
                     }
                 }
             }

@@ -69,8 +69,8 @@ public class MapScreenInterfaceMap
     // list of map sectors that player isn't allowed to even highlight
     private static bool[,] sBadSectorsList = new bool[Globals.WORLD_MAP_X, Globals.WORLD_MAP_X];
     private static IVideoManager video;
-    internal static MAP_ROW sSelMapY;
-    internal static int sSelMapX;
+    internal static MAP_ROW sSelMapY = MAP_ROW.A;
+    internal static int sSelMapX = 9;
     internal static int iCurrentMapSectorZ;
 
     public void SetUpBadSectorsList()

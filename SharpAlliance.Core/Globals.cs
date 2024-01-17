@@ -783,7 +783,7 @@ public partial class Globals
     public const int USABLE = 10;      // minimum work% of items to still be usable
 
     // border and bottom buttons
-    public static GUI_BUTTON[] giMapBorderButtons = new GUI_BUTTON[6];
+    public static Dictionary<MAP_BORDER, GUI_BUTTON> giMapBorderButtons = new();
     public static int[] guiMapButtonInventory = { -1, -1, -1, -1, -1, -1 };
 
     public static DISABLED_STYLE gbDisabledButtonStyle;

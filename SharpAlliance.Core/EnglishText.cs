@@ -141,6 +141,16 @@ public static class EnglishText
         "Airspace over %s is no longer secure!  Arrival sector was moved to %s.",
     };
 
+    // help text used during strategic route plotting
+    public static string[] pMapPlotStrings =
+    {
+        "Click again on the destination to confirm your final route, or click on another sector to place more waypoints.",
+        "Travel route confirmed.",
+        "Destination unchanged.",
+        "Travel route canceled.",
+        "Travel route shortened.",
+    };
+
     // helicopter pilot payment 
 
     public static string[] pSkyriderText =

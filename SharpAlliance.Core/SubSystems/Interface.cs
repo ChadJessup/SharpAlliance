@@ -120,6 +120,37 @@ public class Interface
         }
 
     }
+
+    internal static void EndUIMessage()
+    {
+        uint uiClock = GetJA2Clock();
+
+        if (giUIMessageOverlay != -1)
+        {
+            if (gfUseSkullIconMessage)
+            {
+                if ((uiClock - guiUIMessageTime) < 300)
+                {
+                    return;
+                }
+            }
+
+            //		DebugMsg( TOPIC_JA2, DBG_LEVEL_0, String( "Removing Overlay message") );
+
+            RenderDirty.RemoveVideoOverlay(giUIMessageOverlay);
+
+            // Remove popup as well....
+            if (iUIMessageBox != -1)
+            {
+                MercTextBox.RemoveMercPopupBoxFromIndex(iUIMessageBox);
+                iUIMessageBox = -1;
+            }
+
+            giUIMessageOverlay = -1;
+
+        }
+        //iUIMessageBox = -1;
+    }
 }
 
 public enum INTERFACE

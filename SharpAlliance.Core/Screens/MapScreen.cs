@@ -1,11 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Threading.Tasks;
 using SharpAlliance.Core.Interfaces;
 using SharpAlliance.Core.Managers;
 using SharpAlliance.Core.SubSystems;
 using Veldrid;
-
+using static System.Runtime.InteropServices.JavaScript.JSType;
 using static SharpAlliance.Core.Globals;
 
 namespace SharpAlliance.Core.Screens;
@@ -16,6 +17,11 @@ public class MapScreen : IScreen
     private readonly MapScreenInterfaceMap mapScreenInterface;
     private readonly MessageSubSystem messages;
     public static List<MERC_LEAVE_ITEM?> gpLeaveListHead = [];
+    private static Path? gpHelicopterPreviousMercPath = null;
+    private static Path?[] gpCharacterPreviousMercPath = new Path?[MAX_CHARACTER_COUNT];
+    private static bool[] fSelectedListOfMercsForMapScreen = new bool[MAX_CHARACTER_COUNT];
+    private static MOUSE_REGION? gMapScreenMaskRegion;
+    private static bool fCheckCursorWasSet;
 
     public MapScreen(
         MapScreenInterfaceMap mapScreenInterfaceMap,
@@ -204,6 +210,430 @@ public class MapScreen : IScreen
 
         // also need this, to update the text coloring of mercs in this sector
         fTeamPanelDirty = true;
+    }
+
+    internal static void AbortMovementPlottingMode()
+    {
+        // invalid if we're not plotting movement
+        Debug.Assert((MapScreenInterfaceMap.bSelectedDestChar != -1) || (MapScreenHelicopter.fPlotForHelicopter == true));
+
+        // make everybody go back to where they were going before this plotting session started
+        MapScreen.RestorePreviousPaths();
+
+        // don't need the previous paths any more
+        MapScreen.ClearPreviousPaths();
+
+        // clear the character's temporary path (this is the route being constantly updated on the map)
+        if (pTempCharacterPath is not null)
+        {
+            // make sure we're at the beginning
+            pTempCharacterPath = StrategicPathing.MoveToBeginningOfPathList(ref pTempCharacterPath);
+            pTempCharacterPath = StrategicPathing.ClearStrategicPathList(ref pTempCharacterPath, 0);
+        }
+
+        // clear the helicopter's temporary path (this is the route being constantly updated on the map)
+        if (pTempHelicopterPath is not null)
+        {
+            // make sure we're at the beginning
+            pTempHelicopterPath = StrategicPathing.MoveToBeginningOfPathList(ref pTempHelicopterPath);
+            pTempHelicopterPath = StrategicPathing.ClearStrategicPathList(ref pTempHelicopterPath, 0);
+        }
+
+
+        MapScreen.EndConfirmMapMoveMode();
+
+        // cancel destination line highlight
+        MapScreenInterface.giDestHighLine = -1;
+
+        // cancel movement mode
+        MapScreenInterfaceMap.bSelectedDestChar = -1;
+        MapScreenHelicopter.fPlotForHelicopter = false;
+
+        // tell player the route was UNCHANGED
+        Messages.MapScreenMessage(FontColor.FONT_MCOLOR_LTYELLOW, MSG.MAP_UI_POSITION_MIDDLE, pMapPlotStrings[2]);
+
+
+        // reset cursors
+        MapScreen.ChangeMapScreenMaskCursor(CURSOR.NORMAL);
+        MapScreen.SetUpCursorForStrategicMap();
+
+        // restore glow region
+        RestoreBackgroundForDestinationGlowRegionList();
+
+        // we might be on the map, redraw to remove old path stuff
+        fMapPanelDirty = true;
+        fTeamPanelDirty = true;
+
+        gfRenderPBInterface = true;
+    }
+
+    private static void SetUpCursorForStrategicMap()
+    {
+        if (gfInChangeArrivalSectorMode == false)
+        {
+            // check if character is in destination plotting mode
+            if (fPlotForHelicopter == false)
+            {
+                if (bSelectedDestChar == -1)
+                {
+                    // no plot mode, reset cursor to normal
+                    ChangeMapScreenMaskCursor(CURSOR.NORMAL);
+                }
+                else    // yes - by character
+                {
+                    // set cursor based on foot or vehicle
+                    if ((Menptr[gCharactersList[bSelectedDestChar].usSolID].bAssignment != Assignments.VEHICLE) && !(Menptr[gCharactersList[MapScreenInterfaceMap.bSelectedDestChar].usSolID].uiStatusFlags.HasFlag(SOLDIER.VEHICLE)))
+                    {
+                        ChangeMapScreenMaskCursor(CURSOR.TRATEGIC_FOOT);
+                    }
+                    else
+                    {
+                        ChangeMapScreenMaskCursor(CURSOR.STRATEGIC_VEHICLE);
+                    }
+                }
+            }
+            else    // yes - by helicopter
+            {
+                // set cursor to chopper
+                ChangeMapScreenMaskCursor(CURSOR.CHOPPER);
+            }
+        }
+        else
+        {
+            // set cursor to bullseye
+            ChangeMapScreenMaskCursor(CURSOR.STRATEGIC_BULLSEYE);
+        }
+    }
+
+    private static void ChangeMapScreenMaskCursor(CURSOR usCursor)
+    {
+        MouseSubSystem.MSYS_SetCurrentCursor(usCursor);
+        MouseSubSystem.MSYS_ChangeRegionCursor(MapScreen.gMapScreenMaskRegion, usCursor);
+
+        if (usCursor == CURSOR.CHECKMARK)
+        {
+            fCheckCursorWasSet = true;
+        }
+        else
+        {
+            fCheckCursorWasSet = false;
+        }
+
+        if (usCursor == CURSOR.NORMAL)
+        {
+            if (!InItemStackPopup())
+            {
+                // cancel mouse restriction
+                FreeMouseCursor();
+            }
+        }
+        else
+        {
+            // restrict mouse cursor to the map area
+            RestrictMouseCursor(ref MapScreenRect);
+        }
+    }
+
+    private static void EndConfirmMapMoveMode()
+    {
+        CancelMapUIMessage();
+
+        gfInConfirmMapMoveMode = false;
+    }
+
+    private static void CancelMapUIMessage()
+    {
+        // and kill the message overlay
+        Interface.EndUIMessage();
+
+        fMapPanelDirty = true;
+    }
+
+    private static void ClearPreviousPaths()
+    {
+        for (int iCounter = 0; iCounter < MAX_CHARACTER_COUNT; iCounter++)
+        {
+            if (MapScreen.fSelectedListOfMercsForMapScreen[iCounter] == true)
+            {
+                gpCharacterPreviousMercPath[iCounter] = StrategicPathing.ClearStrategicPathList(ref gpCharacterPreviousMercPath[iCounter], 0);
+            }
+        }
+        gpHelicopterPreviousMercPath = StrategicPathing.ClearStrategicPathList(ref gpHelicopterPreviousMercPath, 0);
+
+    }
+
+    private static void RestorePreviousPaths()
+    {
+        SOLDIERTYPE? pSoldier = null;
+        Path? ppMovePath = null;
+        int ubGroupId = 0;
+        bool fPathChanged = false;
+
+
+        // invalid if we're not plotting movement
+        Debug.Assert((MapScreenInterfaceMap.bSelectedDestChar != -1) || (MapScreenHelicopter.fPlotForHelicopter == true));
+
+
+        if (MapScreenHelicopter.fPlotForHelicopter == true)
+        {
+            ppMovePath = (pVehicleList[iHelicopterVehicleId].pMercPath);
+            ubGroupId = pVehicleList[iHelicopterVehicleId].ubMovementGroup;
+
+            // if the helicopter had a previous path
+            if (gpHelicopterPreviousMercPath != null)
+            {
+                gpHelicopterPreviousMercPath = StrategicPathing.MoveToBeginningOfPathList(MapScreen.gpHelicopterPreviousMercPath);
+
+                // clear current path
+                ppMovePath = StrategicPathing.ClearStrategicPathList(ref ppMovePath, ubGroupId);
+                // replace it with the previous one
+                ppMovePath = StrategicPathing.CopyPaths(gpHelicopterPreviousMercPath, ppMovePath);
+                // will need to rebuild waypoints
+                fPathChanged = true;
+            }
+            else    // no previous path
+            {
+                // if he currently has a path
+                if (ppMovePath is not null)
+                {
+                    // wipe it out!
+                    ppMovePath = StrategicPathing.MoveToBeginningOfPathList(ref ppMovePath);
+                    ppMovePath = StrategicPathing.ClearStrategicPathList(ref ppMovePath, ubGroupId);
+                    // will need to rebuild waypoints
+                    fPathChanged = true;
+                }
+            }
+
+            if (fPathChanged)
+            {
+                // rebuild waypoints
+                StrategicPathing.RebuildWayPointsForGroupPath(ref ppMovePath, ubGroupId);
+
+                // copy his path to all selected characters
+                CopyPathToAllSelectedCharacters(ref ppMovePath);
+            }
+        }
+        else    // character(s) plotting
+        {
+            for (int iCounter = 0; iCounter < MAX_CHARACTER_COUNT; iCounter++)
+            {
+                // if selected
+                if (fSelectedListOfMercsForMapScreen[iCounter] == true)
+                {
+                    pSoldier = MercPtrs[gCharactersList[iCounter].usSolID];
+
+                    if (pSoldier.uiStatusFlags.HasFlag(SOLDIER.VEHICLE))
+                    {
+                        ppMovePath = (pVehicleList[pSoldier.bVehicleID].pMercPath);
+                        ubGroupId = pVehicleList[pSoldier.bVehicleID].ubMovementGroup;
+                    }
+                    else if (pSoldier.bAssignment == Assignments.VEHICLE)
+                    {
+                        ppMovePath = (pVehicleList[pSoldier.iVehicleId].pMercPath);
+                        ubGroupId = pVehicleList[pSoldier.iVehicleId].ubMovementGroup;
+                    }
+                    else if (pSoldier.bAssignment < Assignments.ON_DUTY)
+                    {
+                        ppMovePath = (pSoldier.pMercPath);
+                        ubGroupId = pSoldier.ubGroupID;
+                    }
+                    else
+                    {
+                        // invalid pSoldier - that guy can't possibly be moving, he's on a non-vehicle assignment!
+                        Debug.Assert(false);
+                        continue;
+                    }
+
+
+                    fPathChanged = false;
+
+                    // if we have the previous path stored for the dest char
+                    if (gpCharacterPreviousMercPath[iCounter] is not null)
+                    {
+                        gpCharacterPreviousMercPath[iCounter] = StrategicPathing.MoveToBeginningOfPathList(gpCharacterPreviousMercPath[iCounter]);
+
+                        // clear current path
+                        ppMovePath = StrategicPathing.ClearStrategicPathList(ref ppMovePath, ubGroupId);
+                        // replace it with the previous one
+                        ppMovePath = StrategicPathing.CopyPaths(gpCharacterPreviousMercPath[iCounter], ppMovePath);
+                        // will need to rebuild waypoints
+                        fPathChanged = true;
+                    }
+                    else    // no previous path stored
+                    {
+                        // if he has one now, wipe it out
+                        if (ppMovePath is not null)
+                        {
+                            // wipe it out!
+                            ppMovePath = StrategicPathing.MoveToBeginningOfPathList(ref ppMovePath);
+                            ppMovePath = StrategicPathing.ClearStrategicPathList(ref ppMovePath, ubGroupId);
+                            // will need to rebuild waypoints
+                            fPathChanged = true;
+                        }
+                    }
+
+
+                    if (fPathChanged)
+                    {
+                        // rebuild waypoints
+                        StrategicPathing.RebuildWayPointsForGroupPath(ref ppMovePath, ubGroupId);
+                    }
+                }
+            }
+        }
+    }
+
+    private static void RestorePreviousPathsint()
+    {
+        SOLDIERTYPE? pSoldier = null;
+        Path? ppMovePath = null;
+        int ubGroupId = 0;
+        bool fPathChanged = false;
+
+        // invalid if we're not plotting movement
+        Debug.Assert((MapScreenInterfaceMap.bSelectedDestChar != -1) || (MapScreenHelicopter.fPlotForHelicopter == true));
+
+
+        if (MapScreenHelicopter.fPlotForHelicopter == true)
+        {
+            ppMovePath = (pVehicleList[iHelicopterVehicleId].pMercPath);
+            ubGroupId = pVehicleList[iHelicopterVehicleId].ubMovementGroup;
+
+            // if the helicopter had a previous path
+            if (gpHelicopterPreviousMercPath != null)
+            {
+                gpHelicopterPreviousMercPath = StrategicPathing.MoveToBeginningOfPathList(gpHelicopterPreviousMercPath);
+
+                // clear current path
+                ppMovePath = StrategicPathing.ClearStrategicPathList(ref ppMovePath, ubGroupId);
+                // replace it with the previous one
+                ppMovePath = StrategicPathing.CopyPaths(gpHelicopterPreviousMercPath, ppMovePath);
+                // will need to rebuild waypoints
+                fPathChanged = true;
+            }
+            else    // no previous path
+            {
+                // if he currently has a path
+                if (ppMovePath is not null)
+                {
+                    // wipe it out!
+                    ppMovePath = StrategicPathing.MoveToBeginningOfPathList(ref ppMovePath);
+                    ppMovePath = StrategicPathing.ClearStrategicPathList(ref ppMovePath, ubGroupId);
+                    // will need to rebuild waypoints
+                    fPathChanged = true;
+                }
+            }
+
+            if (fPathChanged)
+            {
+                // rebuild waypoints
+                StrategicPathing.RebuildWayPointsForGroupPath(ref ppMovePath, ubGroupId);
+
+                // copy his path to all selected characters
+                MapScreen.CopyPathToAllSelectedCharacters(ref ppMovePath);
+            }
+        }
+        else    // character(s) plotting
+        {
+            for (int iCounter = 0; iCounter < MAX_CHARACTER_COUNT; iCounter++)
+            {
+                // if selected
+                if (fSelectedListOfMercsForMapScreen[iCounter] == true)
+                {
+                    pSoldier = MercPtrs[gCharactersList[iCounter].usSolID];
+
+                    if (pSoldier.uiStatusFlags.HasFlag(SOLDIER.VEHICLE))
+                    {
+                        ppMovePath = (pVehicleList[pSoldier.bVehicleID].pMercPath);
+                        ubGroupId = pVehicleList[pSoldier.bVehicleID].ubMovementGroup;
+                    }
+                    else if (pSoldier.bAssignment == Assignments.VEHICLE)
+                    {
+                        ppMovePath = (pVehicleList[pSoldier.iVehicleId].pMercPath);
+                        ubGroupId = pVehicleList[pSoldier.iVehicleId].ubMovementGroup;
+                    }
+                    else if (pSoldier.bAssignment < Assignments.ON_DUTY)
+                    {
+                        ppMovePath = (pSoldier.pMercPath);
+                        ubGroupId = pSoldier.ubGroupID;
+                    }
+                    else
+                    {
+                        // invalid pSoldier - that guy can't possibly be moving, he's on a non-vehicle assignment!
+                        Debug.Assert(false);
+                        continue;
+                    }
+
+                    fPathChanged = false;
+
+                    // if we have the previous path stored for the dest char
+                    if (gpCharacterPreviousMercPath[iCounter] is not null)
+                    {
+                        gpCharacterPreviousMercPath[iCounter] = StrategicPathing.MoveToBeginningOfPathList(MapScreen.gpCharacterPreviousMercPath[iCounter]);
+
+                        // clear current path
+                        ppMovePath = StrategicPathing.ClearStrategicPathList(ref ppMovePath, ubGroupId);
+                        // replace it with the previous one
+                        ppMovePath = StrategicPathing.CopyPaths(gpCharacterPreviousMercPath[iCounter], ppMovePath);
+                        // will need to rebuild waypoints
+                        fPathChanged = true;
+                    }
+                    else    // no previous path stored
+                    {
+                        // if he has one now, wipe it out
+                        if (ppMovePath is not null)
+                        {
+                            // wipe it out!
+                            ppMovePath = StrategicPathing.MoveToBeginningOfPathList(ref ppMovePath);
+                            ppMovePath = StrategicPathing.ClearStrategicPathList(ref ppMovePath, ubGroupId);
+                            // will need to rebuild waypoints
+                            fPathChanged = true;
+                        }
+                    }
+
+
+                    if (fPathChanged)
+                    {
+                        // rebuild waypoints
+                        StrategicPathing.RebuildWayPointsForGroupPath(ref ppMovePath, ubGroupId);
+                    }
+                }
+            }
+        }
+    }
+
+    private static void CopyPathToAllSelectedCharacters(ref Path? pPath)
+    {
+        SOLDIERTYPE? pSoldier = null;
+
+
+        // run through list and copy paths for each selected character
+        for (int iCounter = 0; iCounter < MAX_CHARACTER_COUNT; iCounter++)
+        {
+            if (fSelectedListOfMercsForMapScreen[iCounter] == true)
+            {
+                pSoldier = MercPtrs[gCharactersList[iCounter].usSolID];
+
+                // skip itself!
+                if (StrategicPathing.GetSoldierMercPathPtr(pSoldier) != pPath)
+                {
+                    if (pSoldier.uiStatusFlags.HasFlag(SOLDIER.VEHICLE))
+                    {
+                        pVehicleList[pSoldier.bVehicleID].pMercPath = StrategicPathing.CopyPaths(pPath, pVehicleList[pSoldier.bVehicleID].pMercPath);
+                    }
+                    else if (pSoldier.bAssignment == Assignments.VEHICLE)
+                    {
+                        pVehicleList[pSoldier.iVehicleId].pMercPath = StrategicPathing.CopyPaths(pPath, pVehicleList[pSoldier.iVehicleId].pMercPath);
+                    }
+                    else
+                    {
+                        pSoldier.pMercPath = StrategicPathing.CopyPaths(pPath, pSoldier.pMercPath);
+                    }
+
+                    // don't use CopyPathToCharactersSquadIfInOne(), it will whack the original pPath by replacing that merc's path!
+                }
+            }
+        }
     }
 }
 

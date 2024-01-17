@@ -879,7 +879,7 @@ public class StrategicPathing
         return pHeadOfPathList;
     }
 
-    public static Path? ClearStrategicPathList(Path? pHeadOfPath, int sMvtGroup)
+    public static Path? ClearStrategicPathList(ref Path? pHeadOfPath, int sMvtGroup)
     {
         // will clear out a strategic path and return head of list as null
         Path? pNode = pHeadOfPath;
@@ -990,7 +990,7 @@ public class StrategicPathing
         else
         {
             // clear head, return null
-            pHeadOfPath = ClearStrategicPathList(pHeadOfPath, sMvtGroup);
+            pHeadOfPath = ClearStrategicPathList(ref pHeadOfPath, sMvtGroup);
 
             return null;
         }
@@ -1024,7 +1024,7 @@ public class StrategicPathing
         return pHeadOfPath;
     }
 
-    Path? MoveToBeginningOfPathList(Path? pList)
+    public static Path? MoveToBeginningOfPathList(ref Path? pList)
     {
 
         // move to beginning of this list
@@ -1142,7 +1142,7 @@ public class StrategicPathing
         int sSector = 0;
         int sCurrentSector = -1;
         Path? pNode = pList;
-        Path pPastNode = pList;
+        Path? pPastNode = pList;
 
         // get sector value
         sSector = sX + (sY * MAP_WORLD_X);
@@ -1188,7 +1188,7 @@ public class StrategicPathing
         pPastNode.pNext.pPrev = pPastNode;
 
 
-        pPastNode = this.MoveToBeginningOfPathList(pPastNode);
+        pPastNode = MoveToBeginningOfPathList(pPastNode);
 
         return pPastNode;
     }
@@ -1199,7 +1199,7 @@ public class StrategicPathing
         int sLastSector = pCharacter.sSectorX + ((int)pCharacter.sSectorY) * MAP_WORLD_X;
         Path? pNode = null;
 
-        pNode = this.GetSoldierMercPathPtr(pCharacter);
+        pNode = GetSoldierMercPathPtr(pCharacter);
 
         while (pNode is not null)
         {
@@ -1242,7 +1242,7 @@ public class StrategicPathing
 
     }
 
-    Path CopyPaths(Path pSourcePath, Path? pDestPath)
+    public static Path CopyPaths(Path? pSourcePath, Path? pDestPath)
     {
         Path? pDestNode = pDestPath;
         Path? pCurNode = pSourcePath;
@@ -1250,7 +1250,7 @@ public class StrategicPathing
 
 
         // null out dest path
-        pDestNode = ClearStrategicPathList(pDestNode, -1);
+        pDestNode = ClearStrategicPathList(ref pDestNode, -1);
         Debug.Assert(pDestNode == null);
 
 
@@ -1295,7 +1295,7 @@ public class StrategicPathing
 
 
         // move back to beginning fo list
-        pDestNode = this.MoveToBeginningOfPathList(pDestNode);
+        pDestNode = MoveToBeginningOfPathList(pDestNode);
 
         // return to head of path
         return pDestNode;
@@ -1564,12 +1564,12 @@ void VerifyAllMercsInGroupAreOnSameSquad(GROUP* pGroup)
 
 
 
-    void RebuildWayPointsForGroupPath(Path pHeadOfPath, int sMvtGroup)
+    public static void RebuildWayPointsForGroupPath(ref Path? pHeadOfPath, int sMvtGroup)
     {
         int iDelta = 0;
         int iOldDelta = 0;
         bool fFirstNode = true;
-        Path pNode = pHeadOfPath;
+        Path? pNode = pHeadOfPath;
         GROUP? pGroup = null;
         WAYPOINT? wp = null;
 
@@ -1591,10 +1591,6 @@ void VerifyAllMercsInGroupAreOnSameSquad(GROUP* pGroup)
 
         if (pGroup.fPlayer)
         {
-#if BETA_VERSION
-        VerifyAllMercsInGroupAreOnSameSquad(pGroup);
-#endif
-
             // update the destination(s) in the team list
             fTeamPanelDirty = true;
 
@@ -1694,7 +1690,7 @@ void VerifyAllMercsInGroupAreOnSameSquad(GROUP* pGroup)
 
     bool MoveGroupFromSectorToSector(int ubGroupID, int sStartX, MAP_ROW sStartY, int sDestX, MAP_ROW sDestY)
     {
-        Path pNode = null;
+        Path? pNode = null;
 
         // build the path
         pNode = this.BuildAStrategicPath(pNode, (int)CALCULATE_STRATEGIC_INDEX(sStartX, sStartY), (int)CALCULATE_STRATEGIC_INDEX(sDestX, sDestY), ubGroupID, false /*, false */ );
@@ -1704,13 +1700,13 @@ void VerifyAllMercsInGroupAreOnSameSquad(GROUP* pGroup)
             return false;
         }
 
-        pNode = this.MoveToBeginningOfPathList(pNode);
+        pNode = MoveToBeginningOfPathList(pNode);
 
         // start movement to next sector
-        this.RebuildWayPointsForGroupPath(pNode, ubGroupID);
+        RebuildWayPointsForGroupPath(ref pNode, ubGroupID);
 
         // now clear out the mess
-        pNode = ClearStrategicPathList(pNode, -1);
+        pNode = ClearStrategicPathList(ref pNode, -1);
 
         return true;
     }
@@ -1718,7 +1714,7 @@ void VerifyAllMercsInGroupAreOnSameSquad(GROUP* pGroup)
 
     bool MoveGroupFromSectorToSectorButAvoidLastSector(int ubGroupID, int sStartX, MAP_ROW sStartY, int sDestX, MAP_ROW sDestY)
     {
-        Path pNode = null;
+        Path? pNode = null;
 
         // build the path
         pNode = this.BuildAStrategicPath(pNode, (int)CALCULATE_STRATEGIC_INDEX(sStartX, sStartY), (int)CALCULATE_STRATEGIC_INDEX(sDestX, sDestY), ubGroupID, false /*, false*/ );
@@ -1731,20 +1727,20 @@ void VerifyAllMercsInGroupAreOnSameSquad(GROUP* pGroup)
         // remove tail from path
         pNode = this.RemoveTailFromStrategicPath(pNode);
 
-        pNode = this.MoveToBeginningOfPathList(pNode);
+        pNode = MoveToBeginningOfPathList(pNode);
 
         // start movement to next sector
-        this.RebuildWayPointsForGroupPath(pNode, ubGroupID);
+        RebuildWayPointsForGroupPath(ref pNode, ubGroupID);
 
         // now clear out the mess
-        pNode = ClearStrategicPathList(pNode, -1);
+        pNode = ClearStrategicPathList(ref pNode, -1);
 
         return true;
     }
 
     bool MoveGroupFromSectorToSectorButAvoidPlayerInfluencedSectors(int ubGroupID, int sStartX, MAP_ROW sStartY, int sDestX, MAP_ROW sDestY)
     {
-        Path pNode = null;
+        Path? pNode = null;
 
         // init sectors with soldiers in them
 //        InitSectorsWithSoldiersList();
@@ -1773,13 +1769,13 @@ void VerifyAllMercsInGroupAreOnSameSquad(GROUP* pGroup)
             }
         }
 
-        pNode = this.MoveToBeginningOfPathList(pNode);
+        pNode = MoveToBeginningOfPathList(pNode);
 
         // start movement to next sector
-        this.RebuildWayPointsForGroupPath(pNode, ubGroupID);
+        RebuildWayPointsForGroupPath(ref pNode, ubGroupID);
 
         // now clear out the mess
-        pNode = ClearStrategicPathList(pNode, -1);
+        pNode = ClearStrategicPathList(ref pNode, -1);
 
         return true;
     }
@@ -1818,13 +1814,13 @@ void VerifyAllMercsInGroupAreOnSameSquad(GROUP* pGroup)
         // remove tail from path
         pNode = this.RemoveTailFromStrategicPath(pNode);
 
-        pNode = this.MoveToBeginningOfPathList(pNode);
+        pNode = MoveToBeginningOfPathList(pNode);
 
         // start movement to next sector
-        this.RebuildWayPointsForGroupPath(pNode, ubGroupID);
+        RebuildWayPointsForGroupPath(ref pNode, ubGroupID);
 
         // now clear out the mess
-        pNode = ClearStrategicPathList(pNode, -1);
+        pNode = ClearStrategicPathList(ref pNode, -1);
 
         return true;
     }
@@ -1864,7 +1860,7 @@ void VerifyAllMercsInGroupAreOnSameSquad(GROUP* pGroup)
         Path pNode = null;
         int iLength = 0;
 
-        pNode = this.GetSoldierMercPathPtr(pSoldier);
+        pNode = GetSoldierMercPathPtr(pSoldier);
         iLength = this.GetLengthOfPath(pNode);
         return iLength;
     }
@@ -1889,7 +1885,7 @@ void VerifyAllMercsInGroupAreOnSameSquad(GROUP* pGroup)
 
 
 
-    Path GetSoldierMercPathPtr(SOLDIERTYPE pSoldier)
+    public static Path GetSoldierMercPathPtr(SOLDIERTYPE pSoldier)
     {
         Path? pMercPath = null;
 
@@ -2000,7 +1996,7 @@ void VerifyAllMercsInGroupAreOnSameSquad(GROUP* pGroup)
             pVehicle = pVehicleList[iVehicleId];
 
             // clear the path for that vehicle
-            pVehicle.pMercPath = ClearStrategicPathList(pVehicle.pMercPath, pVehicle.ubMovementGroup);
+            pVehicle.pMercPath = ClearStrategicPathList(ref pVehicle.pMercPath, pVehicle.ubMovementGroup);
         }
 
         // clear the waypoints for this group too - no mercpath = no waypoints!
@@ -2018,7 +2014,7 @@ void VerifyAllMercsInGroupAreOnSameSquad(GROUP* pGroup)
 
 
         // clear the soldier's mercpath
-        pSoldier.pMercPath = ClearStrategicPathList(pSoldier.pMercPath, pSoldier.ubGroupID);
+        pSoldier.pMercPath = ClearStrategicPathList(ref pSoldier.pMercPath, pSoldier.ubGroupID);
 
         // if a vehicle
         if (pSoldier.uiStatusFlags.HasFlag(SOLDIER.VEHICLE))
@@ -2035,7 +2031,7 @@ void VerifyAllMercsInGroupAreOnSameSquad(GROUP* pGroup)
         if (pVehicle != null)
         {
             // clear its mercpath, too
-            pVehicle.pMercPath = ClearStrategicPathList(pVehicle.pMercPath, pVehicle.ubMovementGroup);
+            pVehicle.pMercPath = ClearStrategicPathList(ref pVehicle.pMercPath, pVehicle.ubMovementGroup);
         }
     }
 
@@ -2098,4 +2094,22 @@ void VerifyAllMercsInGroupAreOnSameSquad(GROUP* pGroup)
         ppMercPath = pNode;
     }
 
+    internal static Path? MoveToBeginningOfPathList(Path? pList)
+    {
+        // move to beginning of this list
+
+        // no list, return
+        if (pList == null)
+        {
+            return null;
+        }
+
+        // move to beginning of list
+        while (pList.pPrev is not null)
+        {
+            pList = pList.pPrev;
+        }
+
+        return (pList);
+    }
 }

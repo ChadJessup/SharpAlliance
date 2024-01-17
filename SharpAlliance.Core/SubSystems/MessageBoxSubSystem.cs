@@ -250,7 +250,7 @@ public class MessageBoxSubSystem : ISharpAllianceManager
         {
             //		fMapExitDueToMessageBox = true;
             gfStartedFromMapScreen = true;
-            mapScreen.fMapPanelDirty = true;
+            fMapPanelDirty = true;
         }
 
 
@@ -1008,7 +1008,7 @@ public class MessageBoxSubSystem : ISharpAllianceManager
                 }
                 break;
             case ScreenName.MAP_SCREEN:
-                mapScreen.fMapPanelDirty = true;
+                fMapPanelDirty = true;
                 break;
         }
 
