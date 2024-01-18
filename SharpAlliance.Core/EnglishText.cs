@@ -2,19 +2,45 @@
 using System.Collections.Generic;
 using SharpAlliance.Core.Screens;
 using SharpAlliance.Core.SubSystems;
+using SharpAlliance.Core.SubSystems.LaptopSubSystem;
 
 namespace SharpAlliance.Core;
 
 // TODO: Move to built-in internationalization stuff.
 public static class EnglishText
 {
+    public static Dictionary<LaptopText, string> gzLaptopHelpText = new()
+    {
+    	//Buttons:
+    	{ LaptopText.LAPTOP_BN_HLP_TXT_VIEW_EMAIL, "View email" },
+        { LaptopText.LAPTOP_BN_HLP_TXT_BROWSE_VARIOUS_WEB_SITES, "Browse various web sites" },
+        { LaptopText.LAPTOP_BN_HLP_TXT_VIEW_FILES_AND_EMAIL_ATTACHMENTS, "View files and email attachments" },
+        { LaptopText.LAPTOP_BN_HLP_TXT_READ_LOG_OF_EVENTS, "Read log of events" },
+        { LaptopText.LAPTOP_BN_HLP_TXT_VIEW_TEAM_INFO, "View team info" },
+        { LaptopText.LAPTOP_BN_HLP_TXT_VIEW_FINANCIAL_SUMMARY_AND_HISTORY, "View financial summary and history" },
+        { LaptopText.LAPTOP_BN_HLP_TXT_CLOSE_LAPTOP, "Close laptop" },
+    
+    	//Bottom task bar icons (if they exist):
+    	{ LaptopText.LAPTOP_BN_HLP_TXT_YOU_HAVE_NEW_MAIL, "You have new mail" },
+        { LaptopText.LAPTOP_BN_HLP_TXT_YOU_HAVE_NEW_FILE, "You have new file(s)" },
+    
+    	//Bookmarks:
+    	{ LaptopText.BOOKMARK_TEXT_ASSOCIATION_OF_INTERNATION_MERCENARIES, "Association of International Mercenaries" },
+        { LaptopText.BOOKMARK_TEXT_BOBBY_RAY_ONLINE_WEAPON_MAIL_ORDER, "Bobby Ray's online weapon mail order" },
+        { LaptopText.BOOKMARK_TEXT_INSTITUTE_OF_MERCENARY_PROFILING, "Institute of Mercenary Profiling" },
+        { LaptopText.BOOKMARK_TEXT_MORE_ECONOMIC_RECRUITING_CENTER, "More Economic Recruiting Center" },
+        { LaptopText.BOOKMARK_TEXT_MCGILLICUTTY_MORTUARY, "McGillicutty's Mortuary" },
+        { LaptopText.BOOKMARK_TEXT_UNITED_FLORAL_SERVICE, "United Floral Service" },
+        { LaptopText.BOOKMARK_TEXT_INSURANCE_BROKERS_FOR_AIM_CONTRACTS, "Insurance Brokers for A.I.M. contracts" },
+    };
+
     public static string[] Message =
     [
         "",
-    
-    	// In the following 8 strings, the %s is the merc's name, and the %d (if any) is a number.
-    
-    	"%s is hit in the head and loses a point of wisdom!",
+
+        // In the following 8 strings, the %s is the merc's name, and the %d (if any) is a number.
+
+        "%s is hit in the head and loses a point of wisdom!",
         "%s is hit in the shoulder and loses a point of dexterity!",
         "%s is hit in the chest and loses a point of strength!",
         "%s is hit in the legs and loses a point of agility!",
@@ -23,22 +49,22 @@ public static class EnglishText
         "%s is hit in the chest and loses %d points of strength!",
         "%s is hit in the legs and loses %d points of agility!",
         "Interrupt!",
-    
-    	// The first %s is a merc's name, the second is a string from pNoiseVolStr,
-    	// the third is a string from pNoiseTypeStr, and the last is a string from pDirectionStr
-    
-    	"", //OBSOLETE
-    	"Your reinforcements have arrived!",
-    
-    	// In the following four lines, all %s's are merc names
-    
-    	"%s reloads.",
+
+        // The first %s is a merc's name, the second is a string from pNoiseVolStr,
+        // the third is a string from pNoiseTypeStr, and the last is a string from pDirectionStr
+
+        "", //OBSOLETE
+        "Your reinforcements have arrived!",
+
+        // In the following four lines, all %s's are merc names
+
+        "%s reloads.",
         "%s doesn't have enough Action Points!",
         "%s is applying first aid. (Press any key to cancel.)",
         "%s and %s are applying first aid. (Press any key to cancel.)",
-    	// the following 17 strings are used to create lists of gun advantages and disadvantages
-    	// (separated by commas)
-    	"reliable",
+        // the following 17 strings are used to create lists of gun advantages and disadvantages
+        // (separated by commas)
+        "reliable",
         "unreliable",
         "easy to repair",
         "hard to repair",
@@ -55,35 +81,35 @@ public static class EnglishText
         "no burst fire",
         "large magazine",
         "small magazine",
-    
-    	// In the following two lines, all %s's are merc names
-    
-    	"%s's camouflage has worn off.",
+
+        // In the following two lines, all %s's are merc names
+
+        "%s's camouflage has worn off.",
         "%s's camouflage has washed off.",
-    
-    	// The first %s is a merc name and the second %s is an item name
-    
-    	"Second weapon is out of ammo!",
+
+        // The first %s is a merc name and the second %s is an item name
+
+        "Second weapon is out of ammo!",
         "%s has stolen the %s.",
-    
-    	// The %s is a merc name
-    
-    	"%s's weapon can't burst fire.",
+
+        // The %s is a merc name
+
+        "%s's weapon can't burst fire.",
 
         "You've already got one of those attached.",
         "Merge items?",
-    
-    	// Both %s's are item names
-    
-    	"You can't attach a %s to a %s.",
+
+        // Both %s's are item names
+
+        "You can't attach a %s to a %s.",
 
         "None",
         "Eject ammo",
         "Attachments",
-    	
-    	//You cannot use "item(s)" and your "other item" at the same time.
-    	//Ex:  You cannot use sun goggles and you gas mask at the same time.
-    	"You cannot use %s and your %s at the same time.",
+
+        //You cannot use "item(s)" and your "other item" at the same time.
+        //Ex:  You cannot use sun goggles and you gas mask at the same time.
+        "You cannot use %s and your %s at the same time.",
         "The item you have in your cursor can be attached to certain items by placing it in one of the four attachment slots.",
         "The item you have in your cursor can be attached to certain items by placing it in one of the four attachment slots. (However in this case, the item is not compatible.)",
         "The sector isn't cleared of enemies!",

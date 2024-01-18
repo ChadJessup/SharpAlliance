@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using SharpAlliance.Core.Screens;
 
 namespace SharpAlliance.Core;
 
@@ -19,4 +20,7 @@ public partial class Globals
 
     public static Path? pTempCharacterPath;
     public static Path? pTempHelicopterPath;
+
+    public static MapScreenCharacterSt[] gCharactersList = new MapScreenCharacterSt[MAX_CHARACTER_COUNT + 1];
+
 }

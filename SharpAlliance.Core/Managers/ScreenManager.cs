@@ -141,6 +141,8 @@ public class ScreenManager : IScreenManager
     {
         this.ScreenTypes.TryAdd(screenName, typeof(TScreen));
 
+        this.Screens.Add(screenName, ActivatorUtilities.GetServiceOrCreateInstance< TScreen>(this.context.Services));
+
         return this;
     }
 

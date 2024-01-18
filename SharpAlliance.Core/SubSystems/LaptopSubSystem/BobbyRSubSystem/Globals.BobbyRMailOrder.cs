@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
-using SharpAlliance.Core.SubSystems;
+using SharpAlliance.Core.SubSystems.LaptopSubSystem;
+using SharpAlliance.Core.SubSystems.LaptopSubSystem.BobbyRSubSystem;
 
 namespace SharpAlliance.Core;
 
@@ -137,7 +138,7 @@ public partial class Globals
     public static int gbSelectedCity = -1;               //keeps track of the currently selected city
     public static int gubCityAtTopOfList;
     public static int giNumberOfNewBobbyRShipment;
-    public static List<NewBobbyRayOrderStruct> gpNewBobbyrShipments = new();
+    public static List<NewBobbyRayOrderStruct> gpNewBobbyrShipments = [];
 
     //Clear Order Button
     public static int guiBobbyRClearOrder;

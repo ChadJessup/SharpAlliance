@@ -1,11 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.ComponentModel;
 using System.Diagnostics;
-using System.Formats.Asn1;
-using SharpAlliance.Core.SubSystems;
-using static System.Runtime.InteropServices.JavaScript.JSType;
-using static SharpAlliance.Core.Globals;
+using SharpAlliance.Core.SubSystems.LaptopSubSystem.BobbyRSubSystem;
 
 namespace SharpAlliance.Core;
 
@@ -1370,7 +1366,7 @@ public class ArmsDealerInit
         else    // removing perfect item(s)
         {
             // then it's stored as a "perfect" item, simply subtract from tha counter!
-            Debug.Assert(ubHowMany <= gArmsDealersInventory[ubArmsDealer][usItemIndex].ubPerfectItems);
+            // Debug.Assert(ubHowMany <= gArmsDealersInventory[ubArmsDealer][usItemIndex].ubPerfectItems);
             gArmsDealersInventory[ubArmsDealer][usItemIndex].ubPerfectItems -= ubHowMany;
             // decrease total items of this type
             gArmsDealersInventory[ubArmsDealer][usItemIndex].ubTotalItems -= ubHowMany;

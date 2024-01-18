@@ -27,7 +27,7 @@ public class HVOBJECT
     public byte[] pPixData = [];                       // ETRLE pixel data
     public ETRLEObject[] pETRLEObject = [];              // Object offset data etc
     public SixteenBPPObjectInfo[] p16BPPObject = [];
-    public ushort?[][] pShades = new ushort?[SHADE_TABLES][]; // Shading tables
+    public Rgba32[][] pShades = new Rgba32[SHADE_TABLES][]; // Shading tables
     // public ushort[] pShadeCurrent;
     public Rgba32[] ShadeCurrentPixels = [];
     public int? pGlow;                              // glow highlight table
@@ -38,7 +38,7 @@ public class HVOBJECT
     public int usNumberOf16BPPObjects;
     public int usNumberOfObjects;   // Total number of objects
     public int ubBitDepth;                       // BPP 
-    public ushort? pShadeCurrent;
+    public Rgba32? pShadeCurrent;
 
     public string Name { get; set; } = string.Empty;
     public HIMAGE? hImage { get; set; }

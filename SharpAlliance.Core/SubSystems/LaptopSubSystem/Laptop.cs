@@ -1,31 +1,132 @@
 ﻿using System;
 using SharpAlliance.Core.Managers;
 using SharpAlliance.Core.Managers.VideoSurfaces;
-
-using static SharpAlliance.Core.Globals;
 using SharpAlliance.Core.Interfaces;
 using SixLabors.ImageSharp;
 using SixLabors.ImageSharp.PixelFormats;
 using System.Collections.Generic;
 using SharpAlliance.Core.Screens;
+using SharpAlliance.Core.SubSystems.LaptopSubSystem.BobbyRSubSystem;
+using SharpAlliance.Core.SubSystems.LaptopSubSystem.FloristSubSystem;
+using SharpAlliance.Core.SubSystems.LaptopSubSystem.InsuranceSubSystem;
+using static System.Runtime.InteropServices.JavaScript.JSType;
+using System.Diagnostics;
 
-namespace SharpAlliance.Core.SubSystems;
+namespace SharpAlliance.Core.SubSystems.LaptopSubSystem;
 
-public class Laptop
+public partial class Laptop
 {
     private static IVideoManager video;
     private readonly History history;
+    private static IFileManager files;
     private static readonly IEnumerable<GUI_BUTTON> buttonList;
 
-    public Laptop(IVideoManager videoManager, History history)
+    public Laptop(IVideoManager videoManager, History history, IFileManager fileManager)
     {
         video = videoManager;
         this.history = history;
+        files = fileManager;
     }
 
-    internal void LaptopScreenInit()
+    public static bool LaptopScreenInit()
     {
-        throw new NotImplementedException();
+        //Memset the whole structure, to make sure of no 'JUNK'
+        LaptopSaveInfo = new();
+
+        LaptopSaveInfo.gfNewGameLaptop = true;
+
+
+        Mercs.InitializeNumDaysMercArrive();
+
+        //reset the id of the last hired merc
+        LaptopSaveInfo.sLastHiredMerc.iIdOfMerc = -1;
+
+        //reset the flag that enables the 'just hired merc' popup
+        LaptopSaveInfo.sLastHiredMerc.fHaveDisplayedPopUpInLaptop = false;
+
+        //Initialize all vars
+        guiCurrentLaptopMode = LAPTOP_MODE.EMAIL;
+        guiPreviousLaptopMode = LAPTOP_MODE.NONE;
+        guiCurrentWWWMode = LAPTOP_MODE.NONE;
+        guiCurrentSidePanel = LaptopPanel.FIRST_SIDE_PANEL;
+        guiPreviousSidePanel = LaptopPanel.FIRST_SIDE_PANEL;
+
+
+        gfSideBarFlag = false;
+        gfShowBookmarks = false;
+        InitBookMarkList();
+        GameInitAIM();
+        GameInitAIMMembers();
+        GameInitAimFacialIndex();
+        GameInitAimSort();
+        GameInitAimArchives();
+        GameInitAimPolicies();
+        GameInitAimLinks();
+        GameInitAimHistory();
+        Mercs.GameInitMercs();
+        BobbyR.GameInitBobbyR();
+        BobbyR.GameInitBobbyRAmmo();
+        BobbyR.GameInitBobbyRArmour();
+        BobbyR.GameInitBobbyRGuns();
+        BobbyR.GameInitBobbyRMailOrder();
+        BobbyR.GameInitBobbyRMisc();
+        BobbyR.GameInitBobbyRUsed();
+        Emails.GameInitEmail();
+        GameInitCharProfile();
+        Florist.GameInitFlorist();
+        Insurance.GameInitInsurance();
+        Insurance.GameInitInsuranceContract();
+        GameInitFuneral();
+        GameInitSirTech();
+        GameInitFiles();
+        GameInitPersonnel();
+
+        // init program states
+        Array.Fill(gLaptopProgramStates, LAPTOP_PROGRAM_STATES.MINIMIZED);
+
+        gfAtLeastOneMercWasHired = false;
+
+        //No longer inits the laptop screens, now InitLaptopAndLaptopScreens() does
+
+        return true;
+    }
+
+    private static void CreateFileAndNewEmailIconFastHelpText(LaptopText uiHelpTextID, bool fClearHelpText)
+    {
+        MOUSE_REGION pRegion;
+
+        switch (uiHelpTextID)
+        {
+            case LaptopText.LAPTOP_BN_HLP_TXT_YOU_HAVE_NEW_MAIL:
+                pRegion = gNewMailIconRegion;
+                break;
+
+            case LaptopText.LAPTOP_BN_HLP_TXT_YOU_HAVE_NEW_FILE:
+                pRegion = gNewFileIconRegion;
+                break;
+
+            default:
+                Debug.Assert(false);
+                return;
+        }
+
+        if (fClearHelpText)
+        {
+            MouseSubSystem.SetRegionFastHelpText(pRegion, "");
+        }
+        else
+        {
+            MouseSubSystem.SetRegionFastHelpText(pRegion, gzLaptopHelpText[uiHelpTextID]);
+        }
+
+        //fUnReadMailFlag
+        //fNewFilesInFileViewer
+    }
+
+    private static void InitBookMarkList()
+    {
+        // sets bookmark list to -1
+        Array.Fill(LaptopSaveInfo.iBookMarkList, (BOOKMARK)(-1));
     }
 
     public bool InitLaptopAndLaptopScreens()
@@ -119,17 +220,17 @@ public class Laptop
     {
 
 
-        if ((fMaximizingProgram == true) || (fMinizingProgram == true))
+        if (fMaximizingProgram == true || fMinizingProgram == true)
         {
             return;
         }
 
-//        video.GetVideoObject(out HVOBJECT? hLapTopHandle, guiLAPTOP);
-//        VideoObjectManager.BltVideoObject(SurfaceType.FRAME_BUFFER, hLapTopHandle, 0, LAPTOP_X, LAPTOP_Y, VO_BLT.SRCTRANSPARENCY, null);
+        //        video.GetVideoObject(out HVOBJECT? hLapTopHandle, guiLAPTOP);
+        //        VideoObjectManager.BltVideoObject(SurfaceType.FRAME_BUFFER, hLapTopHandle, 0, LAPTOP_X, LAPTOP_Y, VO_BLT.SRCTRANSPARENCY, null);
 
 
-//        hLapTopHandle = video.GetVideoObject(guiLaptopBACKGROUND);
-//        VideoObjectManager.BltVideoObject(SurfaceType.FRAME_BUFFER, hLapTopHandle, 1, 25, 23, VO_BLT.SRCTRANSPARENCY, null);
+        //        hLapTopHandle = video.GetVideoObject(guiLaptopBACKGROUND);
+        //        VideoObjectManager.BltVideoObject(SurfaceType.FRAME_BUFFER, hLapTopHandle, 1, 25, 23, VO_BLT.SRCTRANSPARENCY, null);
 
 
         ButtonSubSystem.MarkButtonsDirty(buttonList);
@@ -139,7 +240,7 @@ public class Laptop
     {
         LAPTOP_MODE uiTempMode = 0;
 
-        if ((fMaximizingProgram == true) || (fMinizingProgram == true))
+        if (fMaximizingProgram == true || fMinizingProgram == true)
         {
             gfShowBookmarks = false;
             return;
@@ -308,7 +409,7 @@ public class Laptop
         Image<Rgba32> pDestBuf;
         Image<Rgba32> pSrcBuf;
 
-        SixLabors.ImageSharp.Rectangle clip = new()
+        Rectangle clip = new()
         {
             // set clipping region
             X = 0,
@@ -318,26 +419,26 @@ public class Laptop
         };
 
         // get surfaces
-//        pDestBuf = video.LockVideoSurface(Surfaces.FRAME_BUFFER, out uiDestPitchBYTES);
+        //        pDestBuf = video.LockVideoSurface(Surfaces.FRAME_BUFFER, out uiDestPitchBYTES);
         CHECKF(video.GetVideoSurface(out HVSURFACE hSrcVSurface, guiDESKTOP));
-//        pSrcBuf = video.LockVideoSurface(guiDESKTOP, out uiSrcPitchBYTES);
+        //        pSrcBuf = video.LockVideoSurface(guiDESKTOP, out uiSrcPitchBYTES);
 
 
         // blit .pcx for the background onto desktop
-//        video.Blt8BPPDataSubTo16BPPBuffer(
-//            pDestBuf,
-//            uiDestPitchBYTES,
-//            hSrcVSurface,
-//            pSrcBuf,
-//            uiSrcPitchBYTES,
-//            LAPTOP_SCREEN_UL_X - 2,
-//            LAPTOP_SCREEN_UL_Y - 3,
-//            out clip);
+        //        video.Blt8BPPDataSubTo16BPPBuffer(
+        //            pDestBuf,
+        //            uiDestPitchBYTES,
+        //            hSrcVSurface,
+        //            pSrcBuf,
+        //            uiSrcPitchBYTES,
+        //            LAPTOP_SCREEN_UL_X - 2,
+        //            LAPTOP_SCREEN_UL_Y - 3,
+        //            out clip);
 
 
         // release surfaces
-//        video.UnLockVideoSurface(guiDESKTOP);
-//        video.UnLockVideoSurface(Surfaces.FRAME_BUFFER);
+        //        video.UnLockVideoSurface(guiDESKTOP);
+        //        video.UnLockVideoSurface(Surfaces.FRAME_BUFFER);
 
         return true;
     }

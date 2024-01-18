@@ -1,10 +1,8 @@
-﻿
-using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Diagnostics;
-using static SharpAlliance.Core.Globals;
+using SharpAlliance.Core.SubSystems.LaptopSubSystem.BobbyRSubSystem;
 
-namespace SharpAlliance.Core.SubSystems;
+namespace SharpAlliance.Core.SubSystems.LaptopSubSystem;
 
 public class LaptopSave
 {
@@ -184,17 +182,21 @@ public class LaptopSaveInfoStruct
 
 
     //Personnel Info
-    int[] ubDeadCharactersList = new int[256];
-    int[] ubLeftCharactersList = new int[256];
-    int[] ubOtherCharactersList = new int[256];
+    public int[] ubDeadCharactersList = new int[256];
+    public int[] ubLeftCharactersList = new int[256];
+    public int[] ubOtherCharactersList = new int[256];
 
     // Aim Site
+    // MERC site info
+    public LAPTOP_MODE gubPlayersMercAccountStatus;
+    public int guiPlayersMercAccountNumber;
+    public int gubLastMercIndex;
 
 
     // BobbyRay Site
     public List<STORE_INVENTORY> BobbyRayInventory = [];
     public List<STORE_INVENTORY> BobbyRayUsedInventory = [];
-    public List<BobbyRayOrderStruct> BobbyRayOrdersOnDeliveryArray;
+    public List<BobbyRayOrderStruct> BobbyRayOrdersOnDeliveryArray = [];
     public int usNumberOfBobbyRayOrderItems;             // The number of elements in the array
     public int usNumberOfBobbyRayOrderUsed;              // The number of items in the array that are used
 

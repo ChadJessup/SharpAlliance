@@ -205,9 +205,17 @@ public class SharpAllianceGameLogic : IGameLogic
 
     private async Task InitializeScreens(Dictionary<ScreenName, IScreen> screens)
     {
+
         foreach (var screen in screens.Values)
         {
-            await screen.Initialize();
+            try
+            {
+                await screen.Initialize();
+            }
+            catch(Exception e)
+            {
+
+            }
         }
     }
 

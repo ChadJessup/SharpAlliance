@@ -134,7 +134,7 @@ public class StructureInternals
 
         CHECKF(szFileName);
         CHECKF(pFileRef);
-        hInput = files.FileOpen(szFileName, FileAccess.Read /*FILE_OPEN_EXISTING*/, false);
+        hInput = files.FileOpen(szFileName, FileAccess.Read, FileMode.Open, false);
 
         // chad: uncomment the following 3 lines to write the temporary file to disk.
         //using var f = new FileStream(@"c:\assets\test.bin", FileMode.OpenOrCreate);

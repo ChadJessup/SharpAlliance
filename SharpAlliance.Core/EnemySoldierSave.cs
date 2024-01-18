@@ -206,7 +206,7 @@ public class EnemySoldierSave
         }
 
         //Open the file for writing, Create it if it doesnt exist
-        hfile = files.FileOpen(zMapName, FileAccess.Write, false);
+        hfile = files.FileOpen(zMapName, FileAccess.Write, FileMode.OpenOrCreate);
         if (!hfile.CanWrite)
         {   //Error opening map modification file
             return false;

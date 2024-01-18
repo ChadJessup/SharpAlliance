@@ -1,13 +1,9 @@
 ﻿using System;
-
-using static SharpAlliance.Core.Globals;
-using static SharpAlliance.Core.EnglishText;
-using SharpAlliance.Core.Managers;
-using SharpAlliance.Core.Managers.VideoSurfaces;
-using System.Diagnostics;
-using SharpAlliance.Core.Interfaces;
-using SharpAlliance.Platform.Interfaces;
 using System.Collections.Generic;
+using System.Linq;
+using SharpAlliance.Core.Interfaces;
+using SharpAlliance.Core.Managers.VideoSurfaces;
+using SharpAlliance.Core.SubSystems.LaptopSubSystem;
 
 namespace SharpAlliance.Core.SubSystems;
 
@@ -18,11 +14,11 @@ public class Emails
     bool fSortSubjectUpwards = false;
 
     int iViewerPositionY = 0;
-    int iDeleteId = 0;
+    private static int iDeleteId = 0;
     bool fUnReadMailFlag = false;
     bool fOldUnreadFlag = true;
     public static bool fNewMailFlag = false;
-    bool fDisplayMessageFlag = false;
+    private static bool fDisplayMessageFlag = false;
     bool fOldDisplayMessageFlag = false;
     bool fReDraw = false;
     bool fDeleteMailFlag = false;
@@ -31,6 +27,10 @@ public class Emails
     bool fJustStartedEmail = false;
     bool fDeleteInternal = false;
     bool fOpenMostRecentUnReadFlag = false;
+    // the length of the subject in char
+
+    public const int SUBJECT_LENGTH = 128;
+
 
     // mouse regions
     MOUSE_REGION[] pEmailRegions = new MOUSE_REGION[MAX_MESSAGES_PAGE];
@@ -48,6 +48,23 @@ public class Emails
         this.buttons = buttonSubSystem;
         files = fileManager;
         this.video = videoManager;
+    }
+
+    public static void GameInitEmail()
+    {
+        pEmailList.Clear();
+        pPageList.Clear();
+
+        iLastPage = -1;
+
+        iCurrentPage = 0;
+        iDeleteId = 0;
+
+        // reset display message flag
+        fDisplayMessageFlag = false;
+
+        // reset page being displayed
+        giMessagePage = 0;
     }
 
     void InitializeMouseRegions()
@@ -92,22 +109,6 @@ public class Emails
         //DeleteSortRegions();
         this.CreateDestroyNextPreviousRegions();
 
-    }
-    void GameInitEmail()
-    {
-        pEmailList = null;
-        pPageList = null;
-
-        iLastPage = -1;
-
-        iCurrentPage = 0;
-        this.iDeleteId = 0;
-
-        // reset display message flag
-        this.fDisplayMessageFlag = false;
-
-        // reset page being displayed
-        giMessagePage = 0;
     }
 
     bool EnterEmail()
@@ -168,11 +169,11 @@ public class Emails
         this.ClearOutEmailMessageRecordsList();
 
         // displayed message?...get rid of it
-        if (this.fDisplayMessageFlag)
+        if (fDisplayMessageFlag)
         {
-            this.fDisplayMessageFlag = false;
+            fDisplayMessageFlag = false;
             this.AddDeleteRegionsToMessageRegion(0);
-            this.fDisplayMessageFlag = true;
+            fDisplayMessageFlag = true;
             this.fReDrawMessageFlag = true;
         }
         else
@@ -219,13 +220,13 @@ public class Emails
         this.UpDateMessageRecordList();
 
         // does email list need to be draw, or can be drawn 
-        if ((!this.fDisplayMessageFlag) && (!fNewMailFlag) && (!this.fDeleteMailFlag) && (fEmailListBeenDrawAlready == false))
+        if ((!fDisplayMessageFlag) && (!fNewMailFlag) && (!this.fDeleteMailFlag) && (fEmailListBeenDrawAlready == false))
         {
             this.DisplayEmailList();
             fEmailListBeenDrawAlready = true;
         }
         // if the message flag, show message
-        else if (this.fDisplayMessageFlag && this.fReDrawMessageFlag)
+        else if (fDisplayMessageFlag && this.fReDrawMessageFlag)
         {
             // redisplay list
             this.DisplayEmailList();
@@ -235,7 +236,7 @@ public class Emails
             fEmailListBeenDrawAlready = false;
 
         }
-        else if (this.fDisplayMessageFlag && (!this.fOldDisplayMessageFlag))
+        else if (fDisplayMessageFlag && (!this.fOldDisplayMessageFlag))
         {
 
             // redisplay list
@@ -249,7 +250,7 @@ public class Emails
         }
 
         // not displaying anymore?
-        if ((this.fDisplayMessageFlag == false) && this.fOldDisplayMessageFlag)
+        if ((fDisplayMessageFlag == false) && this.fOldDisplayMessageFlag)
         {
             // then clear it out
             this.ClearOutEmailMessageRecordsList();
@@ -265,7 +266,7 @@ public class Emails
         // if delete notice needs to be displayed?...display it
         if (this.fDeleteMailFlag)
         {
-            this.DisplayDeleteNotice(this.GetEmailMessage(this.iDeleteId));
+            this.DisplayDeleteNotice(this.GetEmailMessage(iDeleteId));
         }
 
 
@@ -331,7 +332,7 @@ public class Emails
 
         // get and blt the email list background
         hHandle = this.video.GetVideoObject(guiEmailBackground);
-//        video.BltVideoObject(Surfaces.FRAME_BUFFER, hHandle, 0, LAPTOP_SCREEN_UL_X, EMAIL_LIST_WINDOW_Y + LAPTOP_SCREEN_UL_Y, VO_BLT.SRCTRANSPARENCY, null);
+        //        video.BltVideoObject(Surfaces.FRAME_BUFFER, hHandle, 0, LAPTOP_SCREEN_UL_X, EMAIL_LIST_WINDOW_Y + LAPTOP_SCREEN_UL_Y, VO_BLT.SRCTRANSPARENCY, null);
 
 
         // get and blt the email title bar
@@ -389,7 +390,7 @@ public class Emails
 
 
         // starts at iSubjectOffset amd goes iSubjectLength, reading in string
-//        files.LoadEncryptedDataFromFile("BINARYDATA\\Email.edt", out pSubject, 640 * (iMessageOffset), 640);
+        //        files.LoadEncryptedDataFromFile("BINARYDATA\\Email.edt", out pSubject, 640 * (iMessageOffset), 640);
 
         //Make a fake email that will contain the codes ( ie the merc ID )
         FakeEmail.iFirstData = iFirstData;
@@ -423,7 +424,7 @@ public class Emails
 
 
         // starts at iSubjectOffset amd goes iSubjectLength, reading in string
-//        files.LoadEncryptedDataFromFile("BINARYDATA\\Email.edt", out pSubject, 640 * (iMessageOffset), 640);
+        //        files.LoadEncryptedDataFromFile("BINARYDATA\\Email.edt", out pSubject, 640 * (iMessageOffset), 640);
 
         // add message to list
         AddEmailMessage(iMessageOffset, iMessageLength, pSubject, iDate, ubSender, false, 0, 0);
@@ -468,107 +469,41 @@ public class Emails
     private static void AddEmailMessage(int iMessageOffset, int iMessageLength, string pSubject, uint iDate, EmailAddresses ubSender, bool fAlreadyRead, int iFirstData, object uiSecondData)
     {
         // will add a message to the list of messages
-        email? pEmail = pEmailList;
-        email? pTempEmail = null;
-        int iCounter = 0;
-        int iId = 0;
-
-        // run through list of messages, get id of oldest message
-        if (pEmail is not null)
-        {
-            while (pEmail is not null)
-            {
-                if (pEmail.iId > iId)
-                {
-                    iId = pEmail.iId;
-                }
-
-                pEmail = pEmail.Next;
-            }
-        }
-
-        // reset pEmail
-        pEmail = pEmailList;
-
-        // move to end of list
-        if (pEmail is not null)
-        {
-            while (pEmail.Next is not null)
-            {
-                pEmail = pEmail.Next;
-            }
-        }
+        var pEmail = pEmailList;
+        //        int iId = pEmail.Max(p => p.iId);
 
         // add new element onto list
-        pTempEmail = new();
-        // add in strings
-        //while(pMessage !=null)
-        //{
-        //pTempEmail.pText[iCounter]=MemAlloc((wcslen(pMessage.pString)+2)*2);
-        //wcscpy(pTempEmail.pText[iCounter],pMessage.pString);
-        //pMessage=pMessage.Next;
-        //iCounter++;
-        //}	
-        //pTempEmail.pText[iCounter]=null;
-
-        // copy subject
-        pTempEmail.pSubject = pSubject;
-
-        // copy offset and length of the actual message in email.edt
-        pTempEmail.usOffset = (int)iMessageOffset;
-        pTempEmail.usLength = (int)iMessageLength;
-
-        // null out last byte of subject
-        //pTempEmail.pSubject[wcslen(pSubject) + 1] = 0;
-
-
-        // set date and sender, Id
-        if (pEmail is not null)
+        email pTempEmail = new()
         {
-            pTempEmail.iId = iId + 1;
-        }
-        else
-        {
-            pTempEmail.iId = 0;
-        }
+            pSubject = pSubject,
 
-        // copy date and sender id's
-        pTempEmail.iDate = iDate;
-        pTempEmail.ubSender = ubSender;
+            // copy offset and length of the actual message in email.edt
+            usOffset = (int)iMessageOffset,
+            usLength = (int)iMessageLength,
+            // null out last byte of subject
+            //pTempEmail.pSubject[wcslen(pSubject) + 1] = 0;
 
-        // the special data
-        pTempEmail.iFirstData = iFirstData;
-        pTempEmail.uiSecondData = uiSecondData;
+            // set date and sender, Id
+            iId = pEmailList.Count,
 
-        // place into list
-        if (pEmail is not null)
-        {
-            // list exists, place at end
-            pEmail.Next = pTempEmail;
-            pTempEmail.Prev = pEmail;
-        }
-        else
-        {
-            // no list, becomes head of a new list
-            pEmail = pTempEmail;
-            pTempEmail.Prev = null;
-            pEmailList = pEmail;
-        }
+            // copy date and sender id's
+            iDate = iDate,
+            ubSender = ubSender,
 
-        // reset Next ptr
-        pTempEmail.Next = null;
+            // the special data
+            iFirstData = iFirstData,
+            uiSecondData = uiSecondData,
+            fRead = fAlreadyRead,
+            fNew = true,
+        };
 
+        pEmailList.Add(pTempEmail);
         // set flag that new mail has arrived
         fNewMailFlag = true;
 
         // add this message to the pages of email
         AddMessageToPages(pTempEmail.iId);
 
-        // reset read flag of this particular message
-        pTempEmail.fRead = fAlreadyRead;
-
-        // set fact this message is new
-        pTempEmail.fNew = true;
         return;
     }
 
@@ -576,221 +511,43 @@ public class Emails
     void RemoveEmailMessage(int iId)
     {
         // run through list and remove message, update everyone afterwards
-        email? pEmail = pEmailList;
-        email? pTempEmail = null;
-        int iCounter = 0;
+        var email = this.GetEmailMessage(iId);
 
-
-        // error check
-        if (pEmail is null)
+        if (email is not null)
         {
-            return;
-        }
-
-        // look for message
-        pEmail = this.GetEmailMessage(iId);
-        //while((pEmail.iId !=iId)&&(pEmail . Next))
-        //	pEmail=pEmail.Next;
-
-        // end of list, no mail found, leave
-        if (pEmail is null)
-        {
-            return;
-        }
-        // found
-
-        // set tempt o current
-        pTempEmail = pEmail;
-
-        // check position of message in list
-        if ((pEmail.Prev is not null) && (pTempEmail.Next is not null))
-        {
-            // in the middle of the list
-            pEmail = pEmail.Prev;
-            pTempEmail = pTempEmail.Next;
-            pEmail.Next.pSubject = string.Empty;
-            //while(pEmail.Next.pText[iCounter])
-            //{
-            //MemFree(pEmail.Next.pText[iCounter]);
-            //iCounter++;
-            //}
-            pEmail.Next = pTempEmail;
-            pTempEmail.Prev = pEmail;
-        }
-        else if (pEmail.Prev is not null)
-        {
-            // end of the list
-            pEmail = pEmail.Prev;
-            MemFree(pEmail.Next.pSubject);
-            //while(pEmail.Next.pText[iCounter])
-            //{
-            //MemFree(pEmail.Next.pText[iCounter]);
-            //iCounter++;
-            //}
-            pEmail.Next = null;
-        }
-        else if (pTempEmail.Next is not null)
-        {
-            // beginning of the list
-            pEmail = pTempEmail;
-            pTempEmail = pTempEmail.Next;
-            MemFree(pEmail.pSubject);
-            //while(pEmail.pText[iCounter])
-            //{
-            //MemFree(pEmail.pText[iCounter]);
-            //iCounter++;
-            //}
-            MemFree(pEmail);
-            pTempEmail.Prev = null;
-            pEmailList = pTempEmail;
-        }
-        else
-        {
-            // all alone
-            MemFree(pEmail.pSubject);
-            //	while(pEmail.pText[iCounter])
-            //{
-            //MemFree(pEmail.pText[iCounter]);
-            //iCounter++;
-            //}
-            MemFree(pEmail);
-            pEmailList = null;
+            pEmailList.Remove(email);
         }
     }
 
     email? GetEmailMessage(int iId)
     {
-        email? pEmail = pEmailList;
-        // return pointer to message with iId
-
-        // invalid id
-        if (iId == -1)
-        {
-            return null;
-        }
-
-        // invalid list
-        if (pEmail == null)
-        {
-            return null;
-        }
-
-        // look for message 
-        while ((pEmail.iId != iId) && (pEmail.Next is not null))
-        {
-            pEmail = pEmail.Next;
-        }
-
-        if ((pEmail.iId != iId) && (pEmail.Next == null))
-        {
-            pEmail = null;
-        }
-
-        // no message, or is there?
-        if (pEmail is null)
-        {
-            return null;
-        }
-        else
-        {
-            return pEmail;
-        }
+        return pEmailList.FirstOrDefault(email => email.iId == iId);
     }
 
 
     public static void AddEmailPage()
     {
         // simple adds a page to the list
-        PagePtr pPage = pPageList;
-        if (pPage is not null)
-        {
-            while (pPage.Next is not null)
-            {
-                pPage = pPage.Next;
-            }
-        }
+        PagePtr pPage = new();
 
+        Array.Fill(pPage.iIds, -1);
 
-        if (pPage is not null)
-        {
+        pPageList.Add(pPage);
 
-            // there is a page, add current page after it
-            pPage.Next = new();//MemAlloc(sizeof(Page));
-            pPage.Next.Prev = pPage;
-            pPage = pPage.Next;
-            pPage.Next = null;
-            pPage.iPageId = pPage.Prev.iPageId + 1;
-            //memset(pPage.iIds, -1, sizeof(int) * MAX_MESSAGES_PAGE);
-        }
-        else
-        {
-
-            // page becomes head of page list
-            pPageList = new();//MemAlloc(sizeof(Page));
-            pPage = pPageList;
-            pPage.Prev = null;
-            pPage.Next = null;
-            pPage.iPageId = 0;
-            //memset(pPage.iIds, -1, sizeof(int) * MAX_MESSAGES_PAGE);
-            pPageList = pPage;
-        }
         iLastPage++;
         return;
-
     }
 
 
     void RemoveEmailPage(int iPageId)
     {
-        PagePtr? pPage = pPageList;
-        PagePtr? pTempPage = null;
+        PagePtr? pPage = pPageList.FirstOrDefault(p => p.iPageId == iPageId);
 
-        // run through list until page is matched, or out of pages
-        while ((pPage.iPageId != iPageId) && (pPage is not null))
+        if (pPage is not null)
         {
-            pPage = pPage.Next;
+            pPageList.Remove(pPage);
         }
 
-        // error check
-        if (pPage is null)
-        {
-            return;
-        }
-
-
-        // found
-        pTempPage = pPage;
-        if ((pPage.Prev is not null) && (pTempPage.Next is not null))
-        {
-            // in the middle of the list
-            pPage = pPage.Prev;
-            pTempPage = pTempPage.Next;
-            MemFree(pPage.Next);
-            pPage.Next = pTempPage;
-            pTempPage.Prev = pPage;
-        }
-        else if (pPage.Prev is not null)
-        {
-            // end of the list
-            pPage = pPage.Prev;
-            MemFree(pPage.Next);
-            pPage.Next = null;
-        }
-        else if (pTempPage.Next is not null)
-        {
-            // beginning of the list
-            pPage = pTempPage;
-            pTempPage = pTempPage.Next;
-            MemFree(pPage);
-            pTempPage.Prev = null;
-        }
-        else
-        {
-            // all alone
-
-            MemFree(pPage);
-            pPageList = null;
-        }
         if (iLastPage != 0)
         {
             iLastPage--;
@@ -800,19 +557,14 @@ public class Emails
     public static void AddMessageToPages(int iMessageId)
     {
         // go to end of page list
-        PagePtr? pPage = pPageList;
+        PagePtr? pPage = pPageList.FirstOrDefault();
         int iCounter = 0;
         if (pPage is null)
         {
             AddEmailPage();
+            pPage = pPageList.First();
         }
 
-        pPage = pPageList;
-        while ((pPage.Next is not null) && (pPage.iIds[MAX_MESSAGES_PAGE - 1] != -1))
-        {
-            pPage = pPage.Next;
-        }
-        // if list is full, add new page
         while (iCounter < MAX_MESSAGES_PAGE)
         {
             if (pPage.iIds[iCounter] == -1)
@@ -822,6 +574,7 @@ public class Emails
 
             iCounter++;
         }
+
         if (iCounter == MAX_MESSAGES_PAGE)
         {
             AddEmailPage();
@@ -837,147 +590,46 @@ public class Emails
 
     void SortMessages(EmailFields iCriteria)
     {
-        email? pA = pEmailList;
-        email? pB = pEmailList;
+        var pA = pEmailList;
+        var pB = pEmailList;
         string pSubjectA = string.Empty;
         string pSubjectB = string.Empty;
         int iId = 0;
 
         // no messages to sort?
-        if ((pA == null) || (pB == null))
+        if (!pA.Any())
         {
             return;
         }
 
-        // nothing here either?
-        if (pA.Next is null)
-        {
-            return;
-        }
-
-        pB = pA.Next;
         switch (iCriteria)
         {
             case EmailFields.RECEIVED:
-                while (pA is not null)
-                {
+                var sortedDate = this.fSortDateUpwards
+                    ? pEmailList.OrderBy(p => p.iDate)
+                    : pEmailList.OrderByDescending(p => p.iDate);
 
-                    // set B to next in A
-                    pB = pA.Next;
-                    while (pB is not null)
-                    {
-
-                        if (this.fSortDateUpwards)
-                        {
-                            // if date is lesser, swap
-                            if (pA.iDate > pB.iDate)
-                            {
-                                this.SwapMessages(pA.iId, pB.iId);
-                            }
-                        }
-                        else
-                        {
-                            // if date is lesser, swap
-                            if (pA.iDate < pB.iDate)
-                            {
-                                this.SwapMessages(pA.iId, pB.iId);
-                            }
-                        }
-
-
-                        // next in B's list
-                        pB = pB.Next;
-                    }
-
-                    // next in A's List
-                    pA = pA.Next;
-                }
+                pEmailList = [.. sortedDate];
                 break;
             case EmailFields.SENDER:
-                while (pA is not null)
-                {
+                var sortedBySender = this.fSortSenderUpwards
+                    ? pEmailList.OrderBy(p => p.ubSender)
+                    : pEmailList.OrderByDescending(p => p.ubSender);
 
-                    pB = pA.Next;
-                    while (pB is not null)
-                    {
-                        // lesser string?...need sorting 
-                        if (this.fSortSenderUpwards)
-                        {
-                            //                            if ((wcscmp(pSenderNameList[pA.ubSender], pSenderNameList[pB.ubSender])) < 0)
-                            //                            {
-                            //                                SwapMessages(pA.iId, pB.iId);
-                            //                            }
-                        }
-                        else
-                        {
-                            //                            if ((wcscmp(pSenderNameList[pA.ubSender], pSenderNameList[pB.ubSender])) > 0)
-                            //                            {
-                            //                                SwapMessages(pA.iId, pB.iId);
-                            //                            }
-                        }
-                        // next in B's list
-                        pB = pB.Next;
-                    }
-                    // next in A's List
-                    pA = pA.Next;
-                }
+                pEmailList = [.. sortedBySender];
                 break;
             case EmailFields.SUBJECT:
-                while (pA is not null)
-                {
+                var sortedBySubject = this.fSortSubjectUpwards
+                    ? pEmailList.OrderBy(p => p.pSubject)
+                    : pEmailList.OrderByDescending(p => p.pSubject);
 
-                    pB = pA.Next;
-                    while (pB is not null)
-                    {
-                        // clear out control codes
-                        //                        CleanOutControlCodesFromString(pA.pSubject, pSubjectA);
-                        //                        CleanOutControlCodesFromString(pB.pSubject, pSubjectB);
-
-                        // lesser string?...need sorting  
-                        if (this.fSortSubjectUpwards)
-                        {
-                            if (wcscmp(pA.pSubject, pB.pSubject) < 0)
-                            {
-                                this.SwapMessages(pA.iId, pB.iId);
-                            }
-                        }
-                        else
-                        {
-                            if (wcscmp(pA.pSubject, pB.pSubject) > 0)
-                            {
-                                this.SwapMessages(pA.iId, pB.iId);
-                            }
-                        }
-                        // next in B's list
-                        pB = pB.Next;
-                    }
-                    // next in A's List
-                    pA = pA.Next;
-                }
+                pEmailList = [.. sortedBySubject];
                 break;
 
             case EmailFields.READ:
-                while (pA is not null)
-                {
-
-                    pB = pA.Next;
-                    while (pB is not null)
-                    {
-                        // one read and another not?...need sorting  
-                        if (pA.fRead && (!pB.fRead))
-                        {
-                            this.SwapMessages(pA.iId, pB.iId);
-                        }
-
-                        // next in B's list
-                        pB = pB.Next;
-                    }
-                    // next in A's List
-                    pA = pA.Next;
-                }
+                pEmailList = [.. pEmailList.OrderBy(p => p.fRead)];
                 break;
         }
-
 
         // place new list into pages of email
         //PlaceMessagesinPages();
@@ -986,90 +638,11 @@ public class Emails
         fReDrawScreenFlag = true;
     }
 
-    void SwapMessages(int iIdA, int iIdB)
-    {
-        // swaps locations of messages in the linked list
-        email? pA = pEmailList;
-        email? pB = pEmailList;
-        email? pTemp = new();//MemAlloc(sizeof(Email));
-
-        pTemp.pSubject = string.Empty;
-
-        if (pA.Next is null)
-        {
-            return;
-        }
-        //find pA
-        while (pA.iId != iIdA)
-        {
-            pA = pA.Next;
-        }
-        // find pB
-        while (pB.iId != iIdB)
-        {
-            pB = pB.Next;
-        }
-
-        // swap
-
-        // pTemp becomes pA
-        pTemp.iId = pA.iId;
-        pTemp.fRead = pA.fRead;
-        pTemp.fNew = pA.fNew;
-        pTemp.usOffset = pA.usOffset;
-        pTemp.usLength = pA.usLength;
-        pTemp.iDate = pA.iDate;
-        pTemp.ubSender = pA.ubSender;
-        pTemp.pSubject = wcscpy(pA.pSubject);
-
-        // pA becomes pB
-        pA.iId = pB.iId;
-        pA.fRead = pB.fRead;
-        pA.fNew = pB.fNew;
-        pA.usOffset = pB.usOffset;
-        pA.usLength = pB.usLength;
-        pA.iDate = pB.iDate;
-        pA.ubSender = pB.ubSender;
-        pA.pSubject = wcscpy(pB.pSubject);
-
-        // pB becomes pTemp
-        pB.iId = pTemp.iId;
-        pB.fRead = pTemp.fRead;
-        pB.fNew = pTemp.fNew;
-        pB.usOffset = pTemp.usOffset;
-        pB.usLength = pTemp.usLength;
-        pB.iDate = pTemp.iDate;
-        pB.ubSender = pTemp.ubSender;
-        pB.pSubject = wcscpy(pTemp.pSubject);
-
-        // free up memory
-        MemFree(pTemp.pSubject);
-        MemFree(pTemp);
-        return;
-    }
-
     public static void ClearPages()
     {
         // run through list of message pages and set to -1
-        PagePtr? pPage = pPageList;
+        pPageList.Clear();
 
-        // error check
-        if (pPageList == null)
-        {
-            return;
-        }
-
-        while (pPage.Next is not null)
-        {
-            pPage = pPage.Next;
-            MemFree(pPage.Prev);
-        }
-        if (pPage is not null)
-        {
-            MemFree(pPage);
-        }
-
-        pPageList = null;
         iLastPage = -1;
 
         return;
@@ -1077,15 +650,14 @@ public class Emails
 
     void PlaceMessagesinPages()
     {
-        email pEmail = pEmailList;
         // run through the list of messages and add to pages
         ClearPages();
-        while (pEmail is not null)
+
+        foreach (var pEmail in pEmailList)
         {
             AddMessageToPages(pEmail.iId);
-            pEmail = pEmail.Next;
-
         }
+
         if (iCurrentPage > iLastPage)
         {
             iCurrentPage = iLastPage;
@@ -1097,15 +669,15 @@ public class Emails
     void DisplayMessageList(int iPageNum)
     {
         // will display page with idNumber iPageNum
-        PagePtr pPage = pPageList;
-        while (pPage.iPageId != iPageNum)
-        {
-            pPage = pPage.Next;
-            if (pPage is null)
-            {
-                return;
-            }
-        }
+        // PagePtr pPage = pPageList;
+        // while (pPage.iPageId != iPageNum)
+        // {
+        //     pPage = pPage.Next;
+        //     if (pPage is null)
+        //     {
+        //         return;
+        //     }
+        // }
         // found page show it
         return;
     }
@@ -1121,11 +693,11 @@ public class Emails
         // is it read or not?
         if (fRead)
         {
-//            video.BltVideoObject(Surfaces.FRAME_BUFFER, hHandle, 0, INDIC_X, (MIDDLE_Y + iCounter * MIDDLE_WIDTH + 2), VO_BLT.SRCTRANSPARENCY, null);
+            //            video.BltVideoObject(Surfaces.FRAME_BUFFER, hHandle, 0, INDIC_X, (MIDDLE_Y + iCounter * MIDDLE_WIDTH + 2), VO_BLT.SRCTRANSPARENCY, null);
         }
         else
         {
-//            video.BltVideoObject(Surfaces.FRAME_BUFFER, hHandle, 1, INDIC_X, (MIDDLE_Y + iCounter * MIDDLE_WIDTH + 2), VO_BLT.SRCTRANSPARENCY, null);
+            //            video.BltVideoObject(Surfaces.FRAME_BUFFER, hHandle, 1, INDIC_X, (MIDDLE_Y + iCounter * MIDDLE_WIDTH + 2), VO_BLT.SRCTRANSPARENCY, null);
         }
 
         return;
@@ -1232,7 +804,7 @@ public class Emails
     {
         int iCounter = 0;
         // look at current page, and display
-        PagePtr? pPage = pPageList;
+        PagePtr? pPage = pPageList.FirstOrDefault();
         email? pEmail = null;
 
 
@@ -1249,10 +821,10 @@ public class Emails
         }
 
         // loop until we get to the current page
-        while ((pPage.iPageId != iCurrentPage) && (iCurrentPage <= iLastPage))
-        {
-            pPage = pPage.Next;
-        }
+//        while ((pPage.iPageId != iCurrentPage) && (iCurrentPage <= iLastPage))
+//        {
+//            pPage = pPage.Next;
+//        }
 
         // now we have current page, display it
         pEmail = this.GetEmailMessage(pPage.iIds[iCounter]);
@@ -1317,27 +889,13 @@ public class Emails
 
         // simply runrs through list of messages, if any unread, set unread flag
 
-        email? pA = pEmailList;
-
         // reset unread flag
-        this.fUnReadMailFlag = false;
-
-        // look for unread mail
-        while (pA is not null)
-        {
-            // unread mail found, set flag
-            if (!pA.fRead)
-            {
-                this.fUnReadMailFlag = true;
-            }
-
-            pA = pA.Next;
-        }
+        this.fUnReadMailFlag = pEmailList.Any(p => !p.fRead);
 
         if (fStatusOfNewEmailFlag != this.fUnReadMailFlag)
         {
             //Since there is no new email, get rid of the hepl text
-            //            CreateFileAndNewEmailIconFastHelpText(LAPTOP_BN_HLP_TXT_YOU_HAVE_NEW_MAIL, (bool)!fUnReadMailFlag);
+            //Laptop.CreateFileAndNewEmailIconFastHelpText(LAPTOP_BN_HLP_TXT_YOU_HAVE_NEW_MAIL, (bool)!fUnReadMailFlag);
         }
 
         return;
@@ -1346,57 +904,54 @@ public class Emails
     void EmailBtnCallBack(ref MOUSE_REGION pRegion, MSYS_CALLBACK_REASON iReason)
     {
         int iCount;
-        PagePtr? pPage = pPageList;
-        int iId = 0;
-        email? pEmail = null;
+        PagePtr pPage = pPageList.First();
         if (iReason.HasFlag(MSYS_CALLBACK_REASON.INIT))
         {
             return;
         }
-        if (this.fDisplayMessageFlag)
+
+        if (fDisplayMessageFlag)
         {
             return;
         }
 
         if (iReason.HasFlag(MSYS_CALLBACK_REASON.LBUTTON_UP))
         {
-
             // error check
             iCount = (int)MouseSubSystem.MSYS_GetRegionUserData(ref pRegion, 0);
             // check for valid email
             // find surrent page
-            if (pPage is null)
-            {
-                return;
-            }
-
-            while ((pPage.Next is not null) && (pPage.iPageId != iCurrentPage))
-            {
-                pPage = pPage.Next;
-            }
-
-            if (pPage is null)
-            {
-                return;
-            }
+            //if (pPage is null)
+            //{
+            //    return;
+            //}
+            //
+            //while ((pPage.Next is not null) && (pPage.iPageId != iCurrentPage))
+            //{
+            //    pPage = pPage.Next;
+            //}
+            //
+            //if (pPage is null)
+            //{
+            //    return;
+            //}
             // found page
 
             // get id for element iCount
-            iId = pPage.iIds[iCount];
+            int iId = pPage.iIds[iCount];
 
             // invalid message
             if (iId == -1)
             {
-                this.fDisplayMessageFlag = false;
+                fDisplayMessageFlag = false;
                 return;
             }
+            
             // Get email and display
-            this.fDisplayMessageFlag = true;
+            fDisplayMessageFlag = true;
             giMessagePage = 0;
             giPrevMessageId = giMessageId;
             giMessageId = iId;
-
-
         }
         else if (iReason.HasFlag(MSYS_CALLBACK_REASON.RBUTTON_UP))
         {
@@ -1411,19 +966,9 @@ public class Emails
 
             giMessagePage = 0;
 
-            while ((pPage.Next is not null) && (pPage.iPageId != iCurrentPage))
-            {
-                pPage = pPage.Next;
-            }
-
-            if (pPage is null)
-            {
-                //                HandleRightButtonUpEvent();
-                return;
-            }
             // found page
             // get id for element iCount
-            iId = pPage.iIds[iCount];
+            var iId = pPage.iIds[iCount];
             if (this.GetEmailMessage(iId) is null)
             {
                 // no mail here, handle right button up event
@@ -1433,7 +978,7 @@ public class Emails
             else
             {
                 this.fDeleteMailFlag = true;
-                this.iDeleteId = iId;
+                iDeleteId = iId;
                 //DisplayDeleteNotice(GetEmailMessage(iDeleteId));
                 //DeleteEmail();
             }
@@ -1445,7 +990,7 @@ public class Emails
         {
             return;
         }
-        if (this.fDisplayMessageFlag)
+        if (fDisplayMessageFlag)
         {
             return;
         }
@@ -1485,7 +1030,7 @@ public class Emails
                 // X button has been pressed and let up, this means to stop displaying the currently displayed message
 
                 // reset display message flag
-                this.fDisplayMessageFlag = false;
+                fDisplayMessageFlag = false;
 
                 // reset button flag
                 btn.uiFlags &= ~ButtonFlags.BUTTON_CLICKED_ON;
@@ -1509,14 +1054,13 @@ public class Emails
     SetUnNewMessages()
     {
         // on exit from the mailer, set all new messages as 'un'new
-        email? pEmail = pEmailList;
         // run through the list of messages and add to pages
 
-        while (pEmail is not null)
+        foreach (var pEmail in pEmailList)
         {
             pEmail.fNew = false;
-            pEmail = pEmail.Next;
         }
+
         return;
     }
 
@@ -1578,8 +1122,8 @@ public class Emails
         hHandle = this.video.GetVideoObject(guiEmailMessage);
 
         // place the graphic on the frame buffer
-//        video.BltVideoObject(Surfaces.FRAME_BUFFER, hHandle, 1, VIEWER_X, VIEWER_MESSAGE_BODY_START_Y + iViewerPositionY, VO_BLT.SRCTRANSPARENCY, null);
-//        video.BltVideoObject(Surfaces.FRAME_BUFFER, hHandle, 1, VIEWER_X, VIEWER_MESSAGE_BODY_START_Y + FontSubSystem.GetFontHeight(MESSAGE_FONT) + iViewerPositionY, VO_BLT.SRCTRANSPARENCY, null);
+        //        video.BltVideoObject(Surfaces.FRAME_BUFFER, hHandle, 1, VIEWER_X, VIEWER_MESSAGE_BODY_START_Y + iViewerPositionY, VO_BLT.SRCTRANSPARENCY, null);
+        //        video.BltVideoObject(Surfaces.FRAME_BUFFER, hHandle, 1, VIEWER_X, VIEWER_MESSAGE_BODY_START_Y + FontSubSystem.GetFontHeight(MESSAGE_FONT) + iViewerPositionY, VO_BLT.SRCTRANSPARENCY, null);
 
         // set shadow
         FontSubSystem.SetFontShadow(FontShadow.NO_SHADOW);
@@ -1588,7 +1132,7 @@ public class Emails
         hHandle = this.video.GetVideoObject(guiEmailMessage);
 
         // place the graphic on the frame buffer
-//        video.BltVideoObject(Surfaces.FRAME_BUFFER, hHandle, 0, VIEWER_X, VIEWER_Y + iViewerPositionY, VO_BLT.SRCTRANSPARENCY, null);
+        //        video.BltVideoObject(Surfaces.FRAME_BUFFER, hHandle, 0, VIEWER_X, VIEWER_Y + iViewerPositionY, VO_BLT.SRCTRANSPARENCY, null);
 
 
         // the icon for the title of this box
@@ -1611,7 +1155,7 @@ public class Emails
             hHandle = this.video.GetVideoObject(guiEmailMessage);
 
             // place the graphic on the frame buffer
-//            video.BltVideoObject(Surfaces.FRAME_BUFFER, hHandle, 1, VIEWER_X, iViewerPositionY + VIEWER_MESSAGE_BODY_START_Y + ((FontSubSystem.GetFontHeight(MESSAGE_FONT)) * (iCounter)), VO_BLT.SRCTRANSPARENCY, null);
+            //            video.BltVideoObject(Surfaces.FRAME_BUFFER, hHandle, 1, VIEWER_X, iViewerPositionY + VIEWER_MESSAGE_BODY_START_Y + ((FontSubSystem.GetFontHeight(MESSAGE_FONT)) * (iCounter)), VO_BLT.SRCTRANSPARENCY, null);
 
         }
 
@@ -1622,12 +1166,12 @@ public class Emails
         if (giNumberOfPagesToCurrentEmail <= 2)
         {
             // place the graphic on the frame buffer
-//            video.BltVideoObject(Surfaces.FRAME_BUFFER, hHandle, 2, VIEWER_X, iViewerPositionY + VIEWER_MESSAGE_BODY_START_Y + ((FontSubSystem.GetFontHeight(MESSAGE_FONT)) * (iCounter)), VO_BLT.SRCTRANSPARENCY, null);
+            //            video.BltVideoObject(Surfaces.FRAME_BUFFER, hHandle, 2, VIEWER_X, iViewerPositionY + VIEWER_MESSAGE_BODY_START_Y + ((FontSubSystem.GetFontHeight(MESSAGE_FONT)) * (iCounter)), VO_BLT.SRCTRANSPARENCY, null);
         }
         else
         {
             // place the graphic on the frame buffer
-//            video.BltVideoObject(Surfaces.FRAME_BUFFER, hHandle, 3, VIEWER_X, iViewerPositionY + VIEWER_MESSAGE_BODY_START_Y + ((FontSubSystem.GetFontHeight(MESSAGE_FONT)) * (iCounter)), VO_BLT.SRCTRANSPARENCY, null);
+            //            video.BltVideoObject(Surfaces.FRAME_BUFFER, hHandle, 3, VIEWER_X, iViewerPositionY + VIEWER_MESSAGE_BODY_START_Y + ((FontSubSystem.GetFontHeight(MESSAGE_FONT)) * (iCounter)), VO_BLT.SRCTRANSPARENCY, null);
         }
 
         // reset iCounter and iHeight
@@ -1794,7 +1338,7 @@ public class Emails
     {
         // will create/destroy mouse region for message display
 
-        if (this.fDisplayMessageFlag && (!this.fOldDisplayMessageFlag))
+        if (fDisplayMessageFlag && (!this.fOldDisplayMessageFlag))
         {
 
             // set old flag
@@ -1842,7 +1386,7 @@ public class Emails
             // force update of screen
             fReDrawScreenFlag = true;
         }
-        else if ((!this.fDisplayMessageFlag) && this.fOldDisplayMessageFlag)
+        else if ((!fDisplayMessageFlag) && this.fOldDisplayMessageFlag)
         {
             // delete region
             this.fOldDisplayMessageFlag = false;
@@ -1961,12 +1505,12 @@ public class Emails
         //	return ( false );
 
         hHandle = this.video.GetVideoObject(guiEmailWarning);
-//        video.BltVideoObject(Surfaces.FRAME_BUFFER, hHandle, 0, EMAIL_WARNING_X, EMAIL_WARNING_Y, VO_BLT.SRCTRANSPARENCY, null);
+        //        video.BltVideoObject(Surfaces.FRAME_BUFFER, hHandle, 0, EMAIL_WARNING_X, EMAIL_WARNING_Y, VO_BLT.SRCTRANSPARENCY, null);
 
 
         // the icon for the title of this box
         hHandle = this.video.GetVideoObject(guiTITLEBARICONS);
-//        video.BltVideoObject(Surfaces.FRAME_BUFFER, hHandle, 0, EMAIL_WARNING_X + 5, EMAIL_WARNING_Y + 2, VO_BLT.SRCTRANSPARENCY, null);
+        //        video.BltVideoObject(Surfaces.FRAME_BUFFER, hHandle, 0, EMAIL_WARNING_X + 5, EMAIL_WARNING_Y + 2, VO_BLT.SRCTRANSPARENCY, null);
 
         // font stuff 
         FontSubSystem.SetFont(EMAIL_HEADER_FONT);
@@ -2439,7 +1983,7 @@ public class Emails
         // load graphics
 
         hHandle = this.video.GetVideoObject(guiEmailWarning);
-//        video.BltVideoObject(Surfaces.FRAME_BUFFER, hHandle, 0, EMAIL_WARNING_X, EMAIL_WARNING_Y, VO_BLT.SRCTRANSPARENCY, null);
+        //        video.BltVideoObject(Surfaces.FRAME_BUFFER, hHandle, 0, EMAIL_WARNING_X, EMAIL_WARNING_Y, VO_BLT.SRCTRANSPARENCY, null);
 
 
         // font stuff 
@@ -2450,7 +1994,7 @@ public class Emails
 
         // the icon for the title of this box
         hHandle = this.video.GetVideoObject(guiTITLEBARICONS);
-//        video.BltVideoObject(Surfaces.FRAME_BUFFER, hHandle, 0, EMAIL_WARNING_X + 5, EMAIL_WARNING_Y + 2, VO_BLT.SRCTRANSPARENCY, null);
+        //        video.BltVideoObject(Surfaces.FRAME_BUFFER, hHandle, 0, EMAIL_WARNING_X + 5, EMAIL_WARNING_Y + 2, VO_BLT.SRCTRANSPARENCY, null);
 
         // title 
         //        mprintf(EMAIL_WARNING_X + 30, EMAIL_WARNING_Y + 8, pEmailTitleText[0]);
@@ -2492,16 +2036,16 @@ public class Emails
         // error check, invalid mail, or not time to delete mail
         if (this.fDeleteInternal != true)
         {
-            if ((this.iDeleteId == -1) || (!this.fDeleteMailFlag))
+            if ((iDeleteId == -1) || (!this.fDeleteMailFlag))
             {
                 return;
             }
         }
         // remove the message
-        this.RemoveEmailMessage(this.iDeleteId);
+        this.RemoveEmailMessage(iDeleteId);
 
         // stop displaying message, if so
-        this.fDisplayMessageFlag = false;
+        fDisplayMessageFlag = false;
 
         // upadte list
         this.PlaceMessagesinPages();
@@ -2594,7 +2138,7 @@ public class Emails
         {
 
             btn.uiFlags &= ~ButtonFlags.BUTTON_CLICKED_ON;
-            this.iDeleteId = giMessageId;
+            iDeleteId = giMessageId;
             this.fDeleteMailFlag = true;
 
         }
@@ -2852,7 +2396,7 @@ public class Emails
         for (iCounter = 1; iCounter < 19; iCounter++)
         {
             hHandle = this.video.GetVideoObject(guiMAILDIVIDER);
-//            video.BltVideoObject(Surfaces.FRAME_BUFFER, hHandle, 0, INDIC_X - 10, (MIDDLE_Y + iCounter * MIDDLE_WIDTH - 1), VO_BLT.SRCTRANSPARENCY, null);
+            //            video.BltVideoObject(Surfaces.FRAME_BUFFER, hHandle, 0, INDIC_X - 10, (MIDDLE_Y + iCounter * MIDDLE_WIDTH - 1), VO_BLT.SRCTRANSPARENCY, null);
         }
 
 
@@ -2973,7 +2517,7 @@ public class Emails
 
 
         // the email message itself
-        if (this.fDisplayMessageFlag)
+        if (fDisplayMessageFlag)
         {
             // this simply redraws message with button manipulation
             this.DisplayEmailMessage(this.GetEmailMessage(giMessageId));
@@ -2982,7 +2526,7 @@ public class Emails
         if (this.fDeleteMailFlag)
         {
             // delete message, redisplay
-            this.DisplayDeleteNotice(this.GetEmailMessage(this.iDeleteId));
+            this.DisplayDeleteNotice(this.GetEmailMessage(iDeleteId));
         }
 
         if (fNewMailFlag)
@@ -4158,7 +3702,7 @@ public class Emails
     {
         // handle state of email viewer buttons
 
-        if (this.fDisplayMessageFlag == false)
+        if (fDisplayMessageFlag == false)
         {
             // not displaying message, leave
             return;
@@ -4218,13 +3762,13 @@ public class Emails
         // will delete the currently displayed message
 
         // set current message to be deleted
-        this.iDeleteId = giMessageId;
+        iDeleteId = giMessageId;
 
         // set the currently displayed message to none
         giMessageId = -1;
 
         // reset display message flag
-        this.fDisplayMessageFlag = false;
+        fDisplayMessageFlag = false;
 
         // reset page being displayed
         giMessagePage = 0;
@@ -4328,30 +3872,18 @@ public class Emails
     void OpenMostRecentUnreadEmail()
     {
         // will open the most recent email the player has recieved and not read
-        int iMostRecentMailId = -1;
-        email? pB = pEmailList;
-        int iLowestDate = 9999999;
-
-        while (pB is not null)
-        {
-            // if date is lesser and unread , swap
-            if ((pB.iDate < iLowestDate) && (pB.fRead == false))
-            {
-                iMostRecentMailId = pB.iId;
-                iLowestDate = (int)pB.iDate;
-            }
-
-            // next in B's list
-            pB = pB.Next;
-        }
+        var mostRecentUnreadEmail = pEmailList
+            .Where(p => !p.fRead)
+            .OrderByDescending(p => p.iDate)
+            .FirstOrDefault();
 
         // set up id
-        giMessageId = iMostRecentMailId;
+        giMessageId = mostRecentUnreadEmail?.iId ?? -1;
 
         // valid message, show it
         if (giMessageId != -1)
         {
-            this.fDisplayMessageFlag = true;
+            fDisplayMessageFlag = true;
         }
 
         return;
@@ -4424,23 +3956,7 @@ public class Emails
 
     public static void ShutDownEmailList()
     {
-        email? pEmail = pEmailList;
-        email? pTempEmail = null;
-
-        //loop through all the emails to delete them
-        while (pEmail is not null)
-        {
-            pTempEmail = pEmail;
-
-            pEmail = pEmail.Next;
-
-            MemFree(pTempEmail.pSubject);
-            pTempEmail.pSubject = null;
-
-            MemFree(pTempEmail);
-            pTempEmail = null;
-        }
-        pEmailList = null;
+        pEmailList.Clear();
 
         ClearPages();
     }
@@ -4889,17 +4405,12 @@ public class email
     public int iFourthData;
     public int uiFifthData;
     public int uiSixData;
-
-    public email? Next;
-    public email? Prev;
 };
 
 public record PagePtr
 {
     public int[] iIds = new int[MAX_MESSAGES_PAGE];
     public int iPageId;
-    public PagePtr? Next;
-    public PagePtr? Prev;
 };
 
 // This used when saving the emails to disk.

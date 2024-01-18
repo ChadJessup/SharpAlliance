@@ -1,13 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using SharpAlliance.Core.Managers.VideoSurfaces;
+﻿using SharpAlliance.Core.Managers.VideoSurfaces;
 using SharpAlliance.Core.Screens;
-using SharpAlliance.Core.SubSystems;
+using SharpAlliance.Core.SubSystems.LaptopSubSystem;
 using SixLabors.ImageSharp;
-using static SharpAlliance.Core.EnglishText;
 
 namespace SharpAlliance.Core;
 
@@ -17,6 +11,9 @@ public partial class Globals
     public const int SPECK_QUOTE__ALREADY_TOLD_PLAYER_THAT_LARRY_RELAPSED = 0x00000001;
     public const int SPECK_QUOTE__SENT_EMAIL_ABOUT_LACK_OF_PAYMENT = 0x00000002;
 
+    public static int gusMercVideoSpeckSpeech;
+    public static bool gfMercVideoIsBeingDisplayed;
+    public static MERC_VIDEO gubCurrentMercVideoMode;
 
     // MERC site info
     public static int gubPlayersMercAccountStatus;
@@ -132,8 +129,8 @@ public partial class Globals
     public static int giCurrentSubPage;
     public static int guiCurrentLapTopCursor;
     public static int guiPreviousLapTopCursor;
-    public static int guiCurrentSidePanel; // the current navagation panel on the leftside of the laptop screen
-    public static int guiPreviousSidePanel;
+    public static LaptopPanel guiCurrentSidePanel; // the current navagation panel on the leftside of the laptop screen
+    public static LaptopPanel guiPreviousSidePanel;
     public static int guiVSurfaceSize;
     public static int iHighLightBookLine = -1;
     public static bool fFastLoadFlag = false;
@@ -267,7 +264,7 @@ public partial class Globals
     public static int[] gLaptopMinButton = new int[1];
     public static int[] gLaptopMinButtonImage = new int[1];
 
-    public static int[] gLaptopProgramStates = new int[(int)LAPTOP_PROGRAM.HISTORY + 1];
+    public static LAPTOP_PROGRAM_STATES[] gLaptopProgramStates = new LAPTOP_PROGRAM_STATES[(int)LAPTOP_PROGRAM.HISTORY + 1];
 
     // process of mazimizing
     public static bool fMaximizingProgram = false;
@@ -313,8 +310,8 @@ public partial class Globals
     public static MOUSE_REGION[] gBookmarkMouseRegions = new MOUSE_REGION[MAX_BOOKMARKS];
     public static MOUSE_REGION? pScreenMask;
     public static MOUSE_REGION? gLapTopProgramMinIcon;
-    public static MOUSE_REGION? gNewMailIconRegion;
-    public static MOUSE_REGION? gNewFileIconRegion;
+    public static MOUSE_REGION gNewMailIconRegion = new(nameof(gNewMailIconRegion));
+    public static MOUSE_REGION gNewFileIconRegion = new(nameof(gNewFileIconRegion));
 
     // highlighted mouse region
     public LaptopRegions giHighLightRegion = LaptopRegions.NO_REGION;

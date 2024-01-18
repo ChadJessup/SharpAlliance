@@ -93,7 +93,7 @@ public class PCXImageFileLoader : IImageFileLoader
         byte[] pPcxBuffer;
 
         // Open and read in the file
-        if ((hFileHandle = fileManager.FileOpen(pFilename, FileAccess.Read, false)) == Stream.Null)
+        if ((hFileHandle = fileManager.FileOpen(pFilename, FileAccess.Read)) == Stream.Null)
         { // damn we failed to open the file
             return null;
         }

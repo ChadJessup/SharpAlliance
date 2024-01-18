@@ -5,17 +5,12 @@ using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices;
 using System.Text;
-using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using SharpAlliance.Core.Interfaces;
 using SharpAlliance.Core.Managers;
-using SharpAlliance.Core.Managers.Image;
 using SharpAlliance.Core.Managers.VideoSurfaces;
 using SharpAlliance.Core.Screens;
-using SharpAlliance.Core.SubSystems;
-using SharpAlliance.Platform.Interfaces;
-
-using static SharpAlliance.Core.Globals;
+using SharpAlliance.Core.SubSystems.LaptopSubSystem.BobbyRSubSystem;
 
 namespace SharpAlliance.Core;
 
@@ -197,7 +192,7 @@ public class SaveLoadGame
         }
 
         // create the save game file
-        hFile = this.files.FileOpen(zSaveGameName, FileAccess.ReadWrite, false);
+        hFile = this.files.FileOpen(zSaveGameName, FileAccess.ReadWrite);
         if (!hFile.CanWrite)
         {
             goto FAILED_TO_SAVE;
@@ -745,7 +740,7 @@ public class SaveLoadGame
         this.CreateSavedGameFileNameFromNumber(ubSavedGameID, out string zSaveGameName);
 
         // open the save game file
-        hFile = this.files.FileOpen(zSaveGameName, FileAccess.Read, false);
+        hFile = this.files.FileOpen(zSaveGameName, FileAccess.Read);
         if (!hFile.CanRead)
         {
             this.files.FileClose(hFile);
@@ -2671,21 +2666,10 @@ public class SaveLoadGame
 
     bool SaveEmailToSavedGame(Stream hFile)
     {
-        int uiNumOfEmails = 0;
-        int uiSizeOfEmails = 0;
-        email? pEmail = pEmailList;
-        email? pTempEmail = null;
-        int cnt;
+        int uiNumOfEmails = pEmailList.Count;
         int uiStringLength = 0;
 
-        //loop through all the email to find out the total number
-        while (pEmail is not null)
-        {
-            pEmail = pEmail.Next;
-            uiNumOfEmails++;
-        }
-
-        uiSizeOfEmails = Marshal.SizeOf<email>() * uiNumOfEmails;
+        int uiSizeOfEmails = Marshal.SizeOf<email>() * uiNumOfEmails;
 
         //write the number of email messages
         this.files.FileWrite(hFile, uiNumOfEmails, Marshal.SizeOf<int>(), out int uiNumBytesWritten);
@@ -2694,11 +2678,10 @@ public class SaveLoadGame
             return false;
         }
 
-
         //loop trhough all the emails, add each one individually
-        pEmail = pEmailList;
-        for (cnt = 0; cnt < uiNumOfEmails; cnt++)
+        for (int cnt = 0; cnt < uiNumOfEmails; cnt++)
         {
+            var pEmail = pEmailList[cnt];
             //Get the strng length of the subject
             uiStringLength = (wcslen(pEmail.pSubject) + 1) * 2;
 
@@ -2733,7 +2716,6 @@ public class SaveLoadGame
             SavedEmail.uiFifthData = pEmail.uiFifthData;
             SavedEmail.uiSixData = pEmail.uiSixData;
 
-
             // write the email header to the saved game file
             this.files.FileWrite(hFile, SavedEmail, Marshal.SizeOf<SavedEmailStruct>(), out uiNumBytesWritten);
             if (uiNumBytesWritten != Marshal.SizeOf<SavedEmailStruct>())
@@ -2742,7 +2724,6 @@ public class SaveLoadGame
             }
 
             //advance to the next email
-            pEmail = pEmail.Next;
         }
 
         return true;
@@ -2753,24 +2734,15 @@ public class SaveLoadGame
     {
         int uiNumOfEmails = 0;
         int uiSizeOfSubject = 0;
-        email pEmail = pEmailList;
-        email? pTempEmail = null;
-        string pData = null;
-        int cnt;
+        var pEmail = pEmailList;
         SavedEmailStruct SavedEmail = new();
 
         //Delete the existing list of emails
         Emails.ShutDownEmailList();
 
-        pEmailList = null;
+        pEmailList.Clear();
         //Allocate memory for the header node
-        pEmailList = new(); //MemAlloc(Marshal.SizeOf<email>());
-        if (pEmailList == null)
-        {
-            return false;
-        }
-
-        //        memset(pEmailList, 0, Marshal.SizeOf<email>());
+        pEmailList = [];
 
         //read in the number of email messages
         this.files.FileRead(hFile, ref uiNumOfEmails, Marshal.SizeOf<int>(), out int uiNumBytesRead);
@@ -2781,7 +2753,7 @@ public class SaveLoadGame
 
         //loop through all the emails, add each one individually
         pEmail = pEmailList;
-        for (cnt = 0; cnt < uiNumOfEmails; cnt++)
+        for (int cnt = 0; cnt < uiNumOfEmails; cnt++)
         {
             //get the length of the email subject
             this.files.FileRead(hFile, ref uiSizeOfSubject, Marshal.SizeOf<int>(), out uiNumBytesRead);
@@ -2791,16 +2763,9 @@ public class SaveLoadGame
             }
 
             //allocate space for the subject
-            pData = string.Empty; //MemAlloc(EMAIL_SUBJECT_LENGTH * Marshal.SizeOf<wchar_t>());
-            if (pData == null)
-            {
-                return false;
-            }
-
-//            memset(pData, 0, EMAIL_SUBJECT_LENGTH * Marshal.SizeOf<wchar_t>());
-
+            byte[] pData = new byte[Emails.SUBJECT_LENGTH * sizeof(char)];
             //Get the subject
-//            files.FileRead(hFile, ref pData, uiSizeOfSubject, out uiNumBytesRead);
+            files.FileRead(hFile, ref pData, uiSizeOfSubject, out uiNumBytesRead);
             if (uiNumBytesRead != uiSizeOfSubject)
             {
                 return false;
@@ -2818,13 +2783,7 @@ public class SaveLoadGame
             //
 
             //if we havent allocated space yet
-            pTempEmail = new(); //MemAlloc(Marshal.SizeOf<Email>());
-            if (pTempEmail == null)
-            {
-                return false;
-            }
-
-//            memset(pTempEmail, 0, Marshal.SizeOf<Email>());
+            email pTempEmail = new();
 
             pTempEmail.usOffset = SavedEmail.usOffset;
             pTempEmail.usLength = SavedEmail.usLength;
@@ -2833,7 +2792,7 @@ public class SaveLoadGame
             pTempEmail.iId = SavedEmail.iId;
             pTempEmail.fRead = SavedEmail.fRead;
             pTempEmail.fNew = SavedEmail.fNew;
-            pTempEmail.pSubject = pData;
+            pTempEmail.pSubject = Encoding.ASCII.GetString(pData);
             pTempEmail.iFirstData = SavedEmail.iFirstData;
             pTempEmail.uiSecondData = SavedEmail.uiSecondData;
             pTempEmail.iThirdData = SavedEmail.iThirdData;
@@ -2841,31 +2800,19 @@ public class SaveLoadGame
             pTempEmail.uiFifthData = SavedEmail.uiFifthData;
             pTempEmail.uiSixData = SavedEmail.uiSixData;
 
-
-            //add the current email in
-            pEmail.Next = pTempEmail;
-            pTempEmail.Prev = pEmail;
-
-            //moved to the next email
-            pEmail = pEmail.Next;
-
 //            AddMessageToPages(pTempEmail.iId);
 
         }
 
         //if there are emails
-        if (cnt > 0)
+        if (pEmailList.Any())
         {
             //the first node of the LL was a dummy, node,get rid  of it
-            pTempEmail = pEmailList;
-            pEmailList = pEmailList.Next;
-            pEmailList.Prev = null;
-            MemFree(pTempEmail);
+            pEmailList.RemoveAt(0);
         }
         else
         {
-            MemFree(pEmailList);
-            pEmailList = null;
+            pEmailList.Clear();
         }
 
         return true;

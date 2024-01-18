@@ -30,9 +30,9 @@ public interface IVideoManager : ISharpAllianceManager
     HVOBJECT GetVideoObject(string assetPath);
     HVOBJECT GetVideoObject(string image, out string key);
     bool DrawTextToScreen(string text, int x, int y, int width, FontStyle fontStyle, FontColor fontColorForeground, FontColor fontColorBackground, TextJustifies justification);
-    bool GetVideoSurface(out HVSURFACE hSrcVSurface, SurfaceType uiTempMap);
-    void GetVSurfacePaletteEntries(HVSURFACE hSrcVSurface, List<SGPPaletteEntry> pPalette);
-    ushort?[] Create16BPPPaletteShaded(List<SGPPaletteEntry> pPalette, int redScale, int greenScale, int blueScale, bool mono);
+    Image<Rgba32> GetVideoSurface(out HVSURFACE hSrcVSurface, SurfaceType uiTempMap);
+    Rgba32[] GetVSurfacePaletteEntries(HVOBJECT hSrcVSurface);
+    Rgba32[] Create16BPPPaletteShaded(Rgba32[] pPalette, int redScale, int greenScale, int blueScale, bool mono);
     void DeleteVideoSurfaceFromIndex(SurfaceType uiTempMap);
     void DeleteVideoObjectFromIndex(string logoKey);
     void RestoreBackgroundRects();

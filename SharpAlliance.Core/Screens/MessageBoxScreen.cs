@@ -5,6 +5,7 @@ using Microsoft.Extensions.Logging;
 using SharpAlliance.Core.Interfaces;
 using SharpAlliance.Core.Managers;
 using SharpAlliance.Core.Managers.VideoSurfaces;
+using SharpAlliance.Core.SubSystems.LaptopSubSystem;
 using SixLabors.ImageSharp;
 using SixLabors.ImageSharp.PixelFormats;
 

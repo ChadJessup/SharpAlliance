@@ -1,21 +1,24 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Threading.Tasks;
+using Microsoft.Extensions.Logging;
 using SharpAlliance.Core.Interfaces;
 using SharpAlliance.Core.Managers;
-using SharpAlliance.Platform;
-using Veldrid;
-
-using static SharpAlliance.Core.Globals;
+using SharpAlliance.Core.SubSystems.LaptopSubSystem;
 
 namespace SharpAlliance.Core.Screens;
 
 public class LaptopScreen : IScreen
 {
+    private readonly ILogger<LaptopScreen> logger;
+    private readonly Laptop laptop;
+
     public bool IsInitialized { get; set; }
     public ScreenState State { get; set; }
+
+    public LaptopScreen(ILogger<LaptopScreen> logger, Laptop laptop)
+    {
+        this.logger = logger;
+        this.laptop = laptop;
+    }
 
     public ValueTask Activate()
     {
@@ -29,14 +32,11 @@ public class LaptopScreen : IScreen
 
     public ValueTask<bool> Initialize()
     {
+        Laptop.LaptopScreenInit();
         return ValueTask.FromResult(true);
     }
 
     public void Dispose()
-    {
-    }
-
-    public void Draw(IVideoManager videoManager)
     {
     }
 

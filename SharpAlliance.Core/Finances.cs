@@ -2,12 +2,10 @@
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using SharpAlliance.Core.Interfaces;
 using SharpAlliance.Core.Managers.VideoSurfaces;
+using SharpAlliance.Core.SubSystems.LaptopSubSystem;
 
 namespace SharpAlliance.Core;
 
@@ -1057,7 +1055,7 @@ public class Finances
             return;
 
         // open file
-        hFileHandle = files.FileOpen(FINANCES_DATA_FILE, FileAccess.Read, false);
+        hFileHandle = files.FileOpen(FINANCES_DATA_FILE, FileAccess.Read);
 
         // make sure file is more than 0 length
         if (files.FileGetSize(hFileHandle) == 0)
@@ -1520,7 +1518,7 @@ public class Finances
 
 
         // open file
-        hFileHandle = files.FileOpen(FINANCES_DATA_FILE, FileAccess.Write, false);
+        hFileHandle = files.FileOpen(FINANCES_DATA_FILE, FileAccess.Write, FileMode.OpenOrCreate);
 
         // write balance to disk
         files.FileWrite(hFileHandle, (LaptopSaveInfo.iCurrentBalance), sizeof(int), out var _);
@@ -1541,9 +1539,9 @@ public class Finances
         int iBytesRead = 0;
 
         // open file
-        hFileHandle = files.FileOpen(FINANCES_DATA_FILE, FileAccess.Read, false);
+        hFileHandle = files.FileOpen(FINANCES_DATA_FILE, FileAccess.Read);
 
-        if (hFileHandle.Position == 0)
+        if (hFileHandle == Stream.Null)
         {
             LaptopSaveInfo.iCurrentBalance = 0;
             return;
@@ -1573,7 +1571,7 @@ public class Finances
 
 
         // open file
-        hFileHandle = files.FileOpen(FINANCES_DATA_FILE, FileAccess.Write, false);
+        hFileHandle = files.FileOpen(FINANCES_DATA_FILE, FileAccess.Write);
 
         // go to the end
         if (files.FileSeek(hFileHandle, 0, SeekOrigin.End) == false)
@@ -1611,7 +1609,7 @@ public class Finances
             return 0;
 
         // open file
-        hFileHandle = files.FileOpen(FINANCES_DATA_FILE, FileAccess.Read, false);
+        hFileHandle = files.FileOpen(FINANCES_DATA_FILE, FileAccess.Read);
 
         // make sure file is more than balance size + length of 1 record - 1 byte
         if (files.FileGetSize(hFileHandle) < sizeof(int) + sizeof(uint) + sizeof(byte) + sizeof(byte) + sizeof(int))
@@ -1642,7 +1640,7 @@ public class Finances
             return;
 
         // open file
-        hFileHandle = files.FileOpen(FINANCES_DATA_FILE, FileAccess.Read, false);
+        hFileHandle = files.FileOpen(FINANCES_DATA_FILE, FileAccess.Read);
 
         // make sure file is more than 0 length
         if (files.FileGetSize(hFileHandle) == 0)
@@ -1736,7 +1734,7 @@ public class Finances
             return (false);
 
         // open file
-        hFileHandle = files.FileOpen(FINANCES_DATA_FILE, FileAccess.Read, false);
+        hFileHandle = files.FileOpen(FINANCES_DATA_FILE, FileAccess.Read);
 
         // make sure file is more than 0 length
         if (files.FileGetSize(hFileHandle) == 0)
@@ -1909,7 +1907,7 @@ public class Finances
             return 0;
 
         // open file
-        hFileHandle = files.FileOpen(FINANCES_DATA_FILE, FileAccess.Read, false);
+        hFileHandle = files.FileOpen(FINANCES_DATA_FILE, FileAccess.Read);
 
         if (files.FileGetSize(hFileHandle) < sizeof(int) + sizeof(uint) + sizeof(byte) + sizeof(byte) + sizeof(int))
         {
@@ -1955,7 +1953,7 @@ public class Finances
             return 0;
 
         // open file
-        hFileHandle = files.FileOpen(FINANCES_DATA_FILE, FileAccess.Read, false);
+        hFileHandle = files.FileOpen(FINANCES_DATA_FILE, FileAccess.Read);
 
         // start at the end, move back until Date / 24 * 60 on the record is =  ( iDateInMinutes /  ( 24 * 60 ) ) - 2
         iByteCount += sizeof(int);
@@ -2040,7 +2038,7 @@ public class Finances
             return 0;
 
         // open file
-        hFileHandle = files.FileOpen(FINANCES_DATA_FILE, FileAccess.Read, false);
+        hFileHandle = files.FileOpen(FINANCES_DATA_FILE, FileAccess.Read);
 
         // start at the end, move back until Date / 24 * 60 on the record is =  ( iDateInMinutes /  ( 24 * 60 ) ) - 2
         iByteCount += sizeof(int);
@@ -2113,7 +2111,7 @@ public class Finances
             return 0;
 
         // open file
-        hFileHandle = files.FileOpen(FINANCES_DATA_FILE, FileAccess.Read, false);
+        hFileHandle = files.FileOpen(FINANCES_DATA_FILE, FileAccess.Read);
 
         // start at the end, move back until Date / 24 * 60 on the record is =  ( iDateInMinutes /  ( 24 * 60 ) ) - 2
         iByteCount += sizeof(int);
@@ -2205,7 +2203,7 @@ public class Finances
             return 0;
 
         // open file
-        hFileHandle = files.FileOpen(FINANCES_DATA_FILE, FileAccess.Read, false);
+        hFileHandle = files.FileOpen(FINANCES_DATA_FILE, FileAccess.Read);
 
         // start at the end, move back until Date / 24 * 60 on the record is =  ( iDateInMinutes /  ( 24 * 60 ) ) - 2
         iByteCount += sizeof(int);
@@ -2328,7 +2326,7 @@ public class Finances
             return 0;
 
         // open file
-        hFileHandle = files.FileOpen(FINANCES_DATA_FILE, FileAccess.Read, false);
+        hFileHandle = files.FileOpen(FINANCES_DATA_FILE, FileAccess.Read);
 
         // start at the end, move back until Date / 24 * 60 on the record is =  ( iDateInMinutes /  ( 24 * 60 ) ) - 2
         iByteCount += sizeof(int);
@@ -2417,7 +2415,7 @@ public class Finances
             return 0;
 
         // open file
-        hFileHandle = files.FileOpen(FINANCES_DATA_FILE, FileAccess.Read, false);
+        hFileHandle = files.FileOpen(FINANCES_DATA_FILE, FileAccess.Read);
 
         // start at the end, move back until Date / 24 * 60 on the record is =  ( iDateInMinutes /  ( 24 * 60 ) ) - 2
         iByteCount += sizeof(int);
@@ -2508,7 +2506,7 @@ public class Finances
         }
 
         // open file
-        hFileHandle = files.FileOpen(FINANCES_DATA_FILE, FileAccess.Read, false);
+        hFileHandle = files.FileOpen(FINANCES_DATA_FILE, FileAccess.Read);
 
         files.FileSeek(hFileHandle, 0, SeekOrigin.Begin);
         files.FileRead(hFileHandle, ref LaptopSaveInfo.iCurrentBalance, sizeof(int), out iBytesRead);

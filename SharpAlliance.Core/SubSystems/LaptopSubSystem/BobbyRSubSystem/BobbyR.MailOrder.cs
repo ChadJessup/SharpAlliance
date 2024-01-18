@@ -1,10 +1,14 @@
-﻿using System;
-using static SharpAlliance.Core.Globals;
+﻿namespace SharpAlliance.Core.SubSystems.LaptopSubSystem.BobbyRSubSystem;
 
-namespace SharpAlliance.Core;
-
-public class BobbyRMailOrder
+public partial class BobbyR
 {
+    public static void GameInitBobbyRMailOrder()
+    {
+        gubSelectedLight = 0;
+
+        gpNewBobbyrShipments.Clear();
+        giNumberOfNewBobbyRShipment = 0;
+    }
 }
 
 public struct BobbyROrderLocationStruct

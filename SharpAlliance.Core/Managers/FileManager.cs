@@ -1,9 +1,11 @@
 ﻿using System;
 using System.IO;
 using System.Linq;
+using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using System.Threading.Tasks;
 using SharpAlliance.Core.Interfaces;
+using SharpAlliance.Core.Managers.Library;
 
 namespace SharpAlliance.Core.Managers;
 
@@ -33,7 +35,7 @@ public class FileManager : IFileManager
         return ValueTask.FromResult(true);
     }
 
-    public Stream FileOpen(string strFilename, FileAccess uiOptions, bool fDeleteOnClose = false)
+    public Stream FileOpen(string strFilename, FileAccess uiOptions, FileMode fileMode = FileMode.Open, bool fDeleteOnClose = false)
     {
         Stream hFile = Stream.Null;
         FileStream? realFileStream = null;
@@ -69,13 +71,12 @@ public class FileManager : IFileManager
         }
 
         //if the file is on the disk
-        if (false)
+        if (fExists)
         {
             realFileStream = File.Open(
                 strFilename,
-                FileMode.Open,
-                FileAccess.Read,
-                FileShare.Read);
+                fileMode,
+                uiOptions);
 
             if (!realFileStream.SafeFileHandle.IsInvalid)
             {
@@ -98,68 +99,41 @@ public class FileManager : IFileManager
             //if the file doesnt exist on the harddrive, but it is to be created, dont try to load it from the file database
             if (uiOptions.HasFlag(FileAccess.Write))
             {
-                return Stream.Null;
-            }
-
-            //If the file is in the library, get the stream to it.
-            hLibFile = library.OpenFileFromLibrary(strFilename);
-            //tried to open a file that wasnt in the database
-            if (!hLibFile.CanRead)
-            {
-                return Stream.Null;
+                hFile = Stream.Null;
             }
             else
             {
-                return hLibFile;      //return the file handle
+                //If the file is in the library, get the stream to it.
+                hLibFile = library.OpenFileFromLibrary(strFilename);
+                //tried to open a file that wasnt in the database
+
+                if (!hLibFile.CanRead)
+                {
+                    return Stream.Null;
+                }
+                else
+                {
+                    return hLibFile;      //return the file handle
+                }
             }
         }
 
-        // if (!hFile.CanRead)
-        // {
-        //     if (uiOptions & FILE_CREATE_NEW)
-        //     {
-        //         dwCreationFlags = CREATE_NEW;
-        //     }
-        //     else if (uiOptions & FILE_CREATE_ALWAYS)
-        //     {
-        //         dwCreationFlags = CREATE_ALWAYS;
-        //     }
-        //     else if (uiOptions & FILE_OPEN_EXISTING || uiOptions & FILE_ACCESS_READ)
-        //     {
-        //         dwCreationFlags = OPEN_EXISTING;
-        //     }
-        //     else if (uiOptions & FILE_OPEN_ALWAYS)
-        //     {
-        //         dwCreationFlags = OPEN_ALWAYS;
-        //     }
-        //     else if (uiOptions & FILE_TRUNCATE_EXISTING)
-        //     {
-        //         dwCreationFlags = TRUNCATE_EXISTING;
-        //     }
-        //     else
-        //     {
-        //         dwCreationFlags = OPEN_ALWAYS;
-        //     }
-        // 
-        // 
-        //     hRealFile = CreateFile(strFilename, dwAccess, 0, null, dwCreationFlags,
-        //                                     dwFlagsAndAttributes, null);
-        //     if (hRealFile == INVALID_HANDLE_VALUE)
-        //     {
-        //         //int uiLastError = GetLastError();
-        //         string zString;
-        //         // FormatMessage(FORMAT_MESSAGE_FROM_SYSTEM, 0, uiLastError, 0, zString, 1024, null);
-        // 
-        //         return Stream.Null;
-        //     }
-        // 
-        //     hFile = CreateRealFileHandle(hRealFile);
-        // }
-
-        if (!hFile.CanRead)
+        if (hFile == Stream.Null)
         {
-            return Stream.Null;
+            Directory.CreateDirectory(System.IO.Path.GetDirectoryName(strFilename));
+            realFileStream = File.Open(strFilename, fileMode, uiOptions);
+
+            if (realFileStream.SafeFileHandle.IsInvalid)
+            {
+                //int uiLastError = GetLastError();
+                string zString;
+                // FormatMessage(FORMAT_MESSAGE_FROM_SYSTEM, 0, uiLastError, 0, zString, 1024, null);
+
+                return Stream.Null;
+            }
         }
+
+        this.AddToOpenFile(realFileStream!);
 
         return realFileStream;
     }
@@ -180,6 +154,16 @@ public class FileManager : IFileManager
 
     public void FileClose(Stream fptr)
     {
+        var openFiles = gFileDataBase.RealFiles.pRealFilesOpen
+            .Where(fo => fo.Stream == fptr)
+            .ToList();
+
+        foreach (var openFile in openFiles)
+        {
+            gFileDataBase.RealFiles.pRealFilesOpen.Remove(openFile);
+            openFile.Stream.Flush();
+            openFile.Stream.Close();
+        }
     }
 
     private const int ROTATION_ARRAY_SIZE = 46;
@@ -305,7 +289,7 @@ public class FileManager : IFileManager
     {
         pDestString = string.Empty;
 
-        using var stream = this.FileOpen(pFileName, FileAccess.Read, false);
+        var stream = this.FileOpen(pFileName, FileAccess.Read);
         if (stream is null)
         {
             // DebugMsg(TOPIC_JA2, DBG_LEVEL_3, "LoadEncryptedDataFromFile: Failed to FileOpen");
@@ -356,7 +340,18 @@ public class FileManager : IFileManager
 
     public void FileWrite<T>(Stream stream, T value, int size, out int bytesWritten)
     {
-        bytesWritten = size;
+        if (!stream.CanWrite)
+        {
+            throw new FieldAccessException($"Unable to write to file stream");
+        }
+
+        Span<byte> buff = new byte[size];
+        var buffer = System.Text.Json.JsonSerializer.SerializeToUtf8Bytes(value);
+
+        using var bw = new BinaryWriter(stream, System.Text.Encoding.Default, leaveOpen: true);
+        bw.Write(buffer);
+
+        bytesWritten = buffer.Length;
     }
 
     public FileAttributes FileGetAttributes(string filePath) => File.GetAttributes(filePath);

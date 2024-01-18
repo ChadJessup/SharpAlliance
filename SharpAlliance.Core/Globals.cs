@@ -223,8 +223,8 @@ public partial class Globals
     public static bool AM_AN_EPC(SOLDIERTYPE p) => (p.ubProfile == NO_PROFILE) ? false : gMercProfiles[p.ubProfile].ubMiscFlags.HasFlag(PROFILE_MISC_FLAG.EPCACTIVE);
     public static bool AM_A_ROBOT(SOLDIERTYPE p) => (p.ubProfile == NO_PROFILE) ? false : (gMercProfiles[p.ubProfile].ubBodyType == SoldierBodyTypes.ROBOTNOWEAPON);
 
-    public static email? pEmailList;
-    public static PagePtr? pPageList;
+    public static List<email> pEmailList = [];
+    public static List<PagePtr> pPageList = [];
     public static int iLastPage = -1;
     public static int iCurrentPage = 0;
 

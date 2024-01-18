@@ -1,16 +1,14 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Diagnostics;
 using Microsoft.Extensions.Logging;
 using SharpAlliance.Core.Interfaces;
 using SharpAlliance.Core.Managers;
 using SharpAlliance.Core.Managers.VideoSurfaces;
-using SharpAlliance.Core.SubSystems;
-using static SharpAlliance.Core.EnglishText;
-using static SharpAlliance.Core.Globals;
 
-namespace SharpAlliance.Core;
+namespace SharpAlliance.Core.SubSystems.LaptopSubSystem.BobbyRSubSystem;
 
-public class BobbyR
+public partial class BobbyR
 {
     public BobbyR(
         ILogger<BobbyR> logger,
@@ -407,7 +405,7 @@ public class BobbyR
             fReDrawBookMarkInfo = true;
         }
 
-        if (((uiCurTime - uiLastTime) > BOBBYR_UNDERCONSTRUCTION_ANI_DELAY) || fReDrawScreenFlag)
+        if (uiCurTime - uiLastTime > BOBBYR_UNDERCONSTRUCTION_ANI_DELAY || fReDrawScreenFlag)
         {
             // The undercontsruction graphic 
             hPixHandle = null; // this.video.GetVideoObject(guiUnderConstructionImage);
@@ -459,7 +457,7 @@ public class BobbyR
         for (i = 0; i < Items.MAXITEMS; i++)
         {
             //if Bobby Ray sells this, it can be sold, and it's allowed into this game (some depend on e.g. gun-nut option)
-            if ((storeInventory[(int)i, (int)BOBBY_RAY.NEW] != 0) && !Item[i].fFlags.HasFlag(ItemAttributes.ITEM_NOT_BUYABLE) && ItemSubSystem.ItemIsLegal(i))
+            if (storeInventory[(int)i, (int)BOBBY_RAY.NEW] != 0 && !Item[i].fFlags.HasFlag(ItemAttributes.ITEM_NOT_BUYABLE) && ItemSubSystem.ItemIsLegal(i))
             {
                 LaptopSaveInfo.BobbyRayInventory.Add(new());
                 LaptopSaveInfo.BobbyRayInventory[usBobbyrIndex].usItemIndex = i;
@@ -499,9 +497,9 @@ public class BobbyR
         for (i = 0; i < Items.MAXITEMS; i++)
         {
             //if Bobby Ray sells this, it can be sold, and it's allowed into this game (some depend on e.g. gun-nut option)
-            if ((storeInventory[(int)i, (int)BOBBY_RAY.USED] != 0) && !Item[i].fFlags.HasFlag(ItemAttributes.ITEM_NOT_BUYABLE) && ItemSubSystem.ItemIsLegal(i))
+            if (storeInventory[(int)i, (int)BOBBY_RAY.USED] != 0 && !Item[i].fFlags.HasFlag(ItemAttributes.ITEM_NOT_BUYABLE) && ItemSubSystem.ItemIsLegal(i))
             {
-                if ((storeInventory[(int)i, (int)BOBBY_RAY.USED] != 0) && !Item[i].fFlags.HasFlag(ItemAttributes.ITEM_NOT_BUYABLE) && ItemSubSystem.ItemIsLegal(i))
+                if (storeInventory[(int)i, (int)BOBBY_RAY.USED] != 0 && !Item[i].fFlags.HasFlag(ItemAttributes.ITEM_NOT_BUYABLE) && ItemSubSystem.ItemIsLegal(i))
                 {
                     // in case his store inventory list is wrong, make sure this category of item can be sold used
                     if (ArmsDealerInit.CanDealerItemBeSoldUsed(i))
@@ -558,7 +556,7 @@ public class BobbyR
             if (LaptopSaveInfo.BobbyRayInventory[i].ubQtyOnOrder == 0)
             {
                 //if the qty on hand is half the desired amount or fewer
-                if (LaptopSaveInfo.BobbyRayInventory[i].ubQtyOnHand <= (storeInventory[(int)usItemIndex, (int)BOBBY_RAY.NEW] / 2))
+                if (LaptopSaveInfo.BobbyRayInventory[i].ubQtyOnHand <= storeInventory[(int)usItemIndex, (int)BOBBY_RAY.NEW] / 2)
                 {
                     // remember value of the "previously eligible" flag
                     fPrevElig = LaptopSaveInfo.BobbyRayInventory[i].fPreviouslyEligible;
@@ -707,7 +705,7 @@ public class BobbyR
             usItemIndex -= BOBBY_R_USED_PURCHASE_OFFSET;
             pInventoryArray = LaptopSaveInfo.BobbyRayUsedInventory;
             fUsed = BOBBY_RAY.USED;
-            ubItemQuality = 20 + (int)Globals.Random.Next(60);
+            ubItemQuality = 20 + Globals.Random.Next(60);
         }
         else
         {
@@ -786,6 +784,10 @@ public class BobbyR
         // do an extra daily update immediately to create new reorders ASAP
         this.DailyUpdateOfBobbyRaysNewInventory();
         this.DailyUpdateOfBobbyRaysUsedInventory();
+    }
+
+    public static void GameInitBobbyR()
+    {
     }
 }
 

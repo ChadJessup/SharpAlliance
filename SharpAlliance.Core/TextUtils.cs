@@ -47,7 +47,7 @@ public class TextUtils
 
     private string LoadShortNameItemInfo(ushort ubIndex)
     {
-        using var stream = this.files.FileOpen(ITEMSTRINGFILENAME, FileAccess.Read, false);
+        using var stream = this.files.FileOpen(ITEMSTRINGFILENAME, FileAccess.Read);
 
         // Get current mercs bio info
         int uiStartSeekAmount = ((SIZE_SHORT_ITEM_NAME + SIZE_ITEM_NAME + SIZE_ITEM_INFO) * ubIndex);
@@ -64,7 +64,7 @@ public class TextUtils
 
     private (string itemName, string shortItemName, string itemDescription) LoadItemInfo(ushort ubIndex)
     {
-        using var stream = this.files.FileOpen(ITEMSTRINGFILENAME, FileAccess.Read, false);
+        using var stream = this.files.FileOpen(ITEMSTRINGFILENAME, FileAccess.Read);
 
         // Get current mercs bio info
         int uiStartSeekAmount = ((SIZE_SHORT_ITEM_NAME + SIZE_ITEM_NAME + SIZE_ITEM_INFO) * ubIndex);

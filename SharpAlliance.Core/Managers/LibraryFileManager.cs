@@ -403,6 +403,11 @@ public class LibraryFileManager : ILibraryManager
                 //			FastDebugMsg(String("\n*******\nOpenFileFromLibrary():  Warning!:  Trying to load file '%s' from the library '%s' which already has a file open ( file open is '%s')\n", pName, gGameLibaries[ sLibraryID ].sLibraryName, gFileDataBase.pLibraries[ sLibraryID ].pOpenFiles[ gFileDataBase.pLibraries[ sLibraryID ].uiIdOfOtherFileAlreadyOpenedLibrary ].pFileHeader.pFileName ) );
             }
 
+            if(sLibraryID == LibraryNames.BINARY_DATA)
+            {
+
+            }
+
             //check if the file is already open
             if (this.CheckIfFileIsAlreadyOpen(pName, sLibraryID))
             {

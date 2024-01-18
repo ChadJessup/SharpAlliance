@@ -1588,13 +1588,14 @@ public class SDL2VideoManager : IVideoManager
         return true;
     }
 
-    public void GetVSurfacePaletteEntries(HVSURFACE hSrcVSurface, List<SGPPaletteEntry> pPalette)
+    public Rgba32[] GetVSurfacePaletteEntries(HVOBJECT hSrcVSurface)
     {
+        return hSrcVSurface.Palette;
     }
 
-    public ushort?[] Create16BPPPaletteShaded(List<SGPPaletteEntry> pPalette, int redScale, int greenScale, int blueScale, bool mono)
+    public Rgba32[] Create16BPPPaletteShaded(Rgba32[] pPalette, int redScale, int greenScale, int blueScale, bool mono)
     {
-        ushort?[] p16BPPPalette = new ushort?[256];
+        Rgba32[] p16BPPPalette = new Rgba32[256];
         ushort r16, g16, b16, usColor;
         int cnt;
         uint lumin;
@@ -1607,16 +1608,16 @@ public class SDL2VideoManager : IVideoManager
         {
             if (mono)
             {
-                lumin = (uint)(pPalette[cnt].peRed * 299 / 1000) + (uint)(pPalette[cnt].peGreen * 587 / 1000) + (uint)(pPalette[cnt].peBlue * 114 / 1000);
+                lumin = (uint)(pPalette[cnt].R * 299 / 1000) + (uint)(pPalette[cnt].G * 587 / 1000) + (uint)(pPalette[cnt].B * 114 / 1000);
                 rmod = (uint)(redScale * lumin) / 256;
                 gmod = (uint)(greenScale * lumin) / 256;
                 bmod = (uint)(blueScale * lumin) / 256;
             }
             else
             {
-                rmod = (uint)(redScale * pPalette[cnt].peRed / 256);
-                gmod = (uint)(greenScale * pPalette[cnt].peGreen / 256);
-                bmod = (uint)(blueScale * pPalette[cnt].peBlue / 256);
+                rmod = (uint)(redScale * pPalette[cnt].R / 256);
+                gmod = (uint)(greenScale * pPalette[cnt].G / 256);
+                bmod = (uint)(blueScale * pPalette[cnt].B / 256);
             }
 
             r = (byte)Math.Min(rmod, 255);
@@ -1666,7 +1667,7 @@ public class SDL2VideoManager : IVideoManager
                 usColor |= gusAlphaMask;
             }
 
-            p16BPPPalette[cnt] = usColor;
+            p16BPPPalette[cnt] = new Rgba32(usColor);
         }
 
         return (p16BPPPalette);
@@ -1965,7 +1966,7 @@ public class SDL2VideoManager : IVideoManager
             {
                 if (hVObject.pShades[x] != null)
                 {
-                    f16BitPal = hVObject.pShades[x] == hVObject.p16BPPPalette;
+                    f16BitPal = hVObject.pShades[x] == hVObject.Palette;
 
                     MemFree(hVObject.pShades[x]);
                     hVObject.pShades[x] = null;
@@ -2024,11 +2025,11 @@ public class SDL2VideoManager : IVideoManager
     {
     }
 
-    public bool GetVideoSurface(out HVSURFACE hSrcVSurface, SurfaceType uiTempMap)
+    public Image<Rgba32> GetVideoSurface(out HVSURFACE hSrcVSurface, SurfaceType uiTempMap)
     {
         hSrcVSurface = new();
 
-        return true;
+        return this.Surfaces[uiTempMap];
     }
 
     public void ClearElements()

@@ -346,16 +346,8 @@ public class VideoSurfaceManager //: IVideoSurfaceManager
 
     public static bool BltVideoSurface(SurfaceType uiDestVSurface, SurfaceType uiSrcVSurface, int usRegionIndex, int iDestX, int iDestY, BlitTypes fBltFlags, blt_vs_fx? pBltFx)
     {
-
-        if (!video.GetVideoSurface(out HVSURFACE hDestVSurface, uiDestVSurface))
-        {
-            return false;
-        }
-
-        if (!video.GetVideoSurface(out HVSURFACE hSrcVSurface, uiSrcVSurface))
-        {
-            return false;
-        }
+        video.GetVideoSurface(out HVSURFACE hDestVSurface, uiDestVSurface);
+        video.GetVideoSurface(out HVSURFACE hSrcVSurface, uiSrcVSurface);
 
         //if (!BltVideoSurfaceToVideoSurface(hDestVSurface, hSrcVSurface, usRegionIndex, iDestX, iDestY, fBltFlags, pBltFx))
         //{ // VO Blitter will set debug messages for error conditions

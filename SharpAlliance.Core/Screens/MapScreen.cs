@@ -4,9 +4,7 @@ using System.Diagnostics;
 using System.Threading.Tasks;
 using SharpAlliance.Core.Interfaces;
 using SharpAlliance.Core.Managers;
-using SharpAlliance.Core.SubSystems;
-using Veldrid;
-using static System.Runtime.InteropServices.JavaScript.JSType;
+
 using static SharpAlliance.Core.Globals;
 
 namespace SharpAlliance.Core.Screens;
@@ -22,6 +20,8 @@ public class MapScreen : IScreen
     private static bool[] fSelectedListOfMercsForMapScreen = new bool[MAX_CHARACTER_COUNT];
     private static MOUSE_REGION? gMapScreenMaskRegion;
     private static bool fCheckCursorWasSet;
+    private static bool gfInChangeArrivalSectorMode;
+    private static bool gfInConfirmMapMoveMode;
 
     public MapScreen(
         MapScreenInterfaceMap mapScreenInterfaceMap,
@@ -258,7 +258,7 @@ public class MapScreen : IScreen
         MapScreen.SetUpCursorForStrategicMap();
 
         // restore glow region
-        RestoreBackgroundForDestinationGlowRegionList();
+        MapScreenInterface.RestoreBackgroundForDestinationGlowRegionList();
 
         // we might be on the map, redraw to remove old path stuff
         fMapPanelDirty = true;
@@ -269,12 +269,12 @@ public class MapScreen : IScreen
 
     private static void SetUpCursorForStrategicMap()
     {
-        if (gfInChangeArrivalSectorMode == false)
+        if (MapScreen.gfInChangeArrivalSectorMode == false)
         {
             // check if character is in destination plotting mode
-            if (fPlotForHelicopter == false)
+            if (MapScreenHelicopter.fPlotForHelicopter == false)
             {
-                if (bSelectedDestChar == -1)
+                if (MapScreenInterfaceMap.bSelectedDestChar == -1)
                 {
                     // no plot mode, reset cursor to normal
                     ChangeMapScreenMaskCursor(CURSOR.NORMAL);
@@ -282,9 +282,9 @@ public class MapScreen : IScreen
                 else    // yes - by character
                 {
                     // set cursor based on foot or vehicle
-                    if ((Menptr[gCharactersList[bSelectedDestChar].usSolID].bAssignment != Assignments.VEHICLE) && !(Menptr[gCharactersList[MapScreenInterfaceMap.bSelectedDestChar].usSolID].uiStatusFlags.HasFlag(SOLDIER.VEHICLE)))
+                    if ((Menptr[gCharactersList[MapScreenInterfaceMap.bSelectedDestChar].usSolID].bAssignment != Assignments.VEHICLE) && !(Menptr[gCharactersList[MapScreenInterfaceMap.bSelectedDestChar].usSolID].uiStatusFlags.HasFlag(SOLDIER.VEHICLE)))
                     {
-                        ChangeMapScreenMaskCursor(CURSOR.TRATEGIC_FOOT);
+                        ChangeMapScreenMaskCursor(CURSOR.STRATEGIC_FOOT);
                     }
                     else
                     {
@@ -321,16 +321,16 @@ public class MapScreen : IScreen
 
         if (usCursor == CURSOR.NORMAL)
         {
-            if (!InItemStackPopup())
+            if (!InterfaceItems.InItemStackPopup())
             {
                 // cancel mouse restriction
-                FreeMouseCursor();
+                CursorSubSystem.FreeMouseCursor();
             }
         }
         else
         {
             // restrict mouse cursor to the map area
-            RestrictMouseCursor(ref MapScreenRect);
+            MouseSubSystem.RestrictMouseCursor(MapScreenInterfaceMap.MapScreenRect);
         }
     }
 

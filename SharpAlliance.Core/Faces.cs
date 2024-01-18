@@ -110,7 +110,7 @@ public class Faces
         int iFaceIndex = 0;
         ETRLEObject ETRLEObject = new();
         HVOBJECT? hVObject = null;
-        List<SGPPaletteEntry> Pal = new(256);
+        List<Rgba32> Pal = new(256);
 
         if ((iFaceIndex = GetFreeFace()) == (-1))
         {
@@ -235,26 +235,26 @@ public class Faces
             {
                 Pal.Add(new()
                 {
-                    peRed = 255,
-                    peGreen = 255,
-                    peBlue = 255,
+                    R = 255,
+                    G = 255,
+                    B = 255,
                 });
             }
 
-            hVObject.pShades[(ushort)FLASH_PORTRAIT.NOSHADE] = video.Create16BPPPaletteShaded(hVObject.pPaletteEntry, 255, 255, 255, false);
-            hVObject.pShades[(ushort)FLASH_PORTRAIT.STARTSHADE] = video.Create16BPPPaletteShaded(Pal, 255, 255, 255, false);
-            hVObject.pShades[(ushort)FLASH_PORTRAIT.ENDSHADE] = video.Create16BPPPaletteShaded(hVObject.pPaletteEntry, 250, 25, 25, true);
-            hVObject.pShades[(ushort)FLASH_PORTRAIT.DARKSHADE] = video.Create16BPPPaletteShaded(hVObject.pPaletteEntry, 100, 100, 100, true);
-            hVObject.pShades[(ushort)FLASH_PORTRAIT.LITESHADE] = video.Create16BPPPaletteShaded(hVObject.pPaletteEntry, 100, 100, 100, false);
+            hVObject.pShades[(ushort)FLASH_PORTRAIT.NOSHADE] = video.Create16BPPPaletteShaded(hVObject.Palette, 255, 255, 255, false);
+            hVObject.pShades[(ushort)FLASH_PORTRAIT.STARTSHADE] = video.Create16BPPPaletteShaded(Pal.ToArray(), 255, 255, 255, false);
+            hVObject.pShades[(ushort)FLASH_PORTRAIT.ENDSHADE] = video.Create16BPPPaletteShaded(hVObject.Palette, 250, 25, 25, true);
+            hVObject.pShades[(ushort)FLASH_PORTRAIT.DARKSHADE] = video.Create16BPPPaletteShaded(hVObject.Palette, 100, 100, 100, true);
+            hVObject.pShades[(ushort)FLASH_PORTRAIT.LITESHADE] = video.Create16BPPPaletteShaded(hVObject.Palette, 100, 100, 100, false);
 
             for (int uiCount = 0; uiCount < 256; uiCount++)
             {
-
-                Pal[uiCount].peRed = (byte)((byte)(uiCount % 128) + 128);
-                Pal[uiCount].peGreen = (byte)((byte)(uiCount % 128) + 128);
-                Pal[uiCount].peBlue = (byte)((byte)(uiCount % 128) + 128);
+                var pal = Pal[uiCount];
+                pal.R = (byte)((byte)(uiCount % 128) + 128);
+                pal.G = (byte)((byte)(uiCount % 128) + 128);
+                pal.B = (byte)((byte)(uiCount % 128) + 128);
             }
-            hVObject.pShades[(ushort)FLASH_PORTRAIT.GRAYSHADE] = video.Create16BPPPaletteShaded(Pal, 255, 255, 255, false);
+            hVObject.pShades[(ushort)FLASH_PORTRAIT.GRAYSHADE] = video.Create16BPPPaletteShaded(Pal.ToArray(), 255, 255, 255, false);
 
         }
 

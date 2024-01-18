@@ -5,7 +5,7 @@ namespace SharpAlliance.Platform.Interfaces
 {
     public interface IFileManager : ISharpAllianceManager
     {
-        Stream FileOpen(string pFileName, FileAccess read, bool fDeleteOnClose = false);
+        Stream FileOpen(string pFileName, FileAccess read, FileMode mode = FileMode.Open, bool fDeleteOnClose = false);
         void FileClose(Stream fptr);
         bool FileExists(string pFilename);
         bool FileRead(Stream stream, Span<byte> buffer, out uint bytesRead);

@@ -1460,7 +1460,7 @@ public class History
 
 
         // open file
-        hFileHandle = files.FileOpen(HISTORY_DATA_FILE, FileAccess.Write, false);
+        hFileHandle = files.FileOpen(HISTORY_DATA_FILE, FileAccess.Write, FileMode.OpenOrCreate);
 
         // if no file exits, do nothing
         if (hFileHandle == Stream.Null)

@@ -5,6 +5,8 @@ using System.Threading.Tasks;
 using SharpAlliance.Core.Interfaces;
 using SharpAlliance.Core.Managers;
 using SharpAlliance.Core.Screens;
+using SharpAlliance.Core.SubSystems.LaptopSubSystem;
+using SharpAlliance.Core.SubSystems.LaptopSubSystem.BobbyRSubSystem;
 
 namespace SharpAlliance.Core.SubSystems;
 
@@ -117,7 +119,7 @@ public class GameInit
 
         //Reinit the laptopn screen variables
         this.laptop.InitLaptopAndLaptopScreens();
-        this.laptop.LaptopScreenInit();
+        Laptop.LaptopScreenInit();
 
         //Reload the Merc profiles
         this.soldierProfile.LoadMercProfiles();

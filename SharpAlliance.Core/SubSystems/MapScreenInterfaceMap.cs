@@ -6,7 +6,7 @@ using SharpAlliance.Core.Managers.Image;
 using SharpAlliance.Core.Managers.VideoSurfaces;
 using SharpAlliance.Core.Screens;
 using SixLabors.ImageSharp;
-
+using SixLabors.ImageSharp.PixelFormats;
 using static SharpAlliance.Core.Globals;
 
 namespace SharpAlliance.Core.SubSystems;
@@ -22,12 +22,19 @@ public class MapScreenInterfaceMap
     private static int[] guiLeaveListOwnerProfileId = new int[Globals.NUM_LEAVE_LIST_SLOTS];
 
     // the palettes
-    private ushort?[] pMapLTRedPalette;
-    private ushort?[] pMapDKRedPalette;
-    private ushort?[] pMapLTGreenPalette;
-    private ushort?[] pMapDKGreenPalette;
+    private Rgba32[] pMapLTRedPalette;
+    private Rgba32[] pMapDKRedPalette;
+    private Rgba32[] pMapLTGreenPalette;
+    private Rgba32[] pMapDKGreenPalette;
     // destination plotting character
     public static int bSelectedDestChar = -1;
+
+    // map region
+    public static Rectangle MapScreenRect = new(
+        (MAP_VIEW_START_X + MAP_GRID_X - 2),
+        (MAP_VIEW_START_Y + MAP_GRID_Y - 1),
+        MAP_VIEW_START_X + MAP_VIEW_WIDTH - 1 + MAP_GRID_X,
+        MAP_VIEW_START_Y + MAP_VIEW_HEIGHT - 10 + MAP_GRID_Y);
 
     public MapScreenInterfaceMap(IVideoManager videoManager)
     {
@@ -37,7 +44,7 @@ public class MapScreenInterfaceMap
     public object guiUpdatePanelTactical { get; internal set; }
     public object guiUpdatePanel { get; internal set; }
 
-    private Point[] pMapScreenFastHelpLocationList = new Point[]
+    public static Point[] pMapScreenFastHelpLocationList = new Point[]
     {
         new(25,200 ),
         new(150,200),
@@ -52,7 +59,7 @@ public class MapScreenInterfaceMap
         new(100,100),
     };
 
-    private int[] pMapScreenFastHelpWidthList = new int[]
+    public static int[] pMapScreenFastHelpWidthList = new int[]
     {
         100,
         100,
@@ -120,21 +127,21 @@ public class MapScreenInterfaceMap
     {
         // init palettes
         HVSURFACE hSrcVSurface;
-        List<SGPPaletteEntry> pPalette = new();
         VSURFACE_DESC vs_desc;
 
         // load image
-        video.GetVideoObject("INTERFACE\\b_map.pcx", out string uiTempMap);
+        var vobj = video.GetVideoObject("INTERFACE\\b_map.pcx", out string uiTempMap);
 
         // get video surface
-        //video.GetVideoSurface(out hSrcVSurface, uiTempMap);
-        //video.GetVSurfacePaletteEntries(hSrcVSurface, pPalette);
+        var surfType = video.Surfaces.CreateSurface(vobj);
+        var surf = video.GetVideoSurface(out hSrcVSurface, surfType);
+        var palette = video.GetVSurfacePaletteEntries(vobj);
 
         // set up various palettes
-        this.pMapLTRedPalette = video.Create16BPPPaletteShaded(pPalette, redScale: 400, greenScale: 0, blueScale: 0, mono: true);
-        this.pMapDKRedPalette = video.Create16BPPPaletteShaded(pPalette, redScale: 200, greenScale: 0, blueScale: 0, mono: true);
-        this.pMapLTGreenPalette = video.Create16BPPPaletteShaded(pPalette, redScale: 0, greenScale: 400, blueScale: 0, mono: true);
-        this.pMapDKGreenPalette = video.Create16BPPPaletteShaded(pPalette, redScale: 0, greenScale: 200, blueScale: 0, mono: true);
+        this.pMapLTRedPalette = video.Create16BPPPaletteShaded(palette, redScale: 400, greenScale: 0, blueScale: 0, mono: true);
+        this.pMapDKRedPalette = video.Create16BPPPaletteShaded(palette, redScale: 200, greenScale: 0, blueScale: 0, mono: true);
+        this.pMapLTGreenPalette = video.Create16BPPPaletteShaded(palette, redScale: 0, greenScale: 400, blueScale: 0, mono: true);
+        this.pMapDKGreenPalette = video.Create16BPPPaletteShaded(palette, redScale: 0, greenScale: 200, blueScale: 0, mono: true);
 
         // delete image
         // video.DeleteVideoSurfaceFromIndex(uiTempMap);
@@ -396,9 +403,9 @@ public class MapScreenInterfaceMap
         // now run through and display all the fast help text for the mapscreen functional regions
         for (int iCounter = 0; iCounter < Globals.NUMBER_OF_MAPSCREEN_HELP_MESSAGES; iCounter++)
         {
-            this.pFastHelpMapScreenList[iCounter].iX = this.pMapScreenFastHelpLocationList[iCounter].X;
-            this.pFastHelpMapScreenList[iCounter].iY = this.pMapScreenFastHelpLocationList[iCounter].Y;
-            this.pFastHelpMapScreenList[iCounter].iW = this.pMapScreenFastHelpWidthList[iCounter];
+            this.pFastHelpMapScreenList[iCounter].iX = pMapScreenFastHelpLocationList[iCounter].X;
+            this.pFastHelpMapScreenList[iCounter].iY = pMapScreenFastHelpLocationList[iCounter].Y;
+            this.pFastHelpMapScreenList[iCounter].iW = pMapScreenFastHelpWidthList[iCounter];
             this.pFastHelpMapScreenList[iCounter].FastHelpText = EnglishText.pMapScreenFastHelpTextList[iCounter];
         }
     }
