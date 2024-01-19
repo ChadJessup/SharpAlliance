@@ -17,6 +17,6 @@ public static class Soldier
             && p.bActive
             && p.bInSector
             && p.bTeam == Globals.gbPlayerNum
-            && p.bAssignment < Assignments.ON_DUTY;
+            && p.bAssignment < Assignment.ON_DUTY;
 
 }

@@ -217,7 +217,7 @@ public class Squads
                     StrategicMovement.RemovePlayerFromGroup(pCharacter.ubGroupID, pCharacter);
 
                     // character not on a reserved group
-                    if ((pCharacter.bAssignment >= Assignments.ON_DUTY) && (pCharacter.bAssignment != Assignments.VEHICLE))
+                    if ((pCharacter.bAssignment >= Assignment.ON_DUTY) && (pCharacter.bAssignment != Assignment.VEHICLE))
                     {
                         // get the group from the character
                         pGroup = StrategicMovement.GetGroup(pCharacter.ubGroupID);
@@ -231,7 +231,7 @@ public class Squads
 
                 }
 
-                if ((pCharacter.bAssignment == Assignments.VEHICLE) && (pCharacter.iVehicleId == iHelicopterVehicleId) && (pCharacter.iVehicleId != -1))
+                if ((pCharacter.bAssignment == Assignment.VEHICLE) && (pCharacter.iVehicleId == iHelicopterVehicleId) && (pCharacter.iVehicleId != -1))
                 {
                     // if creating a new squad from guys exiting the chopper			
                     fNewSquad = SquadIsEmpty(bSquadValue);
@@ -256,7 +256,7 @@ public class Squads
                         }
                     }
                 }
-                else if ((pCharacter.bAssignment == Assignments.VEHICLE) && (pCharacter.iVehicleId != -1))
+                else if ((pCharacter.bAssignment == Assignment.VEHICLE) && (pCharacter.iVehicleId != -1))
                 {
                     fExitingVehicleToSquad = true;
                     // remove from vehicle
@@ -279,7 +279,7 @@ public class Squads
                 // assign here
                 Squad[bSquadValue][bCounter] = pCharacter;
 
-                if (pCharacter.bAssignment != (Assignments)bSquadValue)
+                if (pCharacter.bAssignment != (Assignment)bSquadValue)
                 {
                     // check to see if we should wake them up
                     if (pCharacter.fMercAsleep)
@@ -293,9 +293,9 @@ public class Squads
 
                 // set squad value
                 //                ChangeSoldiersAssignment(pCharacter, bSquadValue);
-                if (pCharacter.bOldAssignment < Assignments.ON_DUTY)
+                if (pCharacter.bOldAssignment < Assignment.ON_DUTY)
                 {
-                    pCharacter.bOldAssignment = (Assignments)bSquadValue;
+                    pCharacter.bOldAssignment = (Assignment)bSquadValue;
                 }
 
                 // if current tactical sqaud...upadte panel
@@ -782,7 +782,7 @@ public class Squads
         // check if the currently selected guy is on this squad, if not, get the first one on the new squad
         if (gusSelectedSoldier != NO_SOLDIER)
         {
-            if (Menptr[gusSelectedSoldier].bAssignment != (Assignments)iCurrentTacticalSquad)
+            if (Menptr[gusSelectedSoldier].bAssignment != (Assignment)iCurrentTacticalSquad)
             {
                 // ATE: Changed this to false for ackoledgement sounds.. sounds bad if just starting/entering sector..
                 //                SelectSoldier(Squad[iCurrentTacticalSquad][0].ubID, false, true);
@@ -1248,12 +1248,12 @@ public class Squads
             return false;
         }
 
-        if (pSoldier.bAssignment == Assignments.IN_TRANSIT)
+        if (pSoldier.bAssignment == Assignment.IN_TRANSIT)
         {
             return false;
         }
 
-        if (pSoldier.bAssignment == Assignments.ASSIGNMENT_POW)
+        if (pSoldier.bAssignment == Assignment.ASSIGNMENT_POW)
         {
             return false;
         }

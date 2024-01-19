@@ -1556,7 +1556,7 @@ public class HandleUI
                 // TODO: Only our squad!
                 for (bLoop = Globals.gTacticalStatus.Team[Globals.gbPlayerNum].bFirstID, pSoldier = Globals.MercPtrs[bLoop]; bLoop <= Globals.gTacticalStatus.Team[Globals.gbPlayerNum].bLastID; bLoop++)//, pSoldier++)
                 {
-                    if (Soldier.OK_CONTROLLABLE_MERC(pSoldier) && pSoldier.bAssignment == (Assignments)Squads.CurrentSquad() && !pSoldier.fMercAsleep)
+                    if (Soldier.OK_CONTROLLABLE_MERC(pSoldier) && pSoldier.bAssignment == (Assignment)Squads.CurrentSquad() && !pSoldier.fMercAsleep)
                     {
                         // If we can't be controlled, returninvalid...
                         if (pSoldier.uiStatusFlags.HasFlag(SOLDIER.ROBOT))

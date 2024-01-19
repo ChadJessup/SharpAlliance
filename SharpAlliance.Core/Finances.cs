@@ -479,8 +479,9 @@ public class Finances
 
 
         // display border
-        hHandle = this.video.GetVideoObject(guiLaptopBACKGROUND);
-        this.video.BltVideoObject(SurfaceType.FRAME_BUFFER, hHandle, 0, 108, 23, VO_BLT.SRCTRANSPARENCY, null);
+
+        //hHandle = this.video.GetVideoObject(guiLaptopBACKGROUND);
+        this.video.BltVideoObject(SurfaceType.FRAME_BUFFER, guiLaptopBACKGROUND, 0, 108, 23, VO_BLT.SRCTRANSPARENCY, null);
 
 
         // title bar icon
@@ -1176,7 +1177,7 @@ public class Finances
 
     void CreateFinanceButtons()
     {
-        giFinanceButtonImage[PREV_PAGE_BUTTON] = this.buttons.LoadButtonImage("LAPTOP\\arrows.sti", -1, 0, -1, 1, -1);
+        giFinanceButtonImage[PREV_PAGE_BUTTON] = ButtonSubSystem.LoadButtonImage("LAPTOP\\arrows.sti", -1, 0, -1, 1, -1);
         giFinanceButton[PREV_PAGE_BUTTON] = ButtonSubSystem.QuickCreateButton(giFinanceButtonImage[PREV_PAGE_BUTTON], new(PREV_BTN_X, BTN_Y),
                                             ButtonFlags.BUTTON_TOGGLE, MSYS_PRIORITY.HIGHEST - 1,
                                             MouseSubSystem.BtnGenericMouseMoveButtonCallback, (GUI_CALLBACK)BtnFinanceDisplayPrevPageCallBack);
@@ -1799,8 +1800,7 @@ public class Finances
         return (true);
     }
 
-
-    string InsertCommasForDollarFigure(string figure)
+    public static string InsertCommasForDollarFigure(string figure)
     {
         char[] pString = figure.ToCharArray();
         short sCounter = 0;
@@ -1868,7 +1868,7 @@ public class Finances
     }
 
 
-    string InsertDollarSignInToString(string figure)
+    public static string InsertDollarSignInToString(string figure)
     {
         // run to end of string, copy everything in string 2 places right, insert a space at pString[ 1 ] and a '$' at pString[ 0 ]
 

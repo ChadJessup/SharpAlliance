@@ -125,7 +125,7 @@ public class GameInitOptionsScreen : IScreen
         this.video.GetVideoObject("InterFace\\OptionsScreenBackGround.sti", out this.guiGIOMainBackGroundImageKey);
 
         //Ok button
-        this.giGIODoneBtnImage = this.buttons.LoadButtonImage("INTERFACE\\PreferencesButtons.sti", -1, 0, -1, 2, -1);
+        this.giGIODoneBtnImage = ButtonSubSystem.LoadButtonImage("INTERFACE\\PreferencesButtons.sti", -1, 0, -1, 2, -1);
         this.guiGIODoneButton = ButtonSubSystem.CreateIconAndTextButton(
             this.giGIODoneBtnImage,
             EnglishText.gzGIOScreenText[GameInitOptionScreenText.GIO_OK_TEXT],
@@ -843,7 +843,7 @@ public class GameInitOptionsScreen : IScreen
         Rectangle? CenteringRect = new(0, 0, 639, 479);
 
         // reset exit mode
-        //	gfExitGioDueToMessageBox = TRUE;
+        //	gfExitGioDueToMessageBox = true;
 
         // do message box and return
         giGioMessageBox = this.messageBoxes.DoMessageBox(

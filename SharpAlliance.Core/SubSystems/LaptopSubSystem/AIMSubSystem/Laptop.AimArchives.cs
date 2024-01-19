@@ -2,6 +2,7 @@
 
 public partial class Laptop
 {
+
     private static void GameInitAimArchives()
     {
     }

@@ -4984,7 +4984,7 @@ public class OppList
                         continue; // skip
                     }
 
-                    if (bTeam == gbPlayerNum && pSoldier.bAssignment == Assignments.ASSIGNMENT_POW)
+                    if (bTeam == gbPlayerNum && pSoldier.bAssignment == Assignment.ASSIGNMENT_POW)
                     {
                         // POWs should not be processed for noise
                         continue;
@@ -5283,7 +5283,7 @@ public class OppList
         }
 
         // chad: they cheated here. No Assignment for SLEEPING, 
-        if (pSoldier.bAssignment == Assignments.SLEEPING)
+        if (pSoldier.bAssignment == Assignment.SLEEPING)
         {
             // decrease effective volume since we're asleep!
             iEffVolume -= 5;

@@ -570,7 +570,7 @@ public class ButtonSubSystem : ISharpAllianceManager
 
         GUI_BUTTON iButtonID;
 
-        if ((ButPic = this.LoadButtonImage(filename, -1, 0, 1, 2, 3)) == null)
+        if ((ButPic = LoadButtonImage(filename, -1, 0, 1, 2, 3)) == null)
         {
             //DbgMessage(TOPIC_BUTTON_HANDLER, DBG_LEVEL_0, "CreateCheckBoxButton: Can't load button image");
             throw new InvalidOperationException();
@@ -1627,7 +1627,7 @@ public class ButtonSubSystem : ISharpAllianceManager
         return buttonPic;
     }
 
-    public ButtonPic LoadButtonImage(string filename, int Grayed, int OffNormal, int OffHilite, int OnNormal, int OnHilite)
+    public static ButtonPic LoadButtonImage(string filename, int Grayed, int OffNormal, int OffHilite, int OnNormal, int OnHilite)
     {
         int UseSlot;
         ETRLEObject pTrav;
@@ -2270,10 +2270,10 @@ public class ButtonSubSystem : ISharpAllianceManager
                     // ButtonPictures[x].fFlags &= ~GUI_BTN.DUPLICATE_VOBJ;
 
                     // Now remove this button, but not it's vobject
-                //    buttonPic.vobj = null;
+                    //    buttonPic.vobj = null;
 
                     fDone = true;
-                //    ButtonPicsLoaded--;
+                    //    ButtonPicsLoaded--;
                 }
             }
         }
@@ -2281,13 +2281,47 @@ public class ButtonSubSystem : ISharpAllianceManager
         // If image slot isn't empty, delete the image
         if (buttonPic.vobj is not null)
         {
-          //  video.DeleteVideoObject(buttonPic.vobj);
-          //  buttonPic.vobj = null;
+            //  video.DeleteVideoObject(buttonPic.vobj);
+            //  buttonPic.vobj = null;
             ButtonPicsLoaded--;
         }
     }
 
     public ValueTask<bool> Initialize() => this.Initialize(mouse, inputs);
+
+    internal static void SpecifyButtonFont(GUI_BUTTON b, FontStyle uiFont)
+    {
+        b.usFont = uiFont;
+        b.uiFlags |= ButtonFlags.BUTTON_DIRTY;
+    }
+
+    public static void SpecifyButtonDownTextColors(GUI_BUTTON b, FontColor sForeColorDown, FontShadow sShadowColorDown)
+    {
+        b.sForeColorDown = sForeColorDown;
+        b.sShadowColorDown = sShadowColorDown;
+        b.uiFlags |= ButtonFlags.BUTTON_DIRTY;
+    }
+
+    internal static void SpecifyButtonUpTextColors(GUI_BUTTON b, FontColor sForeColor, FontShadow sShadowColor)
+    {
+        b.sForeColor = sForeColor;
+        b.sShadowColor = sShadowColor;
+        b.uiFlags |= ButtonFlags.BUTTON_DIRTY;
+
+    }
+
+    internal static void SpecifyButtonText(GUI_BUTTON b, string value)
+    {
+        b.stringText = value;
+        b.uiFlags |= ButtonFlags.BUTTON_DIRTY;
+    }
+
+    internal static void SpecifyButtonTextOffsets(GUI_BUTTON b, int bTextXOffset, int bTextYOffset, bool fShiftText)
+    {
+        //Copy over information
+        b.bTextOffset = new(bTextXOffset, bTextYOffset);
+        b.fShiftText = fShiftText;
+    }
 }
 
 // GUI_BUTTON callback function type

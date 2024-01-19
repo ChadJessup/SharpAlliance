@@ -3991,7 +3991,7 @@ void LoadGameFilePosition(int iPos, STR pMsg)
         }
         else if (iCurrentTacticalSquad != NO_CURRENT_SQUAD && Squad[iCurrentTacticalSquad][0] is not null)
         {
-            if (Squad[iCurrentTacticalSquad][0].bAssignment != Assignments.IN_TRANSIT)
+            if (Squad[iCurrentTacticalSquad][0].bAssignment != Assignment.IN_TRANSIT)
             {
                 psSectorX = Squad[iCurrentTacticalSquad][0].sSectorX;
                 psSectorY = Squad[iCurrentTacticalSquad][0].sSectorY;
@@ -4015,7 +4015,7 @@ void LoadGameFilePosition(int iPos, STR pMsg)
             {
                 if (pSoldier.IsActive)
                 {
-                    if (pSoldier.bAssignment != Assignments.IN_TRANSIT && !pSoldier.fBetweenSectors)
+                    if (pSoldier.bAssignment != Assignment.IN_TRANSIT && !pSoldier.fBetweenSectors)
                     {
                         //we found an alive, merc that is not moving
                         psSectorX = pSoldier.sSectorX;

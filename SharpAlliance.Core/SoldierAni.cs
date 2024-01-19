@@ -28,7 +28,7 @@ public class SoldierAni
 //        }
 //
 //        // How are we for OK dest?
-//        if (!NewOKDestination(pSoldier, sGridNo, TRUE, bLevel))
+//        if (!NewOKDestination(pSoldier, sGridNo, true, bLevel))
 //        {
 //            return (FALSE);
 //        }

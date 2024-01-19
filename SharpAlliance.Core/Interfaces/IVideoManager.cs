@@ -74,4 +74,5 @@ public interface IVideoManager : ISharpAllianceManager
     bool ShadowVideoSurfaceRect(SurfaceType fRAME_BUFFER, Rectangle rectangle);
     void BltVideoSurface(SurfaceType uiBuffer, SurfaceType surfaceType, int v, Point sDest, BlitTypes blitTypes, object value);
     void StartFrameBufferRender();
+    bool BltStretchVideoSurface(SurfaceType uiDestVSurface, SurfaceType uiSrcVSurface, Point iDest, int fBltFlags, Rectangle SrcRect, Rectangle DestRect);
 }

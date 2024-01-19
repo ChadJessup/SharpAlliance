@@ -1890,7 +1890,7 @@ void VerifyAllMercsInGroupAreOnSameSquad(GROUP* pGroup)
         Path? pMercPath = null;
 
         // IN a vehicle?
-        if (pSoldier.bAssignment == Assignments.VEHICLE)
+        if (pSoldier.bAssignment == Assignment.VEHICLE)
         {
             pMercPath = pVehicleList[pSoldier.iVehicleId].pMercPath;
         }
@@ -1946,7 +1946,7 @@ void VerifyAllMercsInGroupAreOnSameSquad(GROUP* pGroup)
         int ubGroupId = 0;
 
         // IN a vehicle?
-        if (pSoldier.bAssignment == Assignments.VEHICLE)
+        if (pSoldier.bAssignment == Assignment.VEHICLE)
         {
             ubGroupId = pVehicleList[pSoldier.iVehicleId].ubMovementGroup;
         }
@@ -2022,7 +2022,7 @@ void VerifyAllMercsInGroupAreOnSameSquad(GROUP* pGroup)
             pVehicle = pVehicleList[pSoldier.bVehicleID];
         }
         // or in a vehicle
-        else if (pSoldier.bAssignment == Assignments.VEHICLE)
+        else if (pSoldier.bAssignment == Assignment.VEHICLE)
         {
             pVehicle = pVehicleList[pSoldier.iVehicleId];
         }

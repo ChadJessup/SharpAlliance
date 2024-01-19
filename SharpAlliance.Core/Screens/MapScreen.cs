@@ -282,7 +282,7 @@ public class MapScreen : IScreen
                 else    // yes - by character
                 {
                     // set cursor based on foot or vehicle
-                    if ((Menptr[gCharactersList[MapScreenInterfaceMap.bSelectedDestChar].usSolID].bAssignment != Assignments.VEHICLE) && !(Menptr[gCharactersList[MapScreenInterfaceMap.bSelectedDestChar].usSolID].uiStatusFlags.HasFlag(SOLDIER.VEHICLE)))
+                    if ((Menptr[gCharactersList[MapScreenInterfaceMap.bSelectedDestChar].usSolID].bAssignment != Assignment.VEHICLE) && !(Menptr[gCharactersList[MapScreenInterfaceMap.bSelectedDestChar].usSolID].uiStatusFlags.HasFlag(SOLDIER.VEHICLE)))
                     {
                         ChangeMapScreenMaskCursor(CURSOR.STRATEGIC_FOOT);
                     }
@@ -427,12 +427,12 @@ public class MapScreen : IScreen
                         ppMovePath = (pVehicleList[pSoldier.bVehicleID].pMercPath);
                         ubGroupId = pVehicleList[pSoldier.bVehicleID].ubMovementGroup;
                     }
-                    else if (pSoldier.bAssignment == Assignments.VEHICLE)
+                    else if (pSoldier.bAssignment == Assignment.VEHICLE)
                     {
                         ppMovePath = (pVehicleList[pSoldier.iVehicleId].pMercPath);
                         ubGroupId = pVehicleList[pSoldier.iVehicleId].ubMovementGroup;
                     }
-                    else if (pSoldier.bAssignment < Assignments.ON_DUTY)
+                    else if (pSoldier.bAssignment < Assignment.ON_DUTY)
                     {
                         ppMovePath = (pSoldier.pMercPath);
                         ubGroupId = pSoldier.ubGroupID;
@@ -547,12 +547,12 @@ public class MapScreen : IScreen
                         ppMovePath = (pVehicleList[pSoldier.bVehicleID].pMercPath);
                         ubGroupId = pVehicleList[pSoldier.bVehicleID].ubMovementGroup;
                     }
-                    else if (pSoldier.bAssignment == Assignments.VEHICLE)
+                    else if (pSoldier.bAssignment == Assignment.VEHICLE)
                     {
                         ppMovePath = (pVehicleList[pSoldier.iVehicleId].pMercPath);
                         ubGroupId = pVehicleList[pSoldier.iVehicleId].ubMovementGroup;
                     }
-                    else if (pSoldier.bAssignment < Assignments.ON_DUTY)
+                    else if (pSoldier.bAssignment < Assignment.ON_DUTY)
                     {
                         ppMovePath = (pSoldier.pMercPath);
                         ubGroupId = pSoldier.ubGroupID;
@@ -621,7 +621,7 @@ public class MapScreen : IScreen
                     {
                         pVehicleList[pSoldier.bVehicleID].pMercPath = StrategicPathing.CopyPaths(pPath, pVehicleList[pSoldier.bVehicleID].pMercPath);
                     }
-                    else if (pSoldier.bAssignment == Assignments.VEHICLE)
+                    else if (pSoldier.bAssignment == Assignment.VEHICLE)
                     {
                         pVehicleList[pSoldier.iVehicleId].pMercPath = StrategicPathing.CopyPaths(pPath, pVehicleList[pSoldier.iVehicleId].pMercPath);
                     }

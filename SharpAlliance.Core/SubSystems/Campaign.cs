@@ -34,7 +34,7 @@ public class Campaign
             return;
         }
 
-        if (pSoldier.bAssignment == Assignments.ASSIGNMENT_POW)
+        if (pSoldier.bAssignment == Assignment.ASSIGNMENT_POW)
         {
             Messages.ScreenMsg(FontColor.FONT_ORANGE, MSG.BETAVERSION, "ERROR: StatChange: %s improving stats while POW! ubStat %d", pSoldier.name, ubStat.ToString());
             return;
@@ -759,7 +759,7 @@ public class Campaign
             }
 
             // ignore POWs - shouldn't ever be getting this far
-            if (pSoldier.bAssignment == Assignments.ASSIGNMENT_POW)
+            if (pSoldier.bAssignment == Assignment.ASSIGNMENT_POW)
             {
                 return;
             }

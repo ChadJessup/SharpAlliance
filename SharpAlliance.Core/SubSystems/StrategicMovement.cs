@@ -2662,7 +2662,7 @@ public class StrategicMovement
                 foreach (var curr in pGroup.pPlayerList)
                 {
                     pSoldier = curr.pSoldier;
-                    if (pSoldier.bAssignment != Assignments.VEHICLE)
+                    if (pSoldier.bAssignment != Assignment.VEHICLE)
                     { //Soldier is on foot and travelling.  Factor encumbrance into movement rate.
                         iEncumbrance = ItemSubSystem.CalculateCarriedWeight(pSoldier);
                         if (iEncumbrance > iHighestEncumbrance)

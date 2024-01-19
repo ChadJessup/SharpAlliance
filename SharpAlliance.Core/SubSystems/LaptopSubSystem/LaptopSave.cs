@@ -172,13 +172,13 @@ public class LaptopSaveInfoStruct
 {
     //General Laptop Info
     public bool gfNewGameLaptop;                                    //Is it the firs time in Laptop
-    public bool[] fVisitedBookmarkAlready = new bool[20];            // have we visitied this site already?
+    public Dictionary<BOOKMARK, bool> fVisitedBookmarkAlready = new();            // have we visitied this site already?
     public BOOKMARK[] iBookMarkList = new BOOKMARK[MAX_BOOKMARKS];
     public int iCurrentBalance;                                  // current players balance
 
     //IMP Information
     public bool fIMPCompletedFlag;                      // Has the player Completed the IMP process
-    bool fSentImpWarningAlready;             // Has the Imp email warning already been sent
+    public bool fSentImpWarningAlready;             // Has the Imp email warning already been sent
 
 
     //Personnel Info
@@ -209,7 +209,7 @@ public class LaptopSaveInfoStruct
     public int ubNumberLifeInsurancePayoutUsed;      // The number of items in the array that are used
     public bool fBobbyRSiteCanBeAccessed;
     public int ubPlayerBeenToMercSiteStatus;
-    public int fFirstVisitSinceServerWentDown;
+    public bool fFirstVisitSinceServerWentDown;
     public bool fNewMercsAvailableAtMercSite;
     public bool fSaidGenericOpeningInMercSite;
     public bool fSpeckSaidFloMarriedCousinQuote;

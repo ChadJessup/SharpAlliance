@@ -9,14 +9,12 @@ using SharpAlliance.Core.Screens;
 using SharpAlliance.Core.SubSystems.LaptopSubSystem.BobbyRSubSystem;
 using SharpAlliance.Core.SubSystems.LaptopSubSystem.FloristSubSystem;
 using SharpAlliance.Core.SubSystems.LaptopSubSystem.InsuranceSubSystem;
-using static System.Runtime.InteropServices.JavaScript.JSType;
 using System.Diagnostics;
 
 namespace SharpAlliance.Core.SubSystems.LaptopSubSystem;
 
 public partial class Laptop
 {
-    private static IVideoManager video;
     private readonly History history;
     private static IFileManager files;
     private static readonly IEnumerable<GUI_BUTTON> buttonList;
@@ -82,7 +80,11 @@ public partial class Laptop
         GameInitPersonnel();
 
         // init program states
-        Array.Fill(gLaptopProgramStates, LAPTOP_PROGRAM_STATES.MINIMIZED);
+
+        foreach (var key in Enum.GetValues<LAPTOP_PROGRAM>())
+        {
+            gLaptopProgramStates[key] = LAPTOP_PROGRAM_STATES.MINIMIZED;
+        }
 
         gfAtLeastOneMercWasHired = false;
 
@@ -494,37 +496,30 @@ public partial class Laptop
 
     public static void BlitTitleBarIcons()
     {
-        HVOBJECT? hHandle;
         // will blit the icons for the title bar of the program we are in
         switch (guiCurrentLaptopMode)
         {
             case LAPTOP_MODE.HISTORY:
-                hHandle = hHandle = video.GetVideoObject(guiTITLEBARICONS);
-                VideoObjectManager.BltVideoObject(SurfaceType.FRAME_BUFFER, hHandle, 4, LAPTOP_TITLE_ICONS_X, LAPTOP_TITLE_ICONS_Y, VO_BLT.SRCTRANSPARENCY, null);
+                video.BltVideoObject(SurfaceType.FRAME_BUFFER, guiTITLEBARICONS, 4, LAPTOP_TITLE_ICONS_X, LAPTOP_TITLE_ICONS_Y, VO_BLT.SRCTRANSPARENCY, null);
                 break;
             case LAPTOP_MODE.EMAIL:
-                hHandle = hHandle = video.GetVideoObject(guiTITLEBARICONS);
-                VideoObjectManager.BltVideoObject(SurfaceType.FRAME_BUFFER, hHandle, 0, LAPTOP_TITLE_ICONS_X, LAPTOP_TITLE_ICONS_Y, VO_BLT.SRCTRANSPARENCY, null);
+                video.BltVideoObject(SurfaceType.FRAME_BUFFER, guiTITLEBARICONS, 0, LAPTOP_TITLE_ICONS_X, LAPTOP_TITLE_ICONS_Y, VO_BLT.SRCTRANSPARENCY, null);
                 break;
             case LAPTOP_MODE.PERSONNEL:
-                hHandle = video.GetVideoObject(guiTITLEBARICONS);
-                VideoObjectManager.BltVideoObject(SurfaceType.FRAME_BUFFER, hHandle, 3, LAPTOP_TITLE_ICONS_X, LAPTOP_TITLE_ICONS_Y, VO_BLT.SRCTRANSPARENCY, null);
+                video.BltVideoObject(SurfaceType.FRAME_BUFFER, guiTITLEBARICONS, 3, LAPTOP_TITLE_ICONS_X, LAPTOP_TITLE_ICONS_Y, VO_BLT.SRCTRANSPARENCY, null);
                 break;
             case LAPTOP_MODE.FINANCES:
-                hHandle = hHandle = video.GetVideoObject(guiTITLEBARICONS);
-                VideoObjectManager.BltVideoObject(SurfaceType.FRAME_BUFFER, hHandle, 5, LAPTOP_TITLE_ICONS_X, LAPTOP_TITLE_ICONS_Y, VO_BLT.SRCTRANSPARENCY, null);
+                video.BltVideoObject(SurfaceType.FRAME_BUFFER, guiTITLEBARICONS, 5, LAPTOP_TITLE_ICONS_X, LAPTOP_TITLE_ICONS_Y, VO_BLT.SRCTRANSPARENCY, null);
                 break;
             case LAPTOP_MODE.FILES:
-                hHandle = video.GetVideoObject(guiTITLEBARICONS);
-                VideoObjectManager.BltVideoObject(SurfaceType.FRAME_BUFFER, hHandle, 2, LAPTOP_TITLE_ICONS_X, LAPTOP_TITLE_ICONS_Y, VO_BLT.SRCTRANSPARENCY, null);
+                video.BltVideoObject(SurfaceType.FRAME_BUFFER, guiTITLEBARICONS, 2, LAPTOP_TITLE_ICONS_X, LAPTOP_TITLE_ICONS_Y, VO_BLT.SRCTRANSPARENCY, null);
                 break;
             case LAPTOP_MODE.NONE:
                 // do nothing
                 break;
             default:
                 // www pages
-                hHandle = video.GetVideoObject(guiTITLEBARICONS);
-                VideoObjectManager.BltVideoObject(SurfaceType.FRAME_BUFFER, hHandle, 1, LAPTOP_TITLE_ICONS_X, LAPTOP_TITLE_ICONS_Y, VO_BLT.SRCTRANSPARENCY, null);
+                video.BltVideoObject(SurfaceType.FRAME_BUFFER, guiTITLEBARICONS, 1, LAPTOP_TITLE_ICONS_X, LAPTOP_TITLE_ICONS_Y, VO_BLT.SRCTRANSPARENCY, null);
                 break;
         }
     }
@@ -542,6 +537,185 @@ public partial class Laptop
     internal static void DoLapTopSystemMessageBoxWithRect(MessageBoxStyle mSG_BOX_LAPTOP_DEFAULT, string zString, ScreenName lAPTOP_SCREEN, MSG_BOX_FLAG usFlags, MSGBOX_CALLBACK? returnCallback, Rectangle? pCenteringRect)
     {
         throw new NotImplementedException();
+    }
+
+    private static bool fEnteredFromGameStartup = true;
+
+    public static bool EnterLaptop()
+    {
+        //Create, load, initialize data -- just entered the laptop.
+
+        VOBJECT_DESC VObjectDesc;
+        int iCounter = 0;
+
+        // we are re entering due to message box, leave NOW!
+        if (fExitDueToMessageBox == true)
+        {
+
+            return (true);
+        }
+
+        //if the radar map mouse region is still active, disable it.
+        if (gRadarRegion.uiFlags.HasFlag(MouseRegionFlags.MSYS_REGION_ENABLED))
+        {
+            MouseSubSystem.MSYS_DisableRegion(ref gRadarRegion);
+            /*
+                    #ifdef JA2BETAVERSION
+                        DoLapTopMessageBox( MSG_BOX_LAPTOP_DEFAULT, L"Mapscreen's radar region is still active, please tell Dave how you entered Laptop.", LAPTOP_SCREEN, MSG_BOX_FLAG_OK, NULL );
+                    #endif
+            */
+        }
+
+        gfDontStartTransitionFromLaptop = false;
+
+        //Since we are coming in from MapScreen, uncheck the flag
+        guiTacticalInterfaceFlags &= ~INTERFACE.MAPSCREEN;
+
+        // ATE: Disable messages....
+        Messages.DisableScrollMessages();
+
+        // Stop any person from saying anything
+        DialogControl.StopAnyCurrentlyTalkingSpeech();
+
+        // Don't play music....
+        //        SetMusicMode(MUSIC_LAPTOP);
+
+        // Stop ambients...
+        StopAmbients();
+
+        //if its raining, start the rain showers
+        if (IsItRaining())
+        {
+            //Enable the rain delay warning
+            giRainDelayInternetSite = BOOKMARK.UNSET;
+
+            //lower the volume 
+            //            guiRainLoop = PlayJA2Ambient(RAIN_1, LOWVOLUME, 0);
+        }
+
+
+        //open the laptop library
+        //	OpenLibrary( LIBRARY_LAPTOP );
+
+        //pause the game because we dont want time to advance in the laptop
+        GameClock.PauseGame();
+
+        // set the fact we are currently in laptop, for rendering purposes
+        fCurrentlyInLaptop = true;
+
+
+
+        // clear guiSAVEBUFFER
+        //ColorFillVideoSurfaceArea(guiSAVEBUFFER,	0, 0, 640, 480, Get16BPPColor(FROMRGB(0, 0, 0)) );
+        // disable characters panel buttons
+
+        // reset redraw flag and redraw new mail
+        fReDrawScreenFlag = false;
+        Emails.fReDrawNewMailFlag = true;
+
+        // setup basic cursors
+        guiCurrentLapTopCursor = LAPTOP_CURSOR.PANEL_CURSOR;
+        guiPreviousLapTopCursor = LAPTOP_CURSOR.NO_CURSOR;
+
+        // sub page
+        giCurrentSubPage = 0;
+        giCurrentRegion = LaptopRegions.EMAIL_REGION;
+
+        // load the laptop graphic and add it
+
+        guiLAPTOP = video.GetVideoObject(Utils.FilenameForBPP("LAPTOP\\laptop3.sti"));
+
+        // background for panel
+        guiLaptopBACKGROUND = video.GetVideoObject(Utils.FilenameForBPP("LAPTOP\\taskbar.sti"));
+
+        // background for panel
+        guiTITLEBARLAPTOP = video.GetVideoObject(Utils.FilenameForBPP("LAPTOP\\programtitlebar.sti"));
+
+        // lights for power and HD
+        guiLIGHTS = video.GetVideoObject(Utils.FilenameForBPP("LAPTOP\\lights.sti"));
+
+        // icons for title bars
+        guiTITLEBARICONS = video.GetVideoObject(Utils.FilenameForBPP("LAPTOP\\ICONS.sti"));
+
+        // load, blt and delete graphics
+        guiEmailWarning = video.GetVideoObject(Utils.FilenameForBPP("LAPTOP\\NewMailWarning.sti"));
+
+        // load background
+        LoadDesktopBackground();
+
+
+        guiCurrentLaptopMode = LAPTOP_MODE.NONE;
+        //MSYS_SetCurrentCursor(CURSOR_NORMAL);
+
+        guiCurrentLaptopMode = LAPTOP_MODE.NONE;
+        guiPreviousLaptopMode = LAPTOP_MODE.NONE;
+        guiCurrentWWWMode = LAPTOP_MODE.NONE;
+        guiCurrentSidePanel = LaptopPanel.FIRST_SIDE_PANEL;
+        guiPreviousSidePanel = LaptopPanel.FIRST_SIDE_PANEL;
+        gfSideBarFlag = false;
+        CreateLapTopMouseRegions();
+        RenderLapTopImage();
+        HighLightRegion(giCurrentRegion);
+        //AddEmailMessage(L"Entered LapTop",L"Entered", 0, 0);
+        //for(iCounter=0; iCounter <10; iCounter++)
+        //{
+        //AddEmail(3,5,0,0);
+        //}
+        // the laptop mouse region
+
+
+        // reset bookmarks flags
+        fFirstTimeInLaptop = true;
+
+        // reset all bookmark visits
+        foreach (var key in Enum.GetValues<BOOKMARK>())
+        {
+            LaptopSaveInfo.fVisitedBookmarkAlready[key] = false;
+        }
+
+        // init program states
+        foreach (var key in Enum.GetValues<LAPTOP_PROGRAM>())
+        {
+            gLaptopProgramStates[key] = LAPTOP_PROGRAM_STATES.MINIMIZED;
+        }
+
+        // turn the power on
+        fPowerLightOn = true;
+
+        // we are not exiting laptop right now, we just got here
+        fExitingLaptopFlag = false;
+
+        // reset program we are maximizing
+        bProgramBeingMaximized = (LAPTOP_PROGRAM)(-1);
+
+        // reset fact we are maximizing/ mining
+        fMaximizingProgram = false;
+        fMinizingProgram = false;
+
+
+        // initialize open queue
+        InitLaptopOpenQueue();
+
+
+        gfShowBookmarks = false;
+        LoadBookmark();
+        SetBookMark(BOOKMARK.AIM_BOOKMARK);
+        LoadLoadPending();
+
+        DrawDeskTopBackground();
+
+        // create region for new mail icon
+        CreateDestroyMouseRegionForNewMailIcon();
+
+        //DEF: Added to Init things in various laptop pages
+        EnterLaptopInitLaptopPages();
+        InitalizeSubSitesList();
+
+        fShowAtmPanelStartButton = true;
+
+        video.InvalidateRegion(0, 0, 640, 480);
+
+        return (true);
     }
 }
 
@@ -577,7 +751,6 @@ public enum LAPTOP_PROGRAM
     PERSONNEL,
     FINANCES,
     HISTORY,
-
 };
 
 // laptop program states
@@ -655,6 +828,7 @@ public enum LAPTOP
 
 public enum BOOKMARK
 {
+    UNSET = -1,
     AIM_BOOKMARK = 0,
     BOBBYR_BOOKMARK,
     IMP_BOOKMARK,
@@ -663,4 +837,12 @@ public enum BOOKMARK
     FLORIST_BOOKMARK,
     INSURANCE_BOOKMARK,
     CANCEL_STRING,
+};
+
+public enum LAPTOP_CURSOR
+{
+    NO_CURSOR = 0,
+    PANEL_CURSOR,
+    SCREEN_CURSOR,
+    WWW_CURSOR,
 };

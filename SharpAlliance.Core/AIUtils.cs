@@ -2207,7 +2207,7 @@ public class AIUtils
             // ADD 1/10 of man's current health (0-10)
             iThreatValue += (int)(pEnemy.bLife / 10);
 
-            if (pEnemy.bAssignment < Assignments.ON_DUTY)
+            if (pEnemy.bAssignment < Assignment.ON_DUTY)
             {
                 // ADD 1/4 of man's protection percentage (0-25)
 //                iThreatValue += ArmourPercent(pEnemy) / 4;

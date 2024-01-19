@@ -232,13 +232,13 @@ public unsafe partial class Sdl2Window : IWindow
     public bool Resizable
     {
         get => ((SDL.SDL_WindowFlags)SDL.SDL_GetWindowFlags(this._window) & SDL.SDL_WindowFlags.SDL_WINDOW_RESIZABLE) != 0;
-        set => SDL.SDL_SetWindowResizable(this._window, value ? SDL.SDL_bool.SDL_TRUE : SDL.SDL_bool.SDL_FALSE);
+        set => SDL.SDL_SetWindowResizable(this._window, value ? SDL.SDL_bool.SDL_true : SDL.SDL_bool.SDL_FALSE);
     }
 
     public bool BorderVisible
     {
         get => ((SDL.SDL_WindowFlags)SDL.SDL_GetWindowFlags(this._window) & SDL.SDL_WindowFlags.SDL_WINDOW_BORDERLESS) == 0;
-        set => SDL.SDL_SetWindowBordered(this._window, value ? SDL.SDL_bool.SDL_TRUE : SDL.SDL_bool.SDL_FALSE);
+        set => SDL.SDL_SetWindowBordered(this._window, value ? SDL.SDL_bool.SDL_true : SDL.SDL_bool.SDL_FALSE);
     }
 
     public IntPtr SdlWindowHandle => this._window;

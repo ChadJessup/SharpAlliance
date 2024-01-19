@@ -951,7 +951,7 @@ public class ArmsDealerInit
         // 
         // pDealerItem->ubElementsAlloced = ubElementsNeeded;
         // 
-        // return (TRUE);
+        // return (true);
     }
 
     public static bool IsItemInfoSpecial(SPECIAL_ITEM_INFO? pSpclItemInfo)

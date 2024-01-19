@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Diagnostics;
+using System.Reflection.Metadata.Ecma335;
 using Microsoft.Extensions.Logging;
 using SharpAlliance.Core.Screens;
 using SharpAlliance.Core.SubSystems;
@@ -1254,5 +1255,47 @@ public class WorldManager
     private void WorldHideTrees()
     {
         throw new NotImplementedException();
+    }
+
+    internal static bool RemoveRoof(int iMapIndex, TileIndexes usIndex)
+    {
+        LEVELNODE? pRoof = null;
+        LEVELNODE? pOldRoof = null;
+
+        pRoof = gpWorldLevelData[iMapIndex].pRoofHead;
+
+        // Look through all Roofs and remove index if found
+
+        while (pRoof != null)
+        {
+            if (pRoof.usIndex == usIndex)
+            {
+                // OK, set links
+                // Check for head or tail
+                if (pOldRoof == null)
+                {
+                    // It's the head
+                    gpWorldLevelData[iMapIndex].pRoofHead = pRoof.pNext;
+                }
+                else
+                {
+                    pOldRoof.pNext = pRoof.pNext;
+                }
+                // Delete memory assosiated with item
+                WorldStructures.DeleteStructureFromWorld(pRoof.pStructureData);
+                MemFree(pRoof);
+                guiLevelNodes--;
+
+                return (true);
+            }
+
+            pOldRoof = pRoof;
+            pRoof = pRoof.pNext;
+
+        }
+
+        // Could not find it, return FALSE
+
+        return (false);
     }
 }

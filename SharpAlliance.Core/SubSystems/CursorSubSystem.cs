@@ -35,6 +35,10 @@ public class CursorSubSystem : IDisposable
     {
         return false;
     }
+
+    internal static void HandleAnimatedCursors()
+    {
+    }
 }
 
 public enum CURSOR

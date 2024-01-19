@@ -230,9 +230,9 @@ public partial class Globals
 
     public static bool OK_ENEMY_MERC(SOLDIERTYPE p) => p.bNeutral == 0 && (p.bSide != gbPlayerNum) && p.bLife >= OKLIFE;
     // Checks if our guy can be controllable .... checks bInSector, team, on duty, etc...
-    public static bool OK_CONTROLLABLE_MERC(SOLDIERTYPE p) => p.bLife >= OKLIFE && p.bActive && p.bInSector && p.bTeam == gbPlayerNum && p.bAssignment < Assignments.ON_DUTY;
+    public static bool OK_CONTROLLABLE_MERC(SOLDIERTYPE p) => p.bLife >= OKLIFE && p.bActive && p.bInSector && p.bTeam == gbPlayerNum && p.bAssignment < Assignment.ON_DUTY;
     // Checks if our guy can be controllable .... checks bInSector, team, on duty, etc...
-    public static bool OK_INSECTOR_MERC(SOLDIERTYPE p) => p.bLife >= OKLIFE && p.bActive && p.bInSector && p.bTeam == gbPlayerNum && p.bAssignment < Assignments.ON_DUTY;
+    public static bool OK_INSECTOR_MERC(SOLDIERTYPE p) => p.bLife >= OKLIFE && p.bActive && p.bInSector && p.bTeam == gbPlayerNum && p.bAssignment < Assignment.ON_DUTY;
     // Checkf if our guy can be selected and is not in a position where our team has an interupt and he does not have one...
     public static bool OK_INTERRUPT_MERC(SOLDIERTYPE p) => INTERRUPT_QUEUED ? ((p.bMoved > 0) ? false : true) : true;
     public static bool CREATURE_OR_BLOODCAT(SOLDIERTYPE p) => p.uiStatusFlags.HasFlag(SOLDIER.MONSTER) || p.ubBodyType == SoldierBodyTypes.BLOODCAT;
@@ -597,11 +597,11 @@ public partial class Globals
     public static int gUIDisplayActionPointsOffY = 0;
     public static int gUIDisplayActionPointsOffX = 0;
     public static bool gfUIDoNotHighlightSelMerc = false;
-    public static int gfUIHandleSelection = 0;
+    public static bool gfUIHandleSelection = false;
     public static bool gfUIHandleSelectionAboveGuy = false;
     public static bool gfUIInDeadlock = false;
     public static byte gUIDeadlockedSoldier = Globals.NOBODY;
-    public static int gfUIHandleShowMoveGrid { get; set; } = 0;
+    public static bool gfUIHandleShowMoveGrid { get; set; } = false;
     public static int gusMouseXPos { get; internal set; }
     public static int gusMouseYPos { get; internal set; }
     public static int gsGlobalCursorYOffset { get; internal set; }

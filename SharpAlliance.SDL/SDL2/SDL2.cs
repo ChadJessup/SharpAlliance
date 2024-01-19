@@ -190,7 +190,7 @@ namespace SDL2
 		public enum SDL_bool
 		{
 			SDL_FALSE = 0,
-			SDL_TRUE = 1
+			SDL_true = 1
 		}
 
 		/* malloc/free are used by the marshaler! -flibit */
@@ -4221,7 +4221,7 @@ namespace SDL2
 					(p.x < (r.x + r.w)) &&
 					(p.y >= r.y) &&
 					(p.y < (r.y + r.h))	) ?
-				SDL_bool.SDL_TRUE :
+				SDL_bool.SDL_true :
 				SDL_bool.SDL_FALSE;
 		}
 
@@ -4258,7 +4258,7 @@ namespace SDL2
 		public static SDL_bool SDL_RectEmpty(ref SDL_Rect r)
 		{
 			return ((r.w <= 0) || (r.h <= 0)) ?
-				SDL_bool.SDL_TRUE :
+				SDL_bool.SDL_true :
 				SDL_bool.SDL_FALSE;
 		}
 
@@ -4270,7 +4270,7 @@ namespace SDL2
 					(a.y == b.y) &&
 					(a.w == b.w) &&
 					(a.h == b.h)	) ?
-				SDL_bool.SDL_TRUE :
+				SDL_bool.SDL_true :
 				SDL_bool.SDL_FALSE;
 		}
 

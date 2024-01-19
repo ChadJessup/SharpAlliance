@@ -43,6 +43,8 @@ public class DialogControl
     private bool fExternFacesLoaded = false;
     private bool gfUseAlternateDialogueFile = false;
 
+    private static FACETYPE? gpCurrentTalkingFace;
+
     public int[] uiExternalStaticNPCFaces = new int[(int)ExternalFaces.NUMBER_OF_EXTERNAL_NPC_FACES];
 
     public NPCID[] uiExternalFaceProfileIds = new NPCID[(int)ExternalFaces.NUMBER_OF_EXTERNAL_NPC_FACES]
@@ -87,7 +89,7 @@ public class DialogControl
             return false;
         }
 
-        if (pSoldier.bAssignment == Assignments.ASSIGNMENT_POW)
+        if (pSoldier.bAssignment == Assignment.ASSIGNMENT_POW)
         {
             return false;
         }
@@ -372,6 +374,15 @@ public class DialogControl
     internal static void SayQuoteFromAnyBodyInSector(QUOTE eNEMY_PRESENCE)
     {
         throw new NotImplementedException();
+    }
+
+    public static void StopAnyCurrentlyTalkingSpeech()
+    {
+        // ATE; Make sure guys stop talking....
+        if (gpCurrentTalkingFace is not null)
+        {
+            Faces.InternalShutupaYoFace(gpCurrentTalkingFace.iID, true);
+        }
     }
 }
 

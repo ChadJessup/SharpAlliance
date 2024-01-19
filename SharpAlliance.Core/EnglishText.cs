@@ -34,6 +34,105 @@ public static class EnglishText
         { LaptopText.BOOKMARK_TEXT_INSURANCE_BROKERS_FOR_AIM_CONTRACTS, "Insurance Brokers for A.I.M. contracts" },
     };
 
+    public static string[] pLaptopTitles =
+    {
+        "Mail Box",
+        "File Viewer",
+        "Personnel",
+        "Bookkeeper Plus",
+        "History Log",
+    };
+
+    // Web error messages. Please use foreign language equivilant for these messages. 
+    // DNS is the acronym for Domain Name Server
+    // URL is the acronym for Uniform Resource Locator
+
+    public static string[] pErrorStrings =
+    {
+        "Error",
+        "Server does not have DNS entry.",
+        "Check URL address and try again.",
+        "OK",
+        "Intermittent Connection to Host. Expect longer transfer times.",
+    };
+
+
+    public static string[] pWebTitle =
+    {
+        "sir-FER 4.0",		// our name for the version of the browser, play on company name
+    };
+
+
+    // The titles for the web program title bar, for each page loaded
+
+    public static string[] pWebPagesTitles =
+    {
+        "A.I.M.",
+        "A.I.M. Members",
+        "A.I.M. Mug Shots",		// a mug shot is another name for a portrait
+	    "A.I.M. Sort",
+        "A.I.M.",
+        "A.I.M. Alumni",
+        "A.I.M. Policies",
+        "A.I.M. History",
+        "A.I.M. Links",
+        "M.E.R.C.",
+        "M.E.R.C. Accounts",
+        "M.E.R.C. Registration",
+        "M.E.R.C. Index",
+        "Bobby Ray's",
+        "Bobby Ray's - Guns",
+        "Bobby Ray's - Ammo",
+        "Bobby Ray's - Armor",
+        "Bobby Ray's - Misc",							//misc is an abbreviation for miscellaneous				
+	    "Bobby Ray's - Used",
+        "Bobby Ray's - Mail Order",
+        "I.M.P.",
+        "I.M.P.",
+        "United Floral Service",
+        "United Floral Service - Gallery",
+        "United Floral Service - Order Form",
+        "United Floral Service - Card Gallery",
+        "Malleus, Incus & Stapes Insurance Brokers",
+        "Information",
+        "Contract",
+        "Comments",
+        "McGillicutty's Mortuary",
+        "",
+        "URL not found.",
+        "Bobby Ray's - Recent Shipments",
+        "",
+        "",
+    };
+
+    public static string[] pShowBookmarkString =
+    {
+        "Sir-Help",
+        "Click Web Again for Bookmarks.",
+    };
+
+
+    public static string[] pPersonnelString =
+    {
+        "Mercs:", 			// mercs we have
+    };
+
+
+    // icon text strings that appear on the laptop
+
+    public static string[] pLaptopIcons =
+    {
+        "E-mail",
+        "Web",
+        "Financial",
+        "Personnel",
+        "History",
+        "Files",
+        "Shut Down",
+        "sir-FER 4.0",			// our play on the company name (Sirtech) and web surFER
+    };
+
+
     public static string[] Message =
     [
         "",

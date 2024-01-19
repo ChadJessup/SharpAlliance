@@ -2497,7 +2497,7 @@ public class SoldierControl
         // If anything other than on a squad or guard, make them guard....
         if (pSoldier.bTeam == gbPlayerNum)
         {
-            if (pSoldier.bAssignment >= Assignments.ON_DUTY && pSoldier.bAssignment != Assignments.ASSIGNMENT_POW)
+            if (pSoldier.bAssignment >= Assignment.ON_DUTY && pSoldier.bAssignment != Assignment.ASSIGNMENT_POW)
             {
                 if (pSoldier.fMercAsleep)
                 {
@@ -9727,7 +9727,7 @@ static int trig[8] = { 2, 3, 4, 5, 6, 7, 8, 1 };
         }
 
         // allow control from within vehicles - allows strategic travel in a vehicle with robot!
-        if ((pSoldier.bAssignment >= Assignments.ON_DUTY) && (pSoldier.bAssignment != Assignments.VEHICLE))
+        if ((pSoldier.bAssignment >= Assignment.ON_DUTY) && (pSoldier.bAssignment != Assignment.VEHICLE))
         {
             return false;
         }
@@ -9767,7 +9767,7 @@ static int trig[8] = { 2, 3, 4, 5, 6, 7, 8, 1 };
                         }
 
                         // if in a vehicle, must be the same vehicle
-                        if (pRobot.bAssignment == Assignments.VEHICLE && (pRobot.iVehicleId != pSoldier.iVehicleId))
+                        if (pRobot.bAssignment == Assignment.VEHICLE && (pRobot.iVehicleId != pSoldier.iVehicleId))
                         {
                             return false;
                         }

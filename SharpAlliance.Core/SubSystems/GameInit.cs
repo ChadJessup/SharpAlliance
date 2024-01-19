@@ -23,7 +23,7 @@ public class GameInit
     private readonly IScreenManager screens;
     private readonly Messages messages;
     private readonly Emails emails;
-    private readonly Laptop laptop;
+    private readonly LaptopSubSystem.Laptop laptop;
     private readonly SoldierProfileSubSystem soldierProfile;
     private readonly World world;
     private readonly NPC npc;
@@ -43,7 +43,7 @@ public class GameInit
         SoldierCreate soldierCreate,
         Overhead overhead,
         Emails emails,
-        Laptop laptop,
+        LaptopSubSystem.Laptop laptop,
         SoldierProfileSubSystem soldierProfile,
         Messages messages,
         TurnBasedInput tbi,
@@ -119,7 +119,7 @@ public class GameInit
 
         //Reinit the laptopn screen variables
         this.laptop.InitLaptopAndLaptopScreens();
-        Laptop.LaptopScreenInit();
+        LaptopSubSystem.Laptop.LaptopScreenInit();
 
         //Reload the Merc profiles
         this.soldierProfile.LoadMercProfiles();
@@ -210,7 +210,7 @@ public class GameInit
             InitStrategicLayer();
 
             // Set new game flag
-            Laptop.SetLaptopNewGameFlag();
+            LaptopSubSystem.Laptop.SetLaptopNewGameFlag();
 
             // this is for the "mercs climbing down from a rope" animation, NOT Skyrider!!
             MercEntering.ResetHeliSeats();
@@ -257,7 +257,7 @@ public class GameInit
                 GameEvents.AddFutureDayStrategicEvent(EVENT.DAY3_ADD_EMAIL_FROM_SPECK, 60 * 7, 0, uiDaysTimeMercSiteAvailable);
             }
 
-            Laptop.SetLaptopExitScreen(ScreenName.InitScreen);
+            LaptopSubSystem.Laptop.SetLaptopExitScreen(ScreenName.InitScreen);
             await this.screens.SetPendingNewScreen(ScreenName.LAPTOP_SCREEN);
             gubScreenCount = 1;
 
@@ -564,5 +564,28 @@ public class GameInit
                 SectorInfo[SEC.N5].bBloodCats = 12;
                 break;
         }
+    }
+
+    internal static bool AnyMercsHired()
+    {
+//        INT32 cnt;
+//        SOLDIERTYPE? pTeamSoldier;
+//        INT16 bLastTeamID;
+
+        // Find first guy availible in team
+//        cnt = gTacticalStatus.Team[gbPlayerNum].bFirstID;
+
+//        bLastTeamID = gTacticalStatus.Team[gbPlayerNum].bLastID;
+
+        // look for all mercs on the same team, 
+        foreach (var pTeamSoldier in MercPtrs)//; cnt <= bLastTeamID; cnt++, pTeamSoldier++)
+        {
+            if (pTeamSoldier.bActive)
+            {
+                return (true);
+            }
+        }
+
+        return (false);
     }
 }

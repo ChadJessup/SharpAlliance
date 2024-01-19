@@ -151,6 +151,78 @@ public class Interface
         }
         //iUIMessageBox = -1;
     }
+
+    internal static void ResetInterface()
+    {
+        LEVELNODE? pNode;
+
+        if ((guiTacticalInterfaceFlags.HasFlag(INTERFACE.MAPSCREEN)))
+        {
+            return;
+        }
+
+        // find out if we need to show any menus
+        DetermineWhichAssignmentMenusCanBeShown();
+        CreateDestroyAssignmentPopUpBoxes();
+
+        HideUICursor();
+
+        ResetPhysicsTrajectoryUI();
+
+        if (gfUIHandleSelection)
+        {
+            if (gsSelectedLevel > 0)
+            {
+                WorldManager.RemoveRoof(gsSelectedGridNo, TileIndexes.GOODRING1);
+                WorldManager.RemoveRoof(gsSelectedGridNo, TileIndexes.FIRSTPOINTERS2);
+            }
+            else
+            {
+                WorldManager.RemoveObject(gsSelectedGridNo, TileIndexes.FIRSTPOINTERS2);
+                WorldManager.RemoveObject(gsSelectedGridNo, TileIndexes.GOODRING1);
+
+            }
+        }
+
+        if (gfUIHandleShowMoveGrid)
+        {
+            WorldManager.RemoveTopmost(gsUIHandleShowMoveGridLocation, TileIndexes.FIRSTPOINTERS4);
+            WorldManager.RemoveTopmost(gsUIHandleShowMoveGridLocation, TileIndexes.FIRSTPOINTERS9);
+            WorldManager.RemoveTopmost(gsUIHandleShowMoveGridLocation, TileIndexes.FIRSTPOINTERS2);
+            WorldManager.RemoveTopmost(gsUIHandleShowMoveGridLocation, TileIndexes.FIRSTPOINTERS13);
+            WorldManager.RemoveTopmost(gsUIHandleShowMoveGridLocation, TileIndexes.FIRSTPOINTERS15);
+            WorldManager.RemoveTopmost(gsUIHandleShowMoveGridLocation, TileIndexes.FIRSTPOINTERS19);
+            WorldManager.RemoveTopmost(gsUIHandleShowMoveGridLocation, TileIndexes.FIRSTPOINTERS20);
+        }
+
+        if (fInterfacePanelDirty != 0)
+        {
+            fInterfacePanelDirty = 0;
+        }
+
+
+        // Reset int tile cursor stuff
+        if (gfUIShowCurIntTile)
+        {
+//            if (gsUICurIntTileEffectGridNo != NOWHERE)
+//            {
+//                //Find our tile!
+//                pNode = gpWorldLevelData[gsUICurIntTileEffectGridNo].pStructHead;
+//
+//                while (pNode != NULL)
+//                {
+//                    if (pNode->usIndex == gusUICurIntTileEffectIndex)
+//                    {
+//                        pNode->ubShadeLevel = gsUICurIntTileOldShade;
+//                        pNode->uiFlags &= (~LEVELNODE_DYNAMIC);
+//                        break;
+//                    }
+//
+//                    pNode = pNode->pNext;
+//                }
+//            }
+        }
+    }
 }
 
 public enum INTERFACE

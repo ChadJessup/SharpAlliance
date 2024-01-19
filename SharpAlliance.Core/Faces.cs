@@ -641,7 +641,7 @@ public class Faces
             {
                 if ((MercPtrs[pFace.ubSoldierID].bLife < OKLIFE) ||
                          (MercPtrs[pFace.ubSoldierID].fMercAsleep == true) ||
-                         (MercPtrs[pFace.ubSoldierID].bAssignment == Assignments.ASSIGNMENT_POW))
+                         (MercPtrs[pFace.ubSoldierID].bAssignment == Assignment.ASSIGNMENT_POW))
                 {
                     return;
                 }
@@ -1286,7 +1286,7 @@ public class Faces
 
             switch (pSoldier.bAssignment)
             {
-                case Assignments.DOCTOR:
+                case Assignment.DOCTOR:
 
                     sIconIndex = 1;
                     fDoIcon = true;
@@ -1299,7 +1299,7 @@ public class Faces
                     usMaximumPts = (usMaximumPts + 5) / 10;
                     break;
 
-                case Assignments.PATIENT:
+                case Assignment.PATIENT:
 
                     sIconIndex = 2;
                     fDoIcon = true;
@@ -1310,10 +1310,10 @@ public class Faces
                     fShowMaximum = true;
                     break;
 
-                case Assignments.TRAIN_SELF:
-                case Assignments.TRAIN_TOWN:
-                case Assignments.TRAIN_TEAMMATE:
-                case Assignments.TRAIN_BY_OTHER:
+                case Assignment.TRAIN_SELF:
+                case Assignment.TRAIN_TOWN:
+                case Assignment.TRAIN_TEAMMATE:
+                case Assignment.TRAIN_BY_OTHER:
                     sIconIndex = 3;
                     fDoIcon = true;
                     fShowNumber = true;
@@ -1326,25 +1326,25 @@ public class Faces
 
                     switch (MercPtrs[pFace.ubSoldierID].bAssignment)
                     {
-                        case Assignments.TRAIN_SELF:
+                        case Assignment.TRAIN_SELF:
                             //                            sPtsAvailable = GetSoldierTrainingPts(MercPtrs[pFace.ubSoldierID], MercPtrs[pFace.ubSoldierID].bTrainStat, fAtGunRange, usMaximumPts);
                             break;
-                        case Assignments.TRAIN_BY_OTHER:
+                        case Assignment.TRAIN_BY_OTHER:
                             //                            sPtsAvailable = GetSoldierStudentPts(MercPtrs[pFace.ubSoldierID], MercPtrs[pFace.ubSoldierID].bTrainStat, fAtGunRange, usMaximumPts);
                             break;
-                        case Assignments.TRAIN_TOWN:
+                        case Assignment.TRAIN_TOWN:
                             //                            sPtsAvailable = GetTownTrainPtsForCharacter(MercPtrs[pFace.ubSoldierID], &usMaximumPts);
                             // divide both amounts by 10 to make the displayed numbers a little more user-palatable (smaller)
                             sPtsAvailable = (sPtsAvailable + 5) / 10;
                             usMaximumPts = (usMaximumPts + 5) / 10;
                             break;
-                        case Assignments.TRAIN_TEAMMATE:
+                        case Assignment.TRAIN_TEAMMATE:
                             //                            sPtsAvailable = GetBonusTrainingPtsDueToInstructor(MercPtrs[pFace.ubSoldierID], null, MercPtrs[pFace.ubSoldierID].bTrainStat, fAtGunRange, &usMaximumPts);
                             break;
                     }
                     break;
 
-                case Assignments.REPAIR:
+                case Assignment.REPAIR:
 
                     sIconIndex = 0;
                     fDoIcon = true;
@@ -2042,7 +2042,7 @@ public class Faces
         return true;
     }
 
-    private static void InternalShutupaYoFace(int iFaceIndex, bool fForce)
+    public static void InternalShutupaYoFace(int iFaceIndex, bool fForce)
     {
         FACETYPE? pFace;
 

@@ -1,4 +1,5 @@
-﻿using SharpAlliance.Core.Managers.VideoSurfaces;
+﻿using System.Collections.Generic;
+using SharpAlliance.Core.Managers.VideoSurfaces;
 using SharpAlliance.Core.Screens;
 using SharpAlliance.Core.SubSystems.LaptopSubSystem;
 using SixLabors.ImageSharp;
@@ -115,7 +116,7 @@ public partial class Globals
 
     // the wait time for closing of laptop animation/delay
     public const int EXIT_LAPTOP_DELAY_TIME = 100;
-    public static int guiTitleBarSurface;
+    public static SurfaceType guiTitleBarSurface;
     public static bool gfTitleBarSurfaceAlreadyActive = false;
     public const int LAPTOP__NEW_FILE_ICON_X = 83;
     public const int LAPTOP__NEW_FILE_ICON_Y = 412;//(405+19)
@@ -127,8 +128,8 @@ public partial class Globals
     public static LAPTOP_MODE guiPreviousLaptopMode;
     public static LAPTOP_MODE guiCurrentWWWMode = LAPTOP_MODE.NONE;
     public static int giCurrentSubPage;
-    public static int guiCurrentLapTopCursor;
-    public static int guiPreviousLapTopCursor;
+    public static LAPTOP_CURSOR guiCurrentLapTopCursor;
+    public static LAPTOP_CURSOR guiPreviousLapTopCursor;
     public static LaptopPanel guiCurrentSidePanel; // the current navagation panel on the leftside of the laptop screen
     public static LaptopPanel guiPreviousSidePanel;
     public static int guiVSurfaceSize;
@@ -192,12 +193,12 @@ public partial class Globals
     public static ScreenName guiExitScreen = ScreenName.MAP_SCREEN;
     public static MOUSE_REGION gLaptopRegion;
     // Laptop screen graphic handle
-    public static int guiLAPTOP;
+    public static HVOBJECT guiLAPTOP;
     public static bool fNewWWWDisplay = true;
 
     public static bool fNewWWW = true;
 
-    public static int giRainDelayInternetSite = -1;
+    public static BOOKMARK giRainDelayInternetSite = (BOOKMARK)(-1);
 
     // have we visitied this site already?
     //bool fVisitedBookmarkAlready[20];
@@ -217,13 +218,13 @@ public partial class Globals
     public static int guiBOOKMARK;
     public static int guiGRAPHWINDOW;
     public static int guiGRAPHBAR;
-    public static string guiLaptopBACKGROUND;
+    public static HVOBJECT guiLaptopBACKGROUND;
     public static int guiDOWNLOADTOP;
     public static int guiDOWNLOADMID;
     public static int guiDOWNLOADBOT;
-    public static int guiTITLEBARLAPTOP;
-    public static int guiLIGHTS;
-    public static string guiTITLEBARICONS;
+    public static HVOBJECT guiTITLEBARLAPTOP;
+    public static HVOBJECT guiLIGHTS;
+    public static HVOBJECT guiTITLEBARICONS;
     public static SurfaceType guiDESKTOP;
 
     // email notification
@@ -257,26 +258,26 @@ public partial class Globals
     public static int[] giLapTopButtonImage = new int[MAX_BUTTON_COUNT];
     public static int[] giErrorButton = new int[1];
     public static int[] giErrorButtonImage = new int[1];
-    public static int[] gLaptopButton = new int[7];
-    public static int[] gLaptopButtonImage = new int[7];
+    public static GUI_BUTTON[] gLaptopButtons = new GUI_BUTTON[7];
+    public static ButtonPic[] gLaptopButtonImage = new ButtonPic[7];
 
     // minimize button
     public static int[] gLaptopMinButton = new int[1];
     public static int[] gLaptopMinButtonImage = new int[1];
 
-    public static LAPTOP_PROGRAM_STATES[] gLaptopProgramStates = new LAPTOP_PROGRAM_STATES[(int)LAPTOP_PROGRAM.HISTORY + 1];
+    public static Dictionary<LAPTOP_PROGRAM, LAPTOP_PROGRAM_STATES> gLaptopProgramStates = new();
 
     // process of mazimizing
     public static bool fMaximizingProgram = false;
 
     // program we are maximizing
-    public static int bProgramBeingMaximized = -1;
+    public static LAPTOP_PROGRAM bProgramBeingMaximized = (LAPTOP_PROGRAM)(-1);
 
     // are we minimizing 
     public static bool fMinizingProgram = false;
 
     // process openned queue
-    public static int[] gLaptopProgramQueueList = new int[6];
+    public static Dictionary<LAPTOP_PROGRAM, int> gLaptopProgramQueueList = new();
 
     // state of createion of minimize button
     public static bool fCreateMinimizeButton = false;

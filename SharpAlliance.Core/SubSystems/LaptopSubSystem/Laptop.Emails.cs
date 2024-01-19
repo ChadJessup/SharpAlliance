@@ -359,7 +359,7 @@ public class Emails
         this.DisplayEmailHeaders();
 
         // display border
-        hHandle = this.video.GetVideoObject(guiLaptopBACKGROUND);
+        guiLaptopBACKGROUND = this.video.GetVideoObject("");
         //        video.BltVideoObject(Surfaces.FRAME_BUFFER, hHandle, 0, 108, 23, VO_BLT.SRCTRANSPARENCY, null);
 
 
@@ -1136,7 +1136,7 @@ public class Emails
 
 
         // the icon for the title of this box
-        hHandle = this.video.GetVideoObject(guiTITLEBARICONS);
+        guiTITLEBARICONS = this.video.GetVideoObject("");
         //        video.BltVideoObject(Surfaces.FRAME_BUFFER, hHandle, 0, VIEWER_X + 5, VIEWER_Y + iViewerPositionY + 2, VO_BLT.SRCTRANSPARENCY, null);
 
         // display header text
@@ -1346,7 +1346,7 @@ public class Emails
 
 
             // add X button
-            giMessageButtonImage[0] = this.buttons.LoadButtonImage("LAPTOP\\X.sti", -1, 0, -1, 1, -1);
+            giMessageButtonImage[0] = ButtonSubSystem.LoadButtonImage("LAPTOP\\X.sti", -1, 0, -1, 1, -1);
             giMessageButton[0] = ButtonSubSystem.QuickCreateButton(giMessageButtonImage[0], new(BUTTON_X + 2, (int)(BUTTON_Y + (int)iViewerY + 1)),
                 ButtonFlags.BUTTON_TOGGLE, MSYS_PRIORITY.HIGHEST - 1,
                 (GUI_CALLBACK)MouseSubSystem.BtnGenericMouseMoveButtonCallback, (GUI_CALLBACK)this.BtnMessageXCallback);
@@ -1355,12 +1355,12 @@ public class Emails
             if (giNumberOfPagesToCurrentEmail > 2)
             {
                 // add next and previous mail page buttons
-                giMailMessageButtonsImage[0] = this.buttons.LoadButtonImage("LAPTOP\\NewMailButtons.sti", -1, 0, -1, 3, -1);
+                giMailMessageButtonsImage[0] = ButtonSubSystem.LoadButtonImage("LAPTOP\\NewMailButtons.sti", -1, 0, -1, 3, -1);
                 giMailMessageButtons[0] = ButtonSubSystem.QuickCreateButton(giMailMessageButtonsImage[0], new(PREVIOUS_PAGE_BUTTON_X, (int)(LOWER_BUTTON_Y + (int)iViewerY + 2)),
                     ButtonFlags.BUTTON_TOGGLE, MSYS_PRIORITY.HIGHEST - 1,
                     (GUI_CALLBACK)MouseSubSystem.BtnGenericMouseMoveButtonCallback, (GUI_CALLBACK)this.BtnPreviousEmailPageCallback);
 
-                giMailMessageButtonsImage[1] = this.buttons.LoadButtonImage("LAPTOP\\NewMailButtons.sti", -1, 1, -1, 4, -1);
+                giMailMessageButtonsImage[1] = ButtonSubSystem.LoadButtonImage("LAPTOP\\NewMailButtons.sti", -1, 1, -1, 4, -1);
                 giMailMessageButtons[1] = ButtonSubSystem.QuickCreateButton(giMailMessageButtonsImage[1], new(NEXT_PAGE_BUTTON_X, (int)(LOWER_BUTTON_Y + (int)iViewerY + 2)),
                     ButtonFlags.BUTTON_TOGGLE, MSYS_PRIORITY.HIGHEST - 1,
                     (GUI_CALLBACK)MouseSubSystem.BtnGenericMouseMoveButtonCallback, (GUI_CALLBACK)this.BtnNextEmailPageCallback);
@@ -1368,7 +1368,7 @@ public class Emails
                 gfPageButtonsWereCreated = true;
             }
 
-            giMailMessageButtonsImage[2] = this.buttons.LoadButtonImage("LAPTOP\\NewMailButtons.sti", -1, 2, -1, 5, -1);
+            giMailMessageButtonsImage[2] = ButtonSubSystem.LoadButtonImage("LAPTOP\\NewMailButtons.sti", -1, 2, -1, 5, -1);
             giMailMessageButtons[2] = ButtonSubSystem.QuickCreateButton(giMailMessageButtonsImage[2], new(DELETE_BUTTON_X, (int)(BUTTON_LOWER_Y + (int)iViewerY + 2)),
                 ButtonFlags.BUTTON_TOGGLE, MSYS_PRIORITY.HIGHEST - 1,
                 (GUI_CALLBACK)MouseSubSystem.BtnGenericMouseMoveButtonCallback, (GUI_CALLBACK)this.BtnDeleteCallback);
@@ -1430,7 +1430,7 @@ public class Emails
             fOldNewMailFlag = true;
 
             // load image and setup button
-            giNewMailButtonImage[0] = this.buttons.LoadButtonImage("LAPTOP\\YesNoButtons.sti", -1, 0, -1, 1, -1);
+            giNewMailButtonImage[0] = ButtonSubSystem.LoadButtonImage("LAPTOP\\YesNoButtons.sti", -1, 0, -1, 1, -1);
             giNewMailButton[0] = ButtonSubSystem.QuickCreateButton(giNewMailButtonImage[0], new(NEW_BTN_X + 10, NEW_BTN_Y),
                                                   ButtonFlags.BUTTON_TOGGLE, MSYS_PRIORITY.HIGHEST - 2,
                                                   (GUI_CALLBACK)MouseSubSystem.BtnGenericMouseMoveButtonCallback, (GUI_CALLBACK)this.BtnNewOkback);
@@ -1504,12 +1504,12 @@ public class Emails
         //if( ( fNewMailFlag ) && ( fOldNewMailFlag ) )
         //	return ( false );
 
-        hHandle = this.video.GetVideoObject(guiEmailWarning);
+//        hHandle = this.video.GetVideoObject(guiEmailWarning);
         //        video.BltVideoObject(Surfaces.FRAME_BUFFER, hHandle, 0, EMAIL_WARNING_X, EMAIL_WARNING_Y, VO_BLT.SRCTRANSPARENCY, null);
 
 
         // the icon for the title of this box
-        hHandle = this.video.GetVideoObject(guiTITLEBARICONS);
+//        hHandle = this.video.GetVideoObject(guiTITLEBARICONS);
         //        video.BltVideoObject(Surfaces.FRAME_BUFFER, hHandle, 0, EMAIL_WARNING_X + 5, EMAIL_WARNING_Y + 2, VO_BLT.SRCTRANSPARENCY, null);
 
         // font stuff 
@@ -1554,7 +1554,7 @@ public class Emails
     {
 
         // this function will check to see if the new mail region needs to be redrawn
-        if (this.fReDrawNewMailFlag == true)
+        if (fReDrawNewMailFlag == true)
         {
             if (fNewMailFlag)
             {
@@ -1577,7 +1577,7 @@ public class Emails
             // return;
 
             // reset flag for redraw 
-            this.fReDrawNewMailFlag = false;
+            fReDrawNewMailFlag = false;
 
             return;
         }
@@ -1897,7 +1897,7 @@ public class Emails
     }
 
     static bool fOldDeleteMailFlag = false;
-    private bool fReDrawNewMailFlag;
+    public static bool fReDrawNewMailFlag;
     private bool fFirstTime;
     private readonly IVideoManager video;
     private readonly FontSubSystem fonts;
@@ -1913,13 +1913,13 @@ public class Emails
 
             // YES button
             fOldDeleteMailFlag = true;
-            giDeleteMailButtonImage[0] = this.buttons.LoadButtonImage("LAPTOP\\YesNoButtons.sti", -1, 0, -1, 1, -1);
+            giDeleteMailButtonImage[0] = ButtonSubSystem.LoadButtonImage("LAPTOP\\YesNoButtons.sti", -1, 0, -1, 1, -1);
             giDeleteMailButton[0] = ButtonSubSystem.QuickCreateButton(giDeleteMailButtonImage[0], new(NEW_BTN_X + 1, NEW_BTN_Y),
                 ButtonFlags.BUTTON_TOGGLE, MSYS_PRIORITY.HIGHEST - 2,
                 (GUI_CALLBACK)MouseSubSystem.BtnGenericMouseMoveButtonCallback, (GUI_CALLBACK)this.BtnDeleteYesback);
 
             // NO button
-            giDeleteMailButtonImage[1] = this.buttons.LoadButtonImage("LAPTOP\\YesNoButtons.sti", -1, 2, -1, 3, -1);
+            giDeleteMailButtonImage[1] = ButtonSubSystem.LoadButtonImage("LAPTOP\\YesNoButtons.sti", -1, 2, -1, 3, -1);
             giDeleteMailButton[1] = ButtonSubSystem.QuickCreateButton(giDeleteMailButtonImage[1], new(NEW_BTN_X + 40, NEW_BTN_Y),
                 ButtonFlags.BUTTON_TOGGLE, MSYS_PRIORITY.HIGHEST - 2,
                 (GUI_CALLBACK)MouseSubSystem.BtnGenericMouseMoveButtonCallback, (GUI_CALLBACK)this.BtnDeleteNoback);
@@ -1982,7 +1982,7 @@ public class Emails
 
         // load graphics
 
-        hHandle = this.video.GetVideoObject(guiEmailWarning);
+//        hHandle = this.video.GetVideoObject(guiEmailWarning);
         //        video.BltVideoObject(Surfaces.FRAME_BUFFER, hHandle, 0, EMAIL_WARNING_X, EMAIL_WARNING_Y, VO_BLT.SRCTRANSPARENCY, null);
 
 
@@ -1993,7 +1993,7 @@ public class Emails
         FontSubSystem.SetFontShadow(FontShadow.DEFAULT_SHADOW);
 
         // the icon for the title of this box
-        hHandle = this.video.GetVideoObject(guiTITLEBARICONS);
+//        hHandle = this.video.GetVideoObject(guiTITLEBARICONS);
         //        video.BltVideoObject(Surfaces.FRAME_BUFFER, hHandle, 0, EMAIL_WARNING_X + 5, EMAIL_WARNING_Y + 2, VO_BLT.SRCTRANSPARENCY, null);
 
         // title 
@@ -2281,7 +2281,7 @@ public class Emails
         // create sort buttons, right now - not finished
 
         // read sort
-        giSortButtonImage[0] = this.buttons.LoadButtonImage("LAPTOP\\mailbuttons.sti", -1, 0, -1, 4, -1);
+        giSortButtonImage[0] = ButtonSubSystem.LoadButtonImage("LAPTOP\\mailbuttons.sti", -1, 0, -1, 4, -1);
         giSortButton[0] = ButtonSubSystem.QuickCreateButton(giSortButtonImage[0], new(ENVELOPE_BOX_X, FROM_BOX_Y),
                                             ButtonFlags.BUTTON_TOGGLE, MSYS_PRIORITY.HIGHEST - 1,
                                             (GUI_CALLBACK)MouseSubSystem.BtnGenericMouseMoveButtonCallback, (GUI_CALLBACK)this.ReadCallback);
@@ -2289,7 +2289,7 @@ public class Emails
 
 
         // subject sort
-        giSortButtonImage[1] = this.buttons.LoadButtonImage("LAPTOP\\mailbuttons.sti", -1, 1, -1, 5, -1);
+        giSortButtonImage[1] = ButtonSubSystem.LoadButtonImage("LAPTOP\\mailbuttons.sti", -1, 1, -1, 5, -1);
         giSortButton[1] = ButtonSubSystem.QuickCreateButton(giSortButtonImage[1], new(FROM_BOX_X, FROM_BOX_Y),
                                             ButtonFlags.BUTTON_TOGGLE, MSYS_PRIORITY.HIGHEST - 1,
                                             (GUI_CALLBACK)MouseSubSystem.BtnGenericMouseMoveButtonCallback, (GUI_CALLBACK)this.FromCallback);
@@ -2300,7 +2300,7 @@ public class Emails
 
 
         // sender sort
-        giSortButtonImage[2] = this.buttons.LoadButtonImage("LAPTOP\\mailbuttons.sti", -1, 2, -1, 6, -1);
+        giSortButtonImage[2] = ButtonSubSystem.LoadButtonImage("LAPTOP\\mailbuttons.sti", -1, 2, -1, 6, -1);
         giSortButton[2] = ButtonSubSystem.QuickCreateButton(giSortButtonImage[2], new(SUBJECT_BOX_X, FROM_BOX_Y),
                                             ButtonFlags.BUTTON_TOGGLE, MSYS_PRIORITY.HIGHEST - 1,
                                             (GUI_CALLBACK)MouseSubSystem.BtnGenericMouseMoveButtonCallback, (GUI_CALLBACK)this.SubjectCallback);
@@ -2312,7 +2312,7 @@ public class Emails
 
 
         // date sort
-        giSortButtonImage[3] = this.buttons.LoadButtonImage("LAPTOP\\mailbuttons.sti", -1, 3, -1, 7, -1);
+        giSortButtonImage[3] = ButtonSubSystem.LoadButtonImage("LAPTOP\\mailbuttons.sti", -1, 3, -1, 7, -1);
         giSortButton[3] = ButtonSubSystem.QuickCreateButton(giSortButtonImage[3], new(DATE_BOX_X, FROM_BOX_Y),
                                             ButtonFlags.BUTTON_TOGGLE, MSYS_PRIORITY.HIGHEST - 1,
                                             (GUI_CALLBACK)MouseSubSystem.BtnGenericMouseMoveButtonCallback, (GUI_CALLBACK)this.DateCallback);
@@ -3796,14 +3796,14 @@ public class Emails
         // this function will create the buttons to advance and go back email pages
 
         // next button
-        giMailPageButtonsImage[0] = this.buttons.LoadButtonImage("LAPTOP\\NewMailButtons.sti", -1, 1, -1, 4, -1);
+        giMailPageButtonsImage[0] = ButtonSubSystem.LoadButtonImage("LAPTOP\\NewMailButtons.sti", -1, 1, -1, 4, -1);
         giMailPageButtons[0] = ButtonSubSystem.QuickCreateButton(giMailPageButtonsImage[0], new(NEXT_PAGE_X, NEXT_PAGE_Y),
                                             ButtonFlags.BUTTON_TOGGLE, MSYS_PRIORITY.HIGHEST - 1,
                                             (GUI_CALLBACK)MouseSubSystem.BtnGenericMouseMoveButtonCallback, (GUI_CALLBACK)this.NextRegionButtonCallback);
         ButtonSubSystem.SetButtonCursor(giMailPageButtons[0], CURSOR.LAPTOP_SCREEN);
 
         // previous button
-        giMailPageButtonsImage[1] = this.buttons.LoadButtonImage("LAPTOP\\NewMailButtons.sti", -1, 0, -1, 3, -1);
+        giMailPageButtonsImage[1] = ButtonSubSystem.LoadButtonImage("LAPTOP\\NewMailButtons.sti", -1, 0, -1, 3, -1);
         giMailPageButtons[1] = ButtonSubSystem.QuickCreateButton(giMailPageButtonsImage[1], new(PREVIOUS_PAGE_X, NEXT_PAGE_Y),
                                         ButtonFlags.BUTTON_TOGGLE, MSYS_PRIORITY.HIGHEST - 1,
                                         (GUI_CALLBACK)MouseSubSystem.BtnGenericMouseMoveButtonCallback, (GUI_CALLBACK)this.PreviousRegionButtonCallback);

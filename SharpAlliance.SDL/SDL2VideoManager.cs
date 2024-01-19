@@ -2307,4 +2307,17 @@ public class SDL2VideoManager : IVideoManager
     public void StartFrameBufferRender()
     {
     }
+
+    public bool BltStretchVideoSurface(SurfaceType uiDestVSurface, SurfaceType uiSrcVSurface, Point iDest, int fBltFlags, Rectangle SrcRect, Rectangle DestRect)
+    {
+        var dest = GetVideoSurface(out HVSURFACE hDestVSurface, uiDestVSurface);
+        var src = GetVideoSurface(out HVSURFACE hSrcVSurface, uiSrcVSurface);
+
+        dest.Mutate(ctx =>
+        {
+            ctx.DrawImage(src, iDest, SrcRect, 1.0f);
+        });
+
+        return (true);
+    }
 }

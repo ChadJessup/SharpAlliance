@@ -66,6 +66,8 @@ public partial class Globals
     public const int ARROWS_SHOW_DOWN_CLIMB = 0x02000000;
     public const int LOCATEANDSELECT_MERC = 1;
     public const int LOCATE_MERC_ONCE = 2;
+
+    public static MOUSE_REGION gRadarRegion = new(nameof(gRadarRegion));
 }
 
 public struct TOP_MESSAGE

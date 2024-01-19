@@ -82,7 +82,7 @@ public class SoundManager : ISoundManager
     //
     //		Sets the volume on a currently playing sound. 
     //
-    //	Returns:	TRUE if the volume was actually set on the sample, FALSE if the
+    //	Returns:	true if the volume was actually set on the sample, FALSE if the
     //						sample had already expired or couldn't be found
     //
     //*******************************************************************************
@@ -109,7 +109,7 @@ public class SoundManager : ISoundManager
     // 
     // Sounds the volume on a sound channel.
     // 
-    // Returns bool            - TRUE if the volume was set
+    // Returns bool            - true if the volume was set
     // 
     // int uiChannel           - Sound channel	
     // int uiVolume            - New volume 0-127

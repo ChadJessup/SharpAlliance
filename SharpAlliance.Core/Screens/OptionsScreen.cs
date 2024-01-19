@@ -546,7 +546,7 @@ public class OptionsScreen : IScreen
         this.video.GetVideoObject("INTERFACE\\optionscreenaddons.sti", out this.guiOptionsAddOnImagesKey);
 
         //Save game button
-        this.giOptionsButtonImages = this.buttons.LoadButtonImage("INTERFACE\\OptionScreenAddons.sti", -1, 2, -1, 3, -1);
+        this.giOptionsButtonImages = ButtonSubSystem.LoadButtonImage("INTERFACE\\OptionScreenAddons.sti", -1, 2, -1, 3, -1);
 
         this.guiOptGotoSaveGameBtn = ButtonSubSystem.CreateIconAndTextButton(
             this.giOptionsButtonImages,

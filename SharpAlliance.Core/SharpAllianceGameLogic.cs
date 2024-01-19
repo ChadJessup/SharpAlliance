@@ -6,6 +6,7 @@ using Microsoft.Extensions.Localization;
 using SharpAlliance.Core.Interfaces;
 using SharpAlliance.Core.Managers;
 using SharpAlliance.Core.Screens;
+using SharpAlliance.Core.SubSystems.LaptopSubSystem;
 using SharpAlliance.Platform;
 
 namespace SharpAlliance.Core;
@@ -145,7 +146,7 @@ public class SharpAllianceGameLogic : IGameLogic
                         case MapScreen ms when sm.guiPendingScreen is MessageBoxScreen:
                             sm.EndMapScreen(false);
                             break;
-                        case LaptopScreen:
+                        case Laptop:
                             sm.ExitLaptop();
                             break;
                     }
@@ -227,7 +228,7 @@ public class SharpAllianceGameLogic : IGameLogic
         sm.AddScreen<InitScreen>(ScreenName.InitScreen);
         sm.AddScreen<FadeScreen>(ScreenName.FADE_SCREEN);
         sm.AddScreen<IntroScreen>(ScreenName.INTRO_SCREEN);
-        sm.AddScreen<LaptopScreen>(ScreenName.LAPTOP_SCREEN);
+        sm.AddScreen<Laptop>(ScreenName.LAPTOP_SCREEN);
         sm.AddScreen<CreditsScreen>(ScreenName.CREDIT_SCREEN);
         sm.AddScreen<MessageBoxScreen>(ScreenName.MSG_BOX_SCREEN);
         sm.AddScreen<MainMenuScreen>(ScreenName.MAINMENU_SCREEN);

@@ -512,7 +512,7 @@ public class Smell
                 {
                     //This has been removed and it is handled by the ubBloodInfo level when restoring a saved game.
                     //Set a flag indicating that the following changes are to go the the maps temp file
-                    //ApplyMapChangesToMapTempFile( TRUE );
+                    //ApplyMapChangesToMapTempFile( true );
 
                     // Remove
                     WorldManager.RemoveObject(sGridNo, usIndex);
@@ -537,7 +537,7 @@ public class Smell
 
                     //This has been removed and it is handled by the ubBloodInfo level when restoring a saved game.
                     //Set a flag indicating that the following changes are to go the the maps temp file
-                    //ApplyMapChangesToMapTempFile( TRUE );
+                    //ApplyMapChangesToMapTempFile( true );
 
                     // Add!
                     WorldManager.AddObjectToHead(sGridNo, usNewIndex);

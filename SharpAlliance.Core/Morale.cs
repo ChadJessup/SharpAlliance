@@ -127,10 +127,10 @@ public class Morale
             // CJC: decay modifiers while asleep! or POW!
             if (pSoldier.bActive
                 && pSoldier.ubProfile != NO_PROFILE
-                && !(pSoldier.bAssignment == Assignments.IN_TRANSIT || pSoldier.bAssignment == Assignments.ASSIGNMENT_DEAD))
+                && !(pSoldier.bAssignment == Assignment.IN_TRANSIT || pSoldier.bAssignment == Assignment.ASSIGNMENT_DEAD))
             {
                 // only let morale mod decay if it is positive while merc is a POW
-                if (pSoldier.bAssignment == Assignments.ASSIGNMENT_POW && pSoldier.bTacticalMoraleMod < 0)
+                if (pSoldier.bAssignment == Assignment.ASSIGNMENT_POW && pSoldier.bTacticalMoraleMod < 0)
                 {
                     continue;
                 }
@@ -226,10 +226,10 @@ public class Morale
             // CJC: decay modifiers while asleep! or POW!
             if (pSoldier.bActive
                 && pSoldier.ubProfile != NO_PROFILE
-                && !(pSoldier.bAssignment == Assignments.IN_TRANSIT || pSoldier.bAssignment == Assignments.ASSIGNMENT_DEAD))
+                && !(pSoldier.bAssignment == Assignment.IN_TRANSIT || pSoldier.bAssignment == Assignment.ASSIGNMENT_DEAD))
             {
                 // only let morale mod decay if it is positive while merc is a POW
-                if (pSoldier.bAssignment == Assignments.ASSIGNMENT_POW && pSoldier.bStrategicMoraleMod < 0)
+                if (pSoldier.bAssignment == Assignment.ASSIGNMENT_POW && pSoldier.bStrategicMoraleMod < 0)
                 {
                     continue;
                 }
@@ -279,9 +279,9 @@ public class Morale
             return;
         }
 
-        if ((pSoldier.bAssignment == Assignments.ASSIGNMENT_DEAD)
-            || (pSoldier.bAssignment == Assignments.ASSIGNMENT_POW)
-            || (pSoldier.bAssignment == Assignments.IN_TRANSIT))
+        if ((pSoldier.bAssignment == Assignment.ASSIGNMENT_DEAD)
+            || (pSoldier.bAssignment == Assignment.ASSIGNMENT_POW)
+            || (pSoldier.bAssignment == Assignment.IN_TRANSIT))
         {
             return;
         }
@@ -738,10 +738,10 @@ public class Morale
             //if the merc is active, in Arulco, and conscious, not POW
             if (pSoldier.bActive
                 && pSoldier.ubProfile != NO_PROFILE
-                && !(pSoldier.bAssignment == Assignments.IN_TRANSIT
+                && !(pSoldier.bAssignment == Assignment.IN_TRANSIT
                    || pSoldier.fMercAsleep == true
-                   || pSoldier.bAssignment == Assignments.ASSIGNMENT_DEAD
-                   || pSoldier.bAssignment == Assignments.ASSIGNMENT_POW))
+                   || pSoldier.bAssignment == Assignment.ASSIGNMENT_DEAD
+                   || pSoldier.bAssignment == Assignment.ASSIGNMENT_POW))
             {
                 // calculate the guy's opinion of the people he is with
                 pProfile = gMercProfiles[pSoldier.ubProfile];
@@ -774,10 +774,10 @@ public class Morale
                     if (bOtherID != bMercID
                         && pOtherSoldier.bActive
                         && pOtherSoldier.ubProfile != NO_PROFILE
-                        && !(pOtherSoldier.bAssignment == Assignments.IN_TRANSIT
+                        && !(pOtherSoldier.bAssignment == Assignment.IN_TRANSIT
                         || pOtherSoldier.fMercAsleep == true
-                        || pOtherSoldier.bAssignment == Assignments.ASSIGNMENT_DEAD
-                        || pOtherSoldier.bAssignment == Assignments.ASSIGNMENT_POW))
+                        || pOtherSoldier.bAssignment == Assignment.ASSIGNMENT_DEAD
+                        || pOtherSoldier.bAssignment == Assignment.ASSIGNMENT_POW))
                     {
                         if (fSameGroupOnly)
                         {

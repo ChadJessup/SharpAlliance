@@ -46,12 +46,10 @@ public partial class Globals
 
     internal static void gprintf(int x, int y, string format, params object?[] arguments)
     {
-        throw new NotImplementedException();
     }
 
     internal static void mprintf(int sNewX, int sNewY, string format, params object?[] args)
     {
-        throw new NotImplementedException();
     }
 
     internal static string wcscat(string src1, string src2) => src1 + src2;

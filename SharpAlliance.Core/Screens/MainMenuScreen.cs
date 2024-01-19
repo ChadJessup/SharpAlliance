@@ -382,7 +382,7 @@ public class MainMenuScreen : IScreen
             //gfLoadGameUponEntry = false;
 
             // Load button images
-            this.iMenuImages[MainMenuItems.NEW_GAME] = this.buttons.LoadButtonImage("LOADSCREENS\\titletext.sti", 0, 0, 1, 2, -1);
+            this.iMenuImages[MainMenuItems.NEW_GAME] = ButtonSubSystem.LoadButtonImage("LOADSCREENS\\titletext.sti", 0, 0, 1, 2, -1);
             sSlot = 0;
 
             this.iMenuImages[MainMenuItems.LOAD_GAME] = ButtonSubSystem.UseLoadedButtonImage(this.iMenuImages[MainMenuItems.NEW_GAME], 6, 3, 4, 5, -1);

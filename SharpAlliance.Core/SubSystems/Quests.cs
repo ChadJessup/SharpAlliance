@@ -241,7 +241,7 @@ public class Quests
         {
             pSoldier = Globals.MercSlots[uiLoop];
 
-            if (pSoldier is not null && pSoldier.bTeam == Globals.gbPlayerNum && pSoldier.IsAlive && pSoldier.bLife < pSoldier.bLifeMax && pSoldier.bAssignment != Assignments.ASSIGNMENT_HOSPITAL)
+            if (pSoldier is not null && pSoldier.bTeam == Globals.gbPlayerNum && pSoldier.IsAlive && pSoldier.bLife < pSoldier.bLifeMax && pSoldier.bAssignment != Assignment.ASSIGNMENT_HOSPITAL)
             {
                 if (IsometricUtils.PythSpacesAway(sGridNo, pSoldier.sGridNo) <= HOSPITAL_PATIENT_DISTANCE)
                 {

@@ -391,8 +391,8 @@ public class SOLDIERTYPE
     public int iTotalContractLength;         // total time of AIM mercs contract	or the time since last paid for a M.E.R.C. merc
     public int iNextActionSpecialData;       // AI special action data record for the next action
     public MERC_TYPE ubWhatKindOfMercAmI;          //Set to the type of character it is
-    public Assignments bAssignment;                           // soldiers current assignment 
-    public Assignments bOldAssignment;                        // old assignment, for autosleep purposes
+    public Assignment bAssignment;                           // soldiers current assignment 
+    public Assignment bOldAssignment;                        // old assignment, for autosleep purposes
     public bool fForcedToStayAwake;             // forced by player to stay awake, reset to false, the moment they are set to rest or sleep
     public int bTrainStat;                                // current stat soldier is training
     public int sSectorX { get; set; }       // X position on the Stategic Map

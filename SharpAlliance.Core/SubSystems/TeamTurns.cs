@@ -1155,7 +1155,7 @@ public class TeamTurns
 
 
         // don't let mercs on assignment get interrupts
-        if (pSoldier.bTeam == Globals.gbPlayerNum && pSoldier.bAssignment >= Assignments.ON_DUTY)
+        if (pSoldier.bTeam == Globals.gbPlayerNum && pSoldier.bAssignment >= Assignment.ON_DUTY)
         {
             return false;
         }
@@ -1395,7 +1395,7 @@ public class TeamTurns
 
         if (pSoldier.uiStatusFlags.HasFlag(SOLDIER.PC))
         {
-            if (pSoldier.bAssignment >= Assignments.ON_DUTY)
+            if (pSoldier.bAssignment >= Assignment.ON_DUTY)
             {
                 // make sure don't get interrupts!
                 bPoints = -10;

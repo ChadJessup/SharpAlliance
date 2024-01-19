@@ -116,7 +116,7 @@ public class MessageBoxSubSystem : ISharpAllianceManager
                 ubMercBoxBorder = MercTextBoxBorder.DIALOG_MERC_POPUP_BORDER;
 
                 // Add button images
-                gMsgBox.iButtonImages = this.buttons.LoadButtonImage("INTERFACE\\popupbuttons.sti", -1, 0, -1, 1, -1);
+                gMsgBox.iButtonImages = ButtonSubSystem.LoadButtonImage("INTERFACE\\popupbuttons.sti", -1, 0, -1, 1, -1);
                 ubFontColor = FontColor.FONT_MCOLOR_WHITE;
                 ubFontShadowColor = FontShadow.DEFAULT_SHADOW;
                 usCursor = CURSOR.NORMAL;
@@ -128,7 +128,7 @@ public class MessageBoxSubSystem : ISharpAllianceManager
                 ubMercBoxBorder = MercTextBoxBorder.RED_MERC_POPUP_BORDER;
 
                 // Add button images
-                gMsgBox.iButtonImages = this.buttons.LoadButtonImage("INTERFACE\\msgboxRedButtons.sti", -1, 0, -1, 1, -1);
+                gMsgBox.iButtonImages = ButtonSubSystem.LoadButtonImage("INTERFACE\\msgboxRedButtons.sti", -1, 0, -1, 1, -1);
 
                 ubFontColor = (FontColor)2;
                 ubFontShadowColor = FontShadow.NO_SHADOW;
@@ -140,7 +140,7 @@ public class MessageBoxSubSystem : ISharpAllianceManager
                 ubMercBoxBorder = MercTextBoxBorder.BLUE_MERC_POPUP_BORDER;
 
                 // Add button images
-                gMsgBox.iButtonImages = this.buttons.LoadButtonImage("INTERFACE\\msgboxGreyButtons.sti", -1, 0, -1, 1, -1);
+                gMsgBox.iButtonImages = ButtonSubSystem.LoadButtonImage("INTERFACE\\msgboxGreyButtons.sti", -1, 0, -1, 1, -1);
 
                 ubFontColor = (FontColor)2;
                 ubFontShadowColor = (FontShadow)FontColor.FONT_MCOLOR_WHITE;
@@ -151,7 +151,7 @@ public class MessageBoxSubSystem : ISharpAllianceManager
                 ubMercBoxBorder = MercTextBoxBorder.DIALOG_MERC_POPUP_BORDER;
 
                 // Add button images
-                gMsgBox.iButtonImages = this.buttons.LoadButtonImage("INTERFACE\\msgboxGreyButtons.sti", -1, 0, -1, 1, -1);
+                gMsgBox.iButtonImages = ButtonSubSystem.LoadButtonImage("INTERFACE\\msgboxGreyButtons.sti", -1, 0, -1, 1, -1);
 
                 ubFontColor = (FontColor)2;
                 ubFontShadowColor = (FontShadow)FontColor.FONT_MCOLOR_WHITE;
@@ -163,7 +163,7 @@ public class MessageBoxSubSystem : ISharpAllianceManager
                 ubMercBoxBorder = MercTextBoxBorder.DIALOG_MERC_POPUP_BORDER;
 
                 // Add button images
-                gMsgBox.iButtonImages = this.buttons.LoadButtonImage("INTERFACE\\popupbuttons.sti", -1, 2, -1, 3, -1);
+                gMsgBox.iButtonImages = ButtonSubSystem.LoadButtonImage("INTERFACE\\popupbuttons.sti", -1, 2, -1, 3, -1);
                 ubFontColor = FontColor.FONT_MCOLOR_WHITE;
                 ubFontShadowColor = FontShadow.DEFAULT_SHADOW;
                 usCursor = CURSOR.NORMAL;
@@ -175,7 +175,7 @@ public class MessageBoxSubSystem : ISharpAllianceManager
                 ubMercBoxBorder = MercTextBoxBorder.LAPTOP_POP_BORDER;
 
                 // Add button images
-                gMsgBox.iButtonImages = this.buttons.LoadButtonImage("INTERFACE\\popupbuttons.sti", -1, 0, -1, 1, -1);
+                gMsgBox.iButtonImages = ButtonSubSystem.LoadButtonImage("INTERFACE\\popupbuttons.sti", -1, 0, -1, 1, -1);
                 ubFontColor = FontColor.FONT_MCOLOR_WHITE;
                 ubFontShadowColor = FontShadow.DEFAULT_SHADOW;
                 usCursor = CURSOR.LAPTOP_SCREEN;
@@ -186,7 +186,7 @@ public class MessageBoxSubSystem : ISharpAllianceManager
                 ubMercBoxBorder = MercTextBoxBorder.BASIC_MERC_POPUP_BORDER;
 
                 // Add button images
-                gMsgBox.iButtonImages = this.buttons.LoadButtonImage("INTERFACE\\msgboxbuttons.sti", -1, 0, -1, 1, -1);
+                gMsgBox.iButtonImages = ButtonSubSystem.LoadButtonImage("INTERFACE\\msgboxbuttons.sti", -1, 0, -1, 1, -1);
                 ubFontColor = FontColor.FONT_MCOLOR_WHITE;
                 ubFontShadowColor = FontShadow.DEFAULT_SHADOW;
                 usCursor = CURSOR.NORMAL;
