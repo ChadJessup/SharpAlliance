@@ -1,9 +1,25 @@
-﻿using static SharpAlliance.Core.Globals;
+﻿using System;
+using SharpAlliance.Core.Screens;
+using static SharpAlliance.Core.Globals;
 
 namespace SharpAlliance.Core.SubSystems;
 
 public class Assignments
 {
+    private static bool fShowVehicleMenu;
+    private static bool fShowRepairMenu;
+    // PopUp Box Handles
+    private static int ghAssignmentBox = -1;
+    private static int ghEpcBox = -1;
+    private static int ghSquadBox = -1;
+    private static int ghVehicleBox = -1;
+    private static int ghRepairBox = -1;
+    private static int ghTrainingBox = -1;
+    private static int ghAttributeBox = -1;
+    private static int ghRemoveMercAssignBox = -1;
+    private static int ghContractBox = -1;
+    private static int ghMoveBox = -1;
+
     public static void DetermineWhichAssignmentMenusCanBeShown()
     {
         bool fCharacterNoLongerValid = false;
@@ -11,9 +27,9 @@ public class Assignments
 
         if ((guiTacticalInterfaceFlags.HasFlag(INTERFACE.MAPSCREEN)))
         {
-            if (fShowMapScreenMovementList == true)
+            if (MapScreenInterface.fShowMapScreenMovementList == true)
             {
-                if (bSelectedDestChar == -1)
+                if (MapScreenInterfaceMap.bSelectedDestChar == -1)
                 {
                     fCharacterNoLongerValid = true;
                     HandleShowingOfMovementBox();
@@ -31,25 +47,25 @@ public class Assignments
                         HandleShowingOfUpBox( );
                     }
             */
-            else if (bSelectedAssignChar == -1)
+            else if (MapScreenInterfaceMap.bSelectedAssignChar == -1)
             {
                 fCharacterNoLongerValid = true;
             }
 
             // update the assignment positions
-            UpdateMapScreenAssignmentPositions();
+            Assignments.UpdateMapScreenAssignmentPositions();
         }
 
         // determine which assign menu needs to be shown
-        if (((fShowAssignmentMenu == false)) || (fCharacterNoLongerValid == true))
+        if (((MapScreenInterface.fShowAssignmentMenu == false)) || (fCharacterNoLongerValid == true))
         {
             // reset show assignment menus
-            fShowAssignmentMenu = false;
+            MapScreenInterface.fShowAssignmentMenu = false;
             fShowVehicleMenu = false;
-            fShowRepairMenu = false;
+            Assignments.fShowRepairMenu = false;
 
             // destroy mask, if needed
-            CreateDestroyScreenMaskForAssignmentAndContractMenus();
+            Assignments.CreateDestroyScreenMaskForAssignmentAndContractMenus();
 
 
             // destroy menu if needed
@@ -61,49 +77,49 @@ public class Assignments
             CreateDestroyMouseRegionForRepairMenu();
 
             // hide all boxes being shown
-            if (IsBoxShown(ghEpcBox))
+            if (PopUpBox.IsBoxShown(ghEpcBox))
             {
-                HideBox(ghEpcBox);
+                PopUpBox.HideBox(ghEpcBox);
                 fTeamPanelDirty = true;
                 gfRenderPBInterface = true;
             }
-            if (IsBoxShown(ghAssignmentBox))
+            if (PopUpBox.IsBoxShown(ghAssignmentBox))
             {
-                HideBox(ghAssignmentBox);
+                PopUpBox.HideBox(Assignments.ghAssignmentBox);
                 fTeamPanelDirty = true;
                 gfRenderPBInterface = true;
             }
-            if (IsBoxShown(ghTrainingBox))
+            if (PopUpBox.IsBoxShown(ghTrainingBox))
             {
-                HideBox(ghTrainingBox);
+                PopUpBox.HideBox(ghTrainingBox);
                 fTeamPanelDirty = true;
                 gfRenderPBInterface = true;
             }
-            if (IsBoxShown(ghRepairBox))
+            if (PopUpBox.IsBoxShown(ghRepairBox))
             {
-                HideBox(ghRepairBox);
+                PopUpBox.HideBox(ghRepairBox);
                 fTeamPanelDirty = true;
                 gfRenderPBInterface = true;
             }
-            if (IsBoxShown(ghAttributeBox))
+            if (PopUpBox.IsBoxShown(ghAttributeBox))
             {
-                HideBox(ghAttributeBox);
+                PopUpBox.HideBox(ghAttributeBox);
                 fTeamPanelDirty = true;
                 gfRenderPBInterface = true;
             }
-            if (IsBoxShown(ghVehicleBox))
+            if (PopUpBox.IsBoxShown(ghVehicleBox))
             {
-                HideBox(ghVehicleBox);
+                PopUpBox.HideBox(ghVehicleBox);
                 fTeamPanelDirty = true;
                 gfRenderPBInterface = true;
             }
 
             // do we really want ot hide this box?
-            if (fShowContractMenu == false)
+            if (MapScreenInterface.fShowContractMenu == false)
             {
-                if (IsBoxShown(ghRemoveMercAssignBox))
+                if (PopUpBox.IsBoxShown(ghRemoveMercAssignBox))
                 {
-                    HideBox(ghRemoveMercAssignBox);
+                    PopUpBox.HideBox(ghRemoveMercAssignBox);
                     fTeamPanelDirty = true;
                     gfRenderPBInterface = true;
                 }
@@ -132,14 +148,16 @@ public class Assignments
         CreateDestroyMouseRegionForRepairMenu();
 
 
-        if (((Menptr[gCharactersList[bSelectedInfoChar].usSolID].bLife == 0) || (Menptr[gCharactersList[bSelectedInfoChar].usSolID].bAssignment == ASSIGNMENT_POW)) && ((guiTacticalInterfaceFlags & INTERFACE_MAPSCREEN)))
+        if (((Menptr[gCharactersList[bSelectedInfoChar].usSolID].bLife == 0)
+            || (Menptr[gCharactersList[bSelectedInfoChar].usSolID].bAssignment == Assignment.ASSIGNMENT_POW))
+            && ((guiTacticalInterfaceFlags.HasFlag(INTERFACE.MAPSCREEN))))
         {
             // show basic assignment menu
             ShowBox(ghRemoveMercAssignBox);
         }
         else
         {
-            pSoldier = GetSelectedAssignSoldier(false);
+            pSoldier = Assignments.GetSelectedAssignSoldier(false);
 
             if (pSoldier.ubWhatKindOfMercAmI == MERC_TYPE.EPC)
             {
@@ -154,7 +172,7 @@ public class Assignments
         }
 
         // TRAINING menu
-        if (fShowTrainingMenu == true)
+        if (MapScreenInterface.fShowTrainingMenu == true)
         {
             HandleShadingOfLinesForTrainingMenu();
             ShowBox(ghTrainingBox);
@@ -229,6 +247,56 @@ public class Assignments
         CreateDestroyMouseRegionForVehicleMenu();
 
         return;
+    }
+
+    private static void CreateDestroyMouseRegionForVehicleMenu()
+    {
+        throw new NotImplementedException();
+    }
+
+    private static void CreateDestroyMouseRegionsForAssignmentMenu()
+    {
+        throw new NotImplementedException();
+    }
+
+    private static void CreateDestroyMouseRegionsForTrainingMenu()
+    {
+        throw new NotImplementedException();
+    }
+
+    private static void CreateDestroyMouseRegionsForAttributeMenu()
+    {
+        throw new NotImplementedException();
+    }
+
+    private static void CreateDestroyMouseRegionsForSquadMenu(bool v)
+    {
+        throw new NotImplementedException();
+    }
+
+    private static void CreateDestroyMouseRegionForRepairMenu()
+    {
+        throw new NotImplementedException();
+    }
+
+    private static SOLDIERTYPE? GetSelectedAssignSoldier(bool v)
+    {
+        throw new NotImplementedException();
+    }
+
+    internal static void CreateDestroyAssignmentPopUpBoxes()
+    {
+        throw new NotImplementedException();
+    }
+
+    private static void CreateDestroyScreenMaskForAssignmentAndContractMenus()
+    {
+        throw new NotImplementedException();
+    }
+
+    private static void UpdateMapScreenAssignmentPositions()
+    {
+        throw new NotImplementedException();
     }
 }
 

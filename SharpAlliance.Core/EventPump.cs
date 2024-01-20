@@ -9,6 +9,10 @@ namespace SharpAlliance.Core;
 
 public class EventPump
 {
+    internal static void DequeAllGameEvents(bool v)
+    {
+        throw new NotImplementedException();
+    }
 }
 
 // Enumerate all events for JA2

@@ -57,7 +57,7 @@ public class MessageBoxSubSystem : ISharpAllianceManager
         Overhead overhead,
         GameSettings gameSettings)
     {
-        this.video = videoManager;
+        video = videoManager;
         this.buttons = buttonSubSystem;
         gGameSettings = gameSettings;
         MessageBoxSubSystem.mercTextBox = mercTextBox;
@@ -266,16 +266,16 @@ public class MessageBoxSubSystem : ISharpAllianceManager
             ubBitDepth = 16
         };
 
-        var texture = this.video.Surfaces.CreateSurface(vs_desc);
+        var texture = video.Surfaces.CreateSurface(vs_desc);
 
         gMsgBox.uiSaveBuffer = texture.SurfaceType;
 
         //Save what we have under here...
-        var pDestBuf = this.video.Surfaces[gMsgBox.uiSaveBuffer];
-        var pSrcBuf = this.video.Surfaces[SurfaceType.FRAME_BUFFER];
+        var pDestBuf = video.Surfaces[gMsgBox.uiSaveBuffer];
+        var pSrcBuf = video.Surfaces[SurfaceType.FRAME_BUFFER];
 
-//        this.video.BlitSurfaceToSurface(pDestBuf, SurfaceType.FRAME_BUFFER, gMsgBox.Location);
-          this.video.Blt16BPPTo16BPP(
+//        video.BlitSurfaceToSurface(pDestBuf, SurfaceType.FRAME_BUFFER, gMsgBox.Location);
+          video.Blt16BPPTo16BPP(
               pDestBuf,
               pSrcBuf,
               new(0, 0),
@@ -955,8 +955,8 @@ public class MessageBoxSubSystem : ISharpAllianceManager
         if (((gMsgBox.uiExitScreen != ScreenName.GAME_SCREEN) || (fRestoreBackgroundForMessageBox == true)) && gfDontOverRideSaveBuffer)
         {
             // restore what we have under here...
-            pSrcBuf = this.video.Surfaces[gMsgBox.uiSaveBuffer];
-            pDestBuf = this.video.Surfaces[SurfaceType.FRAME_BUFFER];
+            pSrcBuf = video.Surfaces[gMsgBox.uiSaveBuffer];
+            pDestBuf = video.Surfaces[SurfaceType.FRAME_BUFFER];
             
             video.Blt16BPPTo16BPP(
                 pDestBuf,
@@ -968,7 +968,7 @@ public class MessageBoxSubSystem : ISharpAllianceManager
             //UnLockVideoSurface(gMsgBox.uiSaveBuffer);
             //UnLockVideoSurface(FRAME_BUFFER);
             
-            this.video.InvalidateRegion(gMsgBox.Location.X, gMsgBox.Location.Y, (gMsgBox.Location.X + gMsgBox.Size.Width), (gMsgBox.Location.Y + gMsgBox.Size.Height));
+            video.InvalidateRegion(gMsgBox.Location.X, gMsgBox.Location.Y, (gMsgBox.Location.X + gMsgBox.Size.Width), (gMsgBox.Location.Y + gMsgBox.Size.Height));
         }
 
         fRestoreBackgroundForMessageBox = false;

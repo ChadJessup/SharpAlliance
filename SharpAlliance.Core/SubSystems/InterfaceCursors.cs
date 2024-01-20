@@ -257,9 +257,9 @@ public class InterfaceCursors
         return true;
     }
 
-    bool HideUICursor()
+    public static bool HideUICursor()
     {
-        this.HandleLooseCursorHide();
+        HandleLooseCursorHide();
 
         // OK, WE OVERRIDE HERE CURSOR DRAWING FOR THINGS LIKE
         if (Globals.gpItemPointer != null)
@@ -307,7 +307,7 @@ public class InterfaceCursors
         if (Globals.gUICursors[Globals.guiCurUICursor].uiFlags.HasFlag(UICURSOR.SNAPPING))
         {
             // hide Snapping Cursor
-            this.EraseSnappingCursor();
+            EraseSnappingCursor();
         }
 
         if (Globals.gUICursors[Globals.guiCurUICursor].uiFlags.HasFlag(UICURSOR.FREEFLOWING))
@@ -496,7 +496,7 @@ public class InterfaceCursors
         }
     }
 
-    void EraseSnappingCursor()
+    private static void EraseSnappingCursor()
     {
         WorldManager.RemoveAllTopmostsOfTypeRange(Globals.gusCurMousePos, TileTypeDefines.MOCKFLOOR, TileTypeDefines.MOCKFLOOR);
         WorldManager.RemoveAllTopmostsOfTypeRange(Globals.gusCurMousePos, TileTypeDefines.FIRSTPOINTERS, TileTypeDefines.LASTPOINTERS);
@@ -528,7 +528,7 @@ public class InterfaceCursors
         }
     }
 
-    void HandleLooseCursorHide()
+    private static void HandleLooseCursorHide()
     {
         if (gfLooseCursorOn)
         {

@@ -25,7 +25,7 @@ public class Cars
 
     public Cars(IVideoManager videoManager)
     {
-        this.video = videoManager;
+        video = videoManager;
     }
 
     public bool LoadCarPortraitValues()
@@ -37,7 +37,7 @@ public class Cars
 
         for (CarPortrait iCounter = 0; iCounter < CarPortrait.NUMBER_CAR_PORTRAITS; iCounter++)
         {
-            this.video.GetVideoObject(pbCarPortraitFileNames[(int)iCounter], out var key);
+            video.GetVideoObject(pbCarPortraitFileNames[(int)iCounter], out var key);
             giCarPortraits[(int)iCounter] = key;
         }
 

@@ -70,7 +70,7 @@ public class SaveLoadGame
         this.soldierCreate = soldierCreate;
         this.logger = logger;
         this.files = fileManager;
-        this.video = videoManager;
+        video = videoManager;
     }
 
     bool SaveGame(int ubSaveGameID, string pGameDesc)
@@ -112,11 +112,11 @@ public class SaveLoadGame
 
         this.mercTextBox.RenderMercPopUpBoxFromIndex(iSaveLoadGameMessageBoxID, new(usPosX, 160), SurfaceType.FRAME_BUFFER);
 
-        this.video.InvalidateRegion(new(0, 0, 640, 480));
+        video.InvalidateRegion(new(0, 0, 640, 480));
 
-        this.video.ExecuteBaseDirtyRectQueue();
-        this.video.EndFrameBufferRender();
-        this.video.RefreshScreen();
+        video.ExecuteBaseDirtyRectQueue();
+        video.EndFrameBufferRender();
+        video.RefreshScreen();
 
         if (MercTextBox.RemoveMercPopupBoxFromIndex(iSaveLoadGameMessageBoxID))
         {

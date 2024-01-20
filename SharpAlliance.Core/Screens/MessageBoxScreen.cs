@@ -476,8 +476,8 @@ public class MessageBoxScreen : IScreen
             //Laptop
             else if (guiCurrentScreen == ScreenName.LAPTOP_SCREEN)
             {
-            // set up for laptop
-            SubSystems.LaptopSubSystem.Laptop.DoLapTopSystemMessageBoxWithRect(MessageBoxStyle.MSG_BOX_LAPTOP_DEFAULT, zString, ScreenName.LAPTOP_SCREEN, usFlags, ReturnCallback, pCenteringRect);
+                // set up for laptop
+                Laptop.DoLapTopSystemMessageBoxWithRect(MessageBoxStyle.MSG_BOX_LAPTOP_DEFAULT, zString, ScreenName.LAPTOP_SCREEN, usFlags, ReturnCallback, pCenteringRect);
             }
 
             //Save Load Screen

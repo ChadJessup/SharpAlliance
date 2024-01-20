@@ -1,5 +1,6 @@
 ﻿using System;
 using SixLabors.ImageSharp;
+using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace SharpAlliance.Core.Screens;
 
@@ -173,6 +174,15 @@ public class MapScreenInterface
     }
 
     private static int iOldDestinationLine = -1;
+    internal static bool fShowMapScreenMovementList;
+    internal static bool fShowAssignmentMenu;
+    // which menus are we showing
+    public static bool fShowTrainingMenu = false;
+    private static bool fShowAttributeMenu = false;
+    private static bool fShowSquadMenu = false;
+    public static bool fShowContractMenu = false;
+    private static bool fShowRemoveMenu = false;
+
     internal static void RestoreBackgroundForDestinationGlowRegionList()
     {
         // will restore the background region of the destinationz list after a glow has ceased

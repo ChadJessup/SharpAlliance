@@ -865,6 +865,11 @@ public class MouseSubSystem : ISharpAllianceManager
     {
             region.uiFlags |= MouseRegionFlags.MSYS_REGION_ENABLED;
     }
+
+    internal static void RenderFastHelp()
+    {
+        throw new NotImplementedException();
+    }
 }
 
 public class MOUSE_REGION

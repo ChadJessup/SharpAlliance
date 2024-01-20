@@ -15,7 +15,7 @@ public partial class BobbyR
         IVideoManager videoManager)
     {
         this.logger = logger;
-        this.video = videoManager;
+        video = videoManager;
     }
 
     bool EnterBobbyR()
@@ -53,32 +53,32 @@ public partial class BobbyR
         // load the Bobbyname graphic and add it
         //
         MultilanguageGraphicUtils.GetMLGFilename(out string imageFile, MLG.BOBBYNAME);
-        this.video.GetVideoObject(imageFile, out guiBobbyName);
+        video.GetVideoObject(imageFile, out guiBobbyName);
 
         // load the plaque graphic and add it
         //
         //FilenameForBPP("LAPTOP\\BobbyPlaques.sti", VObjectDesc.ImageFile);
-        this.video.GetVideoObject("LAPTOP\\BobbyPlaques.sti", out guiPlaque);
+        video.GetVideoObject("LAPTOP\\BobbyPlaques.sti", out guiPlaque);
 
         // load the TopHinge graphic and add it
         //
         //FilenameForBPP("LAPTOP\\BobbyTopHinge.sti", VObjectDesc.ImageFile);
-        this.video.GetVideoObject("LAPTOP\\BobbyTopHinge.sti", out guiTopHinge);
+        video.GetVideoObject("LAPTOP\\BobbyTopHinge.sti", out guiTopHinge);
 
         // load the BottomHinge graphic and add it
         //
         //Utils.FilenameForBPP("LAPTOP\\BobbyBottomHinge.sti", VObjectDesc.ImageFile);
-        this.video.GetVideoObject("LAPTOP\\BobbyBottomHinge.sti", out guiBottomHinge);
+        video.GetVideoObject("LAPTOP\\BobbyBottomHinge.sti", out guiBottomHinge);
 
         // load the Store Plaque graphic and add it
         //
         MultilanguageGraphicUtils.GetMLGFilename(out imageFile, MLG.STOREPLAQUE);
-        this.video.GetVideoObject(imageFile, out guiStorePlaque);
+        video.GetVideoObject(imageFile, out guiStorePlaque);
 
         // load the Handle graphic and add it
         //
         //FilenameForBPP("LAPTOP\\BobbyHandle.sti", VObjectDesc.ImageFile);
-        this.video.GetVideoObject("LAPTOP\\BobbyHandle.sti", out guiHandle);
+        video.GetVideoObject("LAPTOP\\BobbyHandle.sti", out guiHandle);
 
 
         this.InitBobbiesMouseRegion(BOBBIES_NUMBER_SIGNS, usMouseRegionPosArray, gSelectedBobbiesSignMenuRegion);
@@ -90,7 +90,7 @@ public partial class BobbyR
             //
             //Utils.FilenameForBPP("LAPTOP\\UnderConstruction.sti", VObjectDesc.ImageFile);
 
-            var hvobject = this.video.GetVideoObject("LAPTOP\\UnderConstruction.sti", out guiUnderConstructionImage);
+            var hvobject = video.GetVideoObject("LAPTOP\\UnderConstruction.sti", out guiUnderConstructionImage);
 
             for (i = 0; i < BOBBIES_NUMBER_SIGNS; i++)
             {
@@ -112,16 +112,16 @@ public partial class BobbyR
     void ExitBobbyR()
     {
 
-        this.video.DeleteVideoObjectFromIndex(guiBobbyName);
-        this.video.DeleteVideoObjectFromIndex(guiPlaque);
-        this.video.DeleteVideoObjectFromIndex(guiTopHinge);
-        this.video.DeleteVideoObjectFromIndex(guiBottomHinge);
-        this.video.DeleteVideoObjectFromIndex(guiStorePlaque);
-        this.video.DeleteVideoObjectFromIndex(guiHandle);
+        video.DeleteVideoObjectFromIndex(guiBobbyName);
+        video.DeleteVideoObjectFromIndex(guiPlaque);
+        video.DeleteVideoObjectFromIndex(guiTopHinge);
+        video.DeleteVideoObjectFromIndex(guiBottomHinge);
+        video.DeleteVideoObjectFromIndex(guiStorePlaque);
+        video.DeleteVideoObjectFromIndex(guiHandle);
 
         if (!LaptopSaveInfo.fBobbyRSiteCanBeAccessed)
         {
-            this.video.DeleteVideoObjectFromIndex(guiUnderConstructionImage);
+            video.DeleteVideoObjectFromIndex(guiUnderConstructionImage);
         }
 
 
@@ -145,27 +145,27 @@ public partial class BobbyR
         this.DrawBobbyRWoodBackground();
 
         // Bobby's Name
-        // hPixHandle = this.video.GetVideoObject(guiBobbyName);
+        // hPixHandle = video.GetVideoObject(guiBobbyName);
         // VideoObjectManager.BltVideoObject(SurfaceType.FRAME_BUFFER, hPixHandle, 0, BOBBY_RAYS_NAME_X, BOBBY_RAYS_NAME_Y, VO_BLT.SRCTRANSPARENCY, null);
         // 
         // // Plaque
-        // hPixHandle = this.video.GetVideoObject(guiPlaque);
+        // hPixHandle = video.GetVideoObject(guiPlaque);
         // VideoObjectManager.BltVideoObject(SurfaceType.FRAME_BUFFER, hPixHandle, 0, BOBBYS_PLAQUES_X, BOBBYS_PLAQUES_Y, VO_BLT.SRCTRANSPARENCY, null);
         // 
         // // Top Hinge
-        // hPixHandle = this.video.GetVideoObject(guiTopHinge);
+        // hPixHandle = video.GetVideoObject(guiTopHinge);
         // VideoObjectManager.BltVideoObject(SurfaceType.FRAME_BUFFER, hPixHandle, 0, BOBBIES_TOPHINGE_X, BOBBIES_TOPHINGE_Y, VO_BLT.SRCTRANSPARENCY, null);
         // 
         // // Bottom Hinge
-        // hPixHandle = this.video.GetVideoObject(guiBottomHinge);
+        // hPixHandle = video.GetVideoObject(guiBottomHinge);
         // VideoObjectManager.BltVideoObject(SurfaceType.FRAME_BUFFER, hPixHandle, 0, BOBBIES_BOTTOMHINGE_X, BOBBIES_BOTTOMHINGE_Y, VO_BLT.SRCTRANSPARENCY, null);
         // 
         // // StorePlaque
-        // hStorePlaqueHandle = this.video.GetVideoObject(guiStorePlaque);
+        // hStorePlaqueHandle = video.GetVideoObject(guiStorePlaque);
         // VideoObjectManager.BltVideoObject(SurfaceType.FRAME_BUFFER, hStorePlaqueHandle, 0, BOBBIES_STORE_PLAQUE_X, BOBBIES_STORE_PLAQUE_Y, VO_BLT.SRCTRANSPARENCY, null);
         // 
         // // Handle
-        // hPixHandle = this.video.GetVideoObject(guiHandle);
+        // hPixHandle = video.GetVideoObject(guiHandle);
         // VideoObjectManager.BltVideoObject(SurfaceType.FRAME_BUFFER, hPixHandle, 0, BOBBIES_HANDLE_X, BOBBIES_HANDLE_Y, VO_BLT.SRCTRANSPARENCY, null);
 
         /*
@@ -245,7 +245,7 @@ public partial class BobbyR
         }
 
         Laptop.RenderWWWProgramTitleBar();
-        this.video.InvalidateRegion(LAPTOP_SCREEN_UL_X, LAPTOP_SCREEN_WEB_UL_Y, LAPTOP_SCREEN_LR_X, LAPTOP_SCREEN_WEB_LR_Y);
+        video.InvalidateRegion(LAPTOP_SCREEN_UL_X, LAPTOP_SCREEN_WEB_UL_Y, LAPTOP_SCREEN_LR_X, LAPTOP_SCREEN_WEB_LR_Y);
     }
 
     bool InitBobbyRWoodBackground()
@@ -254,14 +254,14 @@ public partial class BobbyR
         // load the Wood bacground graphic and add it
         //
         string filename = Utils.FilenameForBPP("LAPTOP\\BobbyWood.sti");
-        this.video.GetVideoObject(filename, out guiWoodBackground);
+        video.GetVideoObject(filename, out guiWoodBackground);
 
         return true;
     }
 
     bool DeleteBobbyRWoodBackground()
     {
-        this.video.DeleteVideoObjectFromIndex(guiWoodBackground);
+        video.DeleteVideoObjectFromIndex(guiWoodBackground);
         return true;
     }
 
@@ -271,7 +271,7 @@ public partial class BobbyR
         int x, y, uiPosX, uiPosY;
 
         // Blt the Wood background
-        HVOBJECT hWoodBackGroundHandle = null; //this.video.GetVideoObject(guiWoodBackground);
+        HVOBJECT hWoodBackGroundHandle = null; //video.GetVideoObject(guiWoodBackground);
 
         uiPosY = BOBBY_WOOD_BACKGROUND_Y;
         for (y = 0; y < 4; y++)
@@ -408,14 +408,14 @@ public partial class BobbyR
         if (uiCurTime - uiLastTime > BOBBYR_UNDERCONSTRUCTION_ANI_DELAY || fReDrawScreenFlag)
         {
             // The undercontsruction graphic 
-            hPixHandle = null; // this.video.GetVideoObject(guiUnderConstructionImage);
+            hPixHandle = null; // video.GetVideoObject(guiUnderConstructionImage);
             VideoObjectManager.BltVideoObject(SurfaceType.FRAME_BUFFER, hPixHandle, usCount, BOBBYR_UNDERCONSTRUCTION_X, BOBBYR_UNDERCONSTRUCTION_Y, VO_BLT.SRCTRANSPARENCY, null);
             VideoObjectManager.BltVideoObject(SurfaceType.FRAME_BUFFER, hPixHandle, usCount, BOBBYR_UNDERCONSTRUCTION_X, BOBBYR_UNDERCONSTRUCTION1_Y, VO_BLT.SRCTRANSPARENCY, null);
 
             FontSubSystem.DrawTextToScreen(BobbyRaysFrontText[(int)BOBBYR.UNDER_CONSTRUCTION], new(BOBBYR_UNDER_CONSTRUCTION_TEXT_X, BOBBYR_UNDER_CONSTRUCTION_TEXT_Y), BOBBYR_UNDER_CONSTRUCTION_TEXT_WIDTH, FontStyle.FONT16ARIAL, BOBBIES_SENTENCE_COLOR, BOBBIES_SIGN_BACKCOLOR, TextJustifies.CENTER_JUSTIFIED | TextJustifies.INVALIDATE_TEXT);
 
-            this.video.InvalidateRegion(new(BOBBYR_UNDERCONSTRUCTION_X, BOBBYR_UNDERCONSTRUCTION_Y, BOBBYR_UNDERCONSTRUCTION_X + BOBBYR_UNDERCONSTRUCTION_WIDTH, BOBBYR_UNDERCONSTRUCTION_Y + BOBBYR_UNDERCONSTRUCTION_HEIGHT));
-            this.video.InvalidateRegion(new(BOBBYR_UNDERCONSTRUCTION_X, BOBBYR_UNDERCONSTRUCTION1_Y, BOBBYR_UNDERCONSTRUCTION_X + BOBBYR_UNDERCONSTRUCTION_WIDTH, BOBBYR_UNDERCONSTRUCTION1_Y + BOBBYR_UNDERCONSTRUCTION_HEIGHT));
+            video.InvalidateRegion(new(BOBBYR_UNDERCONSTRUCTION_X, BOBBYR_UNDERCONSTRUCTION_Y, BOBBYR_UNDERCONSTRUCTION_X + BOBBYR_UNDERCONSTRUCTION_WIDTH, BOBBYR_UNDERCONSTRUCTION_Y + BOBBYR_UNDERCONSTRUCTION_HEIGHT));
+            video.InvalidateRegion(new(BOBBYR_UNDERCONSTRUCTION_X, BOBBYR_UNDERCONSTRUCTION1_Y, BOBBYR_UNDERCONSTRUCTION_X + BOBBYR_UNDERCONSTRUCTION_WIDTH, BOBBYR_UNDERCONSTRUCTION1_Y + BOBBYR_UNDERCONSTRUCTION_HEIGHT));
 
             uiLastTime = ClockManager.GetJA2Clock();
 

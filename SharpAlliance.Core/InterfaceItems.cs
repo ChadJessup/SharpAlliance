@@ -25,7 +25,7 @@ public class InterfaceItems
     public InterfaceItems(IVideoManager videoManager, FontSubSystem fontSubSystem)
     {
         this.fonts = fontSubSystem;
-        this.video = videoManager;
+        video = videoManager;
     }
 
     bool AttemptToAddSubstring(string zDest, string zTemp, ref int puiStringLength, int uiPixLimit)
@@ -266,23 +266,23 @@ public class InterfaceItems
 
 
         // Load all four body type images
-        CHECKF(this.video.GetVideoObject("INTERFACE\\inventory_figure_large_male.sti", out string key));
+        CHECKF(video.GetVideoObject("INTERFACE\\inventory_figure_large_male.sti", out string key));
         guiBodyInvVO[SoldierBodyTypes.BIGMALE][0] = key;
-        CHECKF(this.video.GetVideoObject("INTERFACE\\inventory_figure_large_male_H.sti", out key));
+        CHECKF(video.GetVideoObject("INTERFACE\\inventory_figure_large_male_H.sti", out key));
         guiBodyInvVO[SoldierBodyTypes.BIGMALE][1] = key;
-        CHECKF(this.video.GetVideoObject("INTERFACE\\inventory_normal_male.sti", out key));
+        CHECKF(video.GetVideoObject("INTERFACE\\inventory_normal_male.sti", out key));
         guiBodyInvVO[SoldierBodyTypes.REGMALE][0] = key;
-        CHECKF(this.video.GetVideoObject("INTERFACE\\inventory_normal_male_H.sti", out key));
+        CHECKF(video.GetVideoObject("INTERFACE\\inventory_normal_male_H.sti", out key));
         guiBodyInvVO[SoldierBodyTypes.REGMALE][1] = key;
-        CHECKF(this.video.GetVideoObject("INTERFACE\\inventory_normal_male.sti", out key));
+        CHECKF(video.GetVideoObject("INTERFACE\\inventory_normal_male.sti", out key));
         guiBodyInvVO[SoldierBodyTypes.STOCKYMALE][0] = key;
-        CHECKF(this.video.GetVideoObject("INTERFACE\\inventory_normal_male.sti", out key));
+        CHECKF(video.GetVideoObject("INTERFACE\\inventory_normal_male.sti", out key));
         guiBodyInvVO[SoldierBodyTypes.STOCKYMALE][1] = key;
-        CHECKF(this.video.GetVideoObject("INTERFACE\\inventory_figure_female.sti", out key));
+        CHECKF(video.GetVideoObject("INTERFACE\\inventory_figure_female.sti", out key));
         guiBodyInvVO[SoldierBodyTypes.REGFEMALE][0] = key;
-        CHECKF(this.video.GetVideoObject("INTERFACE\\inventory_figure_female_H.sti", out key));
+        CHECKF(video.GetVideoObject("INTERFACE\\inventory_figure_female_H.sti", out key));
         guiBodyInvVO[SoldierBodyTypes.REGFEMALE][1] = key;
-        CHECKF(this.video.GetVideoObject("INTERFACE\\gold_key_button.sti", out guiGoldKeyVO));
+        CHECKF(video.GetVideoObject("INTERFACE\\gold_key_button.sti", out guiGoldKeyVO));
 
         // Add cammo region 
         MouseSubSystem.MSYS_DefineRegion(
@@ -415,16 +415,16 @@ public class InterfaceItems
         InventorySlot cnt;
 
         // Remove all body type panels
-        this.video.DeleteVideoObjectFromIndex(guiBodyInvVO[SoldierBodyTypes.REGMALE][0]);
-        this.video.DeleteVideoObjectFromIndex(guiBodyInvVO[SoldierBodyTypes.STOCKYMALE][0]);
-        this.video.DeleteVideoObjectFromIndex(guiBodyInvVO[SoldierBodyTypes.BIGMALE][0]);
-        this.video.DeleteVideoObjectFromIndex(guiBodyInvVO[SoldierBodyTypes.REGFEMALE][0]);
-        this.video.DeleteVideoObjectFromIndex(guiBodyInvVO[SoldierBodyTypes.REGMALE][1]);
-        this.video.DeleteVideoObjectFromIndex(guiBodyInvVO[SoldierBodyTypes.STOCKYMALE][1]);
-        this.video.DeleteVideoObjectFromIndex(guiBodyInvVO[SoldierBodyTypes.BIGMALE][1]);
-        this.video.DeleteVideoObjectFromIndex(guiBodyInvVO[SoldierBodyTypes.REGFEMALE][1]);
+        video.DeleteVideoObjectFromIndex(guiBodyInvVO[SoldierBodyTypes.REGMALE][0]);
+        video.DeleteVideoObjectFromIndex(guiBodyInvVO[SoldierBodyTypes.STOCKYMALE][0]);
+        video.DeleteVideoObjectFromIndex(guiBodyInvVO[SoldierBodyTypes.BIGMALE][0]);
+        video.DeleteVideoObjectFromIndex(guiBodyInvVO[SoldierBodyTypes.REGFEMALE][0]);
+        video.DeleteVideoObjectFromIndex(guiBodyInvVO[SoldierBodyTypes.REGMALE][1]);
+        video.DeleteVideoObjectFromIndex(guiBodyInvVO[SoldierBodyTypes.STOCKYMALE][1]);
+        video.DeleteVideoObjectFromIndex(guiBodyInvVO[SoldierBodyTypes.BIGMALE][1]);
+        video.DeleteVideoObjectFromIndex(guiBodyInvVO[SoldierBodyTypes.REGFEMALE][1]);
 
-        this.video.DeleteVideoObjectFromIndex(guiGoldKeyVO);
+        video.DeleteVideoObjectFromIndex(guiGoldKeyVO);
 
         // Remove regions
         // Add regions for inventory slots
@@ -4385,7 +4385,8 @@ public class InterfaceItems
         {
             sGridNo = usMapPos;
 
-            if (sDist <= PASSING_ITEM_DISTANCE_OKLIFE && gfUIFullTargetFound
+            if (sDist <= PASSING_ITEM_DISTANCE_OKLIFE
+                && gfUIFullTargetFound
                 && MercPtrs[gusUIFullTargetID].bTeam == gbPlayerNum
                 && !AM_AN_EPC(MercPtrs[gusUIFullTargetID])
                 && !MercPtrs[gusUIFullTargetID].uiStatusFlags.HasFlag(SOLDIER.VEHICLE))

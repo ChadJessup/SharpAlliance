@@ -13,4 +13,23 @@ public partial class Florist
 
     }
 
+    internal static void EnterFlorist()
+    {
+        throw new NotImplementedException();
+    }
+
+    internal static void EnterFloristCards()
+    {
+        throw new NotImplementedException();
+    }
+
+    internal static void EnterFloristGallery()
+    {
+        throw new NotImplementedException();
+    }
+
+    internal static void EnterFloristOrderForm()
+    {
+        throw new NotImplementedException();
+    }
 }

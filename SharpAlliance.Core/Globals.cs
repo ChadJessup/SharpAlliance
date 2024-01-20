@@ -597,11 +597,11 @@ public partial class Globals
     public static int gUIDisplayActionPointsOffY = 0;
     public static int gUIDisplayActionPointsOffX = 0;
     public static bool gfUIDoNotHighlightSelMerc = false;
-    public static bool gfUIHandleSelection = false;
+    public static int gfUIHandleSelection = 0;
     public static bool gfUIHandleSelectionAboveGuy = false;
     public static bool gfUIInDeadlock = false;
     public static byte gUIDeadlockedSoldier = Globals.NOBODY;
-    public static bool gfUIHandleShowMoveGrid { get; set; } = false;
+    public static int gfUIHandleShowMoveGrid { get; set; } = 0;
     public static int gusMouseXPos { get; internal set; }
     public static int gusMouseYPos { get; internal set; }
     public static int gsGlobalCursorYOffset { get; internal set; }

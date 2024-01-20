@@ -717,6 +717,55 @@ public partial class Laptop
 
         return (true);
     }
+
+    private static bool LoadDesktopBackground()
+    {
+        // load desktop background
+        VSURFACE_DESC vs_desc;
+
+        string path;
+        MultilanguageGraphicUtils.GetMLGFilename(out path, MLG.DESKTOP);
+        var obj = video.GetVideoObject(path);
+        guiDESKTOP = video.Surfaces.CreateSurface(obj);
+
+        return true;
+
+    }
+
+    private static void CreateLapTopMouseRegions()
+    {
+        throw new NotImplementedException();
+    }
+
+    private static void InitLaptopOpenQueue()
+    {
+        throw new NotImplementedException();
+    }
+
+    private static void LoadBookmark()
+    {
+        throw new NotImplementedException();
+    }
+
+    private static void LoadLoadPending()
+    {
+        throw new NotImplementedException();
+    }
+
+    private static void InitalizeSubSitesList()
+    {
+        throw new NotImplementedException();
+    }
+
+    private static void EnterLaptopInitLaptopPages()
+    {
+        throw new NotImplementedException();
+    }
+
+    private static void CreateDestroyMouseRegionForNewMailIcon()
+    {
+        throw new NotImplementedException();
+    }
 }
 
 // icons text id's

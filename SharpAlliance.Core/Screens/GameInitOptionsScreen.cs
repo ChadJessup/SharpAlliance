@@ -90,7 +90,7 @@ public class GameInitOptionsScreen : IScreen
         FadeScreen fadeScreen)
     {
         this.messageBoxes = messageBoxSubSystem;
-        this.video = videoManager;
+        video = videoManager;
         this.fade = fadeScreen;
         this.fonts = fontSubSystem;
         this.gGameOptions = gameOptions;
@@ -122,7 +122,7 @@ public class GameInitOptionsScreen : IScreen
         CursorSubSystem.SetCurrentCursorFromDatabase(CURSOR.NORMAL);
 
         // load the Main trade screen backgroiund image
-        this.video.GetVideoObject("InterFace\\OptionsScreenBackGround.sti", out this.guiGIOMainBackGroundImageKey);
+        video.GetVideoObject("InterFace\\OptionsScreenBackGround.sti", out this.guiGIOMainBackGroundImageKey);
 
         //Ok button
         this.giGIODoneBtnImage = ButtonSubSystem.LoadButtonImage("INTERFACE\\PreferencesButtons.sti", -1, 0, -1, 2, -1);
@@ -288,7 +288,7 @@ public class GameInitOptionsScreen : IScreen
         //REnder the screen once so we can blt ot to ths save buffer
         this.RenderGIOScreen();
 
-        this.video.BlitBufferToBuffer(SurfaceType.RENDER_BUFFER, SurfaceType.SAVE_BUFFER, new(0, 0, 639, 439));
+        video.BlitBufferToBuffer(SurfaceType.RENDER_BUFFER, SurfaceType.SAVE_BUFFER, new(0, 0, 639, 439));
 
         this.gfGIOButtonsAllocated = true;
 
@@ -296,14 +296,14 @@ public class GameInitOptionsScreen : IScreen
 
     public async ValueTask<ScreenName> Handle()
     {
-        this.video.StartFrameBufferRender();
+        video.StartFrameBufferRender();
 
         if (this.gfGIOScreenEntry)
         {
             this.gfGIOScreenEntry = false;
             this.gfGIOScreenExit = false;
 
-            this.video.InvalidateRegion(new(0, 0, 640, 480));
+            video.InvalidateRegion(new(0, 0, 640, 480));
         }
 
         this.GetGIOScreenUserInput();
@@ -317,8 +317,8 @@ public class GameInitOptionsScreen : IScreen
         //RenderFastHelp( );
         //GuiManager.RenderButtonsFastHelp();
 
-        this.video.ExecuteBaseDirtyRectQueue();
-        this.video.EndFrameBufferRender();
+        video.ExecuteBaseDirtyRectQueue();
+        video.EndFrameBufferRender();
 
         if (this.fade.HandleFadeOutCallback())
         {
@@ -543,10 +543,10 @@ public class GameInitOptionsScreen : IScreen
 
         //Get the main background screen graphic and blt it
         HVOBJECT background = video.GetVideoObject(this.guiGIOMainBackGroundImageKey);
-        this.video.BltVideoObject(SurfaceType.FRAME_BUFFER, background, 0, 0, 0, VO_BLT.SRCTRANSPARENCY);
+        video.BltVideoObject(SurfaceType.FRAME_BUFFER, background, 0, 0, 0, VO_BLT.SRCTRANSPARENCY);
         
         //Shade the background
-        this.video.ShadowVideoSurfaceRect(SurfaceType.FRAME_BUFFER, new Rectangle(48, 55, 592, 378)); //358
+        video.ShadowVideoSurfaceRect(SurfaceType.FRAME_BUFFER, new Rectangle(48, 55, 592, 378)); //358
 
         //Display the title
         FontSubSystem.DrawTextToScreen(
@@ -790,7 +790,7 @@ public class GameInitOptionsScreen : IScreen
         if (reason.HasFlag(MSYS_CALLBACK_REASON.LBUTTON_DWN))
         {
             btn.uiFlags |= ButtonFlags.BUTTON_CLICKED_ON;
-            this.video.InvalidateRegion(btn.MouseRegion.Bounds);
+            video.InvalidateRegion(btn.MouseRegion.Bounds);
         }
 
         if (reason.HasFlag(MSYS_CALLBACK_REASON.LBUTTON_UP))
@@ -804,7 +804,7 @@ public class GameInitOptionsScreen : IScreen
                 this.DisplayMessageToUserAboutGameDifficulty();
             }
 
-            this.video.InvalidateRegion(btn.MouseRegion.Bounds);
+            video.InvalidateRegion(btn.MouseRegion.Bounds);
         }
     }
 
@@ -898,7 +898,7 @@ public class GameInitOptionsScreen : IScreen
         if (reason.HasFlag(MSYS_CALLBACK_REASON.LBUTTON_DWN))
         {
             btn.uiFlags |= ButtonFlags.BUTTON_CLICKED_ON;
-            this.video.InvalidateRegion(btn.MouseRegion.Bounds);
+            video.InvalidateRegion(btn.MouseRegion.Bounds);
         }
 
         if (reason.HasFlag(MSYS_CALLBACK_REASON.LBUTTON_UP))
@@ -907,7 +907,7 @@ public class GameInitOptionsScreen : IScreen
 
             this.gubGameOptionScreenHandler = GameMode.GIO_CANCEL;
 
-            this.video.InvalidateRegion(btn.MouseRegion.Bounds);
+            video.InvalidateRegion(btn.MouseRegion.Bounds);
         }
     }
 

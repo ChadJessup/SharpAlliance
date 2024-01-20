@@ -209,7 +209,7 @@ public class LaptopSaveInfoStruct
     public int ubNumberLifeInsurancePayoutUsed;      // The number of items in the array that are used
     public bool fBobbyRSiteCanBeAccessed;
     public int ubPlayerBeenToMercSiteStatus;
-    public bool fFirstVisitSinceServerWentDown;
+    public int fFirstVisitSinceServerWentDown;
     public bool fNewMercsAvailableAtMercSite;
     public bool fSaidGenericOpeningInMercSite;
     public bool fSpeckSaidFloMarriedCousinQuote;

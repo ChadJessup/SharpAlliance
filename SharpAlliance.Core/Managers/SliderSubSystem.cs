@@ -25,7 +25,7 @@ public class SliderSubSystem
         IInputManager inputManager,
         IVideoManager videoManager)
     {
-        this.video = videoManager;
+        video = videoManager;
         this.inputs = inputManager;
     }
 
@@ -76,7 +76,7 @@ public class SliderSubSystem
             this.OptDisplayLine(new(pSlider.usPos.X + 1, pSlider.usPos.Y + 1), new(pSlider.usPos.X + pSlider.ubSliderWidth - 1, pSlider.usPos.Y + 1), pSlider.usBackGroundColor);
 
             //invalidate the area
-            this.video.InvalidateRegion(new(
+            video.InvalidateRegion(new(
                 pSlider.usPos.X,
                 pSlider.usPos.Y - 2,
                 pSlider.ubSliderWidth + 1,
@@ -114,7 +114,7 @@ public class SliderSubSystem
                 video.BlitBufferToBuffer(SurfaceType.SAVE_BUFFER, SurfaceType.RENDER_BUFFER, new(pSlider.LastRect.Left, pSlider.LastRect.Top, pSlider.ubSliderWidth, pSlider.ubSliderHeight));
 
                 //invalidate the old area
-                this.video.InvalidateRegion(new(pSlider.LastRect.Left, pSlider.LastRect.Top, pSlider.LastRect.Right, pSlider.LastRect.Bottom));
+                video.InvalidateRegion(new(pSlider.LastRect.Left, pSlider.LastRect.Top, pSlider.LastRect.Right, pSlider.LastRect.Bottom));
             }
 
             //Blit the new rect
@@ -137,11 +137,11 @@ public class SliderSubSystem
             if (!(pSlider.LastRect.Left == 0 && pSlider.LastRect.Right == 0))
             {
                 //Restore the old rect
-                this.video.BlitBufferToBuffer(SurfaceType.SAVE_BUFFER, SurfaceType.RENDER_BUFFER,new(pSlider.LastRect.Left, pSlider.LastRect.Top, 8, 15));
+                video.BlitBufferToBuffer(SurfaceType.SAVE_BUFFER, SurfaceType.RENDER_BUFFER,new(pSlider.LastRect.Left, pSlider.LastRect.Top, 8, 15));
             }
 
             //save the new rect
-            this.video.BlitBufferToBuffer(SurfaceType.RENDER_BUFFER, SurfaceType.SAVE_BUFFER, new(DestRect.Left, DestRect.Top, 8, 15));
+            video.BlitBufferToBuffer(SurfaceType.RENDER_BUFFER, SurfaceType.SAVE_BUFFER, new(DestRect.Left, DestRect.Top, 8, 15));
         }
 
         //Save the new rect location
@@ -150,31 +150,31 @@ public class SliderSubSystem
         if (pSlider.uiFlags.HasFlag(SliderDirection.SLIDER_VERTICAL))
         {
             //display the slider box
-            hPixHandle = this.video.GetVideoObject(this.guiSliderBoxImageTag);
-            this.video.BltVideoObject(SurfaceType.FRAME_BUFFER, hPixHandle, 0, pSlider.LastRect.Left, pSlider.LastRect.Top);
+            hPixHandle = video.GetVideoObject(this.guiSliderBoxImageTag);
+            video.BltVideoObject(SurfaceType.FRAME_BUFFER, hPixHandle, 0, pSlider.LastRect.Left, pSlider.LastRect.Top);
 
             //invalidate the area
-            this.video.InvalidateRegion(new(pSlider.LastRect.Left, pSlider.LastRect.Top, pSlider.LastRect.Right, pSlider.LastRect.Bottom));
+            video.InvalidateRegion(new(pSlider.LastRect.Left, pSlider.LastRect.Top, pSlider.LastRect.Right, pSlider.LastRect.Bottom));
         }
         else
         {
             //display the slider box
-            hPixHandle = this.video.GetVideoObject(this.guiSliderBoxImageTag);
-            this.video.BltVideoObject(SurfaceType.FRAME_BUFFER, hPixHandle, 0, pSlider.usCurrentSliderBoxPosition, pSlider.usPos.Y - Slider.DEFAULT_SLIDER_SIZE);
+            hPixHandle = video.GetVideoObject(this.guiSliderBoxImageTag);
+            video.BltVideoObject(SurfaceType.FRAME_BUFFER, hPixHandle, 0, pSlider.usCurrentSliderBoxPosition, pSlider.usPos.Y - Slider.DEFAULT_SLIDER_SIZE);
 
             //invalidate the area
-            this.video.InvalidateRegion(new(pSlider.usCurrentSliderBoxPosition, pSlider.usPos.Y - Slider.DEFAULT_SLIDER_SIZE, pSlider.usCurrentSliderBoxPosition + 9, pSlider.usPos.Y + Slider.DEFAULT_SLIDER_SIZE));
+            video.InvalidateRegion(new(pSlider.usCurrentSliderBoxPosition, pSlider.usPos.Y - Slider.DEFAULT_SLIDER_SIZE, pSlider.usCurrentSliderBoxPosition + 9, pSlider.usPos.Y + Slider.DEFAULT_SLIDER_SIZE));
         }
     }
 
     private void OptDisplayLine(PointF usStart, PointF usEnd, Color iColor)
     {
-        var frame = this.video.Surfaces[SurfaceType.FRAME_BUFFER];
+        var frame = video.Surfaces[SurfaceType.FRAME_BUFFER];
 
-        this.video.SetClippingRegionAndImageWidth(frame.Width, new Rectangle(0, 0, 640, 480));
+        video.SetClippingRegionAndImageWidth(frame.Width, new Rectangle(0, 0, 640, 480));
 
         // draw the line 
-        this.video.LineDraw(false, usStart, usEnd, iColor, frame);
+        video.LineDraw(false, usStart, usEnd, iColor, frame);
     }
 
     private void CalculateNewSliderIncrement(ref Slider pSlider, int usPos)
@@ -292,7 +292,7 @@ public class SliderSubSystem
     public void InitSliderSystem()
     {
         // load Slider Box Graphic graphic and add it
-        this.video.GetVideoObject("INTERFACE\\SliderBox.sti", out this.guiSliderBoxImageTag);
+        video.GetVideoObject("INTERFACE\\SliderBox.sti", out this.guiSliderBoxImageTag);
 
         gfSliderInited = true;
     }

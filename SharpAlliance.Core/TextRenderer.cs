@@ -29,7 +29,7 @@ public class TextRenderer
         int width = 640;
         int height = 480;
 
-        this.video = videoManager;
+        video = videoManager;
         this.font = this.LoadFont("Arial", 10, FontStyle.Bold);
     }
 
@@ -58,7 +58,7 @@ public class TextRenderer
         Rgba32 foreground,
         Rgba32 background)
     {
-        var buffer = this.video.Surfaces[FontSubSystem.FontDestBuffer];
+        var buffer = video.Surfaces[FontSubSystem.FontDestBuffer];
 
         RichTextOptions options = new(font)
         {

@@ -64,8 +64,8 @@ public class IntroScreen : IScreen
         this.cinematics = cinematics;
         this.mouse = mouseSubSystem;
         this.music = musicManager;
-        this.video = videoManager;
-        this.video = videoManager;
+        video = videoManager;
+        video = videoManager;
         this.gameInit = gameInit;
         this.context = context;
     }
@@ -86,7 +86,7 @@ public class IntroScreen : IScreen
             Globals.gfIntroScreenEntry = false;
             Globals.gfIntroScreenExit = false;
 
-            this.video.InvalidateRegion(new(0, 0, 640, 480));
+            video.InvalidateRegion(new(0, 0, 640, 480));
         }
 
         RenderDirty.RestoreBackgroundRects();
@@ -97,7 +97,7 @@ public class IntroScreen : IScreen
         this.HandleIntroScreen();
 
         RenderDirty.ExecuteBaseDirtyRectQueue();
-        this.video.EndFrameBufferRender();
+        video.EndFrameBufferRender();
 
         if (Globals.gfIntroScreenExit)
         {
@@ -142,7 +142,7 @@ public class IntroScreen : IScreen
             }
         }
 
-        this.video.InvalidateScreen();
+        video.InvalidateScreen();
     }
 
     private bool SmkPollFlics()
@@ -344,16 +344,16 @@ public class IntroScreen : IScreen
         // JA3Gold: do nothing until we have a graphic to replace Talonsoft's
         //return;
 
-        var image = this.video.LoadImage("INTERFACE\\SirtechSplash.sti");
-        //Texture[] surface = this.video.CreateSurfaces(this.video.Renderer, image.Images);
+        var image = video.LoadImage("INTERFACE\\SirtechSplash.sti");
+        //Texture[] surface = video.CreateSurfaces(video.Renderer, image.Images);
 
-        this.video.BlitSurfaceToSurface(
+        video.BlitSurfaceToSurface(
             src: image.Images[0],
             dst: SurfaceType.FRAME_BUFFER,
             dstPoint: new Point(0, 0),
             bltFlags: VO_BLT.SRCTRANSPARENCY);
 
-//        var videoObject = this.video.AddVideoObject("INTERFACE\\SirtechSplash.sti", out logoKey);
+//        var videoObject = video.AddVideoObject("INTERFACE\\SirtechSplash.sti", out logoKey);
 //        videoObject = this.textures.LoadTexture("INTERFACE\\SirtechSplash.sti");
   
         
@@ -367,9 +367,9 @@ public class IntroScreen : IScreen
 //            VO_BLT.SRCTRANSPARENCY,
 //            null);
 
-//        this.video.DeleteVideoObjectFromIndex(logoKey);
-        this.video.InvalidateScreen();
-        this.video.RefreshScreen();
+//        video.DeleteVideoObjectFromIndex(logoKey);
+        video.InvalidateScreen();
+        video.RefreshScreen();
     }
 
     public ValueTask<bool> Initialize()

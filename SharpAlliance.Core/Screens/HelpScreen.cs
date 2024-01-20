@@ -87,6 +87,11 @@ public class HelpScreen : IScreen
         return (true);
     }
 
+    internal static void HelpScreenHandler()
+    {
+        throw new NotImplementedException();
+    }
+
     private static HELP_SCREEN HelpScreenDetermineWhichMapScreenHelpToShow()
     {
         if (fShowMapInventoryPool)

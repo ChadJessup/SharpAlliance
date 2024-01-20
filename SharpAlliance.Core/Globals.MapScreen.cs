@@ -17,7 +17,7 @@ public partial class Globals
     public static bool fShowInventoryFlag = false;
     public static bool fMapInventoryItem = false;
     public static bool fShowDescriptionFlag = false;
-
+    public static int bSelectedInfoChar = 0;
     public static Path? pTempCharacterPath;
     public static Path? pTempHelicopterPath;
 

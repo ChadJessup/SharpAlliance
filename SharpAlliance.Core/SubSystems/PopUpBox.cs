@@ -1,4 +1,5 @@
-﻿using SixLabors.ImageSharp;
+﻿using System;
+using SixLabors.ImageSharp;
 
 using static SharpAlliance.Core.Globals;
 
@@ -18,6 +19,16 @@ public class PopUpBox
         {
             Globals.PopUpBoxList[uiIndex].fUpdated = false;
         }
+    }
+
+    internal static void HideBox(int ghEpcBox)
+    {
+        throw new NotImplementedException();
+    }
+
+    internal static bool IsBoxShown(int ghEpcBox)
+    {
+        throw new NotImplementedException();
     }
 }
 

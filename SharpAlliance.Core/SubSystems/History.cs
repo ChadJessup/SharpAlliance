@@ -23,7 +23,7 @@ public class History
     {
         this.fonts = fontSubSystem;
         files = fileManager;
-        this.video = videoManager;
+        video = videoManager;
     }
 
     public static bool fInHistoryMode = false;
@@ -238,18 +238,18 @@ public class History
         // title bar
         //
 //        Utils.FilenameForBPP("LAPTOP\\programtitlebar.sti", VObjectDesc.ImageFile);
-//        this.video.AddVideoObject(VObjectDesc.ImageFile, out guiTITLE);
+//        video.AddVideoObject(VObjectDesc.ImageFile, out guiTITLE);
 
         // top portion of the screen background
         //
 //        Utils.FilenameForBPP("LAPTOP\\historywindow.sti", VObjectDesc.ImageFile);
-//        this.video.AddVideoObject(VObjectDesc.ImageFile, out guiTOP);
+//        video.AddVideoObject(VObjectDesc.ImageFile, out guiTOP);
 
 
         // shaded line
         //
 //        Utils.FilenameForBPP("LAPTOP\\historylines.sti", VObjectDesc.ImageFile);
-//        this.video.AddVideoObject(VObjectDesc, out guiSHADELINE);
+//        video.AddVideoObject(VObjectDesc, out guiSHADELINE);
 
         /*
         Not being used???  DF commented out	
@@ -261,7 +261,7 @@ public class History
         // black divider line - long ( 480 length)
         //
 //        Utils.FilenameForBPP("LAPTOP\\divisionline480.sti", VObjectDesc.ImageFile);
-//        this.video.AddVideoObject(VObjectDesc.ImageFile, out guiLONGLINE);
+//        video.AddVideoObject(VObjectDesc.ImageFile, out guiLONGLINE);
 
         return true;
     }

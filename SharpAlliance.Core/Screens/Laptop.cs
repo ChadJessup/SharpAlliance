@@ -5,6 +5,8 @@ using SharpAlliance.Core.Interfaces;
 using SharpAlliance.Core.Managers;
 using SharpAlliance.Core.Managers.VideoSurfaces;
 using SharpAlliance.Core.Screens;
+using SharpAlliance.Core.SubSystems.LaptopSubSystem.FloristSubSystem;
+using SharpAlliance.Core.SubSystems.LaptopSubSystem.InsuranceSubSystem;
 using SixLabors.ImageSharp;
 using static System.Runtime.InteropServices.JavaScript.JSType;
 
@@ -188,7 +190,7 @@ public partial class Laptop : IScreen
         if (HelpScreen.ShouldTheHelpScreenComeUp(HELP_SCREEN.LAPTOP, false))
         {
             // handle the help screen
-            HelpScreenHandler();
+            HelpScreen.HelpScreenHandler();
 
             return ValueTask.FromResult(ScreenName.LAPTOP_SCREEN);
         }
@@ -203,7 +205,7 @@ public partial class Laptop : IScreen
         // handle animated cursors
         CursorSubSystem.HandleAnimatedCursors();
         // Deque all game events
-        DequeAllGameEvents(true);
+        EventPump.DequeAllGameEvents(true);
 
         // handle sub sites..like BR Guns, BR Ammo, Armour, Misc...for WW Wait..since they are not true sub pages
         // and are not individual sites
@@ -380,11 +382,11 @@ public partial class Laptop : IScreen
             fReDrawScreenFlag = false;
         }
 
-        ExecuteVideoOverlays();
+        RenderDirty.ExecuteVideoOverlays();
 
         video.SaveBackgroundRects();
         //	RenderButtonsFastHelp();
-        RenderFastHelp();
+        MouseSubSystem.RenderFastHelp();
 
         // ex SAVEBUFFER queue
         video.ExecuteBaseDirtyRectQueue();
@@ -393,6 +395,91 @@ public partial class Laptop : IScreen
 
 
         return ValueTask.FromResult(ScreenName.LAPTOP_SCREEN);
+    }
+
+    private void HandleSlidingTitleBar()
+    {
+        throw new NotImplementedException();
+    }
+
+    private void DisplayTaskBarIcons()
+    {
+        throw new NotImplementedException();
+    }
+
+    private void DisplayFrameRate()
+    {
+        throw new NotImplementedException();
+    }
+
+    private void LookForUnread()
+    {
+        throw new NotImplementedException();
+    }
+
+    private void ReDrawNewMailBox()
+    {
+        throw new NotImplementedException();
+    }
+
+    private void ShouldNewMailBeDisplayed()
+    {
+        throw new NotImplementedException();
+    }
+
+    private void DisplayErrorBox()
+    {
+        throw new NotImplementedException();
+    }
+
+    private void DisplayWebBookMarkNotify()
+    {
+        throw new NotImplementedException();
+    }
+
+    private void DisplayLoadPending()
+    {
+        throw new NotImplementedException();
+    }
+
+    private void DisplayBookMarks()
+    {
+        throw new NotImplementedException();
+    }
+
+    private void HandleWWWSubSites()
+    {
+        throw new NotImplementedException();
+    }
+
+    private void UpdateStatusOfDisplayingBookMarks()
+    {
+        throw new NotImplementedException();
+    }
+
+    private void HandleLapTopHandles()
+    {
+        throw new NotImplementedException();
+    }
+
+    private void GetLaptopKeyboardInput()
+    {
+        throw new NotImplementedException();
+    }
+
+    private void DisplayNewMailBox()
+    {
+        throw new NotImplementedException();
+    }
+
+    private void CreateDestroyNewMailButton()
+    {
+        throw new NotImplementedException();
+    }
+
+    private void CreateDestroyErrorButton()
+    {
+        throw new NotImplementedException();
     }
 
     private static bool fOldShowBookmarks = false;
@@ -518,10 +605,10 @@ public partial class Laptop : IScreen
             if (giRainDelayInternetSite == BOOKMARK.UNSET)
             {
                 DoLapTopMessageBox(
-                    MSG_BOX_LAPTOP_DEFAULT,
+                    MessageBoxStyle.MSG_BOX_LAPTOP_DEFAULT,
                     pErrorStrings[4],
-                    LAPTOP_SCREEN,
-                    MSG_BOX_FLAG_OK,
+                    ScreenName.LAPTOP_SCREEN,
+                    MSG_BOX_FLAG.OK,
                     InternetRainDelayMessageBoxCallBack);
 
                 giRainDelayInternetSite = iPageId;
@@ -591,7 +678,7 @@ public partial class Laptop : IScreen
             case (BOOKMARK.MERC_BOOKMARK):
 
                 //if the mercs server has gone down, but hasnt come up yet
-                if (LaptopSaveInfo.fMercSiteHasGoneDownYet == true && LaptopSaveInfo.fFirstVisitSinceServerWentDown == false)
+                if (LaptopSaveInfo.fMercSiteHasGoneDownYet == true && LaptopSaveInfo.fFirstVisitSinceServerWentDown == 0)
                 {
                     guiCurrentWWWMode = LAPTOP_MODE.BROKEN_LINK;
                     guiCurrentLaptopMode = LAPTOP_MODE.BROKEN_LINK;
@@ -677,6 +764,20 @@ public partial class Laptop : IScreen
 
         gfShowBookmarks = false;
         fReDrawScreenFlag = true;
+    }
+
+    void InternetRainDelayMessageBoxCallBack(MessageBoxReturnCode bExitValue)
+    {
+        GoToWebPage(giRainDelayInternetSite);
+
+        //Set to -2 so we dont due the message for this occurence of laptop
+        giRainDelayInternetSite = (BOOKMARK)(-2);
+    }
+
+
+    private void DoLapTopMessageBox(MessageBoxStyle mSG_BOX_LAPTOP_DEFAULT, string v, ScreenName lAPTOP_SCREEN, MSG_BOX_FLAG oK, MSGBOX_CALLBACK internetRainDelayMessageBoxCallBack)
+    {
+        throw new NotImplementedException();
     }
 
     private static bool IsItRaining()
@@ -765,6 +866,11 @@ public partial class Laptop : IScreen
         }
         return;
 
+    }
+
+    private void DisplayEmailHeaders()
+    {
+        throw new NotImplementedException();
     }
 
     private void DrawTextOnErrorButton()
@@ -1438,29 +1544,29 @@ public partial class Laptop : IScreen
                 break;
 
             case LAPTOP_MODE.FLORIST:
-                EnterFlorist();
+                Florist.EnterFlorist();
                 break;
             case LAPTOP_MODE.FLORIST_FLOWER_GALLERY:
-                EnterFloristGallery();
+                Florist.EnterFloristGallery();
                 break;
             case LAPTOP_MODE.FLORIST_ORDERFORM:
-                EnterFloristOrderForm();
+                Florist.EnterFloristOrderForm();
                 break;
             case LAPTOP_MODE.FLORIST_CARD_GALLERY:
-                EnterFloristCards();
+                Florist.EnterFloristCards();
                 break;
 
             case LAPTOP_MODE.INSURANCE:
-                EnterInsurance();
+                Insurance.EnterInsurance();
                 break;
             case LAPTOP_MODE.INSURANCE_INFO:
-                EnterInsuranceInfo();
+                Insurance.EnterInsuranceInfo();
                 break;
             case LAPTOP_MODE.INSURANCE_CONTRACT:
-                EnterInsuranceContract();
+                Insurance.EnterInsuranceContract();
                 break;
             case LAPTOP_MODE.INSURANCE_COMMENTS:
-                EnterInsuranceComments();
+                Insurance.EnterInsuranceComments();
                 break;
 
             case LAPTOP_MODE.FUNERAL:
@@ -1470,7 +1576,7 @@ public partial class Laptop : IScreen
                 EnterSirTech();
                 break;
             case LAPTOP_MODE.FINANCES:
-                EnterFinances();
+                Finances.EnterFinances();
                 break;
             case LAPTOP_MODE.PERSONNEL:
                 EnterPersonnel();
@@ -1482,7 +1588,7 @@ public partial class Laptop : IScreen
                 EnterFiles();
                 break;
             case LAPTOP_MODE.EMAIL:
-                EnterEmail();
+                Emails.EnterEmail();
                 break;
             case LAPTOP_MODE.BROKEN_LINK:
                 EnterBrokenLink();
@@ -1516,6 +1622,146 @@ public partial class Laptop : IScreen
         // check to see if we need to go to there default web page of not
         //HandleDefaultWebpageForLaptop( );
 
+    }
+
+    private void EnterBobbyRShipments()
+    {
+        throw new NotImplementedException();
+    }
+
+    private void EnterBrokenLink()
+    {
+        throw new NotImplementedException();
+    }
+
+    private void EnterFiles()
+    {
+        throw new NotImplementedException();
+    }
+
+    private void EnterHistory()
+    {
+        throw new NotImplementedException();
+    }
+
+    private void EnterPersonnel()
+    {
+        throw new NotImplementedException();
+    }
+
+    private void EnterSirTech()
+    {
+        throw new NotImplementedException();
+    }
+
+    private void EnterFuneral()
+    {
+        throw new NotImplementedException();
+    }
+
+    private void EnterCharProfile()
+    {
+        throw new NotImplementedException();
+    }
+
+    private void EnterBobbyRMailOrder()
+    {
+        throw new NotImplementedException();
+    }
+
+    private void EnterBobbyRUsed()
+    {
+        throw new NotImplementedException();
+    }
+
+    private void EnterBobbyRMisc()
+    {
+        throw new NotImplementedException();
+    }
+
+    private void EnterBobbyRArmour()
+    {
+        throw new NotImplementedException();
+    }
+
+    private void EnterBobbyRAmmo()
+    {
+        throw new NotImplementedException();
+    }
+
+    private void EnterBobbyRGuns()
+    {
+        throw new NotImplementedException();
+    }
+
+    private void EnterBobbyR()
+    {
+        throw new NotImplementedException();
+    }
+
+    private void EnterMercsNoAccount()
+    {
+        throw new NotImplementedException();
+    }
+
+    private void EnterMercsAccount()
+    {
+        throw new NotImplementedException();
+    }
+
+    private void EnterMercsFiles()
+    {
+        throw new NotImplementedException();
+    }
+
+    private void EnterMercs()
+    {
+        throw new NotImplementedException();
+    }
+
+    private void EnterAimHistory()
+    {
+        throw new NotImplementedException();
+    }
+
+    private void EnterAimLinks()
+    {
+        throw new NotImplementedException();
+    }
+
+    private void EnterAimPolicies()
+    {
+        throw new NotImplementedException();
+    }
+
+    private void EnterAimSort()
+    {
+        throw new NotImplementedException();
+    }
+
+    private void EnterAIMMembers()
+    {
+        throw new NotImplementedException();
+    }
+
+    private void EnterAimFacialIndex()
+    {
+        throw new NotImplementedException();
+    }
+
+    private void DisplayProgramBoundingBox(bool v)
+    {
+        throw new NotImplementedException();
+    }
+
+    private void SetSubSiteAsVisted()
+    {
+        throw new NotImplementedException();
+    }
+
+    private void CreateDestroyMinimizeButtonForCurrentMode()
+    {
+        throw new NotImplementedException();
     }
 
     private bool InitTitleBarMaximizeGraphics(HVOBJECT uiBackgroundGraphic, string pTitle, HVOBJECT uiIconGraphic, int usIconGraphicIndex)

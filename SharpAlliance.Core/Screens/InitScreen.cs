@@ -79,7 +79,7 @@ public class InitScreen : IScreen
         this.textures = textureManager;
         this.strategicMap = strategicMap;
         this.world = world;
-        this.video = videoManager;
+        video = videoManager;
         this.context = context;
         this.cursor = cursorSubSystem;
 //        this.videoSurface = videoSurfaceManager;
@@ -108,7 +108,7 @@ public class InitScreen : IScreen
 
     public ValueTask<bool> Initialize()
     {
-        hVObject = this.video.GetVideoObject(LogoAsset, out var key);
+        hVObject = video.GetVideoObject(LogoAsset, out var key);
        // HVOBJECT logo = this.textures.LoadTexture(LogoAsset);
 
         return ValueTask.FromResult(true);
@@ -139,7 +139,7 @@ public class InitScreen : IScreen
             //vs_desc.fCreateFlags = VideoObjectCreateFlags.VOBJECT_CREATE_FROMFILE;// | VSurfaceCreateFlags.VSURFACE_SYSTEM_MEM_USAGE;
 
             // vs_desc.ImageFile = "ja2_logo.STI";
-            //var hVObject = this.video.GetVideoObject("ja2_logo.STI", out var key);
+            //var hVObject = video.GetVideoObject("ja2_logo.STI", out var key);
             // 
             // if (hVObject is null)
             // {
@@ -147,7 +147,7 @@ public class InitScreen : IScreen
             //     return ScreenName.ERROR_SCREEN;
             // }
 
-            //this.video.BlitSurfaceToSurface(hVObject.Images[0], SurfaceType.FRAME_BUFFER, new(0, 0), VO_BLT.DESTTRANSPARENCY, false);
+            //video.BlitSurfaceToSurface(hVObject.Images[0], SurfaceType.FRAME_BUFFER, new(0, 0), VO_BLT.DESTTRANSPARENCY, false);
             ubCurrentScreen = 1;
 
             // Init screen
@@ -169,7 +169,7 @@ public class InitScreen : IScreen
             //  //  mprintf(10, 450, "SOLDIERTYPE: %d bytes", sizeof(SOLDIERTYPE));
             //}
 
-            this.video.InvalidateScreen();
+            video.InvalidateScreen();
 
             // Delete video Surface
             // this.videoSurface.DeleteVideoSurface(hVSurface);

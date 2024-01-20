@@ -735,6 +735,11 @@ public class RenderDirty
     {
         throw new NotImplementedException();
     }
+
+    internal static void ExecuteVideoOverlays()
+    {
+        throw new NotImplementedException();
+    }
 }
 
 // Struct for init topmost blitter

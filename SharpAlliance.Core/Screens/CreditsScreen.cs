@@ -38,7 +38,7 @@ public class CreditsScreen : IScreen
         FontSubSystem fontSubSystem)
     {
         this.fonts = fontSubSystem;
-        this.video = videoManager;
+        video = videoManager;
         this.gui = guiManager;
         this.clock = clockManager;
         this.context = gameContext;
@@ -536,7 +536,7 @@ public class CreditsScreen : IScreen
             pNodeToAdd.uiVideoSurfaceImage = tex.SurfaceType;
 
             //Set transparency
-            this.video.SetVideoSurfaceTransparency(pNodeToAdd.uiVideoSurfaceImage, new Rgba32(0, 0, 0));
+            video.SetVideoSurfaceTransparency(pNodeToAdd.uiVideoSurfaceImage, new Rgba32(0, 0, 0));
 
             //fill the surface with a transparent color
 
@@ -638,8 +638,8 @@ public class CreditsScreen : IScreen
 
     private void RenderCreditScreen()
     {
-        HVOBJECT hPixHandle = this.video.GetVideoObject(Globals.guiCreditBackGroundImageKey);
-        this.video.BltVideoObject(SurfaceType.FRAME_BUFFER, hPixHandle, 0, 0, 0);
+        HVOBJECT hPixHandle = video.GetVideoObject(Globals.guiCreditBackGroundImageKey);
+        video.BltVideoObject(SurfaceType.FRAME_BUFFER, hPixHandle, 0, 0, 0);
         /*
             HVSURFACE hVSurface;
 
@@ -651,12 +651,12 @@ public class CreditsScreen : IScreen
             Globals.gfCrdtHaveRenderedFirstFrameToSaveBuffer = true;
 
             //blit everything to the save buffer ( cause the save buffer can bleed through )
-            this.video.BlitBufferToBuffer(SurfaceType.RENDER_BUFFER, SurfaceType.SAVE_BUFFER, new(0, 0, 640, 480));
+            video.BlitBufferToBuffer(SurfaceType.RENDER_BUFFER, SurfaceType.SAVE_BUFFER, new(0, 0, 640, 480));
             
             //ButtonSubSystem.UnmarkButtonsDirty();
         }
 
-        this.video.InvalidateScreen();
+        video.InvalidateScreen();
     }
 
     private void GetCreditScreenUserInput()
@@ -678,7 +678,7 @@ public class CreditsScreen : IScreen
                         break;
 
                     case Key.I:
-                        this.video.InvalidateRegion(0, 0, 640, 480);
+                        video.InvalidateRegion(0, 0, 640, 480);
                         break;
 
                     case Key.Up:
@@ -710,8 +710,8 @@ public class CreditsScreen : IScreen
 
     private bool EnterCreditsScreen()
     {
-        this.video.GetVideoObject("INTERFACE\\Credits.sti", out Globals.guiCreditBackGroundImageKey);
-        this.video.GetVideoObject("INTERFACE\\Credit Faces.sti", out Globals.guiCreditFacesKey);
+        video.GetVideoObject("INTERFACE\\Credits.sti", out Globals.guiCreditBackGroundImageKey);
+        video.GetVideoObject("INTERFACE\\Credit Faces.sti", out Globals.guiCreditFacesKey);
 
         //Initialize the root credit node
 
@@ -828,8 +828,8 @@ public class CreditsScreen : IScreen
     {
         Globals.gfCreditsScreenEntry = true;
 
-        this.video.GetVideoObject("INTERFACE\\Credits.sti", out Globals.guiCreditBackGroundImageKey);
-        this.video.GetVideoObject("INTERFACE\\Credit Faces.sti", out Globals.guiCreditFacesKey);
+        video.GetVideoObject("INTERFACE\\Credits.sti", out Globals.guiCreditBackGroundImageKey);
+        video.GetVideoObject("INTERFACE\\Credit Faces.sti", out Globals.guiCreditFacesKey);
 
         return ValueTask.FromResult(true);
     }

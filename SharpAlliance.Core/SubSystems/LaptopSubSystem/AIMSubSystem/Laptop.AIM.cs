@@ -26,6 +26,12 @@ public partial class Laptop
     private static void InitCreateDeleteAimPopUpBox(AIM_POPUP ubFlag, string? sString1, string? sString2, int usPosX, int usPosY, int ubData)
     {
     }
+
+    public static void EnterAIM() { }
+    public static void ExitAIM() { }
+    public static void EnterAimArchives() { }
+    public static void ExitAimArchives() { }
+
 }
 
 // Enumerated types used for the Pop Up Box

@@ -28,7 +28,7 @@ public class MapScreen : IScreen
         IVideoManager videoManager,
         MessageSubSystem messageSubSystem)
     {
-        this.video = videoManager;
+        video = videoManager;
         this.mapScreenInterface = mapScreenInterfaceMap;
         this.messages = messageSubSystem;
     }
@@ -63,10 +63,10 @@ public class MapScreen : IScreen
         // set up leave list arrays for dismissed mercs
         MapScreenInterfaceMap.InitLeaveList();
 
-        this.video.GetVideoObject("INTERFACE\\group_confirm.sti", out var idx1);
+        video.GetVideoObject("INTERFACE\\group_confirm.sti", out var idx1);
         this.mapScreenInterface.guiUpdatePanel = idx1;
 
-        this.video.GetVideoObject("INTERFACE\\group_confirm_tactical.sti", out var idx2);
+        video.GetVideoObject("INTERFACE\\group_confirm_tactical.sti", out var idx2);
         this.mapScreenInterface.guiUpdatePanelTactical = idx2;
 
         return ValueTask.FromResult(true);

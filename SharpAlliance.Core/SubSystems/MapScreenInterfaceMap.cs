@@ -79,6 +79,7 @@ public class MapScreenInterfaceMap
     internal static MAP_ROW sSelMapY = MAP_ROW.A;
     internal static int sSelMapX = 9;
     internal static int iCurrentMapSectorZ;
+    internal static int bSelectedAssignChar;
 
     public void SetUpBadSectorsList()
     {

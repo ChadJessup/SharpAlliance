@@ -75,47 +75,47 @@ public class Finances
     private readonly ButtonSubSystem buttons;
     private readonly ILogger<Finances> logger;
     private readonly FontSubSystem fonts;
-    private readonly IVideoManager video;
+    private static IVideoManager video;
 
     // sizeof one record
-    public int RECORD_SIZE { get; } = (sizeof(uint) + sizeof(int) + sizeof(int) + sizeof(byte) + sizeof(byte));
+    public static int RECORD_SIZE { get; } = (sizeof(uint) + sizeof(int) + sizeof(int) + sizeof(byte) + sizeof(byte));
 
     private bool fPausedReDrawScreenFlag;
 
     // the financial record list
-    FinanceUnitPtr pFinanceListHead = null;
+    private static FinanceUnitPtr pFinanceListHead = null;
 
     // current players balance
     //int iCurrentBalance=0;
 
     // current page displayed
-    int iCurrentPage = 0;
+    private static int iCurrentPage = 0;
 
     // current financial record (the one at the top of the current page)
-    FinanceUnitPtr pCurrentFinance = null;
+    private static FinanceUnitPtr pCurrentFinance = null;
 
     // video object id's
-    string guiTITLE;
-    string guiGREYFRAME;
-    string guiTOP;
-    string guiMIDDLE;
-    string guiBOTTOM;
-    string guiLINE;
-    string guiLONGLINE;
-    string guiLISTCOLUMNS;
+    private static string guiTITLE;
+    private static string guiGREYFRAME;
+    private static string guiTOP;
+    private static string guiMIDDLE;
+    private static string guiBOTTOM;
+    private static string guiLINE;
+    private static string guiLONGLINE;
+    private static string guiLISTCOLUMNS;
 
     // are in the financial system right now?
-    bool fInFinancialMode = false;
+    private static bool fInFinancialMode = false;
 
     // the last page loaded
     uint guiLastPageLoaded = 0;
 
     // the last page altogether
-    int guiLastPageInRecordsList = 0;
+    private static int guiLastPageInRecordsList = 0;
 
     // finance screen buttons
-    Dictionary<FinanceButton, GUI_BUTTON> giFinanceButton = new();
-    Dictionary<FinanceButton, ButtonPic> giFinanceButtonImage = new();
+    private static Dictionary<FinanceButton, GUI_BUTTON> giFinanceButton = new();
+    private static Dictionary<FinanceButton, ButtonPic> giFinanceButtonImage = new();
 
     public Finances(
         ILogger<Finances> logger,
@@ -128,7 +128,7 @@ public class Finances
         this.buttons = buttonSubSystem;
         this.logger = logger;
         this.fonts = fontSubSystem;
-        this.video = videoManager;
+        video = videoManager;
     }
 
     public int AddTransactionToPlayersBook(FinanceEvent ubCode, NPCID ubSecondCode, uint uiDate, int iAmount)
@@ -322,7 +322,7 @@ public class Finances
         return (GetDayDebits(((GameClock.GetWorldTotalMin() - (24 * 60)) / (24 * 60))) + GetDayCredits(((uint)(GameClock.GetWorldTotalMin() - (24 * 60)) / (24 * 60))));
     }
 
-    int GetCurrentBalance()
+    private static int GetCurrentBalance()
     {
         // get balance to this minute
         return (LaptopSaveInfo.iCurrentBalance);
@@ -337,7 +337,7 @@ public class Finances
     }
 
 
-    int GetProjectedTotalDailyIncome()
+    private static int GetProjectedTotalDailyIncome()
     {
         // return total  projected income, including what is earned today already
 
@@ -382,7 +382,7 @@ public class Finances
         GetBalanceFromDisk();
     }
 
-    void EnterFinances()
+    public static void EnterFinances()
     {
         //entry into finanacial system, load graphics, set variables..draw screen once
         // set the fact we are in the financial display system
@@ -456,7 +456,7 @@ public class Finances
 
     }
 
-    void RenderFinances()
+    private static void RenderFinances()
     {
         HVOBJECT hHandle;
 
@@ -480,8 +480,8 @@ public class Finances
 
         // display border
 
-        //hHandle = this.video.GetVideoObject(guiLaptopBACKGROUND);
-        this.video.BltVideoObject(SurfaceType.FRAME_BUFFER, guiLaptopBACKGROUND, 0, 108, 23, VO_BLT.SRCTRANSPARENCY, null);
+        //hHandle = video.GetVideoObject(guiLaptopBACKGROUND);
+        video.BltVideoObject(SurfaceType.FRAME_BUFFER, guiLaptopBACKGROUND, 0, 108, 23, VO_BLT.SRCTRANSPARENCY, null);
 
 
         // title bar icon
@@ -492,25 +492,25 @@ public class Finances
         return;
     }
 
-    bool LoadFinances()
+    private static bool LoadFinances()
     {
         HVOBJECT VObjectDesc;
         // load Finance video objects into memory
 
         // title bar
-        VObjectDesc = this.video.GetVideoObject("LAPTOP\\programtitlebar.sti", out guiTITLE);
+        VObjectDesc = video.GetVideoObject("LAPTOP\\programtitlebar.sti", out guiTITLE);
 
         // top portion of the screen background
-        VObjectDesc = this.video.GetVideoObject("LAPTOP\\Financeswindow.sti", out guiTOP);
+        VObjectDesc = video.GetVideoObject("LAPTOP\\Financeswindow.sti", out guiTOP);
 
         // black divider line - long ( 480 length)
-        VObjectDesc = this.video.GetVideoObject("LAPTOP\\divisionline480.sti", out guiLONGLINE);
+        VObjectDesc = video.GetVideoObject("LAPTOP\\divisionline480.sti", out guiLONGLINE);
 
         // the records columns
-        VObjectDesc = this.video.GetVideoObject("LAPTOP\\recordcolumns.sti", out guiLISTCOLUMNS);
+        VObjectDesc = video.GetVideoObject("LAPTOP\\recordcolumns.sti", out guiLISTCOLUMNS);
 
         // black divider line - long ( 480 length)
-        VObjectDesc = this.video.GetVideoObject("LAPTOP\\divisionline.sti", out guiLINE);
+        VObjectDesc = video.GetVideoObject("LAPTOP\\divisionline.sti", out guiLINE);
 
         return (true);
     }
@@ -519,29 +519,29 @@ public class Finances
     {
 
         // delete Finance video objects from memory
-        this.video.DeleteVideoObjectFromIndex(guiLONGLINE);
-        this.video.DeleteVideoObjectFromIndex(guiLINE);
-        this.video.DeleteVideoObjectFromIndex(guiLISTCOLUMNS);
-        this.video.DeleteVideoObjectFromIndex(guiTOP);
-        this.video.DeleteVideoObjectFromIndex(guiTITLE);
+        video.DeleteVideoObjectFromIndex(guiLONGLINE);
+        video.DeleteVideoObjectFromIndex(guiLINE);
+        video.DeleteVideoObjectFromIndex(guiLISTCOLUMNS);
+        video.DeleteVideoObjectFromIndex(guiTOP);
+        video.DeleteVideoObjectFromIndex(guiTITLE);
 
 
         return;
     }
 
-    void RenderBackGround()
+    private static void RenderBackGround()
     {
         // render generic background for Finance system
         HVOBJECT hHandle;
         int iCounter = 0;
 
         // get title bar object
-        hHandle = this.video.GetVideoObject(guiTITLE);
-        this.video.BltVideoObject(SurfaceType.FRAME_BUFFER, hHandle, 0, TOP_X, TOP_Y - 2, VO_BLT.SRCTRANSPARENCY, null);
+        hHandle = video.GetVideoObject(guiTITLE);
+        video.BltVideoObject(SurfaceType.FRAME_BUFFER, hHandle, 0, TOP_X, TOP_Y - 2, VO_BLT.SRCTRANSPARENCY, null);
 
         // get and blt the top part of the screen, video object and blt to screen
-        hHandle = this.video.GetVideoObject(guiTOP);
-        this.video.BltVideoObject(SurfaceType.FRAME_BUFFER, hHandle, 0, TOP_X, TOP_Y + 22, VO_BLT.SRCTRANSPARENCY, null);
+        hHandle = video.GetVideoObject(guiTOP);
+        video.BltVideoObject(SurfaceType.FRAME_BUFFER, hHandle, 0, TOP_X, TOP_Y + 22, VO_BLT.SRCTRANSPARENCY, null);
         DrawFinanceTitleText();
         return;
     }
@@ -549,7 +549,7 @@ public class Finances
 
 
 
-    void DrawSummary()
+    private static void DrawSummary()
     {
         // draw day's summary to screen
         DrawSummaryLines();
@@ -558,27 +558,27 @@ public class Finances
         return;
     }
 
-    void DrawSummaryLines()
+    private static void DrawSummaryLines()
     {
         // draw divider lines on screen
         HVOBJECT hHandle;
 
         // the summary LINE object handle
-        hHandle = this.video.GetVideoObject(guiLINE);
+        hHandle = video.GetVideoObject(guiLINE);
 
         // blit summary LINE object to screen
-        this.video.BltVideoObject(SurfaceType.FRAME_BUFFER, hHandle, 0, DIVLINE_X, TOP_DIVLINE_Y, VO_BLT.SRCTRANSPARENCY, null);
-        this.video.BltVideoObject(SurfaceType.FRAME_BUFFER, hHandle, 0, DIVLINE_X, TOP_DIVLINE_Y + 2, VO_BLT.SRCTRANSPARENCY, null);
+        video.BltVideoObject(SurfaceType.FRAME_BUFFER, hHandle, 0, DIVLINE_X, TOP_DIVLINE_Y, VO_BLT.SRCTRANSPARENCY, null);
+        video.BltVideoObject(SurfaceType.FRAME_BUFFER, hHandle, 0, DIVLINE_X, TOP_DIVLINE_Y + 2, VO_BLT.SRCTRANSPARENCY, null);
         //BltVideoObject(FRAME_BUFFER, hHandle, 0,DIVLINE_X, MID_DIVLINE_Y, VO_BLT.SRCTRANSPARENCY,null);
-        this.video.BltVideoObject(SurfaceType.FRAME_BUFFER, hHandle, 0, DIVLINE_X, BOT_DIVLINE_Y, VO_BLT.SRCTRANSPARENCY, null);
-        this.video.BltVideoObject(SurfaceType.FRAME_BUFFER, hHandle, 0, DIVLINE_X, MID_DIVLINE_Y2, VO_BLT.SRCTRANSPARENCY, null);
+        video.BltVideoObject(SurfaceType.FRAME_BUFFER, hHandle, 0, DIVLINE_X, BOT_DIVLINE_Y, VO_BLT.SRCTRANSPARENCY, null);
+        video.BltVideoObject(SurfaceType.FRAME_BUFFER, hHandle, 0, DIVLINE_X, MID_DIVLINE_Y2, VO_BLT.SRCTRANSPARENCY, null);
         //BltVideoObject(FRAME_BUFFER, hHandle, 0,DIVLINE_X, BOT_DIVLINE_Y2, VO_BLT.SRCTRANSPARENCY,null);
 
 
         return;
     }
 
-    void DrawAPageOfRecords()
+    private static void DrawAPageOfRecords()
     {
         // this procedure will draw a series of financial records to the screen
         int iCurPage = 1;
@@ -599,7 +599,7 @@ public class Finances
         return;
     }
 
-    void DrawRecordsBackGround()
+    private static void DrawRecordsBackGround()
     {
         // proceudre will draw the background for the list of financial records
         int iCounter = 6;
@@ -613,17 +613,17 @@ public class Finances
         for (; iCounter < 35; iCounter++)
         {
             // get and blt middle background to screen
-            hHandle = this.video.GetVideoObject(guiLISTCOLUMNS);
-            this.video.BltVideoObject(SurfaceType.FRAME_BUFFER, hHandle, 0, TOP_X + 10, TOP_Y + 18 + (iCounter * BLOCK_HEIGHT) + 1, VO_BLT.SRCTRANSPARENCY, null);
+            hHandle = video.GetVideoObject(guiLISTCOLUMNS);
+            video.BltVideoObject(SurfaceType.FRAME_BUFFER, hHandle, 0, TOP_X + 10, TOP_Y + 18 + (iCounter * BLOCK_HEIGHT) + 1, VO_BLT.SRCTRANSPARENCY, null);
         }
 
         // the divisorLines
-        hHandle = this.video.GetVideoObject(guiLONGLINE);
-        this.video.BltVideoObject(SurfaceType.FRAME_BUFFER, hHandle, 0, TOP_X + 10, TOP_Y + 17 + (6 * (BLOCK_HEIGHT)), VO_BLT.SRCTRANSPARENCY, null);
-        hHandle = this.video.GetVideoObject(guiLONGLINE);
-        this.video.BltVideoObject(SurfaceType.FRAME_BUFFER, hHandle, 0, TOP_X + 10, TOP_Y + 19 + (6 * (BLOCK_HEIGHT)), VO_BLT.SRCTRANSPARENCY, null);
-        hHandle = this.video.GetVideoObject(guiLONGLINE);
-        this.video.BltVideoObject(SurfaceType.FRAME_BUFFER, hHandle, 0, TOP_X + 10, TOP_Y + 19 + ((iCounter) * (BLOCK_HEIGHT)), VO_BLT.SRCTRANSPARENCY, null);
+        hHandle = video.GetVideoObject(guiLONGLINE);
+        video.BltVideoObject(SurfaceType.FRAME_BUFFER, hHandle, 0, TOP_X + 10, TOP_Y + 17 + (6 * (BLOCK_HEIGHT)), VO_BLT.SRCTRANSPARENCY, null);
+        hHandle = video.GetVideoObject(guiLONGLINE);
+        video.BltVideoObject(SurfaceType.FRAME_BUFFER, hHandle, 0, TOP_X + 10, TOP_Y + 19 + (6 * (BLOCK_HEIGHT)), VO_BLT.SRCTRANSPARENCY, null);
+        hHandle = video.GetVideoObject(guiLONGLINE);
+        video.BltVideoObject(SurfaceType.FRAME_BUFFER, hHandle, 0, TOP_X + 10, TOP_Y + 19 + ((iCounter) * (BLOCK_HEIGHT)), VO_BLT.SRCTRANSPARENCY, null);
 
 
         // the header text
@@ -633,7 +633,7 @@ public class Finances
 
     }
 
-    void DrawRecordsColumnHeadersText()
+    private static void DrawRecordsColumnHeadersText()
     {
         // write the headers text for each column
         int usX, usY;
@@ -668,7 +668,7 @@ public class Finances
         return;
     }
 
-    void DrawRecordsText()
+    private static void DrawRecordsText()
     {
         // draws the text of the records
         FinanceUnitPtr pCurFinance = pCurrentFinance;
@@ -802,7 +802,7 @@ public class Finances
         FontSubSystem.SetFontShadow(FontShadow.DEFAULT_SHADOW);
         return;
     }
-    void DrawFinanceTitleText()
+    private static void DrawFinanceTitleText()
     {
         // setup the font stuff
         FontSubSystem.SetFont(FINANCE_HEADER_FONT);
@@ -822,12 +822,12 @@ public class Finances
     {
         // invalidates blit region to force refresh of screen
 
-        this.video.InvalidateRegion(LAPTOP_SCREEN_UL_X, LAPTOP_SCREEN_UL_Y, LAPTOP_SCREEN_LR_X, LAPTOP_SCREEN_LR_Y);
+        video.InvalidateRegion(LAPTOP_SCREEN_UL_X, LAPTOP_SCREEN_UL_Y, LAPTOP_SCREEN_LR_X, LAPTOP_SCREEN_LR_Y);
 
         return;
     }
 
-    void DrawSummaryText()
+    private static void DrawSummaryText()
     {
         int usX, usY;
         string pString;
@@ -1099,7 +1099,7 @@ public class Finances
     }
 
 
-    void ClearFinanceList()
+    private static void ClearFinanceList()
     {
         // remove each element from list of transactions
         FinanceUnitPtr pFinanceList = pFinanceListHead;
@@ -1123,7 +1123,7 @@ public class Finances
     }
 
 
-    int ProcessAndEnterAFinacialRecord(FinanceEvent ubCode, uint uiDate, int iAmount, NPCID ubSecondCode, int iBalanceToDate)
+    private static int ProcessAndEnterAFinacialRecord(FinanceEvent ubCode, uint uiDate, int iAmount, NPCID ubSecondCode, int iBalanceToDate)
     {
         int uiId = 0;
         FinanceUnitPtr pFinance = pFinanceListHead;
@@ -1175,7 +1175,7 @@ public class Finances
         return uiId;
     }
 
-    void CreateFinanceButtons()
+    private static void CreateFinanceButtons()
     {
         giFinanceButtonImage[PREV_PAGE_BUTTON] = ButtonSubSystem.LoadButtonImage("LAPTOP\\arrows.sti", -1, 0, -1, 1, -1);
         giFinanceButton[PREV_PAGE_BUTTON] = ButtonSubSystem.QuickCreateButton(giFinanceButtonImage[PREV_PAGE_BUTTON], new(PREV_BTN_X, BTN_Y),
@@ -1223,7 +1223,7 @@ public class Finances
             ButtonSubSystem.UnloadButtonImage(giFinanceButtonImage[(FinanceButton)uiCnt]);
         }
     }
-    void BtnFinanceDisplayPrevPageCallBack(ref GUI_BUTTON btn, MSYS_CALLBACK_REASON reason)
+    private static void BtnFinanceDisplayPrevPageCallBack(ref GUI_BUTTON btn, MSYS_CALLBACK_REASON reason)
     {
 
         if (reason.HasFlag(MSYS_CALLBACK_REASON.LBUTTON_UP))
@@ -1242,7 +1242,7 @@ public class Finances
 
     }
 
-    void BtnFinanceDisplayNextPageCallBack(ref GUI_BUTTON btn, MSYS_CALLBACK_REASON reason)
+    private static void BtnFinanceDisplayNextPageCallBack(ref GUI_BUTTON btn, MSYS_CALLBACK_REASON reason)
     {
         if (reason.HasFlag(MSYS_CALLBACK_REASON.LBUTTON_UP))
         {
@@ -1260,7 +1260,7 @@ public class Finances
         }
     }
 
-    void BtnFinanceFirstLastPageCallBack(ref GUI_BUTTON btn, MSYS_CALLBACK_REASON reason)
+    private static void BtnFinanceFirstLastPageCallBack(ref GUI_BUTTON btn, MSYS_CALLBACK_REASON reason)
     {
         if (reason.HasFlag(MSYS_CALLBACK_REASON.LBUTTON_UP))
         {
@@ -1342,7 +1342,7 @@ public class Finances
         return;
     }
 
-    void ProcessTransactionString(string pString, FinanceUnitPtr pFinance)
+    private static void ProcessTransactionString(string pString, FinanceUnitPtr pFinance)
     {
 
         switch (pFinance.ubCode)
@@ -1464,7 +1464,7 @@ public class Finances
     }
 
 
-    void DisplayFinancePageNumberAndDateRange()
+    private static void DisplayFinancePageNumberAndDateRange()
     {
         // this function will go through the list of 'histories' starting at current until end or 
         // MAX_PER_PAGE...it will get the date range and the page number
@@ -1597,7 +1597,7 @@ public class Finances
         return (true);
     }
 
-    private int ReadInLastElementOfFinanceListAndReturnIdNumber()
+    private static int ReadInLastElementOfFinanceListAndReturnIdNumber()
     {
         // this function will read in the last unit in the finance list, to grab it's id number
 
@@ -1630,7 +1630,7 @@ public class Finances
 
     }
 
-    void SetLastPageInRecords()
+    private static void SetLastPageInRecords()
     {
         // grabs the size of the file and interprets number of pages it will take up
         Stream hFileHandle;
@@ -1661,7 +1661,7 @@ public class Finances
     }
 
 
-    bool LoadPreviousPage()
+    private static bool LoadPreviousPage()
     {
 
         // clear out old list of records, and load in previous page worth of records
@@ -1687,7 +1687,7 @@ public class Finances
         }
     }
 
-    bool LoadNextPage()
+    private static bool LoadNextPage()
     {
 
         // clear out old list of records, and load in previous page worth of records
@@ -1709,7 +1709,7 @@ public class Finances
 
     }
 
-    bool LoadInRecords(int uiPage)
+    private static bool LoadInRecords(int uiPage)
     {
         // loads in records belogning, to page uiPage
         // no file, return
@@ -1926,7 +1926,7 @@ public class Finances
     }
 
 
-    int GetPreviousDaysBalance()
+    private static int GetPreviousDaysBalance()
     {
         // find out what today is, then go back 2 days, get balance for that day
         int iPreviousDaysBalance = 0;
@@ -2010,7 +2010,7 @@ public class Finances
 
 
 
-    int GetTodaysBalance()
+    private static int GetTodaysBalance()
     {
         // find out what today is, then go back 2 days, get balance for that day
         int iPreviousDaysBalance = 0;
@@ -2082,7 +2082,7 @@ public class Finances
 
 
 
-    int GetPreviousDaysIncome()
+    private static int GetPreviousDaysIncome()
     {
         // will return the income from the previous day
         // which is todays starting balance - yesterdays starting balance
@@ -2174,7 +2174,7 @@ public class Finances
     }
 
 
-    int GetTodaysDaysIncome()
+    private static int GetTodaysDaysIncome()
     {
         // will return the income from the previous day
         // which is todays starting balance - yesterdays starting balance
@@ -2261,7 +2261,7 @@ public class Finances
 
     }
 
-    void SetFinanceButtonStates()
+    private static void SetFinanceButtonStates()
     {
         // this function will look at what page we are viewing, enable and disable buttons as needed
 
@@ -2297,7 +2297,7 @@ public class Finances
     }
 
 
-    int GetTodaysOtherDeposits()
+    private static int GetTodaysOtherDeposits()
     {
         // grab todays other deposits
 
@@ -2387,7 +2387,7 @@ public class Finances
     }
 
 
-    int GetYesterdaysOtherDeposits()
+    private static int GetYesterdaysOtherDeposits()
     {
 
         int iPreviousDaysBalance = 0;
@@ -2473,7 +2473,7 @@ public class Finances
     }
 
 
-    int GetTodaysDebits()
+    private static int GetTodaysDebits()
     {
         // return the expenses for today
 
@@ -2482,7 +2482,7 @@ public class Finances
         return (GetCurrentBalance() - GetTodaysBalance() - GetTodaysDaysIncome() - GetTodaysOtherDeposits());
     }
 
-    int GetYesterdaysDebits()
+    private static int GetYesterdaysDebits()
     {
         // return the expenses for yesterday
 

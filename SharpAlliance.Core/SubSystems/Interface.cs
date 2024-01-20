@@ -162,14 +162,14 @@ public class Interface
         }
 
         // find out if we need to show any menus
-        DetermineWhichAssignmentMenusCanBeShown();
-        CreateDestroyAssignmentPopUpBoxes();
+        Assignments.DetermineWhichAssignmentMenusCanBeShown();
+        Assignments.CreateDestroyAssignmentPopUpBoxes();
 
         HideUICursor();
 
         ResetPhysicsTrajectoryUI();
 
-        if (gfUIHandleSelection)
+        if (gfUIHandleSelection != 0)
         {
             if (gsSelectedLevel > 0)
             {
@@ -184,7 +184,7 @@ public class Interface
             }
         }
 
-        if (gfUIHandleShowMoveGrid)
+        if (gfUIHandleShowMoveGrid != 0)
         {
             WorldManager.RemoveTopmost(gsUIHandleShowMoveGridLocation, TileIndexes.FIRSTPOINTERS4);
             WorldManager.RemoveTopmost(gsUIHandleShowMoveGridLocation, TileIndexes.FIRSTPOINTERS9);

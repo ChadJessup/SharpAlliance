@@ -69,7 +69,7 @@ public class MainMenuScreen : IScreen
         this.buttons = buttonSubSystem;
         this.fonts = fontSubSystem;
         this.screens = screenManager;
-        this.video = videoManager;
+        video = videoManager;
         this.gameInit = gameInit;
         this.renderDirty = renderDirtySubSystem;
     }
@@ -102,11 +102,11 @@ public class MainMenuScreen : IScreen
             uiTime = Globals.GetJA2Clock();
             if (Globals.guiSplashFrameFade > 2)
             {
-                this.video.ShadowVideoSurfaceRectUsingLowPercentTable(SurfaceType.FRAME_BUFFER, new Rectangle(0, 0, 640, 480));
+                video.ShadowVideoSurfaceRectUsingLowPercentTable(SurfaceType.FRAME_BUFFER, new Rectangle(0, 0, 640, 480));
             }
             else if (Globals.guiSplashFrameFade > 1)
             {
-                this.video.ColorFillVideoSurfaceArea(SurfaceType.FRAME_BUFFER, new Rectangle(0, 0, 640, 480), Color.Black);
+                video.ColorFillVideoSurfaceArea(SurfaceType.FRAME_BUFFER, new Rectangle(0, 0, 640, 480), Color.Black);
             }
             else
             {
@@ -119,8 +119,8 @@ public class MainMenuScreen : IScreen
 
             Globals.guiSplashFrameFade--;
 
-            this.video.InvalidateScreen();
-            this.video.EndFrameBufferRender();
+            video.InvalidateScreen();
+            video.EndFrameBufferRender();
 
             CursorSubSystem.SetCurrentCursorFromDatabase(CURSOR.VIDEO_NO_CURSOR);
 
@@ -156,7 +156,7 @@ public class MainMenuScreen : IScreen
 
         ButtonSubSystem.RenderButtons(this.iMenuButtons.Values);
 
-        this.video.EndFrameBufferRender();
+        video.EndFrameBufferRender();
 
         this.HandleMainMenuInput();
 
@@ -183,8 +183,8 @@ public class MainMenuScreen : IScreen
 
         this.CreateDestroyMainMenuButtons(false);
 
-        this.video.DeleteVideoObjectFromIndex(this.mainMenuBackGroundImageKey);
-        this.video.DeleteVideoObjectFromIndex(this.ja2LogoImageKey);
+        video.DeleteVideoObjectFromIndex(this.mainMenuBackGroundImageKey);
+        video.DeleteVideoObjectFromIndex(this.ja2LogoImageKey);
 
         //gMsgBox.uiExitScreen = ScreenName.MAINMENU_SCREEN;
     }
@@ -282,13 +282,13 @@ public class MainMenuScreen : IScreen
     private void RenderMainMenu()
     {
         //Get and display the background image
-        HVOBJECT hPixHandle = this.video.GetVideoObject(this.mainMenuBackGroundImageKey);
-        this.video.BlitSurfaceToSurface(hPixHandle.Images[0], SurfaceType.SAVE_BUFFER, new(0, 0), VO_BLT.SRCTRANSPARENCY);
-        this.video.BlitSurfaceToSurface(hPixHandle.Images[0], SurfaceType.FRAME_BUFFER, new(0, 0), VO_BLT.SRCTRANSPARENCY);
+        HVOBJECT hPixHandle = video.GetVideoObject(this.mainMenuBackGroundImageKey);
+        video.BlitSurfaceToSurface(hPixHandle.Images[0], SurfaceType.SAVE_BUFFER, new(0, 0), VO_BLT.SRCTRANSPARENCY);
+        video.BlitSurfaceToSurface(hPixHandle.Images[0], SurfaceType.FRAME_BUFFER, new(0, 0), VO_BLT.SRCTRANSPARENCY);
 
-        hPixHandle = this.video.GetVideoObject(this.ja2LogoImageKey);
-        this.video.BlitSurfaceToSurface(hPixHandle.Images[0], SurfaceType.FRAME_BUFFER, new(188, 15), VO_BLT.SRCTRANSPARENCY);
-        this.video.BlitSurfaceToSurface(hPixHandle.Images[0], SurfaceType.SAVE_BUFFER, new(188, 15), VO_BLT.SRCTRANSPARENCY);
+        hPixHandle = video.GetVideoObject(this.ja2LogoImageKey);
+        video.BlitSurfaceToSurface(hPixHandle.Images[0], SurfaceType.FRAME_BUFFER, new(188, 15), VO_BLT.SRCTRANSPARENCY);
+        video.BlitSurfaceToSurface(hPixHandle.Images[0], SurfaceType.SAVE_BUFFER, new(188, 15), VO_BLT.SRCTRANSPARENCY);
 
         FontSubSystem.DrawTextToScreen(
             EnglishText.gzCopyrightText[0],
@@ -299,7 +299,7 @@ public class MainMenuScreen : IScreen
             FontColor.FONT_MCOLOR_BLACK,
             TextJustifies.CENTER_JUSTIFIED);
 
-        this.video.InvalidateRegion(new Rectangle(0, 0, 640, 480));
+        video.InvalidateRegion(new Rectangle(0, 0, 640, 480));
     }
 
     public ValueTask<bool> Initialize()
@@ -322,10 +322,10 @@ public class MainMenuScreen : IScreen
         this.CreateDestroyMainMenuButtons(fCreate: true);
 
         // load background graphic and add it
-        this.background = this.video.GetVideoObject("LOADSCREENS\\MainMenuBackGround.sti", out this.mainMenuBackGroundImageKey);
+        this.background = video.GetVideoObject("LOADSCREENS\\MainMenuBackGround.sti", out this.mainMenuBackGroundImageKey);
 
         // load ja2 logo graphic and add it
-        this.logo = this.video.GetVideoObject("LOADSCREENS\\Ja2Logo.sti", out this.ja2LogoImageKey);
+        this.logo = video.GetVideoObject("LOADSCREENS\\Ja2Logo.sti", out this.ja2LogoImageKey);
 
         /*
             // Gray out some buttons based on status of game!
@@ -555,8 +555,8 @@ public class MainMenuScreen : IScreen
 
     public void ClearMainMenu()
     {
-        this.video.Surfaces[SurfaceType.FRAME_BUFFER].Mutate(ctx => ctx.Clear(Color.Blue));
-        this.video.InvalidateScreen();
+        video.Surfaces[SurfaceType.FRAME_BUFFER].Mutate(ctx => ctx.Clear(Color.Blue));
+        video.InvalidateScreen();
     }
 
     public ValueTask Deactivate()

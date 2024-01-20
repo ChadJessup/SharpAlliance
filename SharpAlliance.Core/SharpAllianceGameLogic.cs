@@ -57,7 +57,7 @@ public class SharpAllianceGameLogic : IGameLogic
         this.messageBox = messageBoxSubSystem;
         this.os = OSManager;
         this.screen = screenManager;
-        this.video = videoManager;
+        video = videoManager;
     }
 
     public async ValueTask<bool> Initialize()
@@ -165,7 +165,7 @@ public class SharpAllianceGameLogic : IGameLogic
                 sm.guiPendingScreen = NullScreen.Instance;
             }
 
-            this.video.ClearElements();
+            video.ClearElements();
             var nextScreenName = await ScreenManager.CurrentScreen.Handle();
             nextScreen = await sm.GetScreen(nextScreenName, activate: false);
 
@@ -176,8 +176,8 @@ public class SharpAllianceGameLogic : IGameLogic
                 await sm.ActivateScreen(nextScreen);
             }
 
-            this.video.RefreshScreen();
-            this.video.DrawFrame();
+            video.RefreshScreen();
+            video.DrawFrame();
 
             Globals.guiGameCycleCounter++;
 
