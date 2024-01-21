@@ -6,6 +6,8 @@ namespace SharpAlliance.Core.SubSystems;
 
 public class AirRaid
 {
+    internal static bool gfInAirRaid;
+
     public bool InAirRaid()
     {
         return true;

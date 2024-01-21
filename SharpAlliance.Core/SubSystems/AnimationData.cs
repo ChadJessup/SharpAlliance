@@ -104,7 +104,7 @@ public class AnimationData
             Messages.AnimDebugMsg(string.Format("Surface Database: Unloading Surface: %d", usSurfaceIndex));
 
             CHECKF(gAnimSurfaceDatabase[usSurfaceIndex].hVideoObject != null);
-    
+
             video.DeleteVideoObject(gAnimSurfaceDatabase[usSurfaceIndex].hVideoObject);
             gAnimSurfaceDatabase[usSurfaceIndex].hVideoObject = null;
         }
@@ -156,6 +156,20 @@ public class AnimationData
 
     private void LoadAnimationStateInstructions()
     {
+    }
+
+    internal static void ZeroAnimSurfaceCounts()
+    {
+        foreach (var cnt in Enum.GetValues<AnimationSurfaceTypes>())
+        {
+            gAnimSurfaceDatabase[cnt].bUsageCount = 0;
+            gAnimSurfaceDatabase[cnt].hVideoObject = null;
+        }
+
+        foreach(var ast in  Enum.GetValues<AnimationSurfaceTypes>())
+        {
+            gbAnimUsageHistory[ast] = [];
+        }
     }
 }
 

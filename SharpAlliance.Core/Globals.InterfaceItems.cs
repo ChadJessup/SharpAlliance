@@ -15,13 +15,13 @@ namespace SharpAlliance.Core;
 
 public partial class Globals
 {
-    public static Dictionary<InventorySlot, MOUSE_REGION> gSMInvRegion = new();// MOUSE_REGION[(int)NUM_INV_SLOTS];
+    public static Dictionary<InventorySlot, MOUSE_REGION> gSMInvRegion = [];// MOUSE_REGION[(int)NUM_INV_SLOTS];
     public static MOUSE_REGION gKeyRingPanel;
     public static MOUSE_REGION gSMInvCamoRegion;
-    public static Dictionary<InventorySlot, int> gbCompatibleAmmo = new();// int[(int)NUM_INV_SLOTS];
-    public static Dictionary<InventorySlot, int> gbInvalidPlacementSlot = new();// int[(int)NUM_INV_SLOTS];
-    public static int[] us16BPPItemCyclePlacedItemColors = new int[20];
-    public static Dictionary<SoldierBodyTypes, List<string>> guiBodyInvVO = new();
+    public static Dictionary<InventorySlot, int> gbCompatibleAmmo = [];// int[(int)NUM_INV_SLOTS];
+    public static Dictionary<InventorySlot, int> gbInvalidPlacementSlot = [];// int[(int)NUM_INV_SLOTS];
+    public static Rgba32[] us16BPPItemCyclePlacedItemColors = new Rgba32[20];
+    public static Dictionary<SoldierBodyTypes, List<string>> guiBodyInvVO = [];
     public static string guiGoldKeyVO;
     public static int gbCompatibleApplyItem = 0;
     public static REMOVE_MONEY gRemoveMoney;
@@ -277,7 +277,7 @@ public partial class Globals
     public static int giMapInvDescButton = -1;
     public static bool gfItemPopupRegionCallbackEndFix = false;
 
-    public static int[] ubRGBItemCyclePlacedItemColors =
+    public static byte[] ubRGBItemCyclePlacedItemColors =
     {
         25,     25,     25,
         50,     50,     50,

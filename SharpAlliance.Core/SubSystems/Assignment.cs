@@ -32,11 +32,11 @@ public class Assignments
                 if (MapScreenInterfaceMap.bSelectedDestChar == -1)
                 {
                     fCharacterNoLongerValid = true;
-                    HandleShowingOfMovementBox();
+                    Assignments.HandleShowingOfMovementBox();
                 }
                 else
                 {
-                    fShowMapScreenMovementList = false;
+                    MapScreenInterface.fShowMapScreenMovementList = false;
                     fCharacterNoLongerValid = true;
                 }
             }
@@ -153,7 +153,7 @@ public class Assignments
             && ((guiTacticalInterfaceFlags.HasFlag(INTERFACE.MAPSCREEN))))
         {
             // show basic assignment menu
-            ShowBox(ghRemoveMercAssignBox);
+            PopUpBox.ShowBox(ghRemoveMercAssignBox);
         }
         else
         {
@@ -161,13 +161,13 @@ public class Assignments
 
             if (pSoldier.ubWhatKindOfMercAmI == MERC_TYPE.EPC)
             {
-                ShowBox(ghEpcBox);
+                PopUpBox.ShowBox(ghEpcBox);
             }
             else
             {
                 // show basic assignment menu
 
-                ShowBox(ghAssignmentBox);
+                PopUpBox.ShowBox(ghAssignmentBox);
             }
         }
 
@@ -175,13 +175,13 @@ public class Assignments
         if (MapScreenInterface.fShowTrainingMenu == true)
         {
             HandleShadingOfLinesForTrainingMenu();
-            ShowBox(ghTrainingBox);
+            PopUpBox.ShowBox(ghTrainingBox);
         }
         else
         {
-            if (IsBoxShown(ghTrainingBox))
+            if (PopUpBox.IsBoxShown(ghTrainingBox))
             {
-                HideBox(ghTrainingBox);
+                PopUpBox.HideBox(ghTrainingBox);
                 fTeamPanelDirty = true;
                 fMapPanelDirty = true;
                 gfRenderPBInterface = true;
@@ -193,14 +193,14 @@ public class Assignments
         if (fShowRepairMenu == true)
         {
             HandleShadingOfLinesForRepairMenu();
-            ShowBox(ghRepairBox);
+            PopUpBox.ShowBox(ghRepairBox);
         }
         else
         {
             // hide box
-            if (IsBoxShown(ghRepairBox))
+            if (PopUpBox.IsBoxShown(ghRepairBox))
             {
-                HideBox(ghRepairBox);
+                PopUpBox.HideBox(ghRepairBox);
                 fTeamPanelDirty = true;
                 fMapPanelDirty = true;
                 gfRenderPBInterface = true;
@@ -212,13 +212,13 @@ public class Assignments
         if (fShowAttributeMenu == true)
         {
             HandleShadingOfLinesForAttributeMenus();
-            ShowBox(ghAttributeBox);
+            PopUpBox.ShowBox(ghAttributeBox);
         }
         else
         {
-            if (IsBoxShown(ghAttributeBox))
+            if (PopUpBox.IsBoxShown(ghAttributeBox))
             {
-                HideBox(ghAttributeBox);
+                PopUpBox.HideBox(ghAttributeBox);
                 fTeamPanelDirty = true;
                 fMapPanelDirty = true;
                 gfRenderPBInterface = true;
@@ -230,13 +230,13 @@ public class Assignments
         // VEHICLE menu
         if (fShowVehicleMenu == true)
         {
-            ShowBox(ghVehicleBox);
+            PopUpBox.ShowBox(ghVehicleBox);
         }
         else
         {
-            if (IsBoxShown(ghVehicleBox))
+            if (PopUpBox.IsBoxShown(ghVehicleBox))
             {
-                HideBox(ghVehicleBox);
+                PopUpBox.HideBox(ghVehicleBox);
                 fTeamPanelDirty = true;
                 fMapPanelDirty = true;
                 gfRenderPBInterface = true;
@@ -247,6 +247,26 @@ public class Assignments
         CreateDestroyMouseRegionForVehicleMenu();
 
         return;
+    }
+
+    private static void HandleShadingOfLinesForTrainingMenu()
+    {
+        throw new NotImplementedException();
+    }
+
+    private static void HandleShadingOfLinesForRepairMenu()
+    {
+        throw new NotImplementedException();
+    }
+
+    private static void HandleShadingOfLinesForAttributeMenus()
+    {
+        throw new NotImplementedException();
+    }
+
+    private static void HandleShowingOfMovementBox()
+    {
+        throw new NotImplementedException();
     }
 
     private static void CreateDestroyMouseRegionForVehicleMenu()

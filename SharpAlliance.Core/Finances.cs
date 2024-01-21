@@ -430,7 +430,7 @@ public class Finances
         return;
     }
 
-    void ExitFinances()
+    public static void ExitFinances()
     {
         LaptopSaveInfo.iCurrentFinancesPage = iCurrentPage;
 
@@ -451,7 +451,7 @@ public class Finances
 
     }
 
-    void HandleFinances()
+    public static void HandleFinances()
     {
 
     }
@@ -515,7 +515,7 @@ public class Finances
         return (true);
     }
 
-    void RemoveFinances()
+    private static void RemoveFinances()
     {
 
         // delete Finance video objects from memory
@@ -717,9 +717,9 @@ public class Finances
             if (pCurFinance.iAmount >= 0)
             {
                 // increase in asset - debit
-                sString = wprintf("%d", pCurFinance.iAmount);
+                // sString = wprintf("%d", pCurFinance.iAmount);
                 // insert commas
-                InsertCommasForDollarFigure(sString);
+                sString = InsertCommasForDollarFigure(pCurFinance.iAmount);
                 // insert dollar sight for first record in the list
                 //DEF: 3/19/99: removed cause we want to see the dollar sign on ALL entries
                 //		 if( iCounter == 0 )
@@ -733,9 +733,9 @@ public class Finances
             else
             {
                 // decrease in asset - credit
-                wprintf(sString, "%d", pCurFinance.iAmount * (-1));
+//                wprintf(sString, "%d", pCurFinance.iAmount * (-1));
                 FontSubSystem.SetFontForeground(FontColor.FONT_RED);
-                InsertCommasForDollarFigure(sString);
+                InsertCommasForDollarFigure(pCurFinance.iAmount * (-1));
                 // insert dollar sight for first record in the list
                 //DEF: 3/19/99: removed cause we want to see the dollar sign on ALL entries
                 //		 if( iCounter == 0 )
@@ -769,8 +769,8 @@ public class Finances
 
 
             // print the balance string
-            wprintf(sString, "%d", iBalance);
-            InsertCommasForDollarFigure(sString);
+//            wprintf(sString, "%d", iBalance);
+            InsertCommasForDollarFigure(iBalance);
             // insert dollar sight for first record in the list
             //DEF: 3/19/99: removed cause we want to see the dollar sign on ALL entries
             //		if( iCounter == 0 )
@@ -858,12 +858,14 @@ public class Finances
 
         // yesterdays income
         iBalance = GetPreviousDaysIncome();
-        pString = wprintf("%d", iBalance);
+        //        pString = wprintf("%d", iBalance);
 
-        InsertCommasForDollarFigure(pString);
+        pString = InsertCommasForDollarFigure(iBalance);
 
         if (iBalance != 0)
+        {
             InsertDollarSignInToString(pString);
+        }
 
         FontSubSystem.FindFontRightCoordinates(0, 0, 580, 0, pString, FINANCE_TEXT_FONT, out usX, out usY);
 
@@ -873,11 +875,14 @@ public class Finances
 
         // yesterdays other
         iBalance = GetYesterdaysOtherDeposits();
-        wprintf(pString, "%d", iBalance);
+        //wprintf(pString, "%d", iBalance);
 
-        InsertCommasForDollarFigure(pString);
+        pString = InsertCommasForDollarFigure(iBalance);
         if (iBalance != 0)
+        {
             InsertDollarSignInToString(pString);
+        }
+
         FontSubSystem.FindFontRightCoordinates(0, 0, 580, 0, pString, FINANCE_TEXT_FONT, out usX, out usY);
 
         mprintf(usX, YESTERDAYS_OTHER, pString);
@@ -892,9 +897,9 @@ public class Finances
             iBalance *= -1;
         }
 
-        wprintf(pString, "%d", iBalance);
+//        wprintf(pString, "%d", iBalance);
 
-        InsertCommasForDollarFigure(pString);
+        InsertCommasForDollarFigure(iBalance);
         if (iBalance != 0)
             InsertDollarSignInToString(pString);
         FontSubSystem.FindFontRightCoordinates(0, 0, 580, 0, pString, FINANCE_TEXT_FONT, out usX, out usY);
@@ -912,8 +917,8 @@ public class Finances
             iBalance *= -1;
         }
 
-        wprintf(pString, "%d", iBalance);
-        InsertCommasForDollarFigure(pString);
+//        wprintf(pString, "%d", iBalance);
+        pString = InsertCommasForDollarFigure(iBalance);
         if (iBalance != 0)
             InsertDollarSignInToString(pString);
         FontSubSystem.FindFontRightCoordinates(0, 0, 580, 0, pString, FINANCE_TEXT_FONT, out usX, out usY);
@@ -924,11 +929,15 @@ public class Finances
 
         // todays income
         iBalance = GetTodaysDaysIncome();
-        wprintf(pString, "%d", iBalance);
+        //wprintf(pString, "%d", iBalance);
 
-        InsertCommasForDollarFigure(pString);
+        InsertCommasForDollarFigure(iBalance);
+
         if (iBalance != 0)
+        {
             InsertDollarSignInToString(pString);
+        }
+
         FontSubSystem.FindFontRightCoordinates(0, 0, 580, 0, pString, FINANCE_TEXT_FONT, out usX, out usY);
 
         mprintf(usX, TODAYS_INCOME, pString);
@@ -939,9 +948,12 @@ public class Finances
         iBalance = GetTodaysOtherDeposits();
         wprintf(pString, "%d", iBalance);
 
-        InsertCommasForDollarFigure(pString);
+        pString = InsertCommasForDollarFigure(iBalance);
         if (iBalance != 0)
+        {
             InsertDollarSignInToString(pString);
+        }
+
         FontSubSystem.FindFontRightCoordinates(0, 0, 580, 0, pString, FINANCE_TEXT_FONT, out usX, out usY);
 
         mprintf(usX, TODAYS_OTHER, pString);
@@ -957,9 +969,9 @@ public class Finances
             iBalance *= (-1);
         }
 
-        wprintf(pString, "%d", iBalance);
+        // wprintf(pString, "%d", iBalance);
 
-        InsertCommasForDollarFigure(pString);
+        pString = InsertCommasForDollarFigure(iBalance);
         if (iBalance != 0)
             InsertDollarSignInToString(pString);
         FontSubSystem.FindFontRightCoordinates(0, 0, 580, 0, pString, FINANCE_TEXT_FONT, out usX, out usY);
@@ -982,7 +994,7 @@ public class Finances
             wprintf(pString, "%d", iBalance);
         }
 
-        InsertCommasForDollarFigure(pString);
+        pString = InsertCommasForDollarFigure(iBalance);
         if (iBalance != 0)
             InsertDollarSignInToString(pString);
         FontSubSystem.FindFontRightCoordinates(0, 0, 580, 0, pString, FINANCE_TEXT_FONT, out usX, out usY);
@@ -994,7 +1006,7 @@ public class Finances
         iBalance = GetProjectedTotalDailyIncome();
         wprintf(pString, "%d", iBalance);
 
-        InsertCommasForDollarFigure(pString);
+        pString = InsertCommasForDollarFigure(iBalance);
         if (iBalance != 0)
             InsertDollarSignInToString(pString);
 
@@ -1019,9 +1031,12 @@ public class Finances
             wprintf(pString, "%d", iBalance);
         }
 
-        InsertCommasForDollarFigure(pString);
+        pString = InsertCommasForDollarFigure(iBalance);
         if (iBalance != 0)
+        {
             InsertDollarSignInToString(pString);
+        }
+
         FontSubSystem.FindFontRightCoordinates(0, 0, 580, 0, pString, FINANCE_TEXT_FONT, out usX, out usY);
         mprintf(usX, TODAYS_CURRENT_FORCAST_BALANCE, pString);
         FontSubSystem.SetFontForeground(FontColor.FONT_BLACK);
@@ -1213,7 +1228,7 @@ public class Finances
     }
 
 
-    void DestroyFinanceButtons()
+    private static void DestroyFinanceButtons()
     {
         uint uiCnt;
 
@@ -1800,76 +1815,81 @@ public class Finances
         return (true);
     }
 
-    public static string InsertCommasForDollarFigure(string figure)
+    public static string InsertCommasForDollarFigure(int figure)
     {
-        char[] pString = figure.ToCharArray();
-        short sCounter = 0;
-        short sZeroCount = 0;
-        short sTempCounter = 0;
-        short sEndPosition = 0;
+        var test = figure.ToString("c");
 
-        // go to end of dollar figure
-        while (pString[sCounter] != 0)
-        {
-            sCounter++;
-        }
-
-        // negative?
-        if (pString[0] == '-')
-        {
-            // stop one slot in advance of normal
-            sEndPosition = 1;
-        }
-
-        // is there under $1,000?
-        if (sCounter < 4)
-        {
-            // can't do anything, return
-            return figure;
-        }
-
-        // at end, start backing up until beginning
-        while (sCounter > sEndPosition)
-        {
-
-
-            // enough for a comma?
-            if (sZeroCount == 3)
-            {
-                // reset count
-                sZeroCount = 0;
-                // set tempcounter to current counter
-                sTempCounter = sCounter;
-
-                // run until end 
-                while (pString[sTempCounter] != 0)
-                {
-                    sTempCounter++;
-                }
-                // now shift everything over ot the right one place until sTempCounter = sCounter
-                while (sTempCounter >= sCounter)
-                {
-                    pString[sTempCounter + 1] = pString[sTempCounter];
-                    sTempCounter--;
-                }
-                // now insert comma
-                pString[sCounter] = ',';
-            }
-
-            // increment count of digits
-            sZeroCount++;
-
-            // decrement counter
-            sCounter--;
-        }
-
-        return new(pString);
+        return test;
+//        char[] pString = figure;
+//        short sCounter = 0;
+//        short sZeroCount = 0;
+//        short sTempCounter = 0;
+//        short sEndPosition = 0;
+//
+//
+//        // go to end of dollar figure
+//        while (pString[sCounter] != 0)
+//        {
+//            sCounter++;
+//        }
+//
+//        // negative?
+//        if (pString[0] == '-')
+//        {
+//            // stop one slot in advance of normal
+//            sEndPosition = 1;
+//        }
+//
+//        // is there under $1,000?
+//        if (sCounter < 4)
+//        {
+//            // can't do anything, return
+//            return figure;
+//        }
+//
+//        // at end, start backing up until beginning
+//        while (sCounter > sEndPosition)
+//        {
+//
+//
+//            // enough for a comma?
+//            if (sZeroCount == 3)
+//            {
+//                // reset count
+//                sZeroCount = 0;
+//                // set tempcounter to current counter
+//                sTempCounter = sCounter;
+//
+//                // run until end 
+//                while (pString[sTempCounter] != 0)
+//                {
+//                    sTempCounter++;
+//                }
+//                // now shift everything over ot the right one place until sTempCounter = sCounter
+//                while (sTempCounter >= sCounter)
+//                {
+//                    pString[sTempCounter + 1] = pString[sTempCounter];
+//                    sTempCounter--;
+//                }
+//                // now insert comma
+//                pString[sCounter] = ',';
+//            }
+//
+//            // increment count of digits
+//            sZeroCount++;
+//
+//            // decrement counter
+//            sCounter--;
+//        }
+//
+//        return new(pString);
 
     }
 
 
     public static string InsertDollarSignInToString(string figure)
     {
+        return figure;
         // run to end of string, copy everything in string 2 places right, insert a space at pString[ 1 ] and a '$' at pString[ 0 ]
 
         char[] pString = figure.ToCharArray();

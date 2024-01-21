@@ -870,6 +870,11 @@ public class MouseSubSystem : ISharpAllianceManager
     {
         throw new NotImplementedException();
     }
+
+    internal static void MSYS_DefineRegion(MOUSE_REGION? gLapTopScreenRegion, object iLeft, object iTop, object iRight, object iBottom, MSYS_PRIORITY mSYS_PRIORITY, CURSOR lAPTOP_SCREEN, object screenRegionMvtCallback, object lapTopScreenCallBack)
+    {
+        throw new NotImplementedException();
+    }
 }
 
 public class MOUSE_REGION
@@ -1005,5 +1010,5 @@ public struct MouseCursorBackground
     public Image<Rgba32> pSurface;
 }
 
-public delegate void MouseCallback(ref MOUSE_REGION region, MSYS_CALLBACK_REASON callbackReason);
+public delegate void MouseCallback(ref MOUSE_REGION pRegion, MSYS_CALLBACK_REASON iReason);
 public delegate void MOUSE_HELPTEXT_DONE_CALLBACK();

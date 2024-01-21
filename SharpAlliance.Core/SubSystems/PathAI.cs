@@ -769,6 +769,11 @@ public class PathAI
         return ubMovementCost;
 
     }
+
+    internal static bool InitPathAI()
+    {
+        throw new NotImplementedException();
+    }
 }
 
 // PLOT PATH defines

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using SharpAlliance.Core.Managers.VideoSurfaces;
 using SharpAlliance.Core.SubSystems;
 using SixLabors.ImageSharp;
 
@@ -36,6 +37,7 @@ public partial class Globals
     internal static MAP_ROW gsMercArriveSectorY;
     internal static bool[] fRefuelingSiteAvailable = new bool[(int)REFUELING_SITE.NUMBER_OF_REFUEL_SITES];
     internal static bool gfPreBattleInterfaceActive;
+    internal static SurfaceType guiRENDERBUFFER;
 
     public static bool gfEstimatePath { get; internal set; }
     public static int gubScreenCount { get; internal set; }

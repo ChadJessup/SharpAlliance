@@ -1377,15 +1377,14 @@ public class InterfaceItems
     }
 
 
-    void InitItemInterface()
+    public static void InitItemInterface()
     {
         int cnt, cnt2;
 
         for (cnt = 0, cnt2 = 0; cnt2 < 20; cnt += 3, cnt2++)
         {
-            //            us16BPPItemCyclePlacedItemColors[cnt2] = Get16BPPColor(FROMRGB(ubRGBItemCyclePlacedItemColors[cnt], ubRGBItemCyclePlacedItemColors[cnt + 1], ubRGBItemCyclePlacedItemColors[cnt + 2]));
+            us16BPPItemCyclePlacedItemColors[cnt2] = FROMRGB(ubRGBItemCyclePlacedItemColors[cnt], ubRGBItemCyclePlacedItemColors[cnt + 1], ubRGBItemCyclePlacedItemColors[cnt + 2]);
         }
-
     }
 
 

@@ -1,38 +1,41 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using SharpAlliance.Core.Interfaces;
 using SharpAlliance.Core.Managers;
 using SharpAlliance.Core.Managers.VideoSurfaces;
 using SharpAlliance.Core.Screens;
+using SharpAlliance.Core.SubSystems.LaptopSubSystem.BobbyRSubSystem;
 using SharpAlliance.Core.SubSystems.LaptopSubSystem.FloristSubSystem;
+using SharpAlliance.Core.SubSystems.LaptopSubSystem.IMPSubSystem;
 using SharpAlliance.Core.SubSystems.LaptopSubSystem.InsuranceSubSystem;
 using SixLabors.ImageSharp;
-using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace SharpAlliance.Core.SubSystems.LaptopSubSystem;
 
 public partial class Laptop : IScreen
 {
-    private readonly GameInit gameInit;
     private readonly ILogger<Laptop> logger;
-    private readonly Laptop laptop;
     private static IVideoManager video;
     private readonly IScreenManager screens;
 
     public bool IsInitialized { get; set; }
     public ScreenState State { get; set; }
+    private static History history;
+    private static IFileManager files;
+    private static readonly List<GUI_BUTTON> buttonList = [];
 
     public Laptop(
         ILogger<Laptop> logger,
-        Laptop laptop,
         IVideoManager videoManager,
         IScreenManager screenManager,
-        GameInit gameInit)
+        History history,
+        IFileManager fileManager)
     {
-        this.gameInit = gameInit;
         this.logger = logger;
-        this.laptop = laptop;
+        files = fileManager;
+        Laptop.history = history;
         video = videoManager;
         screens = screenManager;
     }
@@ -44,7 +47,6 @@ public partial class Laptop : IScreen
 
     public ValueTask<bool> Initialize()
     {
-        LaptopScreenInit();
         return ValueTask.FromResult(true);
     }
 
@@ -399,87 +401,324 @@ public partial class Laptop : IScreen
 
     private void HandleSlidingTitleBar()
     {
-        throw new NotImplementedException();
     }
 
     private void DisplayTaskBarIcons()
     {
-        throw new NotImplementedException();
     }
 
     private void DisplayFrameRate()
     {
-        throw new NotImplementedException();
     }
 
     private void LookForUnread()
     {
-        throw new NotImplementedException();
     }
 
     private void ReDrawNewMailBox()
     {
-        throw new NotImplementedException();
     }
 
     private void ShouldNewMailBeDisplayed()
     {
-        throw new NotImplementedException();
     }
 
     private void DisplayErrorBox()
     {
-        throw new NotImplementedException();
     }
 
     private void DisplayWebBookMarkNotify()
     {
-        throw new NotImplementedException();
     }
 
     private void DisplayLoadPending()
     {
-        throw new NotImplementedException();
     }
 
     private void DisplayBookMarks()
     {
-        throw new NotImplementedException();
     }
 
     private void HandleWWWSubSites()
     {
-        throw new NotImplementedException();
+        // check to see if WW Wait is needed for a sub site within the Web Browser
+
+        if ((guiCurrentLaptopMode == guiPreviousLaptopMode)
+            || (guiCurrentLaptopMode < LAPTOP_MODE.WWW)
+            || (fLoadPendingFlag)
+            || (fDoneLoadPending)
+            || (guiPreviousLaptopMode < LAPTOP_MODE.WWW))
+        {
+            // no go, leave
+            return;
+        }
+
+        fLoadPendingFlag = true;
+        fConnectingToSubPage = true;
+
+        // fast or slow load?
+        if (gfWWWaitSubSitesVisitedFlags[guiCurrentLaptopMode - (LAPTOP_MODE.WWW + 1)] == true)
+        {
+            fFastLoadFlag = true;
+        }
+
+        // set fact we were here
+        gfWWWaitSubSitesVisitedFlags[guiCurrentLaptopMode - (LAPTOP_MODE.WWW + 1)] = true;
+
+        //Dont show the dlownload screen when switching between these pages
+        if ((guiCurrentLaptopMode == LAPTOP_MODE.AIM_MEMBERS)
+            && (guiPreviousLaptopMode == LAPTOP_MODE.AIM_MEMBERS_FACIAL_INDEX)
+            || (guiCurrentLaptopMode == LAPTOP_MODE.AIM_MEMBERS_FACIAL_INDEX)
+            && (guiPreviousLaptopMode == LAPTOP_MODE.AIM_MEMBERS))
+        {
+            fFastLoadFlag = false;
+            fLoadPendingFlag = false;
+
+            // set fact we were here
+            gfWWWaitSubSitesVisitedFlags[LAPTOP_MODE.AIM_MEMBERS_FACIAL_INDEX - (LAPTOP_MODE.WWW + 1)] = true;
+            gfWWWaitSubSitesVisitedFlags[LAPTOP_MODE.AIM_MEMBERS - (LAPTOP_MODE.WWW + 1)] = true;
+        }
     }
 
     private void UpdateStatusOfDisplayingBookMarks()
     {
-        throw new NotImplementedException();
+        // this function will disable showing of bookmarks if in process of download or if we miniming web browser
+        if ((fLoadPendingFlag)
+            || (guiCurrentLaptopMode < LAPTOP_MODE.WWW))
+        {
+            gfShowBookmarks = false;
+        }
     }
 
     private void HandleLapTopHandles()
     {
+        if (fLoadPendingFlag)
+            return;
+
+        if ((fMaximizingProgram)
+            || (fMinizingProgram))
+        {
+            return;
+        }
+
+
+        switch (guiCurrentLaptopMode)
+        {
+
+            case LAPTOP_MODE.AIM:
+
+                HandleAIM();
+                break;
+            case LAPTOP_MODE.AIM_MEMBERS:
+                HandleAIMMembers();
+                break;
+            case LAPTOP_MODE.AIM_MEMBERS_FACIAL_INDEX:
+                HandleAimFacialIndex();
+                break;
+            case LAPTOP_MODE.AIM_MEMBERS_SORTED_FILES:
+                HandleAimSort();
+                break;
+            case LAPTOP_MODE.AIM_MEMBERS_ARCHIVES:
+                HandleAimArchives();
+                break;
+            case LAPTOP_MODE.AIM_POLICIES:
+                HandleAimPolicies();
+                break;
+            case LAPTOP_MODE.AIM_LINKS:
+                HandleAimLinks();
+                break;
+            case LAPTOP_MODE.AIM_HISTORY:
+                HandleAimHistory();
+                break;
+
+            case LAPTOP_MODE.MERC:
+                Mercs.HandleMercs();
+                break;
+            case LAPTOP_MODE.MERC_FILES:
+                Mercs.HandleMercsFiles();
+                break;
+            case LAPTOP_MODE.MERC_ACCOUNT:
+                Mercs.HandleMercsAccount();
+                break;
+            case LAPTOP_MODE.MERC_NO_ACCOUNT:
+                Mercs.HandleMercsNoAccount();
+                break;
+
+
+            case LAPTOP_MODE.BOBBY_R:
+                BobbyR.HandleBobbyR();
+                break;
+            case LAPTOP_MODE.BOBBY_R_GUNS:
+                BobbyR.HandleBobbyRGuns();
+                break;
+            case LAPTOP_MODE.BOBBY_R_AMMO:
+                BobbyR.HandleBobbyRAmmo();
+                break;
+            case LAPTOP_MODE.BOBBY_R_ARMOR:
+                BobbyR.HandleBobbyRArmour();
+                break;
+            case LAPTOP_MODE.BOBBY_R_MISC:
+                BobbyR.HandleBobbyRMisc();
+                break;
+            case LAPTOP_MODE.BOBBY_R_USED:
+                BobbyR.HandleBobbyRUsed();
+                break;
+            case LAPTOP_MODE.BOBBY_R_MAILORDER:
+                BobbyR.HandleBobbyRMailOrder();
+                break;
+
+
+            case LAPTOP_MODE.CHAR_PROFILE:
+                HandleCharProfile();
+                break;
+            case LAPTOP_MODE.FLORIST:
+                Florist.HandleFlorist();
+                break;
+            case LAPTOP_MODE.FLORIST_FLOWER_GALLERY:
+                Florist.HandleFloristGallery();
+                break;
+            case LAPTOP_MODE.FLORIST_ORDERFORM:
+                Florist.HandleFloristOrderForm();
+                break;
+            case LAPTOP_MODE.FLORIST_CARD_GALLERY:
+                Florist.HandleFloristCards();
+                break;
+
+            case LAPTOP_MODE.INSURANCE:
+                Insurance.HandleInsurance();
+                break;
+
+            case LAPTOP_MODE.INSURANCE_INFO:
+                Insurance.HandleInsuranceInfo();
+                break;
+
+            case LAPTOP_MODE.INSURANCE_CONTRACT:
+                Insurance.HandleInsuranceContract();
+                break;
+            case LAPTOP_MODE.INSURANCE_COMMENTS:
+                Insurance.HandleInsuranceComments();
+                break;
+
+            case LAPTOP_MODE.FUNERAL:
+                HandleFuneral();
+                break;
+            case LAPTOP_MODE.SIRTECH:
+                HandleSirTech();
+                break;
+            case LAPTOP_MODE.FINANCES:
+                Finances.HandleFinances();
+                break;
+            case LAPTOP_MODE.PERSONNEL:
+                HandlePersonnel();
+                break;
+            case LAPTOP_MODE.HISTORY:
+                HandleHistory();
+                break;
+            case LAPTOP_MODE.FILES:
+                HandleFiles();
+                break;
+            case LAPTOP_MODE.EMAIL:
+                Emails.HandleEmail();
+                break;
+
+            case LAPTOP_MODE.BROKEN_LINK:
+                HandleBrokenLink();
+                break;
+
+            case LAPTOP_MODE.BOBBYR_SHIPMENTS:
+                BobbyR.HandleBobbyRShipments();
+                break;
+        }
+    }
+
+    private void HandleBrokenLink()
+    {
         throw new NotImplementedException();
+    }
+
+    private void HandleFiles()
+    {
+        throw new NotImplementedException();
+    }
+
+    private void HandleHistory()
+    {
+        throw new NotImplementedException();
+    }
+
+    private void HandlePersonnel()
+    {
+        throw new NotImplementedException();
+    }
+
+    private void HandleSirTech()
+    {
+        throw new NotImplementedException();
+    }
+
+    private void HandleFuneral()
+    {
+        throw new NotImplementedException();
+    }
+
+    private void HandleCharProfile()
+    {
+        throw new NotImplementedException();
+    }
+
+    private void HandleAimHistory()
+    {
+        throw new NotImplementedException();
+    }
+
+    private void HandleAimLinks()
+    {
+        throw new NotImplementedException();
+    }
+
+    private void HandleAimPolicies()
+    {
+        throw new NotImplementedException();
+    }
+
+    private void HandleAimArchives()
+    {
+        throw new NotImplementedException();
+    }
+
+    private void HandleAimSort()
+    {
+        throw new NotImplementedException();
+    }
+
+    private void HandleAimFacialIndex()
+    {
+        throw new NotImplementedException();
+    }
+
+    private void HandleAIMMembers()
+    {
+        throw new NotImplementedException();
+    }
+
+    private void HandleAIM()
+    {
     }
 
     private void GetLaptopKeyboardInput()
     {
-        throw new NotImplementedException();
     }
 
     private void DisplayNewMailBox()
     {
-        throw new NotImplementedException();
     }
 
     private void CreateDestroyNewMailButton()
     {
-        throw new NotImplementedException();
     }
 
     private void CreateDestroyErrorButton()
     {
-        throw new NotImplementedException();
     }
 
     private static bool fOldShowBookmarks = false;
@@ -673,7 +912,7 @@ public partial class Laptop : IScreen
                     fLoadPendingFlag = true;
                     fFastLoadFlag = true;
                 }
-                iCurrentImpPage = IMP_HOME_PAGE;
+                IMP.iCurrentImpPage = IMP_PAGE.IMP_HOME_PAGE;
                 break;
             case (BOOKMARK.MERC_BOOKMARK):
 
@@ -956,8 +1195,7 @@ public partial class Laptop : IScreen
         FontSubSystem.SetFontBackground(FontColor.FONT_BLACK);
         FontSubSystem.SetFontShadow(FontShadow.NO_SHADOW);
 
-        pString = wprintf("%d", LaptopSaveInfo.iCurrentBalance);
-        Finances.InsertCommasForDollarFigure(pString);
+        pString = Finances.InsertCommasForDollarFigure(LaptopSaveInfo.iCurrentBalance);
         Finances.InsertDollarSignInToString(pString);
 
         if (gLaptopButtons[5].uiFlags.HasFlag(ButtonFlags.BUTTON_CLICKED_ON))
@@ -1054,7 +1292,7 @@ public partial class Laptop : IScreen
                     LaptopSaveInfo.gfNewGameLaptop = false;
                     fExitingLaptopFlag = true;
                     /*guiExitScreen = GAME_SCREEN; */
-                    this.gameInit.InitNewGame(false);
+                    GameInit.InitNewGame(false);
                     gfDontStartTransitionFromLaptop = true;
                     /*InitHelicopterEntranceByMercs( );
                     fFirstTimeInGameScreen = true;*/
@@ -1835,39 +2073,39 @@ public partial class Laptop : IScreen
                     break;
 
                 case LAPTOP_MODE.MERC:
-                    ExitMercs();
+                    Mercs.ExitMercs();
                     break;
                 case LAPTOP_MODE.MERC_FILES:
-                    ExitMercsFiles();
+                    Mercs.ExitMercsFiles();
                     break;
                 case LAPTOP_MODE.MERC_ACCOUNT:
-                    ExitMercsAccount();
+                    Mercs.ExitMercsAccount();
                     break;
                 case LAPTOP_MODE.MERC_NO_ACCOUNT:
-                    ExitMercsNoAccount();
+                    Mercs.ExitMercsNoAccount();
                     break;
 
 
                 case LAPTOP_MODE.BOBBY_R:
-                    ExitBobbyR();
+                    BobbyR.ExitBobbyR();
                     break;
                 case LAPTOP_MODE.BOBBY_R_GUNS:
-                    ExitBobbyRGuns();
+                    BobbyR.ExitBobbyRGuns();
                     break;
                 case LAPTOP_MODE.BOBBY_R_AMMO:
-                    ExitBobbyRAmmo();
+                    BobbyR.ExitBobbyRAmmo();
                     break;
                 case LAPTOP_MODE.BOBBY_R_ARMOR:
-                    ExitBobbyRArmour();
+                    BobbyR.ExitBobbyRArmour();
                     break;
                 case LAPTOP_MODE.BOBBY_R_MISC:
-                    ExitBobbyRMisc();
+                    BobbyR.ExitBobbyRMisc();
                     break;
                 case LAPTOP_MODE.BOBBY_R_USED:
-                    ExitBobbyRUsed();
+                    BobbyR.ExitBobbyRUsed();
                     break;
                 case LAPTOP_MODE.BOBBY_R_MAILORDER:
-                    ExitBobbyRMailOrder();
+                    BobbyR.ExitBobbyRMailOrder();
                     break;
 
 
@@ -1875,31 +2113,31 @@ public partial class Laptop : IScreen
                     ExitCharProfile();
                     break;
                 case LAPTOP_MODE.FLORIST:
-                    ExitFlorist();
+                    Florist.ExitFlorist();
                     break;
                 case LAPTOP_MODE.FLORIST_FLOWER_GALLERY:
-                    ExitFloristGallery();
+                    Florist.ExitFloristGallery();
                     break;
                 case LAPTOP_MODE.FLORIST_ORDERFORM:
-                    ExitFloristOrderForm();
+                    Florist.ExitFloristOrderForm();
                     break;
                 case LAPTOP_MODE.FLORIST_CARD_GALLERY:
-                    ExitFloristCards();
+                    Florist.ExitFloristCards();
                     break;
 
                 case LAPTOP_MODE.INSURANCE:
-                    ExitInsurance();
+                    Insurance.ExitInsurance();
                     break;
 
                 case LAPTOP_MODE.INSURANCE_INFO:
-                    ExitInsuranceInfo();
+                    Insurance.ExitInsuranceInfo();
                     break;
 
                 case LAPTOP_MODE.INSURANCE_CONTRACT:
-                    ExitInsuranceContract();
+                    Insurance.ExitInsuranceContract();
                     break;
                 case LAPTOP_MODE.INSURANCE_COMMENTS:
-                    ExitInsuranceComments();
+                    Insurance.ExitInsuranceComments();
                     break;
 
                 case LAPTOP_MODE.FUNERAL:
@@ -1909,7 +2147,7 @@ public partial class Laptop : IScreen
                     ExitSirTech();
                     break;
                 case LAPTOP_MODE.FINANCES:
-                    ExitFinances();
+                    Finances.ExitFinances();
                     break;
                 case LAPTOP_MODE.PERSONNEL:
                     ExitPersonnel();
@@ -1921,14 +2159,14 @@ public partial class Laptop : IScreen
                     ExitFiles();
                     break;
                 case LAPTOP_MODE.EMAIL:
-                    ExitEmail();
+                    Emails.ExitEmail();
                     break;
                 case LAPTOP_MODE.BROKEN_LINK:
                     ExitBrokenLink();
                     break;
 
                 case LAPTOP_MODE.BOBBYR_SHIPMENTS:
-                    ExitBobbyRShipments();
+                    BobbyR.ExitBobbyRShipments();
                     break;
             }
 
@@ -1939,6 +2177,71 @@ public partial class Laptop : IScreen
 
             return (true);
         }
+    }
+
+    private void ExitBrokenLink()
+    {
+        throw new NotImplementedException();
+    }
+
+    private void ExitFiles()
+    {
+        throw new NotImplementedException();
+    }
+
+    private void ExitHistory()
+    {
+        throw new NotImplementedException();
+    }
+
+    private void ExitPersonnel()
+    {
+        throw new NotImplementedException();
+    }
+
+    private void ExitSirTech()
+    {
+        throw new NotImplementedException();
+    }
+
+    private void ExitFuneral()
+    {
+        throw new NotImplementedException();
+    }
+
+    private void ExitCharProfile()
+    {
+        throw new NotImplementedException();
+    }
+
+    private void ExitAimHistory()
+    {
+        throw new NotImplementedException();
+    }
+
+    private void ExitAimLinks()
+    {
+        throw new NotImplementedException();
+    }
+
+    private void ExitAimPolicies()
+    {
+        throw new NotImplementedException();
+    }
+
+    private void ExitAimSort()
+    {
+        throw new NotImplementedException();
+    }
+
+    private void ExitAIMMembers()
+    {
+        throw new NotImplementedException();
+    }
+
+    private void ExitAimFacialIndex()
+    {
+        throw new NotImplementedException();
     }
 
     private bool CreateLaptopButtons()
@@ -2014,7 +2317,7 @@ public partial class Laptop : IScreen
             ButtonFlags.BUTTON_TOGGLE,
             MSYS_PRIORITY.HIGH,
             MouseSubSystem.BtnGenericMouseMoveButtonCallback,
-            (GUI_CALLBACK)PersonnelRegionButtonCallback);
+            PersonnelRegionButtonCallback);
 
         CreateLaptopButtonHelpText(gLaptopButtons[3], LaptopText.LAPTOP_BN_HLP_TXT_VIEW_TEAM_INFO);
 
@@ -2088,6 +2391,16 @@ public partial class Laptop : IScreen
         ButtonSubSystem.SetButtonCursor(gLaptopButtons[6], CURSOR.LAPTOP_SCREEN);
 
         return (true);
+    }
+
+    private void PersonnelRegionButtonCallback(ref GUI_BUTTON button, MSYS_CALLBACK_REASON reason)
+    {
+        throw new NotImplementedException();
+    }
+
+    private void HistoryRegionButtonCallback(ref GUI_BUTTON button, MSYS_CALLBACK_REASON reason)
+    {
+        throw new NotImplementedException();
     }
 
     private void BtnOnCallback(ref GUI_BUTTON btn, MSYS_CALLBACK_REASON reason)

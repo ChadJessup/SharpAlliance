@@ -11,6 +11,9 @@ namespace SharpAlliance.Core.SubSystems;
 
 public class HelpScreenSubSystem : IDisposable
 {
+    private bool gfHelpScreenEntry;
+    private bool gfHelpScreenExit;
+
     public bool IsInitialized { get; }
 
     public void Dispose()
@@ -19,5 +22,15 @@ public class HelpScreenSubSystem : IDisposable
 
     public void InitHelpScreenSystem()
     {
+        //set some values
+        gHelpScreen = new();
+
+        //set it up so we can enter the screen
+        gfHelpScreenEntry = true;
+        gfHelpScreenExit = false;
+
+        gHelpScreen.bCurrentHelpScreenActiveSubPage = -1;
+
+        gHelpScreen.fHaveAlreadyBeenInHelpScreenSinceEnteringCurrenScreen = false;
     }
 }

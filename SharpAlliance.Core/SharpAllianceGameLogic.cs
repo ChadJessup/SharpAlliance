@@ -64,6 +64,10 @@ public class SharpAllianceGameLogic : IGameLogic
     {
         this.RegisterGameScreens(this.context, this.screen);
         await this.InitializeScreens(this.screen.Screens);
+
+        //Init the help screen system
+        this.helpScreen.InitHelpScreenSystem();
+
         this.saves.LoadGameSettings();
         this.saves.InitGameOptions();
 

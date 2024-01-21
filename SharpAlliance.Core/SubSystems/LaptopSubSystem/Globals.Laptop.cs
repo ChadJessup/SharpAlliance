@@ -205,23 +205,23 @@ public partial class Globals
 
 
     // the laptop icons
-    public static int guiFILESICON;
-    public static int guiFINANCIALICON;
-    public static int guiHISTORYICON;
-    public static int guiMAILICON;
-    public static int guiPERSICON;
-    public static int guiWWWICON;
-    public static int guiBOOKTOP;
-    public static int guiBOOKHIGH;
-    public static int guiBOOKMID;
-    public static int guiBOOKBOT;
-    public static int guiBOOKMARK;
-    public static int guiGRAPHWINDOW;
-    public static int guiGRAPHBAR;
+    public static HVOBJECT guiFILESICON;
+    public static HVOBJECT guiFINANCIALICON;
+    public static HVOBJECT guiHISTORYICON;
+    public static HVOBJECT guiMAILICON;
+    public static HVOBJECT guiPERSICON;
+    public static HVOBJECT guiWWWICON;
+    public static HVOBJECT guiBOOKTOP;
+    public static HVOBJECT guiBOOKHIGH;
+    public static HVOBJECT guiBOOKMID;
+    public static HVOBJECT guiBOOKBOT;
+    public static HVOBJECT guiBOOKMARK;
+    public static HVOBJECT guiGRAPHWINDOW;
+    public static HVOBJECT guiGRAPHBAR;
     public static HVOBJECT guiLaptopBACKGROUND;
-    public static int guiDOWNLOADTOP;
-    public static int guiDOWNLOADMID;
-    public static int guiDOWNLOADBOT;
+    public static HVOBJECT guiDOWNLOADTOP;
+    public static HVOBJECT guiDOWNLOADMID;
+    public static HVOBJECT guiDOWNLOADBOT;
     public static HVOBJECT guiTITLEBARLAPTOP;
     public static HVOBJECT guiLIGHTS;
     public static HVOBJECT guiTITLEBARICONS;
@@ -301,16 +301,16 @@ public partial class Globals
     //int iBookMarkList[MAX_BOOKMARKS];
 
     // mouse regions
-    public static MOUSE_REGION? gEmailRegion;
-    public static MOUSE_REGION? gWWWRegion;
-    public static MOUSE_REGION? gFinancialRegion;
-    public static MOUSE_REGION? gPersonnelRegion;
-    public static MOUSE_REGION? gHistoryRegion;
-    public static MOUSE_REGION? gFilesRegion;
-    public static MOUSE_REGION? gLapTopScreenRegion;
+    public static MOUSE_REGION gEmailRegion = new(nameof(gEmailRegion));
+    public static MOUSE_REGION gWWWRegion = new(nameof(gWWWRegion));
+    public static MOUSE_REGION gFinancialRegion = new(nameof(gFinancialRegion));
+    public static MOUSE_REGION gPersonnelRegion = new(nameof(gPersonnelRegion));
+    public static MOUSE_REGION gHistoryRegion = new(nameof(gHistoryRegion));
+    public static MOUSE_REGION gFilesRegion = new(nameof(gFilesRegion));
+    public static MOUSE_REGION gLapTopScreenRegion = new(nameof(gLapTopScreenRegion));
     public static MOUSE_REGION[] gBookmarkMouseRegions = new MOUSE_REGION[MAX_BOOKMARKS];
-    public static MOUSE_REGION? pScreenMask;
-    public static MOUSE_REGION? gLapTopProgramMinIcon;
+    public static MOUSE_REGION pScreenMask = new(nameof(pScreenMask));
+    public static MOUSE_REGION gLapTopProgramMinIcon = new(nameof(gLapTopProgramMinIcon));
     public static MOUSE_REGION gNewMailIconRegion = new(nameof(gNewMailIconRegion));
     public static MOUSE_REGION gNewFileIconRegion = new(nameof(gNewFileIconRegion));
 

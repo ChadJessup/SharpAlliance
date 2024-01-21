@@ -372,6 +372,11 @@ public class RenderWorld : IDisposable
     {
         gRenderFlags |= full;
     }
+
+    internal static void InitRenderParams(int v)
+    {
+        throw new NotImplementedException();
+    }
 }
 
 [Flags]

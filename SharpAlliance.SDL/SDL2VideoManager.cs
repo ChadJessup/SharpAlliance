@@ -2021,7 +2021,7 @@ public class SDL2VideoManager : IVideoManager
     {
     }
 
-    public void SetVideoSurfaceTransparency(SurfaceType uiVideoSurfaceImage, Rgba32 pixel)
+    public void SetVideoSurfaceTransparency(HVOBJECT hobj, Rgba32 pixel)
     {
     }
 
@@ -2102,17 +2102,24 @@ public class SDL2VideoManager : IVideoManager
                 iBottom = SCREEN_HEIGHT;
             }
 
-//            if ((iRight - iLeft) <= 0)
-//            {
-//                return;
-//            }
-//
-//            if ((iBottom - iTop) <= 0)
-//            {
-//                return;
-//            }
+            //            if ((iRight - iLeft) <= 0)
+            //            {
+            //                return;
+            //            }
+            //
+            //            if ((iBottom - iTop) <= 0)
+            //            {
+            //                return;
+            //            }
 
-            gDirtyRegionsEx[guiDirtyRegionExCount] = new(iLeft, iTop, iRight - iLeft, iBottom - iTop);
+            Rectangle rect = new(iLeft, iTop, iRight - iLeft, iTop - iBottom);
+
+            if(rect.Height < 0 || rect.Width < 0)
+            {
+                return;
+            }
+
+            gDirtyRegionsEx[guiDirtyRegionExCount] = rect;
             gDirtyRegionsFlagsEx[guiDirtyRegionExCount] = uiFlags;
 
             guiDirtyRegionExCount++;

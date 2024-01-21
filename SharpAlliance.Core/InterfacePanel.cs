@@ -116,6 +116,16 @@ public class InterfacePanel
             MercPtrs[ubID].ubNumLocateCycles = 3;
         }
     }
+
+    internal static void InitTEAMSlots()
+    {
+        for (var cnt = 0; cnt < NUM_TEAM_SLOTS; cnt++)
+        {
+            gTeamPanel[cnt].fOccupied = false;
+            gTeamPanel[cnt].ubID = NOBODY;
+
+        }
+    }
 }
 
 public enum SHOW_LOCATOR

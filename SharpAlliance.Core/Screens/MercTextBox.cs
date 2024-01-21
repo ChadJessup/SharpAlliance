@@ -258,7 +258,7 @@ public class MercTextBox
         {
             // Zero with yellow,
             // Set source transparcenty
-            video.SetVideoSurfaceTransparency(pPopUpTextBox.uiSourceBufferIndex, FROMRGB(255, 255, 0));
+            // video.SetVideoSurfaceTransparency(pPopUpTextBox.uiSourceBufferIndex, FROMRGB(255, 255, 0));
 
             usColorVal = new Rgba32(255, 255, 0);
 

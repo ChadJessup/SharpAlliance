@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace SharpAlliance.Core.SubSystems.LaptopSubSystem.IMPSubSystem;
+﻿namespace SharpAlliance.Core.SubSystems.LaptopSubSystem.IMPSubSystem;
 
 public partial class IMP
 {
@@ -9,4 +7,9 @@ public partial class IMP
     public static int iLastPicture = 7;
     // face index
     public static int iPortraitNumber = 0;
+    internal static IMP_PAGE iCurrentImpPage;
+
+    internal static void InitIMPSubPageList()
+    {
+    }
 }

@@ -536,7 +536,7 @@ public class CreditsScreen : IScreen
             pNodeToAdd.uiVideoSurfaceImage = tex.SurfaceType;
 
             //Set transparency
-            video.SetVideoSurfaceTransparency(pNodeToAdd.uiVideoSurfaceImage, new Rgba32(0, 0, 0));
+            // video.SetVideoSurfaceTransparency(pNodeToAdd.uiVideoSurfaceImage, new Rgba32(0, 0, 0));
 
             //fill the surface with a transparent color
 

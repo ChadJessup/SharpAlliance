@@ -740,6 +740,10 @@ public class RenderDirty
     {
         throw new NotImplementedException();
     }
+
+    internal static void InitializeBaseDirtyRectQueue()
+    {
+    }
 }
 
 // Struct for init topmost blitter

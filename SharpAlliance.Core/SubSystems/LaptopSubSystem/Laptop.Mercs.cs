@@ -1,4 +1,6 @@
-﻿namespace SharpAlliance.Core.SubSystems.LaptopSubSystem;
+﻿using System;
+
+namespace SharpAlliance.Core.SubSystems.LaptopSubSystem;
 
 public class Mercs
 {
@@ -48,6 +50,46 @@ public class Mercs
         LaptopSaveInfo.guiNumberOfMercPaymentsInDays = 0;
 
         gusMercVideoSpeckSpeech = 0;
+    }
+
+    internal static void EnterInitMercSite()
+    {
+    }
+
+    internal static void ExitMercs()
+    {
+    }
+
+    internal static void ExitMercsAccount()
+    {
+    }
+
+    internal static void ExitMercsFiles()
+    {
+    }
+
+    internal static void ExitMercsNoAccount()
+    {
+    }
+
+    internal static void HandleMercs()
+    {
+        throw new NotImplementedException();
+    }
+
+    internal static void HandleMercsAccount()
+    {
+        throw new NotImplementedException();
+    }
+
+    internal static void HandleMercsFiles()
+    {
+        throw new NotImplementedException();
+    }
+
+    internal static void HandleMercsNoAccount()
+    {
+        throw new NotImplementedException();
     }
 
     internal static void InitializeNumDaysMercArrive()

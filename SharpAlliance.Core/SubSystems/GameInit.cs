@@ -1,6 +1,4 @@
-﻿using System;
-using System.Diagnostics;
-using System.Reflection.Metadata;
+﻿using System.Diagnostics;
 using System.Threading.Tasks;
 using SharpAlliance.Core.Interfaces;
 using SharpAlliance.Core.Managers;
@@ -12,19 +10,18 @@ namespace SharpAlliance.Core.SubSystems;
 
 public class GameInit
 {
-    private readonly BobbyR bobby;
+    private static BobbyR bobby;
     private readonly IClockManager clock;
     private readonly StrategicMap strategicMap;
     private readonly ISoundManager sound;
     private readonly TacticalSaveSubSystem tacticalSave;
     private readonly SoldierCreate soldierCreate;
     private readonly Overhead overhead;
-    private readonly Finances finances;
-    private readonly IScreenManager screens;
-    private readonly Messages messages;
+    private static Finances finances;
+    private static IScreenManager screens;
+    private static Messages messages;
     private readonly Emails emails;
-    private readonly LaptopSubSystem.Laptop laptop;
-    private readonly SoldierProfileSubSystem soldierProfile;
+    private static SoldierProfileSubSystem soldierProfile;
     private readonly World world;
     private readonly NPC npc;
     private readonly HelpScreenSubSystem helpScreen;
@@ -43,7 +40,6 @@ public class GameInit
         SoldierCreate soldierCreate,
         Overhead overhead,
         Emails emails,
-        LaptopSubSystem.Laptop laptop,
         SoldierProfileSubSystem soldierProfile,
         Messages messages,
         TurnBasedInput tbi,
@@ -59,19 +55,18 @@ public class GameInit
         DialogControl dialogs,
         AirRaid airRaid)
     {
-        this.screens = screenManager;
-        this.messages = messages;
-        this.bobby = bobbyR;
+        screens = screenManager;
+        GameInit.messages = messages;
+        bobby = bobbyR;
         this.clock = clock;
         this.strategicMap = strategicMap;
-        this.finances = finances;
+        GameInit.finances = finances;
         this.sound = soundManager;
         this.tacticalSave = tacticalSaveSubSystem;
         this.soldierCreate = soldierCreate;
         this.overhead = overhead;
         this.emails = emails;
-        this.laptop = laptop;
-        this.soldierProfile = soldierProfile;
+        GameInit.soldierProfile = soldierProfile;
         this.world = world;
         this.npc = npc;
         this.helpScreen = helpScreen;
@@ -99,7 +94,7 @@ public class GameInit
         this.sound.SoundStopAll();
 
         //we are going to restart a game so initialize the variable so we can initialize a new game
-        this.InitNewGame(fReset: true);
+        InitNewGame(fReset: true);
 
         
         //Deletes all the Temp files in the Maps\Temp directory
@@ -118,11 +113,11 @@ public class GameInit
         Emails.ShutDownEmailList();
 
         //Reinit the laptopn screen variables
-        this.laptop.InitLaptopAndLaptopScreens();
-        LaptopSubSystem.Laptop.LaptopScreenInit();
+        Laptop.InitLaptopAndLaptopScreens();
+        Laptop.LaptopScreenInit();
 
         //Reload the Merc profiles
-        this.soldierProfile.LoadMercProfiles();
+        soldierProfile.LoadMercProfiles();
 
         // Reload quote files
         this.npc.ReloadAllQuoteFiles();
@@ -161,7 +156,7 @@ public class GameInit
         Globals.gubCheatLevel = Cheats.STARTING_CHEAT_LEVEL;
     }
 
-    public async ValueTask<bool> InitNewGame(bool fReset)
+    public static async ValueTask<bool> InitNewGame(bool fReset)
     {
         int iStartingCash;
 
@@ -181,7 +176,7 @@ public class GameInit
 
         if (gubScreenCount == 0)
         {
-            if (!this.soldierProfile.LoadMercProfiles())
+            if (!soldierProfile.LoadMercProfiles())
             {
                 return false;
             }
@@ -192,25 +187,25 @@ public class GameInit
         {
             //Init all the arms dealers inventory
             ArmsDealerInit.InitAllArmsDealers();
-            this.bobby.InitBobbyRayInventory();
+            bobby.InitBobbyRayInventory();
         }
 
         // clear tactical 
-        this.messages.ClearTacticalMessageQueue();
+        messages.ClearTacticalMessageQueue();
 
         // clear mapscreen messages
-        this.messages.FreeGlobalMessageList();
+        messages.FreeGlobalMessageList();
 
         // IF our first time, go into laptop!
         if (gubScreenCount == 0)
         {
             //Init the laptop here
-            this.laptop.InitLaptopAndLaptopScreens();
+            Laptop.InitLaptopAndLaptopScreens();
 
             InitStrategicLayer();
 
             // Set new game flag
-            LaptopSubSystem.Laptop.SetLaptopNewGameFlag();
+            Laptop.SetLaptopNewGameFlag();
 
             // this is for the "mercs climbing down from a rope" animation, NOT Skyrider!!
             MercEntering.ResetHeliSeats();
@@ -247,7 +242,7 @@ public class GameInit
             }
 
             // Setup initial money
-            this.finances.AddTransactionToPlayersBook(FinanceEvent.ANONYMOUS_DEPOSIT, 0, GameClock.GetWorldTotalMin(), iStartingCash);
+            finances.AddTransactionToPlayersBook(FinanceEvent.ANONYMOUS_DEPOSIT, 0, GameClock.GetWorldTotalMin(), iStartingCash);
 
 
             {
@@ -257,8 +252,8 @@ public class GameInit
                 GameEvents.AddFutureDayStrategicEvent(EVENT.DAY3_ADD_EMAIL_FROM_SPECK, 60 * 7, 0, uiDaysTimeMercSiteAvailable);
             }
 
-            LaptopSubSystem.Laptop.SetLaptopExitScreen(ScreenName.InitScreen);
-            await this.screens.SetPendingNewScreen(ScreenName.LAPTOP_SCREEN);
+            Laptop.SetLaptopExitScreen(ScreenName.InitScreen);
+            await screens.SetPendingNewScreen(ScreenName.LAPTOP_SCREEN);
             gubScreenCount = 1;
 
             //Set the fact the game is in progress
@@ -318,7 +313,7 @@ public class GameInit
         return true;
     }
 
-    private void InitStrategicLayer()
+    private static void InitStrategicLayer()
     {
         // Clear starategic layer!
         StrategicMap.SetupNewStrategicGame();
@@ -367,7 +362,7 @@ public class GameInit
         fDisableMapInterfaceDueToBattle = false;
     }
 
-    private void InitNPCs()
+    private static void InitNPCs()
     {
         MERCPROFILESTRUCT? pProfile;
 
@@ -504,7 +499,7 @@ public class GameInit
         gMercProfiles[NPCID.DEVIN].bNPCData = 3;
     }
 
-    void InitBloodCatSectors()
+    private static void InitBloodCatSectors()
     {
         //Hard coded table of bloodcat populations.  We don't have
         //access to the real population (if different) until we physically 

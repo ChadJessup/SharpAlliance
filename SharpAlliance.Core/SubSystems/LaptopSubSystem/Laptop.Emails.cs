@@ -15,18 +15,18 @@ public class Emails
 
     private static int iViewerPositionY = 0;
     private static int iDeleteId = 0;
-    bool fUnReadMailFlag = false;
-    bool fOldUnreadFlag = true;
+    private static bool fUnReadMailFlag = false;
+    private static bool fOldUnreadFlag = true;
     public static bool fNewMailFlag = false;
     private static bool fDisplayMessageFlag = false;
-    bool fOldDisplayMessageFlag = false;
+    private static bool fOldDisplayMessageFlag = false;
     private static bool fReDraw = false;
     private static bool fDeleteMailFlag = false;
     private static bool fReDrawMessageFlag = false;
-    bool fOnLastPageFlag = false;
+    private static bool fOnLastPageFlag = false;
     private static bool fJustStartedEmail = false;
-    bool fDeleteInternal = false;
-    bool fOpenMostRecentUnReadFlag = false;
+    private static bool fDeleteInternal = false;
+    private static bool fOpenMostRecentUnReadFlag = false;
     // the length of the subject in char
 
     public const int SUBJECT_LENGTH = 128;
@@ -35,7 +35,7 @@ public class Emails
     // mouse regions
     private static MOUSE_REGION[] pEmailRegions = new MOUSE_REGION[MAX_MESSAGES_PAGE];
     MOUSE_REGION pScreenMask;
-    MOUSE_REGION pDeleteScreenMask;
+    private static MOUSE_REGION pDeleteScreenMask;
 
     // the email info struct to speed up email
     private static EmailPageInfoStruct[] pEmailPageInfo = new EmailPageInfoStruct[MAX_NUMBER_EMAIL_PAGES];
@@ -95,7 +95,7 @@ public class Emails
         CreateDestroyNextPreviousRegions();
     }
 
-    void DeleteEmailMouseRegions()
+    private static void DeleteEmailMouseRegions()
     {
 
         // this function will remove the mouse regions added
@@ -161,20 +161,20 @@ public class Emails
         return true;
     }
 
-    void ExitEmail()
+    public static void ExitEmail()
     {
         LaptopSaveInfo.iCurrentEmailPage = iCurrentPage;
 
         // clear out message record list
-        this.ClearOutEmailMessageRecordsList();
+        ClearOutEmailMessageRecordsList();
 
         // displayed message?...get rid of it
         if (fDisplayMessageFlag)
         {
             fDisplayMessageFlag = false;
-            this.AddDeleteRegionsToMessageRegion(0);
+            AddDeleteRegionsToMessageRegion(0);
             fDisplayMessageFlag = true;
-            this.fReDrawMessageFlag = true;
+            fReDrawMessageFlag = true;
         }
         else
         {
@@ -182,17 +182,17 @@ public class Emails
         }
 
         // delete mail notice?...get rid of it
-        if (this.fDeleteMailFlag)
+        if (fDeleteMailFlag)
         {
-            this.fDeleteMailFlag = false;
-            this.CreateDestroyDeleteNoticeMailButton();
+            fDeleteMailFlag = false;
+            CreateDestroyDeleteNoticeMailButton();
         }
 
         // remove all mouse regions in use in email
-        this.DeleteEmailMouseRegions();
+        DeleteEmailMouseRegions();
 
         // reset flags of new messages
-        this.SetUnNewMessages();
+        SetUnNewMessages();
 
         // remove video objects being used by email screen
         video.DeleteVideoObjectFromIndex(guiEmailTitle);
@@ -203,13 +203,13 @@ public class Emails
 
 
         // remove buttons
-        this.DestroyMailScreenButtons();
+        DestroyMailScreenButtons();
 
 
     }
 
     static bool fEmailListBeenDrawAlready = false;
-    void HandleEmail()
+    public static void HandleEmail()
     {
 
         int iViewerY = 0;
@@ -217,80 +217,80 @@ public class Emails
 
 
         // check if email message record list needs to be updated
-        this.UpDateMessageRecordList();
+        UpDateMessageRecordList();
 
         // does email list need to be draw, or can be drawn 
-        if ((!fDisplayMessageFlag) && (!fNewMailFlag) && (!this.fDeleteMailFlag) && (fEmailListBeenDrawAlready == false))
+        if ((!fDisplayMessageFlag) && (!fNewMailFlag) && (!fDeleteMailFlag) && (fEmailListBeenDrawAlready == false))
         {
-            this.DisplayEmailList();
+            DisplayEmailList();
             fEmailListBeenDrawAlready = true;
         }
         // if the message flag, show message
-        else if (fDisplayMessageFlag && this.fReDrawMessageFlag)
+        else if (fDisplayMessageFlag && fReDrawMessageFlag)
         {
             // redisplay list
-            this.DisplayEmailList();
+            DisplayEmailList();
 
             // this simply redraws message without button manipulation
-            iViewerY = this.DisplayEmailMessage(this.GetEmailMessage(giMessageId));
+            iViewerY = DisplayEmailMessage(GetEmailMessage(giMessageId));
             fEmailListBeenDrawAlready = false;
 
         }
-        else if (fDisplayMessageFlag && (!this.fOldDisplayMessageFlag))
+        else if (fDisplayMessageFlag && (!fOldDisplayMessageFlag))
         {
 
             // redisplay list
             DisplayEmailList();
 
             // this simply redraws message with button manipulation
-            iViewerY = this.DisplayEmailMessage(this.GetEmailMessage(giMessageId));
-            this.AddDeleteRegionsToMessageRegion(iViewerY);
+            iViewerY = DisplayEmailMessage(GetEmailMessage(giMessageId));
+            AddDeleteRegionsToMessageRegion(iViewerY);
             fEmailListBeenDrawAlready = false;
 
         }
 
         // not displaying anymore?
-        if ((fDisplayMessageFlag == false) && this.fOldDisplayMessageFlag)
+        if ((fDisplayMessageFlag == false) && fOldDisplayMessageFlag)
         {
             // then clear it out
-            this.ClearOutEmailMessageRecordsList();
+            ClearOutEmailMessageRecordsList();
         }
 
 
         // if new message is being displayed...check to see if it's buttons need to be created or destroyed
-        this.AddDeleteRegionsToMessageRegion(0);
+        AddDeleteRegionsToMessageRegion(0);
 
         // same with delete notice
-        this.CreateDestroyDeleteNoticeMailButton();
+        CreateDestroyDeleteNoticeMailButton();
 
         // if delete notice needs to be displayed?...display it
-        if (this.fDeleteMailFlag)
+        if (fDeleteMailFlag)
         {
-            this.DisplayDeleteNotice(this.GetEmailMessage(iDeleteId));
+            DisplayDeleteNotice(GetEmailMessage(iDeleteId));
         }
 
 
         // update buttons
-        this.HandleEmailViewerButtonStates();
+        HandleEmailViewerButtonStates();
 
         // set up icons for buttons
-        this.SetUpIconForButton();
+        SetUpIconForButton();
 
         // redraw screen
         //ReDraw();
 
         //redraw headers to sort buttons
-        this.DisplayEmailHeaders();
+        DisplayEmailHeaders();
 
 
         // handle buttons states
-        this.UpdateStatusOfNextPreviousButtons();
+        UpdateStatusOfNextPreviousButtons();
 
-        if (this.fOpenMostRecentUnReadFlag == true)
+        if (fOpenMostRecentUnReadFlag == true)
         {
             // enter email due to email icon on program panel
-            this.OpenMostRecentUnreadEmail();
-            this.fOpenMostRecentUnReadFlag = false;
+            OpenMostRecentUnreadEmail();
+            fOpenMostRecentUnReadFlag = false;
 
         }
 
@@ -508,10 +508,10 @@ public class Emails
     }
 
 
-    void RemoveEmailMessage(int iId)
+    private static void RemoveEmailMessage(int iId)
     {
         // run through list and remove message, update everyone afterwards
-        var email = this.GetEmailMessage(iId);
+        var email = GetEmailMessage(iId);
 
         if (email is not null)
         {
@@ -885,14 +885,14 @@ public class Emails
 
     void LookForUnread()
     {
-        bool fStatusOfNewEmailFlag = this.fUnReadMailFlag;
+        bool fStatusOfNewEmailFlag = fUnReadMailFlag;
 
         // simply runrs through list of messages, if any unread, set unread flag
 
         // reset unread flag
-        this.fUnReadMailFlag = pEmailList.Any(p => !p.fRead);
+        fUnReadMailFlag = pEmailList.Any(p => !p.fRead);
 
-        if (fStatusOfNewEmailFlag != this.fUnReadMailFlag)
+        if (fStatusOfNewEmailFlag != fUnReadMailFlag)
         {
             //Since there is no new email, get rid of the hepl text
             //Laptop.CreateFileAndNewEmailIconFastHelpText(LAPTOP_BN_HLP_TXT_YOU_HAVE_NEW_MAIL, (bool)!fUnReadMailFlag);
@@ -1009,7 +1009,7 @@ public class Emails
         }
     }
 
-    void BtnMessageXCallback(ref GUI_BUTTON btn, MSYS_CALLBACK_REASON reason)
+    private static void BtnMessageXCallback(ref GUI_BUTTON btn, MSYS_CALLBACK_REASON reason)
     {
         if (!btn.uiFlags.HasFlag(ButtonFlags.BUTTON_ENABLED))
         {
@@ -1050,8 +1050,8 @@ public class Emails
         }
 
     }
-    void
-    SetUnNewMessages()
+
+    private static void SetUnNewMessages()
     {
         // on exit from the mailer, set all new messages as 'un'new
         // run through the list of messages and add to pages
@@ -1334,22 +1334,22 @@ public class Emails
         }
     }
 
-    void AddDeleteRegionsToMessageRegion(int iViewerY)
+    private static void AddDeleteRegionsToMessageRegion(int iViewerY)
     {
         // will create/destroy mouse region for message display
 
-        if (fDisplayMessageFlag && (!this.fOldDisplayMessageFlag))
+        if (fDisplayMessageFlag && (!fOldDisplayMessageFlag))
         {
 
             // set old flag
-            this.fOldDisplayMessageFlag = true;
+            fOldDisplayMessageFlag = true;
 
 
             // add X button
             giMessageButtonImage[0] = ButtonSubSystem.LoadButtonImage("LAPTOP\\X.sti", -1, 0, -1, 1, -1);
             giMessageButton[0] = ButtonSubSystem.QuickCreateButton(giMessageButtonImage[0], new(BUTTON_X + 2, (int)(BUTTON_Y + (int)iViewerY + 1)),
                 ButtonFlags.BUTTON_TOGGLE, MSYS_PRIORITY.HIGHEST - 1,
-                (GUI_CALLBACK)MouseSubSystem.BtnGenericMouseMoveButtonCallback, (GUI_CALLBACK)this.BtnMessageXCallback);
+                (GUI_CALLBACK)MouseSubSystem.BtnGenericMouseMoveButtonCallback, (GUI_CALLBACK)BtnMessageXCallback);
             ButtonSubSystem.SetButtonCursor(giMessageButton[0], CURSOR.LAPTOP_SCREEN);
 
             if (giNumberOfPagesToCurrentEmail > 2)
@@ -1358,12 +1358,12 @@ public class Emails
                 giMailMessageButtonsImage[0] = ButtonSubSystem.LoadButtonImage("LAPTOP\\NewMailButtons.sti", -1, 0, -1, 3, -1);
                 giMailMessageButtons[0] = ButtonSubSystem.QuickCreateButton(giMailMessageButtonsImage[0], new(PREVIOUS_PAGE_BUTTON_X, (int)(LOWER_BUTTON_Y + (int)iViewerY + 2)),
                     ButtonFlags.BUTTON_TOGGLE, MSYS_PRIORITY.HIGHEST - 1,
-                    (GUI_CALLBACK)MouseSubSystem.BtnGenericMouseMoveButtonCallback, (GUI_CALLBACK)this.BtnPreviousEmailPageCallback);
+                    (GUI_CALLBACK)MouseSubSystem.BtnGenericMouseMoveButtonCallback, (GUI_CALLBACK)BtnPreviousEmailPageCallback);
 
                 giMailMessageButtonsImage[1] = ButtonSubSystem.LoadButtonImage("LAPTOP\\NewMailButtons.sti", -1, 1, -1, 4, -1);
                 giMailMessageButtons[1] = ButtonSubSystem.QuickCreateButton(giMailMessageButtonsImage[1], new(NEXT_PAGE_BUTTON_X, (int)(LOWER_BUTTON_Y + (int)iViewerY + 2)),
                     ButtonFlags.BUTTON_TOGGLE, MSYS_PRIORITY.HIGHEST - 1,
-                    (GUI_CALLBACK)MouseSubSystem.BtnGenericMouseMoveButtonCallback, (GUI_CALLBACK)this.BtnNextEmailPageCallback);
+                    (GUI_CALLBACK)MouseSubSystem.BtnGenericMouseMoveButtonCallback, (GUI_CALLBACK)BtnNextEmailPageCallback);
 
                 gfPageButtonsWereCreated = true;
             }
@@ -1371,7 +1371,7 @@ public class Emails
             giMailMessageButtonsImage[2] = ButtonSubSystem.LoadButtonImage("LAPTOP\\NewMailButtons.sti", -1, 2, -1, 5, -1);
             giMailMessageButtons[2] = ButtonSubSystem.QuickCreateButton(giMailMessageButtonsImage[2], new(DELETE_BUTTON_X, (int)(BUTTON_LOWER_Y + (int)iViewerY + 2)),
                 ButtonFlags.BUTTON_TOGGLE, MSYS_PRIORITY.HIGHEST - 1,
-                (GUI_CALLBACK)MouseSubSystem.BtnGenericMouseMoveButtonCallback, (GUI_CALLBACK)this.BtnDeleteCallback);
+                (GUI_CALLBACK)MouseSubSystem.BtnGenericMouseMoveButtonCallback, (GUI_CALLBACK)BtnDeleteCallback);
             /*
                     // set up disable methods
                     SpecifyDisabledButtonStyle( giMailMessageButtons[1], DISABLED_STYLE_SHADED );
@@ -1386,10 +1386,10 @@ public class Emails
             // force update of screen
             fReDrawScreenFlag = true;
         }
-        else if ((!fDisplayMessageFlag) && this.fOldDisplayMessageFlag)
+        else if ((!fDisplayMessageFlag) && fOldDisplayMessageFlag)
         {
             // delete region
-            this.fOldDisplayMessageFlag = false;
+            fOldDisplayMessageFlag = false;
             ButtonSubSystem.RemoveButton(giMessageButton[0]);
             ButtonSubSystem.UnloadButtonImage(giMessageButtonImage[0]);
 
@@ -1467,7 +1467,7 @@ public class Emails
 
 
             //re draw screen
-            this.fReDraw = true;
+            fReDraw = true;
 
             // redraw screen
             fPausedReDrawScreenFlag = true;
@@ -1571,7 +1571,7 @@ public class Emails
                 fNewMailFlag = true;
 
                 // time to redraw
-                this.DisplayNewMailBox();
+                DisplayNewMailBox();
             }
 
             // return;
@@ -1676,7 +1676,7 @@ public class Emails
 
     }
 
-    void BtnPreviousEmailPageCallback(ref GUI_BUTTON btn, MSYS_CALLBACK_REASON reason)
+    private static void BtnPreviousEmailPageCallback(ref GUI_BUTTON btn, MSYS_CALLBACK_REASON reason)
     {
         if (!btn.uiFlags.HasFlag(ButtonFlags.BUTTON_ENABLED))
         {
@@ -1701,8 +1701,8 @@ public class Emails
 
                 btn.uiFlags &= ~ButtonFlags.BUTTON_CLICKED_ON;
 
-                this.fReDraw = true;
-                this.RenderEmail();
+                fReDraw = true;
+                RenderEmail();
                 ButtonSubSystem.MarkButtonsDirty(buttonList);
             }
         }
@@ -1713,7 +1713,7 @@ public class Emails
 
     }
 
-    void BtnNextEmailPageCallback(ref GUI_BUTTON btn, MSYS_CALLBACK_REASON reason)
+    private static void BtnNextEmailPageCallback(ref GUI_BUTTON btn, MSYS_CALLBACK_REASON reason)
     {
         if (!btn.uiFlags.HasFlag(ButtonFlags.BUTTON_ENABLED))
         {
@@ -1737,7 +1737,7 @@ public class Emails
                 return;
             }
 
-            if (!this.fOnLastPageFlag)
+            if (!fOnLastPageFlag)
             {
                 if ((giNumberOfPagesToCurrentEmail - 1) > (giMessagePage + 1))
                 {
@@ -1792,7 +1792,7 @@ public class Emails
     }
 
 
-    void BtnDeleteNoback(ref GUI_BUTTON btn, MSYS_CALLBACK_REASON reason)
+    private static void BtnDeleteNoback(ref GUI_BUTTON btn, MSYS_CALLBACK_REASON reason)
     {
         if (!btn.uiFlags.HasFlag(ButtonFlags.BUTTON_ENABLED))
         {
@@ -1811,14 +1811,14 @@ public class Emails
             if (btn.uiFlags.HasFlag(ButtonFlags.BUTTON_CLICKED_ON))
             {
                 btn.uiFlags &= ~ButtonFlags.BUTTON_CLICKED_ON;
-                this.fDeleteMailFlag = false;
+                fDeleteMailFlag = false;
                 fReDrawScreenFlag = true;
             }
         }
     }
 
 
-    void BtnDeleteYesback(ref GUI_BUTTON btn, MSYS_CALLBACK_REASON reason)
+    private static void BtnDeleteYesback(ref GUI_BUTTON btn, MSYS_CALLBACK_REASON reason)
     {
         if (!btn.uiFlags.HasFlag(ButtonFlags.BUTTON_ENABLED))
         {
@@ -1838,7 +1838,7 @@ public class Emails
             {
                 btn.uiFlags &= ~ButtonFlags.BUTTON_CLICKED_ON;
                 fReDrawScreenFlag = true;
-                this.DeleteEmail();
+                DeleteEmail();
 
             }
         }
@@ -1884,14 +1884,14 @@ public class Emails
     void ReDraw()
     {
         // forces update of entire laptop screen
-        if (this.fReDraw)
+        if (fReDraw)
         {
             Laptop.RenderLaptop();
             //EnterNewLaptopMode();
             //            DrawLapTopText();
             //            ReDrawHighLight();
             ButtonSubSystem.MarkButtonsDirty(buttonList);
-            this.fReDraw = false;
+            fReDraw = false;
         }
 
     }
@@ -1905,7 +1905,7 @@ public class Emails
     private static IFileManager files;
     private static IEnumerable<GUI_BUTTON> buttonList;
 
-    void CreateDestroyDeleteNoticeMailButton()
+    private static void CreateDestroyDeleteNoticeMailButton()
     {
         if (fDeleteMailFlag && (!fOldDeleteMailFlag))
         {
@@ -1916,13 +1916,13 @@ public class Emails
             giDeleteMailButtonImage[0] = ButtonSubSystem.LoadButtonImage("LAPTOP\\YesNoButtons.sti", -1, 0, -1, 1, -1);
             giDeleteMailButton[0] = ButtonSubSystem.QuickCreateButton(giDeleteMailButtonImage[0], new(NEW_BTN_X + 1, NEW_BTN_Y),
                 ButtonFlags.BUTTON_TOGGLE, MSYS_PRIORITY.HIGHEST - 2,
-                (GUI_CALLBACK)MouseSubSystem.BtnGenericMouseMoveButtonCallback, (GUI_CALLBACK)this.BtnDeleteYesback);
+                (GUI_CALLBACK)MouseSubSystem.BtnGenericMouseMoveButtonCallback, (GUI_CALLBACK)BtnDeleteYesback);
 
             // NO button
             giDeleteMailButtonImage[1] = ButtonSubSystem.LoadButtonImage("LAPTOP\\YesNoButtons.sti", -1, 2, -1, 3, -1);
             giDeleteMailButton[1] = ButtonSubSystem.QuickCreateButton(giDeleteMailButtonImage[1], new(NEW_BTN_X + 40, NEW_BTN_Y),
                 ButtonFlags.BUTTON_TOGGLE, MSYS_PRIORITY.HIGHEST - 2,
-                (GUI_CALLBACK)MouseSubSystem.BtnGenericMouseMoveButtonCallback, (GUI_CALLBACK)this.BtnDeleteNoback);
+                (GUI_CALLBACK)MouseSubSystem.BtnGenericMouseMoveButtonCallback, (GUI_CALLBACK)BtnDeleteNoback);
 
             // set up cursors
             ButtonSubSystem.SetButtonCursor(giDeleteMailButton[0], CURSOR.LAPTOP_SCREEN);
@@ -1931,13 +1931,13 @@ public class Emails
             // set up screen mask to prevent other actions while delete mail box is destroyed
             //            MouseSubSystem.MSYS_DefineRegion(pDeleteScreenMask, 0, 0, 640, 480,
             //                MSYS_PRIORITY.HIGHEST - 3, CURSOR.LAPTOP_SCREEN, MSYS_NO_CALLBACK, LapTopScreenCallBack);
-            MouseSubSystem.MSYS_AddRegion(ref this.pDeleteScreenMask);
+            MouseSubSystem.MSYS_AddRegion(ref pDeleteScreenMask);
 
             // force update
             fReDrawScreenFlag = true;
 
         }
-        else if ((!this.fDeleteMailFlag) && fOldDeleteMailFlag)
+        else if ((!fDeleteMailFlag) && fOldDeleteMailFlag)
         {
 
             // clear out the buttons and screen mask
@@ -1948,7 +1948,7 @@ public class Emails
             ButtonSubSystem.UnloadButtonImage(giDeleteMailButtonImage[1]);
 
             // the region
-            MouseSubSystem.MSYS_RemoveRegion(this.pDeleteScreenMask);
+            MouseSubSystem.MSYS_RemoveRegion(pDeleteScreenMask);
 
             // force refresh
             fReDrawScreenFlag = true;
@@ -2030,25 +2030,25 @@ public class Emails
         return true;
     }
 
-    void DeleteEmail()
+    private static void DeleteEmail()
     {
 
         // error check, invalid mail, or not time to delete mail
-        if (this.fDeleteInternal != true)
+        if (fDeleteInternal != true)
         {
-            if ((iDeleteId == -1) || (!this.fDeleteMailFlag))
+            if ((iDeleteId == -1) || (!fDeleteMailFlag))
             {
                 return;
             }
         }
         // remove the message
-        this.RemoveEmailMessage(iDeleteId);
+        RemoveEmailMessage(iDeleteId);
 
         // stop displaying message, if so
         fDisplayMessageFlag = false;
 
         // upadte list
-        this.PlaceMessagesinPages();
+        PlaceMessagesinPages();
 
         // redraw icons (if deleted message was last unread, remove checkmark)
         Laptop.DrawLapTopIcons();
@@ -2101,7 +2101,7 @@ public class Emails
 
     }
 
-    void SubjectCallback(ref GUI_BUTTON btn, MSYS_CALLBACK_REASON iReason)
+    private static void SubjectCallback(ref GUI_BUTTON btn, MSYS_CALLBACK_REASON iReason)
     {
         if (iReason.HasFlag(MSYS_CALLBACK_REASON.INIT))
         {
@@ -2110,11 +2110,11 @@ public class Emails
         if (iReason.HasFlag(MSYS_CALLBACK_REASON.LBUTTON_UP))
         {
             // sort message on subject and reorder list
-            this.fSortSubjectUpwards = !this.fSortSubjectUpwards;
+            fSortSubjectUpwards = !fSortSubjectUpwards;
 
-            this.SortMessages(EmailFields.SUBJECT);
-            this.fJustStartedEmail = false;
-            this.PlaceMessagesinPages();
+            SortMessages(EmailFields.SUBJECT);
+            fJustStartedEmail = false;
+            PlaceMessagesinPages();
 
 
 
@@ -2128,7 +2128,7 @@ public class Emails
     }
 
 
-    void BtnDeleteCallback(ref GUI_BUTTON btn, MSYS_CALLBACK_REASON iReason)
+    private static void BtnDeleteCallback(ref GUI_BUTTON btn, MSYS_CALLBACK_REASON iReason)
     {
         if (iReason.HasFlag(MSYS_CALLBACK_REASON.INIT))
         {
@@ -2258,7 +2258,7 @@ public class Emails
 
     }
 
-    void DestroyMailScreenButtons()
+    private static void DestroyMailScreenButtons()
     {
         // this function will destory the buttons used in the email screen
 
@@ -2404,7 +2404,7 @@ public class Emails
     }
 
 
-    void ClearOutEmailMessageRecordsList()
+    private static void ClearOutEmailMessageRecordsList()
     {
         RecordPtr pTempRecord;
         int iCounter = 0;
@@ -2474,9 +2474,7 @@ public class Emails
         return;
 
     }
-
-
-    void UpDateMessageRecordList()
+    private static void UpDateMessageRecordList()
     {
 
         // simply checks to see if old and new message ids are the same, if so, do nothing
@@ -2485,7 +2483,7 @@ public class Emails
         if (giMessageId != giPrevMessageId)
         {
             // if chenged, clear list
-            this.ClearOutEmailMessageRecordsList();
+            ClearOutEmailMessageRecordsList();
 
             // set prev to current
             giPrevMessageId = giMessageId;
@@ -3698,7 +3696,7 @@ public class Emails
 
     }
 
-    void HandleEmailViewerButtonStates()
+    private static void HandleEmailViewerButtonStates()
     {
         // handle state of email viewer buttons
 
@@ -3727,7 +3725,7 @@ public class Emails
 
 
         // turn off next page button
-        if (this.pEmailPageInfo[giMessagePage + 1].pFirstRecord == null)
+        if (pEmailPageInfo[giMessagePage + 1].pFirstRecord == null)
         {
             ButtonSubSystem.DisableButton(giMailMessageButtons[1]);
         }
@@ -3741,11 +3739,11 @@ public class Emails
     }
 
 
-    void SetUpIconForButton()
+    private static void SetUpIconForButton()
     {
         // if we just got in, return, don't set any
 
-        if (this.fJustStartedEmail == true)
+        if (fJustStartedEmail == true)
         {
             return;
         }
@@ -3773,12 +3771,12 @@ public class Emails
         // reset page being displayed
         giMessagePage = 0;
 
-        this.fDeleteInternal = true;
+        fDeleteInternal = true;
 
         // delete message
-        this.DeleteEmail();
+        DeleteEmail();
 
-        this.fDeleteInternal = false;
+        fDeleteInternal = false;
 
         // force update of entire screen
         fReDrawScreenFlag = true;
@@ -3819,7 +3817,7 @@ public class Emails
     }
 
 
-    void UpdateStatusOfNextPreviousButtons()
+    private static void UpdateStatusOfNextPreviousButtons()
     {
 
         // set the states of the page advance buttons
@@ -3869,7 +3867,7 @@ public class Emails
         return;
     }
 
-    void OpenMostRecentUnreadEmail()
+    private static void OpenMostRecentUnreadEmail()
     {
         // will open the most recent email the player has recieved and not read
         var mostRecentUnreadEmail = pEmailList
@@ -3933,7 +3931,7 @@ public class Emails
     }
 
 
-    int GetNumberOfPagesToEmail()
+    private static int GetNumberOfPagesToEmail()
     {
         RecordPtr? pTempRecord = null;
         int iNumberOfPagesToEmail = 0;
@@ -4008,7 +4006,7 @@ public class Emails
         }
 
         // get number of pages to this email
-        giNumberOfPagesToCurrentEmail = this.GetNumberOfPagesToEmail();
+        giNumberOfPagesToCurrentEmail = GetNumberOfPagesToEmail();
 
 
         while (pTempRecord is not null)

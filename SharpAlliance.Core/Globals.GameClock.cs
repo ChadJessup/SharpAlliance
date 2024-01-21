@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using SharpAlliance.Core.SubSystems;
+using SharpAlliance.Core.SubSystems.LaptopSubSystem;
 
 namespace SharpAlliance.Core;
 
@@ -46,7 +47,7 @@ public partial class Globals
     public static bool gfAtLeastOneMercWasHired { get; internal set; }
     public static bool fDisplayMessageFlag { get; internal set; }
     public static bool gfPageButtonsWereCreated { get; internal set; }
-    public static int gubVideoConferencingMode { get; internal set; }
+    public static AIM_VIDEO gubVideoConferencingMode { get; internal set; }
     public static bool gfFirstBattleMeanwhileScenePending { get; set; }
     public static bool gfPlotPathToExitGrid { get; internal set; }
     public static int giNPCReferenceCount { get; internal set; }

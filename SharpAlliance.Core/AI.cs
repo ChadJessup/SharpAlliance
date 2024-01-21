@@ -10,6 +10,10 @@ namespace SharpAlliance.Core;
 
 public class AI
 {
+    internal static bool InitAI()
+    {
+        throw new NotImplementedException();
+    }
 }
 
 // NB THESE THREE FLAGS SHOULD BE REMOVED FROM CODE

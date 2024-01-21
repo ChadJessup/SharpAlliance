@@ -5,6 +5,7 @@ namespace SharpAlliance.Core.SubSystems.LaptopSubSystem;
 public partial class Laptop
 {
     private static bool gfInitAdArea;
+    private const int NUM_AIM_HISTORY_PAGES = 5;
 
     private static void GameInitAIM()
     {

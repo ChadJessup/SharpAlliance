@@ -115,7 +115,7 @@ public class CivQuotes
         CivQuotes.mercTextBox = mercTextBox;
     }
 
-    void CopyNumEntriesIntoQuoteStruct()
+    private static void CopyNumEntriesIntoQuoteStruct()
     {
         CIV_QUOTE cnt;
 
@@ -822,10 +822,10 @@ public class CivQuotes
     }
 
 
-    void InitCivQuoteSystem()
+    public static void InitCivQuoteSystem()
     {
         //        memset(&gCivQuotes, 0, sizeof(gCivQuotes));
-        this.CopyNumEntriesIntoQuoteStruct();
+        CopyNumEntriesIntoQuoteStruct();
 
 //        memset(&gCivQuoteData, 0, sizeof(gCivQuoteData));
         gCivQuoteData.bActive = false;
@@ -858,7 +858,7 @@ public class CivQuotes
         //            return (false);
         //        }
 
-        this.CopyNumEntriesIntoQuoteStruct();
+        CopyNumEntriesIntoQuoteStruct();
 
         return true;
     }

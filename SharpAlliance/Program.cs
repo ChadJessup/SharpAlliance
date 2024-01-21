@@ -122,7 +122,7 @@ public static class StandardSharpAllianceExtensions
         builder.Services.AddSingleton<SoldierCreate>();
         builder.Services.AddSingleton<Overhead>();
         builder.Services.AddSingleton<Emails>();
-        builder.Services.AddSingleton<Core.SubSystems.LaptopSubSystem.Laptop>();
+        builder.Services.AddSingleton<Laptop>();
         //builder.Services.AddSingleton<Interface>();
         builder.Services.AddSingleton<TurnBasedInput>();
         builder.Services.AddSingleton<Cheats>();

@@ -10,21 +10,14 @@ using SharpAlliance.Core.SubSystems.LaptopSubSystem.BobbyRSubSystem;
 using SharpAlliance.Core.SubSystems.LaptopSubSystem.FloristSubSystem;
 using SharpAlliance.Core.SubSystems.LaptopSubSystem.InsuranceSubSystem;
 using System.Diagnostics;
+using static System.Runtime.InteropServices.JavaScript.JSType;
+using SharpAlliance.Core.SubSystems.LaptopSubSystem.IMPSubSystem;
 
 namespace SharpAlliance.Core.SubSystems.LaptopSubSystem;
 
 public partial class Laptop
 {
-    private readonly History history;
-    private static IFileManager files;
-    private static readonly IEnumerable<GUI_BUTTON> buttonList;
-
-    public Laptop(IVideoManager videoManager, History history, IFileManager fileManager)
-    {
-        video = videoManager;
-        this.history = history;
-        files = fileManager;
-    }
+    private const int NUM_AIM_POLICY_PAGES = 11;
 
     public static bool LaptopScreenInit()
     {
@@ -131,10 +124,10 @@ public partial class Laptop
         Array.Fill(LaptopSaveInfo.iBookMarkList, (BOOKMARK)(-1));
     }
 
-    public bool InitLaptopAndLaptopScreens()
+    public static bool InitLaptopAndLaptopScreens()
     {
         Finances.GameInitFinances();
-        this.history.GameInitHistory();
+        history.GameInitHistory();
 
         //Reset the flag so we can create a new IMP character
         LaptopSaveInfo.fIMPCompletedFlag = false;
@@ -718,6 +711,11 @@ public partial class Laptop
         return (true);
     }
 
+    private static void StopAmbients()
+    {
+        //SoundStopAllRandom();
+    }
+
     private static bool LoadDesktopBackground()
     {
         // load desktop background
@@ -734,37 +732,205 @@ public partial class Laptop
 
     private static void CreateLapTopMouseRegions()
     {
-        throw new NotImplementedException();
+        // the entire laptop display region
+        MouseSubSystem.MSYS_DefineRegion(
+            gLapTopScreenRegion,
+            LaptopScreenRect,
+            MSYS_PRIORITY.NORMAL + 1,
+            CURSOR.LAPTOP_SCREEN,
+            ScreenRegionMvtCallback,
+            LapTopScreenCallBack);
+    }
+
+    private static void ScreenRegionMvtCallback(ref MOUSE_REGION region, MSYS_CALLBACK_REASON iReason)
+    {
+        if (iReason.HasFlag(MSYS_CALLBACK_REASON.INIT))
+        {
+            return;
+        }
     }
 
     private static void InitLaptopOpenQueue()
     {
-        throw new NotImplementedException();
+        foreach(var program in Enum.GetValues<LAPTOP_PROGRAM>())
+        {
+            gLaptopProgramQueueList[program] = 1;
+        }
     }
 
     private static void LoadBookmark()
     {
-        throw new NotImplementedException();
+        VOBJECT_DESC VObjectDesc;
+
+
+        // grab download bars too
+
+        guiDOWNLOADTOP = video.GetVideoObject(Utils.FilenameForBPP("LAPTOP\\downloadtop.sti"));
+        guiDOWNLOADMID = video.GetVideoObject(Utils.FilenameForBPP("LAPTOP\\downloadmid.sti"));
+        guiDOWNLOADBOT = video.GetVideoObject(Utils.FilenameForBPP("LAPTOP\\downloadbot.sti"));
+        guiBOOKTOP = video.GetVideoObject(Utils.FilenameForBPP("LAPTOP\\bookmarktop.sti"));
+        guiBOOKMID = video.GetVideoObject(Utils.FilenameForBPP("LAPTOP\\bookmarkmiddle.sti"));
+        guiBOOKMARK = video.GetVideoObject(Utils.FilenameForBPP("LAPTOP\\webpages.sti"));
+        guiBOOKHIGH = video.GetVideoObject(Utils.FilenameForBPP("LAPTOP\\hilite.sti"));
+        guiBOOKBOT = video.GetVideoObject(Utils.FilenameForBPP("LAPTOP\\Bookmarkbottom.sti"));
     }
 
     private static void LoadLoadPending()
     {
-        throw new NotImplementedException();
+        // function will load the load pending graphics
+        // reuse bookmark
+        // load graph window and bar
+        guiGRAPHWINDOW = video.GetVideoObject(Utils.FilenameForBPP("LAPTOP\\graphwindow.sti"));
+        guiGRAPHBAR = video.GetVideoObject(Utils.FilenameForBPP("LAPTOP\\graphsegment.sti"));
     }
 
     private static void InitalizeSubSitesList()
     {
-        throw new NotImplementedException();
+        // init all subsites list to not visited
+        for (var iCounter = LAPTOP_MODE.WWW + 1; iCounter <= LAPTOP_MODE.SIRTECH; iCounter++)
+        {
+            gfWWWaitSubSitesVisitedFlags[iCounter - (LAPTOP_MODE.WWW + 1)] = false;
+        }
     }
 
     private static void EnterLaptopInitLaptopPages()
     {
-        throw new NotImplementedException();
+        EnterInitAimMembers();
+        EnterInitAimArchives();
+        EnterInitAimPolicies();
+        EnterInitAimHistory();
+        Florist.EnterInitFloristGallery();
+        Insurance.EnterInitInsuranceInfo();
+        BobbyR.EnterInitBobbyRayOrder();
+        Mercs.EnterInitMercSite();
+
+        // init sub pages for WW Wait
+        IMP.InitIMPSubPageList();
     }
+
+    private static void EnterInitAimHistory()
+    {
+        Array.Fill(AimHistorySubPagesVisitedFlag, false);
+    }
+
+    private static void EnterInitAimPolicies()
+    {
+        Array.Fill(AimPoliciesSubPagesVisitedFlag, false);
+    }
+
+    private static void EnterInitAimArchives()
+    {
+        gfDrawPopUpBox = false;
+        gfDestroyPopUpBox = false;
+
+        Array.Fill(AimArchivesSubPagesVisitedFlag, false);
+        AimArchivesSubPagesVisitedFlag[0] = true;
+    }
+
+    private static void EnterInitAimMembers()
+    {
+        gubVideoConferencingMode = AIM_VIDEO.NOT_DISPLAYED_MODE;
+        gubVideoConferencingPreviousMode = AIM_VIDEO.NOT_DISPLAYED_MODE;
+        gfVideoFaceActive = false;
+        //fShouldMercTalk = FALSE;	
+        gubPopUpBoxAction = AIM_POPUP.NOTHING;
+        gfRedrawScreen = false;
+        giContractAmount = 0;
+        giMercFaceIndex = 0;
+        guiLastHandleMercTime = GetJA2Clock();
+        gubCurrentCount = 0;
+        gfFirstTimeInContactScreen = true;
+
+        //reset the variable so a pop up can be displyed this time in laptop
+        LaptopSaveInfo.sLastHiredMerc.fHaveDisplayedPopUpInLaptop = false;
+
+        //reset the id of the last merc
+        LaptopSaveInfo.sLastHiredMerc.iIdOfMerc = -1;
+    }
+
+    private static bool fCreated = false;
+    private static bool fUnReadMailFlag;
+    private static bool fOpenMostRecentUnReadFlag;
+    private static bool fEnteredFileViewerFromNewFileIcon;
+    private static AIM_VIDEO gubVideoConferencingPreviousMode;
+    private static bool gfVideoFaceActive;
+    private static AIM_POPUP gubPopUpBoxAction;
+    private static bool gfRedrawScreen;
+    private static int giContractAmount;
+    private static int giMercFaceIndex;
+    private static uint guiLastHandleMercTime;
+    private static int gubCurrentCount;
+    private static bool gfFirstTimeInContactScreen;
+
+    public static bool[] AimArchivesSubPagesVisitedFlag = new bool[3];
+    private static bool gfDrawPopUpBox;
+    private static bool gfDestroyPopUpBox;
+    private static bool[] AimPoliciesSubPagesVisitedFlag = new bool[NUM_AIM_POLICY_PAGES];
+    private static bool[] AimHistorySubPagesVisitedFlag = new bool[NUM_AIM_HISTORY_PAGES];
 
     private static void CreateDestroyMouseRegionForNewMailIcon()
     {
-        throw new NotImplementedException();
+
+        //. will toggle creation/destruction of the mouse regions used by the new mail icon
+
+        if (fCreated == false)
+        {
+            fCreated = true;
+            MouseSubSystem.MSYS_DefineRegion(
+                gNewMailIconRegion,
+                new Rectangle(LAPTOP__NEW_EMAIL_ICON_X, LAPTOP__NEW_EMAIL_ICON_Y + 5, LAPTOP__NEW_EMAIL_ICON_X + 16, LAPTOP__NEW_EMAIL_ICON_Y + 16),
+                MSYS_PRIORITY.HIGHEST - 3,
+                CURSOR.LAPTOP_SCREEN,
+                MSYS_NO_CALLBACK,
+                NewEmailIconCallback);
+
+            CreateFileAndNewEmailIconFastHelpText(
+                LaptopText.LAPTOP_BN_HLP_TXT_YOU_HAVE_NEW_MAIL,
+                (fUnReadMailFlag == false));
+
+            MouseSubSystem.MSYS_DefineRegion(
+                gNewFileIconRegion,
+                new Rectangle(LAPTOP__NEW_FILE_ICON_X, LAPTOP__NEW_FILE_ICON_Y + 5, LAPTOP__NEW_FILE_ICON_X + 16, LAPTOP__NEW_FILE_ICON_Y + 16),
+                MSYS_PRIORITY.HIGHEST - 3,
+                CURSOR.LAPTOP_SCREEN,
+                MSYS_NO_CALLBACK,
+                NewFileIconCallback);
+
+            CreateFileAndNewEmailIconFastHelpText(
+                LaptopText.LAPTOP_BN_HLP_TXT_YOU_HAVE_NEW_FILE,
+                (fNewFilesInFileViewer == false));
+        }
+        else
+        {
+            fCreated = false;
+            MouseSubSystem.MSYS_RemoveRegion(gNewMailIconRegion);
+            MouseSubSystem.MSYS_RemoveRegion(gNewFileIconRegion);
+        }
+    }
+
+    private static void NewFileIconCallback(ref MOUSE_REGION region, MSYS_CALLBACK_REASON iReason)
+    {
+        if (iReason.HasFlag(MSYS_CALLBACK_REASON.LBUTTON_UP))
+        {
+            if (fNewFilesInFileViewer)
+            {
+                fEnteredFileViewerFromNewFileIcon = true;
+                guiCurrentLaptopMode = LAPTOP_MODE.FILES;
+            }
+        }
+    }
+
+    private static void NewEmailIconCallback(ref MOUSE_REGION region, MSYS_CALLBACK_REASON iReason)
+    {
+        if (iReason.HasFlag(MSYS_CALLBACK_REASON.LBUTTON_UP))
+        {
+            if (fUnReadMailFlag)
+            {
+                fOpenMostRecentUnReadFlag = true;
+                guiCurrentLaptopMode = LAPTOP_MODE.EMAIL;
+            }
+        }
+
     }
 }
 
@@ -894,4 +1060,17 @@ public enum LAPTOP_CURSOR
     PANEL_CURSOR,
     SCREEN_CURSOR,
     WWW_CURSOR,
+};
+
+// enumerated types used for the Video Conferencing Display
+public enum AIM_VIDEO
+{
+    NOT_DISPLAYED_MODE,                           // The video popup is not displayed
+    POPUP_MODE,                                           // The title bar pops up out of the Contact button
+    INIT_MODE,                                            // When the player first tries to contact the merc, it will be snowy for a bit
+    FIRST_CONTACT_MERC_MODE,              // The popup that is displayed when first contactinf the merc
+    HIRE_MERC_MODE,                                   // The popup which deals with the contract length, and transfer funds
+    MERC_ANSWERING_MACHINE_MODE,      // The popup which will be instread of the AIM_VIDEO_FIRST_CONTACT_MERC_MODE if the merc is not there
+    MERC_UNAVAILABLE_MODE,                    // The popup which will be instread of the AIM_VIDEO_FIRST_CONTACT_MERC_MODE if the merc is unavailable
+    POPDOWN_MODE,										// The title bars pops down to the contact button
 };

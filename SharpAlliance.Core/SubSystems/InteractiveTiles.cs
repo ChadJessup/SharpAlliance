@@ -44,7 +44,7 @@ public class InteractiveTiles
         this.worldStructures = worldStructures;
     }
 
-    bool InitInteractiveTileManagement()
+    public static bool InitInteractiveTileManagement()
     {
         return true;
     }

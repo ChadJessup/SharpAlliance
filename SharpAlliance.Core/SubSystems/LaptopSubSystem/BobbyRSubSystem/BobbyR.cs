@@ -102,14 +102,14 @@ public partial class BobbyR
 
 
         Laptop.SetBookMark(BOOKMARK.BOBBYR_BOOKMARK);
-        this.HandleBobbyRUnderConstructionAni(true);
+        HandleBobbyRUnderConstructionAni(true);
 
         this.RenderBobbyR();
 
         return true;
     }
 
-    void ExitBobbyR()
+    public static void ExitBobbyR()
     {
 
         video.DeleteVideoObjectFromIndex(guiBobbyName);
@@ -125,16 +125,16 @@ public partial class BobbyR
         }
 
 
-        this.DeleteBobbyRWoodBackground();
+        DeleteBobbyRWoodBackground();
 
-        this.RemoveBobbiesMouseRegion(BOBBIES_NUMBER_SIGNS, gSelectedBobbiesSignMenuRegion);
+        RemoveBobbiesMouseRegion(BOBBIES_NUMBER_SIGNS, gSelectedBobbiesSignMenuRegion);
 
         guiLastBobbyRayPage = LAPTOP_MODE.BOBBY_R;
     }
 
-    void HandleBobbyR()
+    public static void HandleBobbyR()
     {
-        this.HandleBobbyRUnderConstructionAni(false);
+        HandleBobbyRUnderConstructionAni(false);
     }
 
     void RenderBobbyR()
@@ -259,7 +259,7 @@ public partial class BobbyR
         return true;
     }
 
-    bool DeleteBobbyRWoodBackground()
+    private static bool DeleteBobbyRWoodBackground()
     {
         video.DeleteVideoObjectFromIndex(guiWoodBackground);
         return true;
@@ -320,7 +320,7 @@ public partial class BobbyR
     }
 
 
-    bool RemoveBobbiesMouseRegion(int ubNumberRegions, List<MOUSE_REGION> Mouse_Region)
+    private static bool RemoveBobbiesMouseRegion(int ubNumberRegions, List<MOUSE_REGION> Mouse_Region)
     {
         int i;
 
@@ -382,9 +382,9 @@ public partial class BobbyR
     static uint uiLastTime = 1;
     static ushort usCount = 0;
     private readonly ILogger<BobbyR> logger;
-    private readonly IVideoManager video;
+    private static IVideoManager video;
 
-    void HandleBobbyRUnderConstructionAni(bool fReset)
+    private static void HandleBobbyRUnderConstructionAni(bool fReset)
     {
         HVOBJECT hPixHandle;
         uint uiCurTime = ClockManager.GetJA2Clock();

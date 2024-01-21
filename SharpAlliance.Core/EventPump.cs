@@ -9,9 +9,8 @@ namespace SharpAlliance.Core;
 
 public class EventPump
 {
-    internal static void DequeAllGameEvents(bool v)
+    internal static void DequeAllGameEvents(bool fExecute)
     {
-        throw new NotImplementedException();
     }
 }
 

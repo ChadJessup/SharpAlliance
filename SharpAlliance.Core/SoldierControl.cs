@@ -4765,7 +4765,7 @@ int	gOrangeGlowG[]=
     ///////////////////////////////////////////////////////
     //PALETTE REPLACEMENT FUNCTIONS
     ///////////////////////////////////////////////////////
-    bool LoadPaletteData()
+    public static bool LoadPaletteData()
     {
         return true;
         //Stream hFile;

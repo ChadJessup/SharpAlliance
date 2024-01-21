@@ -1,27 +1,215 @@
 ﻿using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using SharpAlliance.Core.Managers;
+using SharpAlliance.Core.Managers.VideoSurfaces;
 using SharpAlliance.Core.Screens;
-using SharpAlliance.Core.SubSystems;
-using static System.Runtime.InteropServices.JavaScript.JSType;
-using static SharpAlliance.Core.Globals;
+using SixLabors.ImageSharp.PixelFormats;
 
 namespace SharpAlliance.Core.SubSystems;
 
 public class Overhead
 {
+    private static Rgba32[] bDefaultTeamColors =
+    {
+        FROMRGB( 255, 255, 0 ),
+        FROMRGB( 255, 0, 0 ),
+        FROMRGB( 255, 0, 255 ),
+        FROMRGB( 0, 255, 0 ),
+        FROMRGB( 255, 255, 255 ),
+        FROMRGB( 0, 0, 255 )
+    };
+
+    // TEMP VALUES FOR TEAM DEAFULT POSITIONS
+    private static int[,] bDefaultTeamRanges =
+    {
+        { 0,      19  },                                    //20  US
+    	{ 20,     51  },                                    //32  ENEMY
+    	{ 52,     83  },                                    //32    CREATURE
+    	{ 84,     115 },                                    //32    REBELS ( OUR GUYS )
+    	{ 116,    MAX_NUM_SOLDIERS - 1 },                   //32  CIVILIANS
+        { MAX_NUM_SOLDIERS, TOTAL_SOLDIERS - 1 },            // PLANNING SOLDIERS
+    };
+
     private static bool gfPauseAllAI;
     private static int giPauseAllAITimer;
+    private static SOLDIERTYPE[] AwaySlots = new SOLDIERTYPE[TOTAL_SOLDIERS];
+    private static int guiNumAwaySlots = 0;
+    private const int MAX_REALTIME_SPEED_VAL = 10;
 
-    public static void InitOverhead()
+    public static bool InitOverhead()
     {
+        int cnt2;
+
+        for (int i = 0; i < MercSlots.Length; i++)
+        {
+            MercSlots[i] = new();
+        }
+
+        for (int i = 0; i < AwaySlots.Length; i++)
+        {
+            AwaySlots[i] = new();
+        }
+
+        // Set pointers list
+        for (var cnt = 0; cnt < TOTAL_SOLDIERS; cnt++)
+        {
+            MercPtrs[cnt] = Menptr[cnt];
+            MercPtrs[cnt].bActive = false;
+        }
+
+        gTacticalStatus = new();
+
+        // Set team values
+        for (TEAM cnt = 0; cnt < MAXTEAMS; cnt++)
+        {
+            // For now, set hard-coded values
+            gTacticalStatus.Team[cnt].bFirstID = bDefaultTeamRanges[(int)cnt, 0];
+            gTacticalStatus.Team[cnt].bLastID = bDefaultTeamRanges[(int)cnt, 1];
+            gTacticalStatus.Team[cnt].RadarColor = bDefaultTeamColors[(int)cnt];
+
+            if (cnt == gbPlayerNum || cnt == TEAM.PLAYER_PLAN)
+            {
+                gTacticalStatus.Team[cnt].bSide = 0;
+                gTacticalStatus.Team[cnt].bHuman = 1;
+            }
+            else
+            {
+                if (cnt == MILITIA_TEAM)
+                {
+                    // militia guys on our side!
+                    gTacticalStatus.Team[cnt].bSide = 0;
+                }
+                else if (cnt == CREATURE_TEAM)
+                {
+                    // creatures are on no one's side but their own
+                    // NB side 2 is used for hostile rebels....
+                    gTacticalStatus.Team[cnt].bSide = TEAM.MILITIA_TEAM;
+                }
+                else
+                {
+                    // hostile (enemies, or civilians; civs are potentially hostile but neutral)	
+                    gTacticalStatus.Team[cnt].bSide = TEAM.ENEMY_TEAM;
+                }
+                gTacticalStatus.Team[cnt].bHuman = 0;
+            }
+
+            gTacticalStatus.Team[cnt].ubLastMercToRadio = NOBODY;
+            gTacticalStatus.Team[cnt].bTeamActive = 0;
+            gTacticalStatus.Team[cnt].bAwareOfOpposition = 0;
+
+            // set team values in soldier structures for all who are on this team
+            for (cnt2 = gTacticalStatus.Team[cnt].bFirstID; cnt2 <= gTacticalStatus.Team[cnt].bLastID; cnt2++)
+            {
+                MercPtrs[cnt2].bTeam = cnt;
+            }
+        }
+
+        // Zero out merc slots!
+        for (int cnt = 0; cnt < TOTAL_SOLDIERS; cnt++)
+        {
+            MercSlots[cnt] = new();
+        }
+
+        // Set other tactical flags
+        gTacticalStatus.uiFlags = TacticalEngineStatus.TURNBASED | TacticalEngineStatus.TRANSLUCENCY_TYPE;
+        gTacticalStatus.sSlideTarget = NOWHERE;
+        gTacticalStatus.uiTimeOfLastInput = GetJA2Clock();
+        gTacticalStatus.uiTimeSinceDemoOn = GetJA2Clock();
+        gTacticalStatus.uiCountdownToRestart = GetJA2Clock();
+        gTacticalStatus.fGoingToEnterDemo = false;
+        gTacticalStatus.fNOTDOLASTDEMO = false;
+        gTacticalStatus.fDidGameJustStart = true;
+        gTacticalStatus.ubLastRequesterTargetID = NO_PROFILE;
+
+        for (var cnt = 0; cnt < NUM_PANIC_TRIGGERS; cnt++)
+        {
+            gTacticalStatus.sPanicTriggerGridNo[cnt] = NOWHERE;
+        }
+        /*	for ( cnt = 0; cnt < NUM_TOPTIONS; cnt++ ) 
+            {
+                gGameSettings.fOptions[ cnt ] = 1;
+            }
+
+            gGameSettings.fOptions[ TOPTION_RTCONFIRM ] = 0;
+            gGameSettings.fOptions[ TOPTION_HIDE_BULLETS ] = 0;
+        */
+        gTacticalStatus.bRealtimeSpeed = Overhead.MAX_REALTIME_SPEED_VAL / 2;
+
+        AirRaid.gfInAirRaid = false;
+        gpCustomizableTimerCallback = null;
+
+        // Reset cursor
+        gpItemPointer = null;
+        gpItemPointerSoldier = null;
+
+        foreach (var slot in Enum.GetValues<InventorySlot>())
+        {
+            gbInvalidPlacementSlot[slot] = 0;
+        }
+
+        CivQuotes.InitCivQuoteSystem();
+
+        AnimationData.ZeroAnimSurfaceCounts();
+
+        return (true);
     }
 
     public static ValueTask<bool> InitTacticalEngine()
     {
+        // Init renderer
+        RenderWorld.InitRenderParams(0);
+
+        // Init dirty queue system
+        RenderDirty.InitializeBaseDirtyRectQueue();
+
+        // Init Interface stuff
+        Interface.InitializeTacticalInterface();
+
+        // Init system objects
+
+        InitializeGameVideoObjects();
+
+        // Init palette system
+        SoldierControl.LoadPaletteData();
+
+        if (!LoadLockTable())
+        {
+            return ValueTask.FromResult(false);
+        }
+
+        InteractiveTiles.InitInteractiveTileManagement();
+
+        // init path code
+        if (!PathAI.InitPathAI())
+        {
+            return ValueTask.FromResult(false);
+        }
+
+        // init AI
+        if (!AI.InitAI())
+        {
+            return ValueTask.FromResult(false);
+        }
+
+        // Init Overhead
+        if (!InitOverhead())
+        {
+            return ValueTask.FromResult(false);
+        }
+
         return ValueTask.FromResult(true);
+    }
+
+    private static bool LoadLockTable()
+    {
+        throw new NotImplementedException();
+    }
+
+    private static void InitializeGameVideoObjects()
+    {
+        gfExtraBuffer = true;
+        guiRENDERBUFFER = SurfaceType.FRAME_BUFFER;
     }
 
     public static bool InOverheadMap()
@@ -1531,6 +1719,16 @@ public class Overhead
         gfPauseAllAI = true;
         giPauseAllAITimer = 0;
     }
+
+    internal static void KillOverheadMap()
+    {
+        throw new NotImplementedException();
+    }
+
+    internal static void GoIntoOverheadMap()
+    {
+        throw new NotImplementedException();
+    }
 }
 
 // civilian "sub teams":
@@ -1591,7 +1789,7 @@ public class TacticalStatusType
     public int ubTheChosenOne;
     public uint uiTimeOfLastInput;
     public uint uiTimeSinceDemoOn;
-    public int uiCountdownToRestart;
+    public uint uiCountdownToRestart;
     public bool fGoingToEnterDemo;
     public bool fNOTDOLASTDEMO;
     public bool fMultiplayer;
@@ -1674,7 +1872,7 @@ public class TacticalStatusType
 // TACTICAL ENGINE STATUS FLAGS
 public class TacticalTeamType
 {
-    public int RadarColor;
+    public Rgba32 RadarColor;
     public int bFirstID;
     public int bLastID;
     public TEAM bSide;

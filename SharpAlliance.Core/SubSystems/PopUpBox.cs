@@ -30,6 +30,11 @@ public class PopUpBox
     {
         throw new NotImplementedException();
     }
+
+    internal static void ShowBox(int ghVehicleBox)
+    {
+        throw new NotImplementedException();
+    }
 }
 
 public class POPUPBOX

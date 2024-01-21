@@ -48,7 +48,7 @@ public interface IVideoManager : ISharpAllianceManager
     bool ShadowVideoSurfaceRectUsingLowPercentTable(SurfaceType surface, Rectangle rectangle);
     bool DeleteVideoObject(HVOBJECT vobj);
     bool BlitBufferToBuffer(SurfaceType srcBuffer, SurfaceType dstBuffer, Rectangle srcRect);
-    void SetVideoSurfaceTransparency(SurfaceType uiVideoSurfaceImage, Rgba32 pixel);
+    void SetVideoSurfaceTransparency(HVOBJECT vobj, Rgba32 pixel);
     void ClearElements();
     bool Blt16BPPTo16BPP(Image<Rgba32> pDest, Image<Rgba32> pSrc, Point iDestPos, Point iSrcPos, Size size, bool debug = false);
     bool Blt8BPPDataSubTo16BPPBuffer(Image<Rgba32> pDestBuf, Size size, Image<Rgba32> pSrcBuf, HVOBJECT srcvObj, int iX, int iY, Rectangle clip);
