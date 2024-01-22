@@ -868,7 +868,7 @@ public class MouseSubSystem : ISharpAllianceManager
 
     internal static void RenderFastHelp()
     {
-        throw new NotImplementedException();
+        
     }
 
     internal static void MSYS_DefineRegion(MOUSE_REGION? gLapTopScreenRegion, object iLeft, object iTop, object iRight, object iBottom, MSYS_PRIORITY mSYS_PRIORITY, CURSOR lAPTOP_SCREEN, object screenRegionMvtCallback, object lapTopScreenCallBack)

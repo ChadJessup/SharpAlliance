@@ -1,20 +1,22 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using SharpAlliance.Core.Managers;
 using SharpAlliance.Core.Screens;
-using SharpAlliance.Platform.Interfaces;
-using static SharpAlliance.Core.Globals;
 
 namespace SharpAlliance.Core.SubSystems;
 
 public class Keys
 {
+    public static List<LOCK> LockTable = [];
+
     private static IFileManager files;
+    public const int NUM_KEYS =64;
+    public const int NUM_LOCKS = 64;
 
     public Keys(IFileManager fileManager) => files = fileManager;
 
-    //This is the link to see if a door exists at a gridno.  
+    //This is the link to see if a door exists at a gridno.
     public static DOOR? FindDoorInfoAtGridNo(int iMapIndex)
     {
         for (int i = 0; i < Globals.gubNumDoors; i++)

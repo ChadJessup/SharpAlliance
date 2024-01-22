@@ -273,7 +273,7 @@ public class Messages
         }
 
         // DONOT UPDATE IF WE ARE SCROLLING!
-        if (Globals.gfScrollPending || Globals.gfScrollInertia)
+        if (Globals.gfScrollPending || Globals.gfScrollInertia != 0)
         {
             return;
         }

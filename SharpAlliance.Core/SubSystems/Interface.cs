@@ -290,7 +290,7 @@ public class Interface
         // Load interface panels
         
         // failing the CHECKF after this will cause you to lose your mouse
-            var path  ="INTERFACE\\IN_TEXT.STI";
+        var path  ="INTERFACE\\IN_TEXT.STI";
 
         guiINTEXT = video.GetVideoObject(path);
         video.SetVideoSurfaceTransparency(guiINTEXT, FROMRGB(255, 0, 0));

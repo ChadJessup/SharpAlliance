@@ -162,8 +162,11 @@ public class AnimationData
     {
         foreach (var cnt in Enum.GetValues<AnimationSurfaceTypes>())
         {
-            gAnimSurfaceDatabase[cnt].bUsageCount = 0;
-            gAnimSurfaceDatabase[cnt].hVideoObject = null;
+            gAnimSurfaceDatabase[cnt] = new()
+            {
+                bUsageCount = 0,
+                hVideoObject = null,
+            };
         }
 
         foreach(var ast in  Enum.GetValues<AnimationSurfaceTypes>())

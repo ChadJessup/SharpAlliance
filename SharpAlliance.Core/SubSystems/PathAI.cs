@@ -26,6 +26,12 @@ public class PathAI
     	{ WorldDirections.NORTHWEST , -Globals.MAPWIDTH-1 },      //NW
     };
 
+    private static path_t[] pathQ = new path_t[ABSMAX_PATHQ];
+    private static TRAILCELLTYPE[] trailCost = new TRAILCELLTYPE[MAPLENGTH];
+    private static int[] trailCostUsed = new int[MAPLENGTH];
+    private static trail_t[] trailTree = new trail_t[ABSMAX_PATHQ];
+    private static path_t pQueueHead;
+    private static path_t pClosedHead;
 
     public PathAI(
         ILogger<PathAI> logger,
@@ -772,7 +778,22 @@ public class PathAI
 
     internal static bool InitPathAI()
     {
-        throw new NotImplementedException();
+//        pathQ = MemAlloc(ABSMAX_PATHQ * sizeof(path_t));
+//        trailCost = MemAlloc(MAPLENGTH * sizeof(TRAILCELLTYPE));
+//        trailCostUsed = MemAlloc(MAPLENGTH);
+//        trailTree = MemAlloc(ABSMAX_TRAIL_TREE * sizeof(trail_t));
+     
+//        if (!pathQ || !trailCost || !trailCostUsed || !trailTree)
+//        {
+//          return (false);
+//        }
+        
+        pQueueHead = (pathQ[QHEADNDX]);
+        pClosedHead = (pathQ[QPOOLNDX]);
+
+        Array.Fill(trailCostUsed, 0);
+
+        return true;
     }
 }
 

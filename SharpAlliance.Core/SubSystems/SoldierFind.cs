@@ -765,7 +765,7 @@ public class SoldierFind
 
         // Find the diustance from render center to true world center
         sDistToCenterX = Globals.gsRenderCenterX - Globals.gCenterWorldX;
-        sDistToCenterY = (MAP_ROW)Globals.gsRenderCenterY - Globals.gCenterWorldY;
+        sDistToCenterY = Globals.gsRenderCenterY - Globals.gCenterWorldY;
 
         // From render center in world coords, convert to render center in "screen" coords
         IsometricUtils.FromCellToScreenCoordinates(sDistToCenterX, sDistToCenterY, out int sScreenCenterX, out int sScreenCenterY);

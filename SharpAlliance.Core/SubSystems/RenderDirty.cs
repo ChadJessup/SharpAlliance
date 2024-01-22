@@ -738,7 +738,37 @@ public class RenderDirty
 
     internal static void ExecuteVideoOverlays()
     {
-        throw new NotImplementedException();
+        for (int uiCount = 0; uiCount < guiNumVideoOverlays; uiCount++)
+        {
+            if (gVideoOverlays[uiCount].fAllocated != 0)
+            {
+                if (!gVideoOverlays[uiCount].fDisabled)
+                {
+                    // If we are scrolling but havn't saved yet, don't!
+                    if (!gVideoOverlays[uiCount].fActivelySaving && gfScrollInertia > 0)
+                    {
+                        continue;
+                    }
+
+                    // ATE: Wait a frame before executing!
+                    if (gVideoOverlays[uiCount].fAllocated == 1)
+                    {
+                        // Call Blit Function
+                        gVideoOverlays[uiCount].BltCallback?.Invoke(gVideoOverlays[uiCount]);
+                    }
+                    else if (gVideoOverlays[uiCount].fAllocated == 2)
+                    {
+                        gVideoOverlays[uiCount].fAllocated = 1;
+                    }
+                }
+
+                // Remove if pending
+                //if ( gVideoOverlays[uiCount].fDeletionPending )
+                //{
+                //	RemoveVideoOverlay( uiCount );
+                //}
+            }
+        }
     }
 
     internal static void InitializeBaseDirtyRectQueue()

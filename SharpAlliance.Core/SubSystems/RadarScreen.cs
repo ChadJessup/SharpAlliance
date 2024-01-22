@@ -11,8 +11,8 @@ internal class RadarScreen
     private const int RADAR_WINDOW_X = 543;
     private const int RADAR_WINDOW_TM_Y = INTERFACE_START_Y + 13;
     private const int RADAR_WINDOW_SM_Y = INV_INTERFACE_START_Y + 13;
-    private const int RADAR_WINDOW_WIDTH = 88;
-    private const int RADAR_WINDOW_HEIGHT = 44;
+    public const int RADAR_WINDOW_WIDTH = 88;
+    public const int RADAR_WINDOW_HEIGHT = 44;
     private static int gsRadarX;
     private static int gsRadarY;
     private static bool fRenderRadarScreen;
@@ -137,8 +137,8 @@ internal class RadarScreen
 
         // Adjust these to world center
         sNewCenterWorldX = (gCenterWorldX + sTempX_W);
-        sNewCenterWorldY = ((int)gCenterWorldY + sTempY_W);
+        sNewCenterWorldY = (gCenterWorldY + sTempY_W);
 
-        RenderWorld.SetRenderCenter(sNewCenterWorldX, (MAP_ROW)sNewCenterWorldY);
+        RenderWorld.SetRenderCenter(sNewCenterWorldX, sNewCenterWorldY);
     }
 }

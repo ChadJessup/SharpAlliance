@@ -37,6 +37,11 @@ public partial class Globals
         {
             gubQuest[quest] = 0;
         }
+
+        for (int i = 0; i < Menptr.Length; i++)
+        {
+            Menptr[i] = new();
+        }
     }
 
     public const int NAME_LENGTH = 30;
@@ -605,7 +610,7 @@ public partial class Globals
     public static int gusMouseXPos { get; internal set; }
     public static int gusMouseYPos { get; internal set; }
     public static int gsGlobalCursorYOffset { get; internal set; }
-    public static bool gfScrollInertia { get; internal set; }
+    public static int gfScrollInertia { get; internal set; }
     public static bool gfScrollPending { get; internal set; }
 
     public static int gsUIHandleShowMoveGridLocation = Globals.NOWHERE;
@@ -679,20 +684,24 @@ public partial class Globals
     public static int gsBottomLeftWorldX, gsBottomLeftWorldY;
     public static int gsBottomRightWorldX, gsBottomRightWorldY;
 
-    public static SixLabors.ImageSharp.Rectangle gSelectRegion;
-    public static SixLabors.ImageSharp.Point gSelectAnchor;
+    public static Rectangle gSelectRegion;
+    public static Point gSelectAnchor;
 
     // GLOBAL COORDINATES
-    public static int gTopLeftWorldLimitX, gTopLeftWorldLimitY;
-    public static int gTopRightWorldLimitX, gTopRightWorldLimitY;
-    public static int gBottomLeftWorldLimitX, gBottomLeftWorldLimitY;
-    public static int gBottomRightWorldLimitX, gBottomRightWorldLimitY;
+    public static int gTopLeftWorldLimitX;
+    public static int gTopLeftWorldLimitY;
+    public static int gTopRightWorldLimitX;
+    public static int gTopRightWorldLimitY;
+    public static int gBottomLeftWorldLimitX;
+    public static int gBottomLeftWorldLimitY;
+    public static int gBottomRightWorldLimitX;
+    public static int gBottomRightWorldLimitY;
     public static int gCenterWorldX;
-    public static MAP_ROW gCenterWorldY;
+    public static int gCenterWorldY;
     public static int gsTLX, gsTLY, gsTRX, gsTRY;
     public static int gsBLX, gsBLY, gsBRX, gsBRY;
     public static int gsCX, gsCY;
-    public static float gdScaleX, gdScaleY;
+    public static double gdScaleX, gdScaleY;
     public static bool fLandLayerDirty;
     public static bool gfIgnoreScrollDueToCenterAdjust;
 

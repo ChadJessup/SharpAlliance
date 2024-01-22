@@ -12,7 +12,14 @@ public class AI
 {
     internal static bool InitAI()
     {
-        throw new NotImplementedException();
+        //If we are not loading a saved game ( if we are, this has already been called )
+        if (!(gTacticalStatus.uiFlags.HasFlag(TacticalEngineStatus.LOADING_SAVED_GAME)))
+        {
+            //init the panic system
+            PanicButtons.InitPanicSystem();
+        }
+
+        return (true);
     }
 }
 

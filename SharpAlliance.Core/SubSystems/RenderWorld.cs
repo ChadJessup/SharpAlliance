@@ -9,14 +9,236 @@ using Rectangle = SixLabors.ImageSharp.Rectangle;
 using Point = SixLabors.ImageSharp.Point;
 
 using static SharpAlliance.Core.Globals;
+using SixLabors.ImageSharp.PixelFormats;
 
 namespace SharpAlliance.Core.SubSystems;
 
 public class RenderWorld : IDisposable
 {
     public int fSelectMode;
-    
+
+    private const int NUM_ITEM_CYCLE_COLORS = 60;
+
     public static TILES_DYNAMIC uiLayerUsedFlags = (TILES_DYNAMIC)0xffffffff;
+    private static Rgba32 gsLobOutline;
+    private static Rgba32 gsThrowOutline;
+    private static Rgba32 gsGiveOutline;
+    private static Rgba32 gusNormalItemOutlineColor;
+    private static Rgba32 gusYellowItemOutlineColor;
+    private static Rgba32[] us16BPPItemCycleWhiteColors = new Rgba32[NUM_ITEM_CYCLE_COLORS];
+    private static Rgba32[] us16BPPItemCycleRedColors = new Rgba32[NUM_ITEM_CYCLE_COLORS];
+    private static Rgba32[] us16BPPItemCycleYellowColors = new Rgba32[NUM_ITEM_CYCLE_COLORS];
+
+    private static byte[] ubRGBItemCycleWhiteColors =
+{
+    25,     25,     25,
+    50,     50,     50,
+    75,   75,   75,
+    100,    100,    100,
+    125,    125,    125,
+    150,    150,    150,
+    175,    175,    175,
+    200,    200,    200,
+    225,    225,    225,
+    250,    250,    250,
+
+    250,    250,    250,
+    225,    225,    225,
+    200,    200,    200,
+    175,    175,    175,
+    150,    150,    150,
+    125,    125,    125,
+    100,    100,    100,
+    75,   75,   75,
+    50,     50,     50,
+    25,     25,     25,
+
+    25,     25,     25,
+    50,     50,     50,
+    75,   75,   75,
+    100,    100,    100,
+    125,    125,    125,
+    150,    150,    150,
+    175,    175,    175,
+    200,    200,    200,
+    225,    225,    225,
+    250,    250,    250,
+
+    250,    250,    250,
+    225,    225,    225,
+    200,    200,    200,
+    175,    175,    175,
+    150,    150,    150,
+    125,    125,    125,
+    100,    100,    100,
+    75,   75,   75,
+    50,     50,     50,
+    25,     25,     25,
+
+    25,     25,     25,
+    50,     50,     50,
+    75,   75,   75,
+    100,    100,    100,
+    125,    125,    125,
+    150,    150,    150,
+    175,    175,    175,
+    200,    200,    200,
+    225,    225,    225,
+    250,    250,    250,
+
+    250,    250,    250,
+    225,    225,    225,
+    200,    200,    200,
+    175,    175,    175,
+    150,    150,    150,
+    125,    125,    125,
+    100,    100,    100,
+    75,   75,   75,
+    50,     50,     50,
+    25,     25,     25
+
+};
+
+
+    private static byte[] ubRGBItemCycleRedColors =
+    {
+    25,     0,      0,
+    50,     0,      0,
+    75,   0,        0,
+    100,    0,      0,
+    125,    0,      0,
+    150,    0,      0,
+    175,    0,      0,
+    200,    0,      0,
+    225,    0,      0,
+    250,    0,      0,
+
+    250,    0,      0,
+    225,    0,      0,
+    200,    0,      0,
+    175,    0,      0,
+    150,    0,      0,
+    125,    0,      0,
+    100,    0,      0,
+    75,   0,        0,
+    50,     0,      0,
+    25,     0,      0,
+
+    25,     0,      0,
+    50,     0,      0,
+    75,   0,        0,
+    100,    0,      0,
+    125,    0,      0,
+    150,    0,      0,
+    175,    0,      0,
+    200,    0,      0,
+    225,    0,      0,
+    250,    0,      0,
+
+    250,    0,      0,
+    225,    0,      0,
+    200,    0,      0,
+    175,    0,      0,
+    150,    0,      0,
+    125,    0,      0,
+    100,    0,      0,
+    75,   0,        0,
+    50,     0,      0,
+    25,     0,      0,
+
+    25,     0,      0,
+    50,     0,      0,
+    75,   0,        0,
+    100,    0,      0,
+    125,    0,      0,
+    150,    0,      0,
+    175,    0,      0,
+    200,    0,      0,
+    225,    0,      0,
+    250,    0,      0,
+
+    250,    0,      0,
+    225,    0,      0,
+    200,    0,      0,
+    175,    0,      0,
+    150,    0,      0,
+    125,    0,      0,
+    100,    0,      0,
+    75,   0,        0,
+    50,     0,      0,
+    25,     0,      0,
+
+};
+
+    private static byte[] ubRGBItemCycleYellowColors =
+    {
+    25,     25,     0,
+    50,     50,     0,
+    75,      75,    0,
+    100,    100,    0,
+    125,    125,    0,
+    150,    150,    0,
+    175,    175,    0,
+    200,    200,    0,
+    225,    225,    0,
+    250,    250,    0,
+
+    250,    250,    0,
+    225,    225,    0,
+    200,    200,    0,
+    175,    175,    0,
+    150,    150,    0,
+    125,    125,    0,
+    100,    100,    0,
+    75,     75,     0,
+    50,     50,     0,
+    25,     25,     0,
+
+    25,     25,     0,
+    50,     50,     0,
+    75,      75,    0,
+    100,    100,    0,
+    125,    125,    0,
+    150,    150,    0,
+    175,    175,    0,
+    200,    200,    0,
+    225,    225,    0,
+    250,    250,    0,
+
+    250,    250,    0,
+    225,    225,    0,
+    200,    200,    0,
+    175,    175,    0,
+    150,    150,    0,
+    125,    125,    0,
+    100,    100,    0,
+    75,   75,   0,
+    50,     50,     0,
+    25,     25,     0,
+
+    25,     25,     0,
+    50,     50,     0,
+    75,   75,   0,
+    100,    100,    0,
+    125,    125,    0,
+    150,    150,    0,
+    175,    175,    0,
+    200,    200,    0,
+    225,    225,    0,
+    250,    250,    0,
+
+    250,    250,    0,
+    225,    225,    0,
+    200,    200,    0,
+    175,    175,    0,
+    150,    150,    0,
+    125,    125,    0,
+    100,    100,    0,
+    75,   75,   0,
+    50,     50,     0,
+    25,     25,     0,
+
+};
 
     public static RenderingFlags gRenderFlags { get; private set; }
 
@@ -46,7 +268,7 @@ public class RenderWorld : IDisposable
     }
 
 
-    public static void SetRenderCenter(int sNewX, MAP_ROW sNewY)
+    public static void SetRenderCenter(int sNewX, int sNewY)
     {
         if (gfIgnoreScrolling)
         {
@@ -78,11 +300,11 @@ public class RenderWorld : IDisposable
 
         }
 
-        gfScrollInertia = false;
+        gfScrollInertia = 0;
     }
 
     // Appy? HEahehahehahehae.....
-    public static bool ApplyScrolling(int sTempRenderCenterX, MAP_ROW sTempRenderCenterY, bool fForceAdjust, bool fCheckOnly)
+    public static bool ApplyScrolling(int sTempRenderCenterX, int sTempRenderCenterY, bool fForceAdjust, bool fCheckOnly)
     {
         bool fScrollGood = false;
         bool fOutLeft = false;
@@ -98,7 +320,7 @@ public class RenderWorld : IDisposable
         int sBottomLeftWorldX, sBottomLeftWorldY;
         int sBottomRightWorldX, sBottomRightWorldY;
         int sTempPosX_W = 0;
-        MAP_ROW sTempPosY_W = 0;
+        int sTempPosY_W = 0;
 
 
         // For debug text for all 4 angles
@@ -106,7 +328,7 @@ public class RenderWorld : IDisposable
 
         int sX_S, sY_S;
         int sScreenCenterX = 0, sScreenCenterY = 0;
-        MAP_ROW sDistToCenterY;
+        int sDistToCenterY;
         int sDistToCenterX;
         int sNewScreenX, sNewScreenY;
         int sMult;
@@ -118,12 +340,12 @@ public class RenderWorld : IDisposable
 
         //Makesure it's a multiple of 5
         sMult = (int)sTempRenderCenterY / CELL_X_SIZE;
-        sTempRenderCenterY = (MAP_ROW)(sMult * CELL_Y_SIZE) + (CELL_Y_SIZE / 2);
+        sTempRenderCenterY = (sMult * CELL_Y_SIZE) + (CELL_Y_SIZE / 2);
 
 
         // Find the diustance from render center to true world center
         sDistToCenterX = sTempRenderCenterX - gCenterWorldX;
-        sDistToCenterY = (MAP_ROW)(sTempRenderCenterY - gCenterWorldY);
+        sDistToCenterY = (sTempRenderCenterY - gCenterWorldY);
 
         // From render center in world coords, convert to render center in "screen" coords
 //        FromCellToScreenCoordinates(sDistToCenterX, sDistToCenterY, out sScreenCenterX, out sScreenCenterY);
@@ -373,9 +595,94 @@ public class RenderWorld : IDisposable
         gRenderFlags |= full;
     }
 
-    internal static void InitRenderParams(int v)
+    internal static void InitRenderParams(int ubRestrictionID)
     {
-        throw new NotImplementedException();
+        int gsTilesX, gsTilesY;
+        int  cnt, cnt2;
+        double dWorldX, dWorldY;
+
+        switch (ubRestrictionID)
+        {
+            case 0:     //Default!
+
+                gTopLeftWorldLimitX = CELL_X_SIZE;
+                gTopLeftWorldLimitY = ((WORLD_ROWS / 2) * CELL_X_SIZE);
+
+                gTopRightWorldLimitX = (WORLD_COLS / 2) * CELL_Y_SIZE;
+                gTopRightWorldLimitY = CELL_X_SIZE;
+
+                gBottomLeftWorldLimitX = ((WORLD_COLS / 2) * CELL_Y_SIZE);
+                gBottomLeftWorldLimitY = (int)(WORLD_ROWS * CELL_Y_SIZE);
+
+                gBottomRightWorldLimitX = (WORLD_COLS * CELL_Y_SIZE);
+                gBottomRightWorldLimitY = (int)((WORLD_ROWS / 2) * CELL_X_SIZE);
+                break;
+
+            case 1:     // BAEMENT LEVEL 1
+
+                gTopLeftWorldLimitX = (3 * WORLD_ROWS / 10) * CELL_X_SIZE;
+                gTopLeftWorldLimitY = (int)((WORLD_ROWS / 2) * CELL_X_SIZE);
+
+                gTopRightWorldLimitX = (WORLD_ROWS / 2) * CELL_X_SIZE;
+                gTopRightWorldLimitY = (int)((3 * WORLD_COLS / 10) * CELL_X_SIZE);
+
+                gBottomLeftWorldLimitX = (WORLD_ROWS / 2) * CELL_X_SIZE;
+                gBottomLeftWorldLimitY = (int)((7 * WORLD_COLS / 10) * CELL_X_SIZE);
+
+                gBottomRightWorldLimitX = (7 * WORLD_ROWS / 10) * CELL_X_SIZE;
+                gBottomRightWorldLimitY = (int)((WORLD_ROWS / 2) * CELL_X_SIZE);
+                break;
+
+        }
+
+        gCenterWorldX = (WORLD_ROWS) / 2 * CELL_X_SIZE;
+        gCenterWorldY = ((WORLD_COLS) / 2 * CELL_Y_SIZE);
+
+        // Convert Bounding box into screen coords
+        IsometricUtils.FromCellToScreenCoordinates(gTopLeftWorldLimitX, gTopLeftWorldLimitY, out gsTLX, out gsTLY);
+        IsometricUtils.FromCellToScreenCoordinates(gTopRightWorldLimitX, gTopRightWorldLimitY, out gsTRX, out gsTRY);
+        IsometricUtils.FromCellToScreenCoordinates(gBottomLeftWorldLimitX, gBottomLeftWorldLimitY, out gsBLX, out gsBLY);
+        IsometricUtils.FromCellToScreenCoordinates(gBottomRightWorldLimitX, gBottomRightWorldLimitY, out gsBRX, out gsBRY);
+        IsometricUtils.FromCellToScreenCoordinates(gCenterWorldX, gCenterWorldY, out gsCX, out gsCY);
+
+        // Adjust for interface height tabbing!
+        gsTLY += ROOF_LEVEL_HEIGHT;
+        gsTRY += ROOF_LEVEL_HEIGHT;
+        gsCY += (ROOF_LEVEL_HEIGHT / 2);
+
+        // Take these spaning distances and determine # tiles spaning
+        gsTilesX = (gsTRX - gsTLX) / WORLD_TILE_X;
+        gsTilesY = (gsBRY - gsTRY) / WORLD_TILE_Y;
+
+//        DebugMsg(TOPIC_JA2, DBG_LEVEL_0, String("World Screen Width %d Height %d", (gsTRX - gsTLX), (gsBRY - gsTRY)));
+
+
+        // Determine scale factors
+        // First scale world screen coords for VIEWPORT ratio
+        dWorldX = (gsTRX - gsTLX);
+        dWorldY = (gsBRY - gsTRY);
+
+        gdScaleX = RadarScreen.RADAR_WINDOW_WIDTH / dWorldX;
+        gdScaleY = RadarScreen.RADAR_WINDOW_HEIGHT / dWorldY;
+
+        for (cnt = 0, cnt2 = 0; cnt2 < NUM_ITEM_CYCLE_COLORS; cnt += 3, cnt2++)
+        {
+            us16BPPItemCycleWhiteColors[cnt2] = (FROMRGB(ubRGBItemCycleWhiteColors[cnt], ubRGBItemCycleWhiteColors[cnt + 1], ubRGBItemCycleWhiteColors[cnt + 2]));
+            us16BPPItemCycleRedColors[cnt2] = (FROMRGB(ubRGBItemCycleRedColors[cnt], ubRGBItemCycleRedColors[cnt + 1], ubRGBItemCycleRedColors[cnt + 2]));
+            us16BPPItemCycleYellowColors[cnt2] = (FROMRGB(ubRGBItemCycleYellowColors[cnt], ubRGBItemCycleYellowColors[cnt + 1], ubRGBItemCycleYellowColors[cnt + 2]));
+        }
+
+        gsLobOutline = (FROMRGB(10, 200, 10));
+        gsThrowOutline = (FROMRGB(253, 212, 10));
+        gsGiveOutline = (FROMRGB(253, 0, 0));
+
+        gusNormalItemOutlineColor = (FROMRGB(255, 255, 255));
+        gusYellowItemOutlineColor = (FROMRGB(255, 255, 0));
+
+        // NOW GET DISTANCE SPANNING WORLD LIMITS IN WORLD COORDS
+        //FromScreenToCellCoordinates( ( gTopRightWorldLimitX - gTopLeftWorldLimitX ), ( gTopRightWorldLimitY - gTopLeftWorldLimitY ), &gsWorldSpanX, &gsWorldSpanY );
+
+        // CALCULATE 16BPP COLORS FOR ITEMS
     }
 }
 

@@ -244,7 +244,7 @@ public class IsometricUtils
     public static void FromCellToScreenCoordinates(int sCellX, int sCellY, out int psScreenX, out int psScreenY)
     {
         psScreenX = (2 * sCellX) - (2 * sCellY);
-        psScreenY = sCellX + sCellY;
+        psScreenY = (sCellX + sCellY);
     }
 
     public static void FromScreenToCellCoordinates(int sScreenX, int sScreenY, out int psCellX, out int psCellY)

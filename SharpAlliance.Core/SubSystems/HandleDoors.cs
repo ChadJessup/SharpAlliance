@@ -190,7 +190,7 @@ public class DOOR
 
 public struct LOCK
 {
-    public int[] ubEditorName;// [Globals.MAXLOCKDESCLENGTH];  // name to display in editor
+    public string ubEditorName;// [Globals.MAXLOCKDESCLENGTH];  // name to display in editor
     public int usKeyItem;                                                   // key for this door uses which graphic (item #)?
     public int ubLockType;                                                   // regular, padlock, electronic, etc
     public int ubPickDifficulty;                                     // difficulty to pick such a lock

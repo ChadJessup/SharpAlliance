@@ -1,6 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
+using System.Text;
 using System.Threading.Tasks;
+using Microsoft.Extensions.Logging;
 using SharpAlliance.Core.Managers;
 using SharpAlliance.Core.Managers.VideoSurfaces;
 using SharpAlliance.Core.Screens;
@@ -10,6 +13,16 @@ namespace SharpAlliance.Core.SubSystems;
 
 public class Overhead
 {
+    public Overhead(
+        ILogger<Overhead> logger,
+        Interface inter,
+        IFileManager fileManager)
+    {
+        this.logger = logger;
+        this.inter = inter;
+        file = fileManager;
+    }
+
     private static Rgba32[] bDefaultTeamColors =
     {
         FROMRGB( 255, 255, 0 ),
@@ -36,6 +49,9 @@ public class Overhead
     private static SOLDIERTYPE[] AwaySlots = new SOLDIERTYPE[TOTAL_SOLDIERS];
     private static int guiNumAwaySlots = 0;
     private const int MAX_REALTIME_SPEED_VAL = 10;
+    private readonly ILogger<Overhead> logger;
+    private readonly Interface inter;
+    private static IFileManager file;
 
     public static bool InitOverhead()
     {
@@ -203,7 +219,54 @@ public class Overhead
 
     private static bool LoadLockTable()
     {
-        throw new NotImplementedException();
+        uint uiNumBytesRead = 0;
+        int uiBytesToRead;
+        string pFileName = "BINARYDATA\\Locks.bin";
+        Stream hFile;
+
+        // Load the Lock Table
+
+        hFile = file.FileOpen(pFileName, FileAccess.Read, fDeleteOnClose: false);
+        if (hFile == Stream.Null)
+        {
+            //  DebugMsg(TOPIC_JA2, DBG_LEVEL_3, String("FAILED to LoadLockTable from file %s", pFileName));
+            return (false);
+        }
+
+        uiBytesToRead = 2944;//sizeof(LOCK) * NUM_LOCKS;
+
+        Span<byte> locks = new byte[uiBytesToRead];
+
+        file.FileRead(hFile, locks, out uiNumBytesRead);
+
+        int offset = 0;
+
+        for (int i = 0; i < Keys.NUM_LOCKS; i++)
+        {
+            Span<byte> aLock = locks.Slice(offset, 46);
+
+            LOCK newLock = new()
+            {
+                ubEditorName = Encoding.UTF8.GetString(aLock[..40]).Split('\0')[0],
+                usKeyItem = BitConverter.ToInt16(aLock[40..]),
+                ubLockType = aLock[42],
+                ubPickDifficulty = aLock[43],
+                ubSmashDifficulty = aLock[44],
+                ubFiller = aLock[45],
+            };
+
+            offset += 46; // sizeof lock
+            Keys.LockTable.Add(newLock);
+        }
+
+        file.FileClose(hFile);
+
+        if (uiNumBytesRead != uiBytesToRead)
+        {
+            return (false);
+        }
+
+        return true;
     }
 
     private static void InitializeGameVideoObjects()
@@ -1649,7 +1712,7 @@ public class Overhead
             sNewCenterWorldX = (int)pSoldier.dXPos;
             sNewCenterWorldY = (MAP_ROW)pSoldier.dYPos;
 
-            RenderWorld.SetRenderCenter(sNewCenterWorldX, sNewCenterWorldY);
+            RenderWorld.SetRenderCenter(sNewCenterWorldX, (int)sNewCenterWorldY);
 
             // Plot new path!
             gfPlotNewMovement = true;
@@ -1686,7 +1749,7 @@ public class Overhead
             return;
         }
 
-        RenderWorld.SetRenderCenter(sNewCenterWorldX, sNewCenterWorldY);
+        RenderWorld.SetRenderCenter(sNewCenterWorldX, (int)sNewCenterWorldY);
     }
 
     public static bool GetSoldier(out SOLDIERTYPE? ppSoldier, int usSoldierIndex)

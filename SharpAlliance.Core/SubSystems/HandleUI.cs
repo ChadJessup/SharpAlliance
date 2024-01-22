@@ -574,7 +574,7 @@ public class HandleUI
                 }
                 else
                 {
-                    if (Globals.gfScrollPending || Globals.gfScrollInertia)
+                    if (Globals.gfScrollPending || Globals.gfScrollInertia != 0)
                     {
 
                     }
@@ -4550,7 +4550,8 @@ public class HandleUI
     void GetGridNoScreenXY(int sGridNo, out int? pScreenX, out int? pScreenY)
     {
         int sScreenX, sScreenY;
-        int sOffsetX, sOffsetY;
+        int sOffsetX;
+        int sOffsetY;
 
         IsometricUtils.ConvertGridNoToCellXY(sGridNo, out int sXPos, out int sYPos);
 
@@ -4558,7 +4559,7 @@ public class HandleUI
         sOffsetX = sXPos - Globals.gsRenderCenterX;
         sOffsetY = sYPos - Globals.gsRenderCenterY;
 
-        IsometricUtils.FromCellToScreenCoordinates(sOffsetX, sOffsetY, out int sTempX_S, out int sTempY_S);
+        IsometricUtils.FromCellToScreenCoordinates(sOffsetX, sOffsetY, out int sTempX_S, out var sTempY_S);
 
         sScreenX = ((Globals.gsVIEWPORT_END_X - Globals.gsVIEWPORT_START_X) / 2) + (int)sTempX_S;
         sScreenY = ((Globals.gsVIEWPORT_END_Y - Globals.gsVIEWPORT_START_Y) / 2) + (int)sTempY_S;

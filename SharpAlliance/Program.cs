@@ -86,6 +86,7 @@ public static class StandardSharpAllianceExtensions
         builder.Services.AddSingleton<Finances>();
         builder.Services.AddSingleton<Messages>();
         builder.Services.AddSingleton<TileCache>();
+        builder.Services.AddSingleton<Interface>();
         builder.Services.AddSingleton<GuiManager>();
         builder.Services.AddSingleton<FadeScreen>();
         builder.Services.AddSingleton<RenderWorld>();
