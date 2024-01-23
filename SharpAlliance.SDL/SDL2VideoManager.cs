@@ -2181,8 +2181,16 @@ public class SDL2VideoManager : IVideoManager
         {
             for (int x = 0; x < pBuffer.Width; x++)
             {
-                var colorIndex = hSrcVSurface.hImage.p8BPPData[x + (y * x)];
-                pBuffer[x, y] = p16BPPPalette[colorIndex];
+                byte colorIndex = 0;
+                try
+                {
+                    colorIndex = hSrcVSurface.hImage.p8BPPData[(y * x) + x];
+                    pBuffer[x, y] = p16BPPPalette[colorIndex];
+                }
+                catch(Exception e)
+                {
+                    return true;
+                }
             }
         }
 
@@ -2315,7 +2323,7 @@ public class SDL2VideoManager : IVideoManager
     {
     }
 
-    public bool BltStretchVideoSurface(SurfaceType uiDestVSurface, SurfaceType uiSrcVSurface, Point iDest, int fBltFlags, Rectangle SrcRect, Rectangle DestRect)
+    public bool BltStretchVideoSurface(SurfaceType uiDestVSurface, SurfaceType uiSrcVSurface, Point iDest, VO_BLT fBltFlags, Rectangle SrcRect, Rectangle DestRect)
     {
         var dest = GetVideoSurface(out HVSURFACE hDestVSurface, uiDestVSurface);
         var src = GetVideoSurface(out HVSURFACE hSrcVSurface, uiSrcVSurface);

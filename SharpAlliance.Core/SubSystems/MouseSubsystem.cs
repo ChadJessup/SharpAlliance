@@ -875,6 +875,16 @@ public class MouseSubSystem : ISharpAllianceManager
     {
         throw new NotImplementedException();
     }
+
+    internal static void MSYS_DefineRegion(MOUSE_REGION? gAssignmentScreenMaskRegion, int v1, int v2, int v3, int v4, MSYS_PRIORITY mSYS_PRIORITY, CURSOR mSYS_NO_CURSOR, MouseCallback? mSYS_NO_CALLBACK, object assignmentScreenMaskBtnCallback)
+    {
+        throw new NotImplementedException();
+    }
+
+    internal static void MSYS_DefineRegion(object gSelectedAimLogo, object value, MSYS_PRIORITY hIGH, CURSOR wWW, MouseCallback? mSYS_NO_CALLBACK, object selectAimLogoRegionCallBack)
+    {
+        throw new NotImplementedException();
+    }
 }
 
 public class MOUSE_REGION

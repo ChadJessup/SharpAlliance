@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.ConstrainedExecution;
+using System.Security.Cryptography;
 using System.Text;
 using System.Threading.Tasks;
 using SharpAlliance.Core.Managers;
@@ -73,6 +74,99 @@ public class Vehicles
         */
     }
 
+    internal static bool IsThisVehicleAccessibleToSoldier(SOLDIERTYPE? pSoldier, int iId)
+    {
+        if (pSoldier == null)
+        {
+            return false;
+        }
+
+        if ((iId >= ubNumberOfVehicles) || (iId < 0))
+        {
+            return (false);
+        }
+
+        // now check if vehicle is valid
+        if (pVehicleList[iId].fValid == false)
+        {
+            return (false);
+        }
+
+        // if the soldier or the vehicle is between sectors
+        if (pSoldier.fBetweenSectors || pVehicleList[iId].fBetweenSectors)
+        {
+            return (false);
+        }
+
+        // any sector values off?
+        if ((pSoldier.sSectorX != pVehicleList[iId].sSectorX) ||
+                (pSoldier.sSectorY != pVehicleList[iId].sSectorY) ||
+                (pSoldier.bSectorZ != pVehicleList[iId].sSectorZ))
+        {
+            return (false);
+        }
+
+        // if vehicle is not ok to use then return false
+        if (!Vehicles.OKUseVehicle(pVehicleList[iId].ubProfileID))
+        {
+            return (false);
+        }
+
+        return (true);
+    }
+
+    private static bool OKUseVehicle(NPCID ubProfile)
+    {
+        if (ubProfile == NPCID.PROF_HUMMER)
+        {
+            return (Facts.CheckFact(FACT.OK_USE_HUMMER, NO_PROFILE));
+        }
+        else if (ubProfile == NPCID.PROF_ICECREAM)
+        {
+            return (Facts.CheckFact(FACT.OK_USE_ICECREAM, NO_PROFILE));
+        }
+        else if (ubProfile == NPCID.PROF_HELICOPTER)
+        {
+            // don't allow mercs to get inside vehicle if it's grounded (enemy controlled, Skyrider owed money, etc.)
+            return (MapScreenHelicopter.CanHelicopterFly());
+        }
+        else
+        {
+            return (true);
+        }
+    }
+
+    internal static bool IsEnoughSpaceInVehicle(int iID)
+    {
+        // find if vehicle is valid
+        if (VehicleIdIsValid(iID) == false)
+        {
+            return (false);
+        }
+
+        if (GetNumberInVehicle(iID) == iSeatingCapacities[pVehicleList[iID].ubVehicleType])
+        {
+            return (false);
+        }
+
+        return (true);
+    }
+
+    private static bool VehicleIdIsValid(int iID)
+    {
+        throw new NotImplementedException();
+    }
+
+    private static int GetNumberInVehicle(int iID)
+    {
+        throw new NotImplementedException();
+    }
+
+    internal static void PutSoldierInVehicle(SOLDIERTYPE? pSoldier, int iVehicleID)
+    {
+        throw new NotImplementedException();
+    }
+
     // the mvt groups associated with vehcile types
     public VehicleTypes[] iMvtTypes =
     {
@@ -84,7 +178,7 @@ public class Vehicles
     	VehicleTypes.AIR,  // helicopter
     };
 
-    public int[] iSeatingCapacities =
+    public static int[] iSeatingCapacities =
     {
         6, // eldorado
     	6, // hummer

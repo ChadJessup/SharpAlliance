@@ -1,7 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using SharpAlliance.Core.Screens;
-using SharpAlliance.Core.SubSystems;
 using SharpAlliance.Core.SubSystems.LaptopSubSystem;
 
 namespace SharpAlliance.Core;
@@ -9,6 +7,34 @@ namespace SharpAlliance.Core;
 // TODO: Move to built-in internationalization stuff.
 public static class EnglishText
 {
+    //Aim Home Page
+
+    public static string[] AimBottomMenuText =
+    {
+    	//Text for the links at the bottom of all AIM pages
+    	"Home",
+        "Members",
+        "Alumni",
+        "Policies",
+        "History",
+        "Links",
+    };
+
+
+    // bookmarks for different websites
+    // IMPORTANT make sure you move down the Cancel string as bookmarks are being added
+    public static string[] pBookMarkStrings =
+    {
+        "A.I.M.",
+        "Bobby Ray's",
+        "I.M.P",
+        "M.E.R.C.",
+        "Mortuary",
+        "Florist",
+        "Insurance",
+        "Cancel",
+    };
+
     public static Dictionary<LaptopText, string> gzLaptopHelpText = new()
     {
     	//Buttons:

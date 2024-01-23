@@ -5,6 +5,13 @@ namespace SharpAlliance.Core;
 
 public class MultilanguageGraphicUtils
 {
+    public static string GetMLGFilename(MLG usMLGGraphicId)
+    {
+        GetMLGFilename(out var filename, usMLGGraphicId);
+
+        return filename;
+    }
+
     public static bool GetMLGFilename(out string filename, MLG usMLGGraphicID)
     {
         switch (usMLGGraphicID)

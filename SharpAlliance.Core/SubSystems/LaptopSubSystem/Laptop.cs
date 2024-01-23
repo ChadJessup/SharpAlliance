@@ -10,14 +10,48 @@ using SharpAlliance.Core.SubSystems.LaptopSubSystem.BobbyRSubSystem;
 using SharpAlliance.Core.SubSystems.LaptopSubSystem.FloristSubSystem;
 using SharpAlliance.Core.SubSystems.LaptopSubSystem.InsuranceSubSystem;
 using System.Diagnostics;
-using static System.Runtime.InteropServices.JavaScript.JSType;
 using SharpAlliance.Core.SubSystems.LaptopSubSystem.IMPSubSystem;
 
 namespace SharpAlliance.Core.SubSystems.LaptopSubSystem;
 
 public partial class Laptop
 {
+    private const string AIMHISTORYFILE = "BINARYDATA\\AimHist.edt";
+    private const int AIM_HISTORY_LINE_SIZE = 400 * 2;
+
+
+    private const FontColor AIM_FONT_MCOLOR_WHITE = FontColor.FONT_MCOLOR_WHITE;
+    private const FontColor AIM_FONT_MCOLOR_DKRED = FontColor.FONT_MCOLOR_RED;
+
+    // RustBackGround
+    private const int RUSTBACKGROUND_SIZE_X = 125;
+    private const int RUSTBACKGROUND_SIZE_Y = 100;
+    private const int RUSTBACKGROUND_1_X = IMAGE_OFFSET_X;
+    private const int RUSTBACKGROUND_1_Y = IMAGE_OFFSET_Y;
+
+    private const int AIM_LOGO_TEXT_X = 175;
+    private const int AIM_LOGO_TEXT_Y = 77 + LAPTOP_SCREEN_WEB_DELTA_Y + 4;
+    private const int AIM_LOGO_TEXT_WIDTH = 360;
+
     private const int NUM_AIM_POLICY_PAGES = 11;
+
+    private const FontStyle AIM_FONT10ROMAN = FontStyle.FONT10ROMAN;
+    private const FontStyle AIM_FONT12ROMAN = FontStyle.FONT12ROMAN;
+    private const FontStyle AIM_FONT14SANSERIF = FontStyle.FONT14SANSERIF;
+    private const FontStyle AIM_LOGO_FONT = FontStyle.FONT10ARIAL;
+    private const FontStyle AIM_COPYRIGHT_FONT = FontStyle.FONT10ARIAL;
+    private const FontStyle AIM_WARNING_FONT = FontStyle.FONT12ARIAL;
+    private const FontStyle AIM_FONT12ARIAL = FontStyle.FONT12ARIAL;
+    private const FontColor AIM_GREEN = (FontColor)157;
+    private const FontColor AIM_MAINTITLE_COLOR = AIM_GREEN;
+    private const FontStyle AIM_MAINTITLE_FONT = FontStyle.FONT14ARIAL;
+    private const FontColor AIM_BUTTON_ON_COLOR = FontColor.FONT_MCOLOR_DKWHITE;
+    private const FontColor AIM_BUTTON_OFF_COLOR = (FontColor)138;
+    private const FontColor AIM_BUTTON_DISABLED_COLOR = (FontColor)141;
+    private const FontColor AIM_CONTENTBUTTON_WIDTH = (FontColor)205;
+    private const FontColor AIM_CONTENTBUTTON_HEIGHT = (FontColor)19;
+    private const FontColor AIM_FONT_GOLD = (FontColor)170;
+
 
     public static bool LaptopScreenInit()
     {
@@ -213,20 +247,13 @@ public partial class Laptop
 
     public static void RenderLapTopImage()
     {
-
-
         if (fMaximizingProgram == true || fMinizingProgram == true)
         {
             return;
         }
 
-        //        video.GetVideoObject(out HVOBJECT? hLapTopHandle, guiLAPTOP);
-        //        VideoObjectManager.BltVideoObject(SurfaceType.FRAME_BUFFER, hLapTopHandle, 0, LAPTOP_X, LAPTOP_Y, VO_BLT.SRCTRANSPARENCY, null);
-
-
-        //        hLapTopHandle = video.GetVideoObject(guiLaptopBACKGROUND);
-        //        VideoObjectManager.BltVideoObject(SurfaceType.FRAME_BUFFER, hLapTopHandle, 1, 25, 23, VO_BLT.SRCTRANSPARENCY, null);
-
+        video.BltVideoObject(SurfaceType.FRAME_BUFFER, guiLAPTOP, 0, LAPTOP_X, LAPTOP_Y, VO_BLT.SRCTRANSPARENCY, null);
+        video.BltVideoObject(SurfaceType.FRAME_BUFFER, guiLaptopBACKGROUND, 1, 25, 23, VO_BLT.SRCTRANSPARENCY, null);
 
         ButtonSubSystem.MarkButtonsDirty(buttonList);
     }
@@ -253,7 +280,7 @@ public partial class Laptop
                 DrawDeskTopBackground();
                 break;
             case LAPTOP_MODE.AIM:
-                //                RenderAIM();
+                RenderAIM();
                 break;
             case LAPTOP_MODE.AIM_MEMBERS:
                 //                RenderAIMMembers();
@@ -397,13 +424,225 @@ public partial class Laptop
         ButtonSubSystem.MarkButtonsDirty(buttonList);
     }
 
+    private static void RenderAIM()
+    {
+        HVOBJECT hMemberCardHandle;
+        HVOBJECT hPoliciesHandle;
+        HVOBJECT hLinksHandle;
+        HVOBJECT hHistoryHandle;
+        //	UINT16	x,y, uiPosX, uiPosY;
+
+        DrawAimDefaults();
+
+        //MemberCard
+        video.BltVideoObject(SurfaceType.FRAME_BUFFER, guiMemberCard, 0, MEMBERCARD_X, MEMBERCARD_Y, VO_BLT.SRCTRANSPARENCY);
+
+        //Policies
+        video.BltVideoObject(SurfaceType.FRAME_BUFFER, guiPolicies, 0, POLICIES_X, POLICIES_Y, VO_BLT.SRCTRANSPARENCY);
+
+        //Links
+        video.BltVideoObject(SurfaceType.FRAME_BUFFER, guiLinks, 0, LINKS_X, LINKS_Y, VO_BLT.SRCTRANSPARENCY);
+
+        //History
+        video.BltVideoObject(SurfaceType.FRAME_BUFFER, guiHistory, 0, HISTORY_X, HISTORY_Y, VO_BLT.SRCTRANSPARENCY);
+
+        // Draw the aim slogan under the symbol
+        DisplayAimSlogan();
+
+        DisplayAimCopyright();
+
+        //Draw text under boxes
+        // members
+        FontSubSystem.DrawTextToScreen(
+            AimBottomMenuText[(int)AIM.MEMBERS],
+            new(MEMBERCARD_X, MEMBERS_TEXT_Y),
+            LINK_SIZE_X,
+            FontStyle.FONT12ARIAL,
+            AIM_FONT_MCOLOR_WHITE,
+            FontColor.FONT_MCOLOR_BLACK,
+            TextJustifies.CENTER_JUSTIFIED);
+
+        // Policies
+        FontSubSystem.DrawTextToScreen(AimBottomMenuText[(int)AIM.POLICIES], new(POLICIES_X, POLICIES_TEXT_Y), LINK_SIZE_X, FontStyle.FONT12ARIAL, AIM_FONT_MCOLOR_WHITE, FontColor.FONT_MCOLOR_BLACK, TextJustifies.CENTER_JUSTIFIED);
+        // History
+        FontSubSystem.DrawTextToScreen(AimBottomMenuText[(int)AIM.HISTORY], new(HISTORY_X, HISTORY_TEXT_Y), LINK_SIZE_X, FontStyle.FONT12ARIAL, AIM_FONT_MCOLOR_WHITE, FontColor.FONT_MCOLOR_BLACK, TextJustifies.CENTER_JUSTIFIED);
+        // Links
+        FontSubSystem.DrawTextToScreen(AimBottomMenuText[(int)AIM.LINKS], new(LINKS_X, LINK_TEXT_Y), LINK_SIZE_X, FontStyle.FONT12ARIAL, AIM_FONT_MCOLOR_WHITE, FontColor.FONT_MCOLOR_BLACK, TextJustifies.CENTER_JUSTIFIED);
+
+        HandleAdAndWarningArea(gfInitAdArea, true);
+
+        RenderWWWProgramTitleBar();
+
+        video.InvalidateRegion(LAPTOP_SCREEN_UL_X, LAPTOP_SCREEN_WEB_UL_Y, LAPTOP_SCREEN_LR_X, LAPTOP_SCREEN_WEB_LR_Y);
+    }
+
+    private static AIM_AD ubPreviousAdvertisment;
+    private static void HandleAdAndWarningArea(bool fInit, bool fRedraw)
+    {
+
+        if (fInit)
+        {
+            gubCurrentAdvertisment = AIM_AD.WARNING_BOX;
+        }
+        else
+        {
+            if (ubPreviousAdvertisment == AIM_AD.DONE)
+            {
+//                gubCurrentAdvertisment = GetNextAimAd(gubCurrentAdvertisment);
+
+                fInit = true;
+
+                /*
+                            UINT32	uiDay = GetWorldDay();
+                            BOOLEAN	fSkip=FALSE;
+                            gubCurrentAdvertisment++;
+
+                            //if the add should be for Bobby rays
+                            if( gubCurrentAdvertisment == AIM_AD.BOBBY_RAY_AD )
+                            {
+                                //if the player has NOT ever been to drassen
+                                if( !LaptopSaveInfo.fBobbyRSiteCanBeAccessed )
+                                {
+                                    //advance to the next add
+                                    gubCurrentAdvertisment++;
+                                }
+                                else
+                                {
+                                    fSkip = TRUE;
+                                    fInit = TRUE;
+                                }
+                            }
+                            else
+                                fSkip = FALSE;
+
+
+                            if( !fSkip )
+                            {
+                                //if the current ad is not supposed to be available, loop back to the first ad
+                                switch( gubCurrentAdvertisment )
+                                {
+                                    case AIM_AD.FUNERAL_ADS:
+                                        if( uiDay < AIM_AD.DAY_FUNERAL_AD_STARTS )
+                                            gubCurrentAdvertisment = AIM_AD.WARNING_BOX;
+                                        break;
+
+                                    case AIM_AD.FLOWER_SHOP:
+                                        if( uiDay < AIM_AD.DAY_FLOWER_AD_STARTS )
+                                            gubCurrentAdvertisment = AIM_AD.WARNING_BOX;
+                                        break;
+
+                                    case AIM_AD.INSURANCE_AD:
+                                        if( uiDay < AIM_AD.DAY_INSURANCE_AD_STARTS )
+                                            gubCurrentAdvertisment = AIM_AD.WARNING_BOX;
+                                        break;
+                                }
+                                fInit = TRUE;
+                            }
+                */
+            }
+
+            if (gubCurrentAdvertisment >= AIM_AD.LAST_AD)
+            {
+                gubCurrentAdvertisment = AIM_AD.WARNING_BOX;
+            }
+        }
+
+        switch (gubCurrentAdvertisment)
+        {
+            case AIM_AD.WARNING_BOX:
+                MouseSubSystem.MSYS_DisableRegion(gSelectedBannerRegion);
+//                ubPreviousAdvertisment = DrawWarningBox(fInit, fRedraw);
+                break;
+
+            case AIM_AD.FLOWER_SHOP:
+//                ubPreviousAdvertisment = DisplayFlowerAd(fInit, fRedraw);
+                break;
+
+            case AIM_AD.FOR_ADS:
+                // disable the region because only certain banners will be 'clickable'
+                MouseSubSystem.MSYS_DisableRegion(gSelectedBannerRegion);
+//                ubPreviousAdvertisment = DisplayAd(fInit, fRedraw, AIM_AD.FOR_ADS_DELAY, AIM_AD.FOR_ADS__NUM_SUBIMAGES, guiAdForAdsImages);
+                break;
+
+            case AIM_AD.INSURANCE_AD:
+                MouseSubSystem.MSYS_EnableRegion(gSelectedBannerRegion);
+//                ubPreviousAdvertisment = DisplayAd(fInit, fRedraw, AIM_AD.INSURANCE_AD_DELAY, AIM_AD.INSURANCE_AD__NUM_SUBIMAGES, guiInsuranceAdImages);
+                break;
+
+            case AIM_AD.FUNERAL_ADS:
+                MouseSubSystem.MSYS_EnableRegion(gSelectedBannerRegion);
+//                ubPreviousAdvertisment = DisplayAd(fInit, fRedraw, AIM_AD.FUNERAL_AD_DELAY, AIM_AD.FUNERAL_AD__NUM_SUBIMAGES, guiFuneralAdImages);
+                break;
+
+            case AIM_AD.BOBBY_RAY_AD:
+                MouseSubSystem.MSYS_EnableRegion(gSelectedBannerRegion);
+                //			ubPreviousAdvertisment = DisplayAd( fInit, fRedraw, AIM_AD.BOBBYR_AD_DELAY, AIM_AD.BOBBYR_AD__NUM_SUBIMAGES, guiBobbyRAdImages );
+//                ubPreviousAdvertisment = DisplayBobbyRAd(fInit, fRedraw);
+                break;
+        }
+    }
+
+    private static void DisplayAimCopyright()
+    {
+        string sSlogan;
+        int uiStartLoc = 0;
+
+        //Load and Display the copyright notice 
+
+        uiStartLoc = AIM_HISTORY_LINE_SIZE * (int)AIM_COPYRIGHT.COPYRIGHT_1;
+        files.LoadEncryptedDataFromFile(AIMHISTORYFILE, out sSlogan, uiStartLoc, AIM_HISTORY_LINE_SIZE);
+        FontSubSystem.DrawTextToScreen(sSlogan, new(AIM_COPYRIGHT_X, AIM_COPYRIGHT_Y), AIM_COPYRIGHT_WIDTH, AIM_COPYRIGHT_FONT, FontColor.FONT_MCOLOR_DKWHITE, FontColor.FONT_MCOLOR_BLACK, TextJustifies.CENTER_JUSTIFIED);
+
+        uiStartLoc = AIM_HISTORY_LINE_SIZE * (int)AIM_COPYRIGHT.COPYRIGHT_2;
+        files.LoadEncryptedDataFromFile(AIMHISTORYFILE, out sSlogan, uiStartLoc, AIM_HISTORY_LINE_SIZE);
+        FontSubSystem.DrawTextToScreen(sSlogan, new(AIM_COPYRIGHT_X, AIM_COPYRIGHT_Y + AIM_COPYRIGHT_GAP), AIM_COPYRIGHT_WIDTH, AIM_COPYRIGHT_FONT, FontColor.FONT_MCOLOR_DKWHITE, FontColor.FONT_MCOLOR_BLACK, TextJustifies.CENTER_JUSTIFIED);
+
+        uiStartLoc = AIM_HISTORY_LINE_SIZE * (int)AIM_COPYRIGHT.COPYRIGHT_3;
+        files.LoadEncryptedDataFromFile(AIMHISTORYFILE, out sSlogan, uiStartLoc, AIM_HISTORY_LINE_SIZE);
+        FontSubSystem.DrawTextToScreen(sSlogan, new(AIM_COPYRIGHT_X, AIM_COPYRIGHT_Y + AIM_COPYRIGHT_GAP * 2), AIM_COPYRIGHT_WIDTH, AIM_COPYRIGHT_FONT, FontColor.FONT_MCOLOR_DKWHITE, FontColor.FONT_MCOLOR_BLACK, TextJustifies.CENTER_JUSTIFIED);
+    }
+
+    private static void DisplayAimSlogan()
+    {
+        string sSlogan;
+
+        files.LoadEncryptedDataFromFile(AIMHISTORYFILE, out sSlogan, 0, AIM_HISTORY_LINE_SIZE);
+        //Display Aim Text under the logo
+        FontSubSystem.DisplayWrappedString(
+            new Point(AIM_LOGO_TEXT_X, AIM_LOGO_TEXT_Y),
+            AIM_LOGO_TEXT_WIDTH,
+            2,
+            AIM_LOGO_FONT,
+            AIM_FONT_MCOLOR_WHITE,
+            sSlogan,
+            FontColor.FONT_MCOLOR_BLACK,
+            TextJustifies.CENTER_JUSTIFIED);
+    }
+
+    private static void DrawAimDefaults()
+    {
+        HVOBJECT hRustBackGroundHandle;
+        HVOBJECT hAimSymbolHandle;
+        int x, y, uiPosX, uiPosY;
+
+        uiPosY = RUSTBACKGROUND_1_Y;
+        for (y = 0; y < 4; y++)
+        {
+            uiPosX = RUSTBACKGROUND_1_X;
+            for (x = 0; x < 4; x++)
+            {
+                video.BltVideoObject(SurfaceType.FRAME_BUFFER, guiRustBackGround, 0, uiPosX, uiPosY, VO_BLT.SRCTRANSPARENCY);
+                uiPosX += RUSTBACKGROUND_SIZE_X;
+            }
+            uiPosY += RUSTBACKGROUND_SIZE_Y;
+        }
+
+        // Aim Symbol
+        video.BltVideoObject(SurfaceType.FRAME_BUFFER, guiAimSymbol, 0, AIM_SYMBOL_X, AIM_SYMBOL_Y, VO_BLT.SRCTRANSPARENCY);
+    }
+
     private static bool DrawDeskTopBackground()
     {
-        int uiDestPitchBYTES;
-        int uiSrcPitchBYTES;
-        Image<Rgba32> pDestBuf;
-        Image<Rgba32> pSrcBuf;
-
         Rectangle clip = new()
         {
             // set clipping region
@@ -413,27 +652,19 @@ public partial class Laptop
             Height = 408 + 19,
         };
 
-        // get surfaces
-        //        pDestBuf = video.LockVideoSurface(Surfaces.FRAME_BUFFER, out uiDestPitchBYTES);
-        CHECKF(video.GetVideoSurface(out HVSURFACE hSrcVSurface, guiDESKTOP));
-        //        pSrcBuf = video.LockVideoSurface(guiDESKTOP, out uiSrcPitchBYTES);
-
+        Image<Rgba32> pDestBuf = video.Surfaces[SurfaceType.FRAME_BUFFER];
+        var pSrcSurface = video.Surfaces.CreateSurface(guiDESKTOP);
+        Image<Rgba32> pSrcBuf = video.Surfaces[pSrcSurface];
 
         // blit .pcx for the background onto desktop
-        //        video.Blt8BPPDataSubTo16BPPBuffer(
-        //            pDestBuf,
-        //            uiDestPitchBYTES,
-        //            hSrcVSurface,
-        //            pSrcBuf,
-        //            uiSrcPitchBYTES,
-        //            LAPTOP_SCREEN_UL_X - 2,
-        //            LAPTOP_SCREEN_UL_Y - 3,
-        //            out clip);
-
-
-        // release surfaces
-        //        video.UnLockVideoSurface(guiDESKTOP);
-        //        video.UnLockVideoSurface(Surfaces.FRAME_BUFFER);
+        video.Blt8BPPDataSubTo16BPPBuffer(
+            pDestBuf,
+            new(clip.Width, clip.Height),
+            pSrcBuf,
+            guiDESKTOP,
+            LAPTOP_SCREEN_UL_X - 2,
+            LAPTOP_SCREEN_UL_Y - 3,
+            clip);
 
         return true;
     }
@@ -718,13 +949,7 @@ public partial class Laptop
 
     private static bool LoadDesktopBackground()
     {
-        // load desktop background
-        VSURFACE_DESC vs_desc;
-
-        string path;
-        MultilanguageGraphicUtils.GetMLGFilename(out path, MLG.DESKTOP);
-        var obj = video.GetVideoObject(path);
-        guiDESKTOP = video.Surfaces.CreateSurface(obj);
+        guiDESKTOP = video.GetVideoObject(MultilanguageGraphicUtils.GetMLGFilename(MLG.DESKTOP));
 
         return true;
 
@@ -752,7 +977,7 @@ public partial class Laptop
 
     private static void InitLaptopOpenQueue()
     {
-        foreach(var program in Enum.GetValues<LAPTOP_PROGRAM>())
+        foreach (var program in Enum.GetValues<LAPTOP_PROGRAM>())
         {
             gLaptopProgramQueueList[program] = 1;
         }
@@ -1073,4 +1298,26 @@ public enum AIM_VIDEO
     MERC_ANSWERING_MACHINE_MODE,      // The popup which will be instread of the AIM_VIDEO_FIRST_CONTACT_MERC_MODE if the merc is not there
     MERC_UNAVAILABLE_MODE,                    // The popup which will be instread of the AIM_VIDEO_FIRST_CONTACT_MERC_MODE if the merc is unavailable
     POPDOWN_MODE,										// The title bars pops down to the contact button
+};
+
+//Aim Home Page
+public enum AIM
+{
+    HOME,
+    MEMBERS,
+    ALUMNI,
+    POLICIES,
+    HISTORY,
+    LINKS,
+};
+
+
+public enum AIM_COPYRIGHT
+{
+    SLOGAN,
+    WARNING_1,
+    WARNING_2,
+    COPYRIGHT_1,
+    COPYRIGHT_2,
+    COPYRIGHT_3
 };

@@ -36,6 +36,8 @@ public class Interface
     private static HVOBJECT guiITEMPOINTERHATCHES;
     private static HVOBJECT guiCOMPANELB;
     private static IVideoManager video;
+    private static int gsPhysicsImpactPointGridNo;
+    private static bool gfDisplayPhysicsUI;
     private readonly MercTextBox mercTextBox;
     private readonly RenderDirty renderDirty;
 
@@ -252,7 +254,13 @@ public class Interface
 
     private static void ResetPhysicsTrajectoryUI()
     {
-        throw new NotImplementedException();
+        if (gfDisplayPhysicsUI)
+        {
+            WorldManager.RemoveTopmost(gsPhysicsImpactPointGridNo, TileIndexes.FIRSTPOINTERS8);
+            WorldManager.RemoveTopmost(gsPhysicsImpactPointGridNo, TileIndexes.FIRSTPOINTERS12);
+            WorldManager.RemoveOnRoof(gsPhysicsImpactPointGridNo, TileIndexes.FIRSTPOINTERS8);
+            WorldManager.RemoveOnRoof(gsPhysicsImpactPointGridNo, TileIndexes.FIRSTPOINTERS12);
+        }
     }
 
     internal static bool InitializeTacticalInterface()

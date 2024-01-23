@@ -80,6 +80,7 @@ public class MapScreenInterfaceMap
     internal static int sSelMapX = 9;
     internal static int iCurrentMapSectorZ;
     internal static int bSelectedAssignChar;
+    internal static int bSelectedContractChar;
 
     public void SetUpBadSectorsList()
     {

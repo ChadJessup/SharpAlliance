@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using SharpAlliance.Core.Interfaces;
@@ -11,6 +12,7 @@ using SharpAlliance.Core.SubSystems.LaptopSubSystem.FloristSubSystem;
 using SharpAlliance.Core.SubSystems.LaptopSubSystem.IMPSubSystem;
 using SharpAlliance.Core.SubSystems.LaptopSubSystem.InsuranceSubSystem;
 using SixLabors.ImageSharp;
+using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace SharpAlliance.Core.SubSystems.LaptopSubSystem;
 
@@ -160,10 +162,10 @@ public partial class Laptop : IScreen
                 SrcRect2.Y = iY - iHeight / 2;
                 SrcRect2.Height = SrcRect2.Y + iHeight;
 
-                //SrcRect2.iLeft = 464 - 464 * iScalePercentage / 100;
-                //SrcRect2.iRight = 477 + 163 * iScalePercentage / 100;
-                //SrcRect2.iTop = 417 - 417 * iScalePercentage / 100;
-                //SrcRect2.iBottom = 425 + 55 * iScalePercentage / 100;
+                //SrcRect2.X = 464 - 464 * iScalePercentage / 100;
+                //SrcRect2.Width = 477 + 163 * iScalePercentage / 100;
+                //SrcRect2.Y = 417 - 417 * iScalePercentage / 100;
+                //SrcRect2.Height = 425 + 55 * iScalePercentage / 100;
 
                 //BltStretchVideoSurface( FRAME_BUFFER, guiEXTRABUFFER, 0, 0, 0, &SrcRect1, &DstRect );
 
@@ -173,8 +175,8 @@ public partial class Laptop : IScreen
                 //mprintf( 10, 10, L"%d . %d", iRealPercentage, iPercentage );
                 //pDestBuf = LockVideoSurface( FRAME_BUFFER, &uiDestPitchBYTES );
                 //SetClippingRegionAndImageWidth( uiDestPitchBYTES, 0, 0, 640, 480 );
-                //RectangleDraw( true, SrcRect1.iLeft, SrcRect1.iTop, SrcRect1.iRight, SrcRect1.iBottom, Get16BPPColor( FROMRGB( 255, 100, 0 ) ), pDestBuf );
-                //RectangleDraw( true, SrcRect2.iLeft, SrcRect2.iTop, SrcRect2.iRight, SrcRect2.iBottom, Get16BPPColor( FROMRGB( 100, 255, 0 ) ), pDestBuf );
+                //RectangleDraw( true, SrcRect1.X, SrcRect1.Y, SrcRect1.Width, SrcRect1.Height, Get16BPPColor( FROMRGB( 255, 100, 0 ) ), pDestBuf );
+                //RectangleDraw( true, SrcRect2.X, SrcRect2.Y, SrcRect2.Width, SrcRect2.Height, Get16BPPColor( FROMRGB( 100, 255, 0 ) ), pDestBuf );
                 //UnLockVideoSurface( FRAME_BUFFER );
 
                 video.BltStretchVideoSurface(SurfaceType.FRAME_BUFFER, SurfaceType.SAVE_BUFFER, new(0, 0), 0, DstRect, SrcRect2);
@@ -401,10 +403,328 @@ public partial class Laptop : IScreen
 
     private void HandleSlidingTitleBar()
     {
+        if ((fMaximizingProgram == false) && (fMinizingProgram == false))
+        {
+            return;
+        }
+
+        if (fExitingLaptopFlag)
+        {
+            return;
+        }
+
+        if (fMaximizingProgram)
+        {
+            switch (bProgramBeingMaximized)
+            {
+                case (LAPTOP_PROGRAM.MAILER):
+                    fMaximizingProgram = !DisplayTitleBarMaximizeGraphic(true, fInitTitle, 29, 66, 29 + 20);
+                    if (fMaximizingProgram == false)
+                    {
+                        RemoveTitleBarMaximizeGraphics();
+                        fEnteredNewLapTopDueToHandleSlidingBars = true;
+                        EnterNewLaptopMode();
+                        fEnteredNewLapTopDueToHandleSlidingBars = false;
+                        fPausedReDrawScreenFlag = true;
+                    }
+                    break;
+                case (LAPTOP_PROGRAM.FILES):
+                    fMaximizingProgram = !DisplayTitleBarMaximizeGraphic(true, fInitTitle, 29, 120, 29 + 20);
+                    if (fMaximizingProgram == false)
+                    {
+                        RemoveTitleBarMaximizeGraphics();
+                        fEnteredNewLapTopDueToHandleSlidingBars = true;
+                        EnterNewLaptopMode();
+                        fEnteredNewLapTopDueToHandleSlidingBars = false;
+                        fPausedReDrawScreenFlag = true;
+                    }
+                    break;
+                case (LAPTOP_PROGRAM.FINANCES):
+                    fMaximizingProgram = !DisplayTitleBarMaximizeGraphic(true, fInitTitle, 29, 226, 29 + 20);
+                    if (fMaximizingProgram == false)
+                    {
+                        RemoveTitleBarMaximizeGraphics();
+                        fEnteredNewLapTopDueToHandleSlidingBars = true;
+                        EnterNewLaptopMode();
+                        fEnteredNewLapTopDueToHandleSlidingBars = false;
+                        fPausedReDrawScreenFlag = true;
+                    }
+                    break;
+                case (LAPTOP_PROGRAM.PERSONNEL):
+                    fMaximizingProgram = !DisplayTitleBarMaximizeGraphic(true, fInitTitle, 29, 194, 29 + 20);
+                    if (fMaximizingProgram == false)
+                    {
+                        RemoveTitleBarMaximizeGraphics();
+                        fEnteredNewLapTopDueToHandleSlidingBars = true;
+                        EnterNewLaptopMode();
+                        fEnteredNewLapTopDueToHandleSlidingBars = false;
+                        fPausedReDrawScreenFlag = true;
+                    }
+                    break;
+                case (LAPTOP_PROGRAM.HISTORY):
+                    fMaximizingProgram = !DisplayTitleBarMaximizeGraphic(true, fInitTitle, 29, 162, 29 + 20);
+                    if (fMaximizingProgram == false)
+                    {
+                        RemoveTitleBarMaximizeGraphics();
+                        fEnteredNewLapTopDueToHandleSlidingBars = true;
+                        EnterNewLaptopMode();
+                        fEnteredNewLapTopDueToHandleSlidingBars = false;
+                        fPausedReDrawScreenFlag = true;
+                    }
+                    break;
+                case (LAPTOP_PROGRAM.WEB_BROWSER):
+                    fMaximizingProgram = !DisplayTitleBarMaximizeGraphic(true, fInitTitle, 29, 99, 29 + 20);
+                    if (fMaximizingProgram == false)
+                    {
+                        RemoveTitleBarMaximizeGraphics();
+                        fEnteredNewLapTopDueToHandleSlidingBars = true;
+                        EnterNewLaptopMode();
+                        fEnteredNewLapTopDueToHandleSlidingBars = false;
+                        fPausedReDrawScreenFlag = true;
+                    }
+                    break;
+            }
+
+            ButtonSubSystem.MarkButtonsDirty(Laptop.buttonList);
+        }
+        else
+        {
+            // minimizing
+            switch (bProgramBeingMaximized)
+            {
+                case (LAPTOP_PROGRAM.MAILER):
+                    fMinizingProgram = !DisplayTitleBarMaximizeGraphic(false, fInitTitle, 29, 66, 29 + 20);
+                    if (fMinizingProgram == false)
+                    {
+                        RemoveTitleBarMaximizeGraphics();
+                        EnterNewLaptopMode();
+                        fEnteredNewLapTopDueToHandleSlidingBars = false;
+                        fPausedReDrawScreenFlag = true;
+                    }
+                    break;
+                case (LAPTOP_PROGRAM.FILES):
+                    fMinizingProgram = !DisplayTitleBarMaximizeGraphic(false, fInitTitle, 29, 130, 29 + 20);
+                    if (fMinizingProgram == false)
+                    {
+                        RemoveTitleBarMaximizeGraphics();
+                        EnterNewLaptopMode();
+                        fEnteredNewLapTopDueToHandleSlidingBars = false;
+                        fPausedReDrawScreenFlag = true;
+                    }
+                    break;
+                case (LAPTOP_PROGRAM.FINANCES):
+                    fMinizingProgram = !DisplayTitleBarMaximizeGraphic(false, fInitTitle, 29, 226, 29 + 20);
+                    if (fMinizingProgram == false)
+                    {
+                        RemoveTitleBarMaximizeGraphics();
+                        EnterNewLaptopMode();
+                        fEnteredNewLapTopDueToHandleSlidingBars = false;
+                        fPausedReDrawScreenFlag = true;
+                    }
+                    break;
+                case (LAPTOP_PROGRAM.PERSONNEL):
+                    fMinizingProgram = !DisplayTitleBarMaximizeGraphic(false, fInitTitle, 29, 194, 29 + 20);
+                    if (fMinizingProgram == false)
+                    {
+                        RemoveTitleBarMaximizeGraphics();
+                        EnterNewLaptopMode();
+                        fEnteredNewLapTopDueToHandleSlidingBars = false;
+                        fPausedReDrawScreenFlag = true;
+                    }
+                    break;
+                case (LAPTOP_PROGRAM.HISTORY):
+                    fMinizingProgram = !DisplayTitleBarMaximizeGraphic(false, fInitTitle, 29, 162, 29 + 20);
+                    if (fMinizingProgram == false)
+                    {
+                        RemoveTitleBarMaximizeGraphics();
+                        EnterNewLaptopMode();
+                        fEnteredNewLapTopDueToHandleSlidingBars = false;
+                        fPausedReDrawScreenFlag = true;
+                    }
+                    break;
+                case (LAPTOP_PROGRAM.WEB_BROWSER):
+                    fMinizingProgram = !DisplayTitleBarMaximizeGraphic(false, fInitTitle, 29, 99, 29 + 20);
+                    if (fMinizingProgram == false)
+                    {
+                        RemoveTitleBarMaximizeGraphics();
+                        EnterNewLaptopMode();
+                        fEnteredNewLapTopDueToHandleSlidingBars = false;
+                        fPausedReDrawScreenFlag = true;
+                    }
+                    break;
+            }
+        }
+
+
+        // reset init
+        fInitTitle = false;
+    }
+
+    private static int ubCount;
+    private static Rectangle LastRect;
+
+    private bool DisplayTitleBarMaximizeGraphic(bool fForward, bool fInit, int usTopLeftX, int usTopLeftY, int usTopRightX)
+    {
+        int sPosX, sPosY, sPosRightX, sPosBottomY, sWidth, sHeight;
+        Rectangle SrcRect;
+        Rectangle DestRect;
+        float dTemp;
+
+        if (fInit)
+        {
+            if (gfTitleBarSurfaceAlreadyActive)
+            {
+                return (false);
+            }
+
+            gfTitleBarSurfaceAlreadyActive = true;
+            if (fForward)
+            {
+                ubCount = 1;
+            }
+            else
+            {
+                ubCount = NUMBER_OF_LAPTOP_TITLEBAR_ITERATIONS - 1;
+            }
+        }
+
+        dTemp = (LAPTOP_TITLE_BAR_TOP_LEFT_X - usTopLeftX) / (float)NUMBER_OF_LAPTOP_TITLEBAR_ITERATIONS;
+        sPosX = (int)(usTopLeftX + dTemp * ubCount);
+
+        dTemp = (LAPTOP_TITLE_BAR_TOP_RIGHT_X - usTopRightX) / (float)NUMBER_OF_LAPTOP_TITLEBAR_ITERATIONS;
+        sPosRightX = (int)(usTopRightX + dTemp * ubCount);
+
+        dTemp = (LAPTOP_TITLE_BAR_TOP_LEFT_Y - usTopLeftY) / (float)NUMBER_OF_LAPTOP_TITLEBAR_ITERATIONS;
+        sPosY = (int)(usTopLeftY + dTemp * ubCount);
+
+
+        sPosBottomY = LAPTOP_TITLE_BAR_HEIGHT;
+
+        SrcRect = new()
+        {
+            X = 0,
+            Y = 0,
+            Width = LAPTOP_TITLE_BAR_WIDTH,
+            Height = LAPTOP_TITLE_BAR_HEIGHT
+        };
+
+        //if its the last fram, bit the tittle bar to the final position
+        if (ubCount == NUMBER_OF_LAPTOP_TITLEBAR_ITERATIONS)
+        {
+            DestRect = new()
+            {
+                X = LAPTOP_TITLE_BAR_TOP_LEFT_X,
+                Y = LAPTOP_TITLE_BAR_TOP_LEFT_Y,
+                Width = LAPTOP_TITLE_BAR_TOP_RIGHT_X
+            };
+
+            DestRect.Height = DestRect.Y + sPosBottomY;
+        }
+        else
+        {
+            DestRect = new()
+            {
+                X = sPosX,
+                Y = sPosY,
+                Width = sPosRightX
+            };
+            DestRect.Height = DestRect.X + sPosBottomY;
+        }
+
+        if (fForward)
+        {
+            //Restore the old rect
+            if (ubCount > 1)
+            {
+                sWidth = (LastRect.Width - LastRect.X);
+                sHeight = (LastRect.Height - LastRect.Y);
+                video.BlitBufferToBuffer(SurfaceType.SAVE_BUFFER, SurfaceType.RENDER_BUFFER, new(LastRect.X, LastRect.Y, sWidth, sHeight));
+            }
+
+            //Save rectangle
+            if (ubCount > 0)
+            {
+                sWidth = (DestRect.Width - DestRect.X);
+                sHeight = (DestRect.Height - DestRect.Y);
+                video.BlitBufferToBuffer(SurfaceType.RENDER_BUFFER, SurfaceType.SAVE_BUFFER, new(DestRect.X, DestRect.Y, sWidth, sHeight));
+            }
+        }
+        else
+        {
+            //Restore the old rect
+            if (ubCount < NUMBER_OF_LAPTOP_TITLEBAR_ITERATIONS - 1)
+            {
+                sWidth = (LastRect.Width - LastRect.X);
+                sHeight = (LastRect.Height - LastRect.Y);
+                video.BlitBufferToBuffer(SurfaceType.SAVE_BUFFER, SurfaceType.RENDER_BUFFER, new(LastRect.X, LastRect.Y, sWidth, sHeight));
+            }
+
+            //Save rectangle
+            if (ubCount < NUMBER_OF_LAPTOP_TITLEBAR_ITERATIONS)
+            {
+                sWidth = (DestRect.Width - DestRect.X);
+                sHeight = (DestRect.Height - DestRect.Y);
+                video.BlitBufferToBuffer(SurfaceType.RENDER_BUFFER, SurfaceType.SAVE_BUFFER, new(DestRect.X, DestRect.Y, sWidth, sHeight));
+            }
+        }
+
+
+        video.BltStretchVideoSurface(SurfaceType.FRAME_BUFFER, guiTitleBarSurface, new(0, 0), VO_BLT.SRCTRANSPARENCY, SrcRect, DestRect);
+
+        video.InvalidateRegion(DestRect.X, DestRect.Y, DestRect.Width, DestRect.Height);
+        video.InvalidateRegion(LastRect.X, LastRect.Y, LastRect.Width, LastRect.Height);
+
+        LastRect = DestRect;
+
+        if (fForward)
+        {
+            if (ubCount == NUMBER_OF_LAPTOP_TITLEBAR_ITERATIONS)
+            {
+                gfTitleBarSurfaceAlreadyActive = false;
+                return (true);
+            }
+            else
+            {
+                ubCount++;
+                return (false);
+            }
+        }
+        else
+        {
+            if (ubCount == 0)
+            {
+                gfTitleBarSurfaceAlreadyActive = false;
+                return (true);
+            }
+            else
+            {
+                ubCount--;
+                return (false);
+            }
+        }
+
+        return (true);
+    }
+
+    private void RemoveTitleBarMaximizeGraphics()
+    {
+        video.DeleteVideoSurfaceFromIndex(guiTitleBarSurface);
     }
 
     private void DisplayTaskBarIcons()
     {
+        if (fNewFilesInFileViewer)
+        {
+            //display the files icon, if there is any
+            video.BltVideoObject(SurfaceType.FRAME_BUFFER, guiTITLEBARICONS, 7, LAPTOP__NEW_FILE_ICON_X, LAPTOP__NEW_FILE_ICON_Y, VO_BLT.SRCTRANSPARENCY);
+        }
+
+        //display the email icon, if there is email
+        if (fUnReadMailFlag)
+        {
+            //		usPosX -= 16;
+            video.BltVideoObject(SurfaceType.FRAME_BUFFER, guiTITLEBARICONS, 6, LAPTOP__NEW_EMAIL_ICON_X, LAPTOP__NEW_EMAIL_ICON_Y, VO_BLT.SRCTRANSPARENCY);
+        }
     }
 
     private void DisplayFrameRate()
@@ -413,6 +733,20 @@ public partial class Laptop : IScreen
 
     private void LookForUnread()
     {
+        bool fStatusOfNewEmailFlag = fUnReadMailFlag;
+
+        // simply runrs through list of messages, if any unread, set unread flag
+        fUnReadMailFlag = pEmailList.Any(e => !e.fRead);
+
+        if (fStatusOfNewEmailFlag != fUnReadMailFlag)
+        {
+            //Since there is no new email, get rid of the hepl text
+            CreateFileAndNewEmailIconFastHelpText(
+                LaptopText.LAPTOP_BN_HLP_TXT_YOU_HAVE_NEW_MAIL,
+                !fUnReadMailFlag);
+        }
+
+        return;
     }
 
     private void ReDrawNewMailBox()
@@ -421,6 +755,35 @@ public partial class Laptop : IScreen
 
     private void ShouldNewMailBeDisplayed()
     {
+        bool fReDraw = false;
+        switch (guiCurrentLaptopMode)
+        {
+            case LAPTOP_MODE.AIM_MEMBERS:
+                fReDraw = Laptop.DisableNewMailMessage();
+                break;
+        }
+        /*
+            if(fReDraw)
+            {
+                RenderLapTopImage();
+                HighLightRegion(giCurrentRegion);
+                RenderLaptop(); 
+            }
+         */
+    }
+
+    private static bool DisableNewMailMessage()
+    {
+        if (Emails.fNewMailFlag && gubVideoConferencingMode != 0)
+        {
+            Laptop.gfIsNewMailFlagSet = true;
+            Emails.fNewMailFlag = false;
+            gfRedrawScreen = true;
+
+            return true;
+        }
+
+        return false;
     }
 
     private void DisplayErrorBox()
@@ -437,6 +800,111 @@ public partial class Laptop : IScreen
 
     private void DisplayBookMarks()
     {
+        // will look at bookmarklist and set accordingly
+        int iCounter = 1;
+        // load images
+        HVOBJECT hLapTopIconHandle;
+        // laptop icons
+        int sX, sY;
+
+
+        // check if we are maximizing or minimizing.. if so, do not display
+        if ((fMaximizingProgram) || (fMinizingProgram))
+        {
+            return;
+        }
+
+
+        // font stuff
+        FontSubSystem.SetFont(BOOK_FONT);
+        FontSubSystem.SetFontForeground(FontColor.FONT_WHITE);
+        FontSubSystem.SetFontBackground(FontColor.FONT_BLACK);
+        FontSubSystem.SetFontShadow(FontShadow.NO_SHADOW);
+
+        // dirty and print to screen
+        //	gprintfdirty( sX, sY, pBookmarkTitle[0]);
+        //	mprintf(sX, sY,pBookmarkTitle[0] );
+
+        // set buffer
+        FontSubSystem.SetFontDestBuffer(SurfaceType.FRAME_BUFFER, BOOK_X, BOOK_TOP_Y, BOOK_X + BOOK_WIDTH - 10, 480, false);
+
+
+        // blt in book mark background
+        while (LaptopSaveInfo.iBookMarkList[iCounter - 1] != BOOKMARK.UNSET)
+        {
+
+            if (iHighLightBookLine == iCounter - 1)
+            {
+                video.BltVideoObject(SurfaceType.FRAME_BUFFER, guiBOOKHIGH, 0, BOOK_X, BOOK_TOP_Y + (iCounter * (BOOK_HEIGHT + 6)) + 6, VO_BLT.SRCTRANSPARENCY);
+            }
+            else
+            {
+                video.BltVideoObject(SurfaceType.FRAME_BUFFER, guiBOOKMARK, 0, BOOK_X, BOOK_TOP_Y + (iCounter * (BOOK_HEIGHT + 6)) + 6, VO_BLT.SRCTRANSPARENCY);
+            }
+
+            if (iHighLightBookLine == iCounter - 1)
+            {
+                // blit in text
+                FontSubSystem.SetFontForeground(FontColor.FONT_WHITE);
+                FontSubSystem.SetFontBackground(FontColor.FONT_BLACK);
+            }
+            else
+            {
+                // blit in text
+                FontSubSystem.SetFontForeground(FontColor.FONT_BLACK);
+                FontSubSystem.SetFontBackground(FontColor.FONT_BLACK);
+            }
+
+            FontSubSystem.FindFontCenterCoordinates(BOOK_X + 3, (BOOK_TOP_Y + 2 + (iCounter * (BOOK_HEIGHT + 6)) + 6), BOOK_WIDTH - 3, BOOK_HEIGHT + 6, pBookMarkStrings[(int)LaptopSaveInfo.iBookMarkList[iCounter - 1]], BOOK_FONT, out sX, out sY);
+
+            mprintf(sX, sY, pBookMarkStrings[(int)LaptopSaveInfo.iBookMarkList[iCounter - 1]]);
+            iCounter++;
+        }
+
+        // blit one more
+
+
+        if (iHighLightBookLine == iCounter - 1)
+        {
+            video.BltVideoObject(SurfaceType.FRAME_BUFFER, guiBOOKHIGH, 0, BOOK_X, BOOK_TOP_Y + (iCounter * (BOOK_HEIGHT + 6)) + 6, VO_BLT.SRCTRANSPARENCY);
+        }
+        else
+        {
+            video.BltVideoObject(SurfaceType.FRAME_BUFFER, guiBOOKMARK, 0, BOOK_X, BOOK_TOP_Y + (iCounter * (BOOK_HEIGHT + 6)) + 6, VO_BLT.SRCTRANSPARENCY);
+        }
+
+        if (iHighLightBookLine == iCounter - 1)
+        {
+            // blit in text
+            FontSubSystem.SetFontForeground(FontColor.FONT_WHITE);
+            FontSubSystem.SetFontBackground(FontColor.FONT_BLACK);
+        }
+        else
+        {
+            // blit in text
+            FontSubSystem.SetFontForeground(FontColor.FONT_BLACK);
+            FontSubSystem.SetFontBackground(FontColor.FONT_BLACK);
+        }
+
+        FontSubSystem.FindFontCenterCoordinates(BOOK_X + 3, (BOOK_TOP_Y + 2 + (iCounter * (BOOK_HEIGHT + 6)) + 6), BOOK_WIDTH - 3, BOOK_HEIGHT + 6, pBookMarkStrings[(int)BOOKMARK.CANCEL_STRING], BOOK_FONT, out sX, out sY);
+        mprintf(sX, sY, pBookMarkStrings[(int)BOOKMARK.CANCEL_STRING]);
+        iCounter++;
+
+        FontSubSystem.SetFontDestBuffer(SurfaceType.FRAME_BUFFER, 0, 0, 640, 480, false);
+
+        //GetVideoObject(&hLapTopIconHandle, guiBOOKBOT);
+        //BltVideoObject(FRAME_BUFFER, hLapTopIconHandle, 0,BOOK_X, 6+BOOK_TOP_Y+(iCounter)*BOOK_HEIGHT, VO_BLT_SRCTRANSPARENCY,NULL);
+
+        /*if(fNewWWWDisplay)
+       ScrollDisplayText(BOOK_TOP_Y+2+((iCounter)*BOOK_HEIGHT)+6);
+        else
+     */
+        video.InvalidateRegion(BOOK_X, BOOK_TOP_Y + ((iCounter) * BOOK_HEIGHT) + 12, BOOK_X + BOOK_WIDTH, BOOK_TOP_Y + ((iCounter + 1) * BOOK_HEIGHT) + 16);
+        FontSubSystem.SetFontShadow(FontShadow.DEFAULT_SHADOW);
+
+
+        video.InvalidateRegion(BOOK_X, BOOK_TOP_Y, BOOK_X + BOOK_WIDTH, BOOK_TOP_Y + (iCounter + 6) * BOOK_HEIGHT + 16);
+        return;
     }
 
     private void HandleWWWSubSites()
@@ -1393,10 +1861,10 @@ public partial class Laptop : IScreen
                     SrcRect2.Width = SrcRect2.X + iWidth;
                     SrcRect2.Y = iY - iHeight / 2;
                     SrcRect2.Height = SrcRect2.Y + iHeight;
-                    //SrcRect2.iLeft = 464 - 464 * iScalePercentage / 100;
-                    //SrcRect2.iRight = 477 + 163 * iScalePercentage / 100;
-                    //SrcRect2.iTop = 417 - 417 * iScalePercentage / 100;
-                    //SrcRect2.iBottom = 425 + 55 * iScalePercentage / 100;
+                    //SrcRect2.X = 464 - 464 * iScalePercentage / 100;
+                    //SrcRect2.Width = 477 + 163 * iScalePercentage / 100;
+                    //SrcRect2.Y = 417 - 417 * iScalePercentage / 100;
+                    //SrcRect2.Height = 425 + 55 * iScalePercentage / 100;
 
                     //BltStretchVideoSurface( FRAME_BUFFER, guiEXTRABUFFER, 0, 0, 0, &SrcRect1, &DstRect );
 
@@ -1406,8 +1874,8 @@ public partial class Laptop : IScreen
                     //mprintf( 10, 10, L"%d . %d", iRealPercentage, iPercentage );
                     //pDestBuf = LockVideoSurface( FRAME_BUFFER, &uiDestPitchBYTES );
                     //SetClippingRegionAndImageWidth( uiDestPitchBYTES, 0, 0, 640, 480 );
-                    //RectangleDraw( true, SrcRect1.iLeft, SrcRect1.iTop, SrcRect1.iRight, SrcRect1.iBottom, Get16BPPColor( FROMRGB( 255, 100, 0 ) ), pDestBuf );
-                    //RectangleDraw( true, SrcRect2.iLeft, SrcRect2.iTop, SrcRect2.iRight, SrcRect2.iBottom, Get16BPPColor( FROMRGB( 100, 255, 0 ) ), pDestBuf );
+                    //RectangleDraw( true, SrcRect1.X, SrcRect1.Y, SrcRect1.Width, SrcRect1.Height, Get16BPPColor( FROMRGB( 255, 100, 0 ) ), pDestBuf );
+                    //RectangleDraw( true, SrcRect2.X, SrcRect2.Y, SrcRect2.Width, SrcRect2.Height, Get16BPPColor( FROMRGB( 100, 255, 0 ) ), pDestBuf );
                     //UnLockVideoSurface( FRAME_BUFFER );
 
                     video.BltStretchVideoSurface(SurfaceType.FRAME_BUFFER, SurfaceType.SAVE_BUFFER, new(0, 0), 0, DstRect, SrcRect2);
@@ -1511,6 +1979,8 @@ public partial class Laptop : IScreen
     }
 
     private static bool fOldLoadFlag = false;
+    private static bool gfIsNewMailFlagSet;
+
     private void EnterNewLaptopMode()
     {
 

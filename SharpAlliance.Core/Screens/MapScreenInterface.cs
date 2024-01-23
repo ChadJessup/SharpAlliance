@@ -1,6 +1,7 @@
 ﻿using System;
 using SixLabors.ImageSharp;
 using static System.Runtime.InteropServices.JavaScript.JSType;
+using static SharpAlliance.Core.InputManager;
 
 namespace SharpAlliance.Core.Screens;
 
@@ -23,7 +24,30 @@ public class MapScreenInterface
     private static MapScreenCharacterSt[] gCharactersList = new MapScreenCharacterSt[MAX_CHARACTER_COUNT + 1];
     private static bool fShowMapScreenHelpText;
 
+    // positions for all the pop up boxes
+    public static Rectangle ContractDimensions = new (0, 0, 140, 60 );
+    public static Point ContractPosition = new (120, 50 );
+    public static Rectangle AttributeDimensions = new (0, 0, 100, 95 );
+    public static Point AttributePosition = new (220, 150 );
+    public static Rectangle TrainDimensions = new (0, 0, 100, 95 );
+    public static Point TrainPosition = new (160, 150 );
+    public static Rectangle VehicleDimensions = new (0, 0, 80, 60 );
+    public static Point VehiclePosition = new (160, 150 );
 
+    public static Point RepairPosition = new (160, 150 );
+    public static Rectangle RepairDimensions = new (0, 0, 80, 80 );
+
+    public static Rectangle AssignmentDimensions = new (0, 0, 100, 95 );
+    public static Point AssignmentPosition = new (120, 150 );
+    public static Point SquadPosition = new (160, 150 );
+    public static Rectangle SquadDimensions = new (0, 0, 140, 60 );
+
+    public static Point OrigContractPosition = new (120, 50 );
+    public static Point OrigAttributePosition = new (220, 150 );
+    public static Point OrigSquadPosition = new (160, 150 );
+    public static Point OrigAssignmentPosition = new (120, 150 );
+    public static Point OrigTrainPosition = new (160, 150 );
+    public static Point OrigVehiclePosition = new (160, 150 );
 
     internal static void DoMapMessageBoxWithRect(MessageBoxStyle mSG_BOX_BASIC_STYLE, string zString, ScreenName mAP_SCREEN, MSG_BOX_FLAG usFlags, MSGBOX_CALLBACK? returnCallback, Rectangle? pCenteringRect)
     {
@@ -182,6 +206,8 @@ public class MapScreenInterface
     private static bool fShowSquadMenu = false;
     public static bool fShowContractMenu = false;
     private static bool fShowRemoveMenu = false;
+    internal static int giContractHighLine;
+    internal static int giAssignHighLine;
 
     internal static void RestoreBackgroundForDestinationGlowRegionList()
     {

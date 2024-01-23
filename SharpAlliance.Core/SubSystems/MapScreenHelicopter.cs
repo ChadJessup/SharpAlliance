@@ -175,6 +175,11 @@ public class MapScreenHelicopter
         }
 
     }
+
+    internal static bool CanHelicopterFly()
+    {
+        throw new NotImplementedException();
+    }
 }
 
 // the sam site enums

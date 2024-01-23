@@ -225,7 +225,7 @@ public partial class Globals
     public static HVOBJECT guiTITLEBARLAPTOP;
     public static HVOBJECT guiLIGHTS;
     public static HVOBJECT guiTITLEBARICONS;
-    public static SurfaceType guiDESKTOP;
+    public static HVOBJECT guiDESKTOP;
 
     // email notification
     public static int guiUNREAD;
