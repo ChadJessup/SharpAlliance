@@ -662,8 +662,7 @@ public partial class Laptop
             new(clip.Width, clip.Height),
             pSrcBuf,
             guiDESKTOP,
-            LAPTOP_SCREEN_UL_X - 2,
-            LAPTOP_SCREEN_UL_Y - 3,
+            new(LAPTOP_SCREEN_UL_X - 2, LAPTOP_SCREEN_UL_Y - 3),
             clip);
 
         return true;

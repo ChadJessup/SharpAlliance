@@ -278,7 +278,7 @@ public class MercTextBox
             // pDestBuf.SaveAsPng($@"C:\temp\pdestBuf.png");
             // pSrcBuf.SaveAsPng($@"C:\temp\pSrcBuf.png");
 
-            video.Blt8BPPDataSubTo16BPPBuffer(pDestBuf, new(pSrcBuf.Width, pSrcBuf.Height), pSrcBuf, pPopUpTextBox.BackgroundVideoObject,0, 0, DestRect);
+            video.Blt8BPPDataSubTo16BPPBuffer(pDestBuf, new(pSrcBuf.Width, pSrcBuf.Height), pSrcBuf, pPopUpTextBox.BackgroundVideoObject, new(0, 0), DestRect);
         }
 
         hImageHandle = video.GetVideoObject(pPopUpTextBox.uiMercTextPopUpBorder);

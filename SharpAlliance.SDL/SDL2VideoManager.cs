@@ -9,6 +9,7 @@ using SharpAlliance.Core.Screens;
 using SharpAlliance.Core.SubSystems;
 using SharpAlliance.Platform;
 using SharpAlliance.Platform.Interfaces;
+using SixLabors.ImageSharp.Advanced;
 using SixLabors.ImageSharp.Drawing.Processing;
 using static SharpAlliance.Core.Globals;
 using FontStyle = SharpAlliance.Core.SubSystems.FontStyle;
@@ -2114,7 +2115,7 @@ public class SDL2VideoManager : IVideoManager
 
             Rectangle rect = new(iLeft, iTop, iRight - iLeft, iTop - iBottom);
 
-            if(rect.Height < 0 || rect.Width < 0)
+            if (rect.Height < 0 || rect.Width < 0)
             {
                 return;
             }
@@ -2144,12 +2145,12 @@ public class SDL2VideoManager : IVideoManager
 
     public void InvalidateRegion(int v1, int v2, int v3, int v4) => this.InvalidateRegion(new(v1, v2, v3, v4));
 
-    public bool Blt8BPPDataSubTo16BPPBuffer(Image<Rgba32> pBuffer, Size size, Image<Rgba32> pSrcBuffer, HVOBJECT hSrcVSurface, int iX, int iY, Rectangle pRect)
+    public bool Blt8BPPDataSubTo16BPPBuffer(Image<Rgba32> pBuffer, Size size, Image<Rgba32> pSrcBuffer, HVOBJECT hSrcVSurface, Point i, Rectangle pRect)
     {
         var p16BPPPalette = hSrcVSurface.Palette;
         int usHeight, usWidth;
-        int uiSrcPitch = pSrcBuffer.Width + 2;
-        int uiDestPitchBYTES = (pBuffer.Width * 2) + 4;
+        int uiSrcPitch = pSrcBuffer.Width + 6;
+        int uiDestPitchBYTES = (pBuffer.Width * 2) + 0;
         int SrcPtr, DestPtr;
         int LineSkip, LeftSkip, RightSkip, TopSkip, BlitLength, SrcSkip, BlitHeight;
         int iTempX, iTempY;
@@ -2159,8 +2160,8 @@ public class SDL2VideoManager : IVideoManager
         usWidth = size.Width;
 
         // Add to start position of dest buffer
-        iTempX = iX;
-        iTempY = iY;
+        iTempX = i.X;
+        iTempY = i.Y;
 
         // Validations
         CHECKF(iTempX >= 0);
@@ -2174,25 +2175,76 @@ public class SDL2VideoManager : IVideoManager
         SrcSkip = uiSrcPitch - BlitLength;
 
         SrcPtr = (0 + TopSkip + LeftSkip);
-        DestPtr = (0 + (uiDestPitchBYTES * iTempY) + (iTempX * 2));
+        DestPtr = (0 + (iTempY) + (iTempX * 2));
         LineSkip = (uiDestPitchBYTES - (BlitLength * 2));
 
-        for (int y = 0; y < pBuffer.Height; y++)
+        var dstPixels = pBuffer.GetPixelMemoryGroup()[0].Span;
+        var rowOffset = 0;
+        int col = DestPtr;
+        pBuffer.ProcessPixelRows(p =>
         {
-            for (int x = 0; x < pBuffer.Width; x++)
+            int rowIndex = i.Y;
+            while (rowIndex < BlitHeight)
             {
-                byte colorIndex = 0;
                 try
                 {
-                    colorIndex = hSrcVSurface.hImage.p8BPPData[(y * x) + x];
-                    pBuffer[x, y] = p16BPPPalette[colorIndex];
+                    var row = p.GetRowSpan(rowIndex);
+                    var rowRemainder = row.Slice(i.X, BlitLength);
+
+                    col = i.X;
+                    while (col < rowRemainder.Length)
+                    {
+                        var ax = hSrcVSurface.hImage.p8BPPData[SrcPtr];
+                        rowRemainder[col] = p16BPPPalette[ax];
+
+                        col++;
+                        SrcPtr++;
+                    }
+
+                    rowOffset++;
+
+                    rowIndex = i.Y + rowOffset;
                 }
-                catch(Exception e)
+                catch (Exception e)
                 {
-                    return true;
+                    return;
                 }
             }
-        }
+        });
+
+        //        while (BlitHeight != 0)
+        //        {
+        //            BlitLength = pRect.Right - pRect.Left;
+        //
+        //            while (BlitLength != 0)
+        //            {
+        //                try
+        //                {
+        //                    var ax = hSrcVSurface.hImage.p8BPPData[SrcPtr];
+        //                    var dstPixel = p16BPPPalette[ax];
+        //
+        //                    Bgr565 pixel = new();
+        //                    pixel.FromRgba32(dstPixel);
+        //                    var packedValue = pixel.PackedValue;
+        //
+        //                    dstPixels[DestPtr] = dstPixel;
+        //                }
+        //                catch (Exception e)
+        //                {
+        //                    return true;
+        //                }
+        //
+        //                DestPtr++;
+        //                SrcPtr++;
+        //                //DestPtr++;
+        //                BlitLength--;
+        //            }
+        //
+        //            SrcPtr += SrcSkip;
+        //            DestPtr += LineSkip;
+        //
+        //            BlitHeight--;
+        //        }
 
         return true;
     }
@@ -2269,7 +2321,7 @@ public class SDL2VideoManager : IVideoManager
 
     public void BlitSurfaceToSurface(Image<Rgba32> src, SurfaceType dst, Point dstPoint, VO_BLT bltFlags = VO_BLT.SRCTRANSPARENCY, bool debug = false)
     {
-        if(debug)
+        if (debug)
         {
 
         }
