@@ -751,6 +751,32 @@ public partial class Laptop : IScreen
 
     private void ReDrawNewMailBox()
     {
+        // this function will check to see if the new mail region needs to be redrawn
+        if (Emails.fReDrawNewMailFlag)
+        {
+            if (Emails.fNewMailFlag)
+            {
+                // set display flag back to orginal
+                Emails.fNewMailFlag = false;
+
+                // display new mail box
+                DisplayNewMailBox();
+
+                // dirty buttons
+                ButtonSubSystem.MarkAButtonDirty(giNewMailButton[0]);
+
+                // set display flag back to orginal
+                Emails.fNewMailFlag = true;
+
+                // time to redraw
+                DisplayNewMailBox();
+            }
+
+            // return;
+
+            // reset flag for redraw 
+            Emails.fReDrawNewMailFlag = false;
+        }
     }
 
     private void ShouldNewMailBeDisplayed()
@@ -794,8 +820,202 @@ public partial class Laptop : IScreen
     {
     }
 
-    private void DisplayLoadPending()
+    private static uint iTotalTime = 0;
+    private bool DisplayLoadPending()
     {
+        // this function will display the load pending and return if the load is done
+        uint iTempTime = 0;
+        int iCounter = 0;
+        uint iDifference = 0;
+        HVOBJECT hLapTopIconHandle;
+        uint iLoadTime;
+        uint iUnitTime;
+        uint uiTempLaptopMode = 0;
+        uint uiTempWWWMode = 0;
+        int sXPosition = 0, sYPosition = 0;
+
+        // if merc webpage, make it longer
+        //TEMP disables the loadpending
+        if (gfTemporaryDisablingOfLoadPendingFlag)
+        {
+            iLoadTime = 1;
+            iUnitTime = 1;
+        }
+        else
+        {
+            if ((fFastLoadFlag == true) && (fConnectingToSubPage == true))
+            {
+                iUnitTime = FASTEST_UNIT_TIME;
+            }
+            else if (fFastLoadFlag == true)
+            {
+                iUnitTime = FAST_UNIT_TIME;
+            }
+            else if (fConnectingToSubPage == true)
+            {
+                iUnitTime = ALMOST_FAST_UNIT_TIME;
+            }
+
+            //if we are connecting the MERC site, and the MERC site hasnt yet moved to their new site, have the sloooww wait
+            else if (guiCurrentLaptopMode == LAPTOP_MODE.MERC && !LaptopSaveInfo.fMercSiteHasGoneDownYet)
+            {
+                iUnitTime = LONG_UNIT_TIME;
+            }
+            else
+            {
+                iUnitTime = UNIT_TIME;
+            }
+
+            iUnitTime += WWaitDelayIncreasedIfRaining(iUnitTime);
+
+            iLoadTime = iUnitTime * 30;
+        }
+
+
+        // we are now waiting on a web page to download, reset counter
+        if (!fLoadPendingFlag)
+        {
+            fDoneLoadPending = false;
+            fFastLoadFlag = false;
+            fConnectingToSubPage = false;
+            iBaseTime = 0;
+            iTotalTime = 0;
+            return (false);
+        }
+        // if total time is exceeded, return (true)
+        if (iBaseTime == 0)
+        {
+            iBaseTime = GetJA2Clock();
+        }
+
+
+
+        if (iTotalTime >= iLoadTime)
+        {
+            // done loading, redraw screen
+            fLoadPendingFlag = false;
+            fFastLoadFlag = false;
+            iTotalTime = 0;
+            iBaseTime = 0;
+            fDoneLoadPending = true;
+            fConnectingToSubPage = false;
+            fPausedReDrawScreenFlag = true;
+
+            return (true);
+        }
+
+
+        iDifference = GetJA2Clock() - iBaseTime;
+
+
+
+        // difference has been long enough or we are redrawing the screen
+        if ((iDifference) > iUnitTime)
+        {
+            // LONG ENOUGH TIME PASSED
+            iCounter = 0;
+            iBaseTime = GetJA2Clock();
+            iTotalTime += iDifference;
+            iTempTime = iTotalTime;
+
+        }
+
+        // new mail, don't redraw
+        if (Emails.fNewMailFlag == true)
+        {
+            return (false);
+        }
+
+        ButtonSubSystem.RenderButtons(buttonList);
+
+        //	RenderFastHelp( );
+        //	RenderButtonsFastHelp( );
+
+
+        // display top middle and bottom of box
+        video.BltVideoObject(SurfaceType.FRAME_BUFFER, guiDOWNLOADTOP, 0, DOWNLOAD_X, DOWNLOAD_Y, VO_BLT.SRCTRANSPARENCY);
+        video.BltVideoObject(SurfaceType.FRAME_BUFFER, guiDOWNLOADMID, 0, DOWNLOAD_X, DOWNLOAD_Y + DOWN_HEIGHT, VO_BLT.SRCTRANSPARENCY);
+        video.BltVideoObject(SurfaceType.FRAME_BUFFER, guiDOWNLOADBOT, 0, DOWNLOAD_X, DOWNLOAD_Y + 2 * DOWN_HEIGHT, VO_BLT.SRCTRANSPARENCY);
+        video.BltVideoObject(SurfaceType.FRAME_BUFFER, guiTITLEBARICONS, 1, DOWNLOAD_X + 4, DOWNLOAD_Y + 1, VO_BLT.SRCTRANSPARENCY);
+
+
+        // font stuff
+        FontSubSystem.SetFont(DOWNLOAD_FONT);
+        FontSubSystem.SetFontForeground(FontColor.FONT_WHITE);
+        FontSubSystem.SetFontBackground(FontColor.FONT_BLACK);
+        FontSubSystem.SetFontShadow(FontShadow.NO_SHADOW);
+
+        // reload or download?
+        if (fFastLoadFlag == true)
+        {
+            FontSubSystem.FindFontCenterCoordinates(328, 0, 446 - 328, 0, pDownloadString[1], DOWNLOAD_FONT, out sXPosition, out sYPosition);
+
+            // display download string
+            mprintf(sXPosition, DOWN_STRING_Y, pDownloadString[1]);
+        }
+        else
+        {
+            FontSubSystem.FindFontCenterCoordinates(328, 0, 446 - 328, 0, pDownloadString[0], DOWNLOAD_FONT, out sXPosition, out sYPosition);
+
+            // display download string
+            mprintf(sXPosition, DOWN_STRING_Y, pDownloadString[0]);
+        }
+
+        // get and blt the window video object
+        video.BltVideoObject(SurfaceType.FRAME_BUFFER, guiGRAPHWINDOW, 0, LAPTOP_WINDOW_X, LAPTOP_WINDOW_Y, VO_BLT.SRCTRANSPARENCY);
+
+        // check to see if we are only updating screen, but not passed a new element in the load pending display
+
+
+        iTempTime = iTotalTime;
+        // decide how many time units are to be displayed, based on amount of time passed
+        while (iTempTime > 0)
+        {
+            video.BltVideoObject(SurfaceType.FRAME_BUFFER, guiGRAPHBAR, 0, LAPTOP_BAR_X + (UNIT_WIDTH * iCounter), LAPTOP_BAR_Y, VO_BLT.SRCTRANSPARENCY);
+            iTempTime -= iUnitTime;
+            iCounter++;
+
+            // have we gone too far?
+            if (iCounter > 30)
+            {
+                iTempTime = 0;
+            }
+        }
+
+        video.InvalidateRegion(DOWNLOAD_X, DOWNLOAD_Y, DOWNLOAD_X + 150, DOWNLOAD_Y + 100);
+
+        // re draw screen and new mail warning box
+        FontSubSystem.SetFontShadow(FontShadow.DEFAULT_SHADOW);
+
+        ButtonSubSystem.MarkButtonsDirty(buttonList);
+
+        DisableMercSiteButton();
+
+        return (false);
+    }
+
+    private void DisableMercSiteButton()
+    {
+        if (Mercs.iMercPopUpBox != -1)
+        {
+            Mercs.guiAccountBoxButton.uiFlags |= ButtonFlags.BUTTON_FORCE_UNDIRTY;
+        }
+    }
+
+    private uint WWaitDelayIncreasedIfRaining(uint iUnitTime)
+    {
+        uint iRetVal = 0;
+
+        if (guiEnvWeather.HasFlag(WEATHER_FORECAST.THUNDERSHOWERS))
+        {
+            iRetVal = (uint)(iUnitTime * 0.80);
+        }
+        else if (guiEnvWeather.HasFlag(WEATHER_FORECAST.SHOWERS))
+        {
+            iRetVal = (uint)(iUnitTime * 0.6);
+        }
+
+        return (iRetVal);
     }
 
     private void DisplayBookMarks()
@@ -893,7 +1113,7 @@ public partial class Laptop : IScreen
         FontSubSystem.SetFontDestBuffer(SurfaceType.FRAME_BUFFER, 0, 0, 640, 480, false);
 
         //GetVideoObject(&hLapTopIconHandle, guiBOOKBOT);
-        //BltVideoObject(FRAME_BUFFER, hLapTopIconHandle, 0,BOOK_X, 6+BOOK_TOP_Y+(iCounter)*BOOK_HEIGHT, VO_BLT_SRCTRANSPARENCY,NULL);
+        //BltVideoObject(FRAME_BUFFER, hLapTopIconHandle, 0,BOOK_X, 6+BOOK_TOP_Y+(iCounter)*BOOK_HEIGHT, VO_BLT.SRCTRANSPARENCY,null);
 
         /*if(fNewWWWDisplay)
        ScrollDisplayText(BOOK_TOP_Y+2+((iCounter)*BOOK_HEIGHT)+6);

@@ -2183,15 +2183,15 @@ public class SDL2VideoManager : IVideoManager
         int col = DestPtr;
         pBuffer.ProcessPixelRows(p =>
         {
-            int rowIndex = i.Y;
-            while (rowIndex < BlitHeight)
+            int rowIndex = 0;
+            while (rowIndex < BlitHeight + i.Y)
             {
                 try
                 {
                     var row = p.GetRowSpan(rowIndex);
                     var rowRemainder = row.Slice(i.X, BlitLength);
 
-                    col = i.X;
+                    col = 0;
                     while (col < rowRemainder.Length)
                     {
                         var ax = hSrcVSurface.hImage.p8BPPData[SrcPtr];

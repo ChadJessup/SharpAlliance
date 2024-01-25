@@ -7,6 +7,14 @@ namespace SharpAlliance.Core;
 // TODO: Move to built-in internationalization stuff.
 public static class EnglishText
 {
+    // When loading or download a web page
+
+    public static string[] pDownloadString =
+    {
+        "Downloading",
+        "Reloading",
+    };
+
     //Aim Home Page
 
     public static string[] AimBottomMenuText =

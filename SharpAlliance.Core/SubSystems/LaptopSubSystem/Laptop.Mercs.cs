@@ -21,6 +21,8 @@ public class Mercs
 
     public static NPCID[] gubMercArray = new NPCID[NUMBER_OF_MERCS];
     public static int gubCurMercIndex = 0;
+    internal static int iMercPopUpBox;
+    internal static GUI_BUTTON guiAccountBoxButton;
 
     public static void GameInitMercs()
     {

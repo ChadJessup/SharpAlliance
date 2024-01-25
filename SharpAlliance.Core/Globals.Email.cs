@@ -184,7 +184,10 @@ public partial class Globals
     public static ButtonPic[] giDeleteMailButtonImage = new ButtonPic[2];
     public static GUI_BUTTON[] giSortButton = new GUI_BUTTON[4];
     public static ButtonPic[] giSortButtonImage = new ButtonPic[4];
-    public static GUI_BUTTON[] giNewMailButton = new GUI_BUTTON[1];
+    public static GUI_BUTTON[] giNewMailButton = new GUI_BUTTON[1]
+    {
+        new GUI_BUTTON(),
+    };
     public static ButtonPic[] giNewMailButtonImage = new ButtonPic[1];
     public static GUI_BUTTON[] giMailMessageButtons = new GUI_BUTTON[3];
     public static ButtonPic[] giMailMessageButtonsImage = new ButtonPic[3];
