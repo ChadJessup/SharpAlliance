@@ -195,12 +195,12 @@ public partial class Globals
     public static ButtonPic[] giMailPageButtonsImage = new ButtonPic[2];
 
     // video handles
-    public static string guiEmailTitle;
-    public static string guiEmailStamp;
-    public static string guiEmailBackground;
-    public static string guiEmailIndicator;
-    public static string guiEmailMessage;
-    public static string guiMAILDIVIDER;
+    public static HVOBJECT guiEmailTitle;
+    public static HVOBJECT guiEmailStamp;
+    public static HVOBJECT guiEmailBackground;
+    public static HVOBJECT guiEmailIndicator;
+    public static HVOBJECT guiEmailMessage;
+    public static HVOBJECT guiMAILDIVIDER;
 
     // position of header text on the email list
     public const int FROM_X = 205;

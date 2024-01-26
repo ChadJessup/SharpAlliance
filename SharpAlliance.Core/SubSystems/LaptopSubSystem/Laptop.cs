@@ -866,7 +866,6 @@ public partial class Laptop
         // load background
         LoadDesktopBackground();
 
-
         guiCurrentLaptopMode = LAPTOP_MODE.NONE;
         //MSYS_SetCurrentCursor(CURSOR_NORMAL);
 

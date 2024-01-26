@@ -36,6 +36,7 @@ public class SharpAllianceGameLogic : IGameLogic
         MouseSubSystem mouseSubSystem,
         CursorSubSystem cursorSubSystem,
         HelpScreenSubSystem helpScreenSubSystem,
+        IFileManager fileManager,
         IInputManager inputManager,
         SaveGameSubSystem saveGameSubSystem,
         MessageBoxSubSystem messageBoxSubSystem,
@@ -44,6 +45,7 @@ public class SharpAllianceGameLogic : IGameLogic
         IVideoManager videoManager,
         IMusicManager musicManager)
     {
+        Globals.gGameSettings = new(fileManager);
         this.context = context;
         this.strings = strings;
 

@@ -26,7 +26,7 @@ public partial class Laptop : IScreen
     public ScreenState State { get; set; }
     private static History history;
     private static IFileManager files;
-    private static readonly List<GUI_BUTTON> buttonList = [];
+    public static readonly List<GUI_BUTTON> buttonList = [];
 
     public Laptop(
         ILogger<Laptop> logger,
@@ -91,7 +91,7 @@ public partial class Laptop : IScreen
             RenderLapTopImage();
             HighLightRegion(giCurrentRegion);
             RenderLaptop();
-            ButtonSubSystem.RenderButtons(gLaptopButtons);
+            ButtonSubSystem.RenderButtons(buttonList);
             PrintDate();
             PrintBalance();
             PrintNumberOnTeam();
@@ -281,8 +281,8 @@ public partial class Laptop : IScreen
         GetLaptopKeyboardInput();
 
         // check to see if new mail box needs to be displayed
-        DisplayNewMailBox();
-        CreateDestroyNewMailButton();
+        Emails.DisplayNewMailBox();
+        Emails.CreateDestroyNewMailButton();
 
         // create various mouse regions that are global to laptop system
         CreateDestoryBookMarkRegions();
@@ -760,7 +760,7 @@ public partial class Laptop : IScreen
                 Emails.fNewMailFlag = false;
 
                 // display new mail box
-                DisplayNewMailBox();
+                Emails.DisplayNewMailBox();
 
                 // dirty buttons
                 ButtonSubSystem.MarkAButtonDirty(giNewMailButton[0]);
@@ -769,7 +769,7 @@ public partial class Laptop : IScreen
                 Emails.fNewMailFlag = true;
 
                 // time to redraw
-                DisplayNewMailBox();
+                Emails.DisplayNewMailBox();
             }
 
             // return;
@@ -1192,6 +1192,8 @@ public partial class Laptop : IScreen
 
         switch (guiCurrentLaptopMode)
         {
+            case LAPTOP_MODE.NONE:
+                break;
 
             case LAPTOP_MODE.AIM:
 
@@ -1397,14 +1399,6 @@ public partial class Laptop : IScreen
     {
     }
 
-    private void DisplayNewMailBox()
-    {
-    }
-
-    private void CreateDestroyNewMailButton()
-    {
-    }
-
     private void CreateDestroyErrorButton()
     {
     }
@@ -1543,7 +1537,9 @@ public partial class Laptop : IScreen
             }
         }
         else
+        {
             giRainDelayInternetSite = BOOKMARK.UNSET;
+        }
 
         switch (iPageId)
         {
@@ -1759,7 +1755,7 @@ public partial class Laptop : IScreen
         if (fMarkButtonsDirtyFlag)
         {
             // flag set, mark buttons and reset
-            //ButtonSubSystem.MarkButtonsDirty();
+            ButtonSubSystem.MarkButtonsDirty(buttonList);
             fMarkButtonsDirtyFlag = false;
         }
     }
@@ -1788,16 +1784,11 @@ public partial class Laptop : IScreen
         switch (guiCurrentLaptopMode)
         {
             case LAPTOP_MODE.EMAIL:
-                DisplayEmailHeaders();
+                Emails.DisplayEmailHeaders();
                 break;
         }
         return;
 
-    }
-
-    private void DisplayEmailHeaders()
-    {
-        throw new NotImplementedException();
     }
 
     private void DrawTextOnErrorButton()
@@ -2215,6 +2206,8 @@ public partial class Laptop : IScreen
         // handle maximizing of programs
         switch (guiCurrentLaptopMode)
         {
+            case LAPTOP_MODE.NONE:
+                break;
             case (LAPTOP_MODE.EMAIL):
                 if (gLaptopProgramStates[LAPTOP_PROGRAM.MAILER] == LAPTOP_PROGRAM_STATES.MINIMIZED)
                 {
@@ -2311,9 +2304,6 @@ public partial class Laptop : IScreen
                     gLaptopProgramStates[LAPTOP_PROGRAM.HISTORY] = LAPTOP_PROGRAM_STATES.OPEN;
                     return;
                 }
-                break;
-            case (LAPTOP_MODE.NONE):
-                // do nothing
                 break;
             default:
                 if (gLaptopProgramStates[LAPTOP_PROGRAM.WEB_BROWSER] == LAPTOP_PROGRAM_STATES.MINIMIZED)
@@ -3079,6 +3069,8 @@ public partial class Laptop : IScreen
         ButtonSubSystem.SetButtonCursor(gLaptopButtons[4], CURSOR.LAPTOP_SCREEN);
         ButtonSubSystem.SetButtonCursor(gLaptopButtons[5], CURSOR.LAPTOP_SCREEN);
         ButtonSubSystem.SetButtonCursor(gLaptopButtons[6], CURSOR.LAPTOP_SCREEN);
+
+        buttonList.AddRange(gLaptopButtons);
 
         return (true);
     }

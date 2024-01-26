@@ -593,7 +593,7 @@ public partial class Globals
     public static NPCID gubNastyNPCProfile = NO_PROFILE;
 
     public static GameOptions gGameOptions = new();
-    public static GameSettings gGameSettings = new();
+    public static GameSettings gGameSettings;
 
     public const MouseCallback? MSYS_NO_CALLBACK = null;
 

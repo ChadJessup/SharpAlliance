@@ -273,7 +273,7 @@ public class OptionsScreen : IScreen
         //Get the current status of the toggle boxes
         GetOptionsScreenToggleBoxes();
         //The save the current settings to disk
-        gGameSettings.SaveGameSettings();
+        GameSettings.SaveGameSettings();
 
         //Create the clock mouse region
         GameClock.CreateMouseRegionForPauseOfClock(CLOCK_REGION_START_X, CLOCK_REGION_START_Y);

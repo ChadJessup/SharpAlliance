@@ -587,7 +587,7 @@ public class SaveLoadGame
         }
 
         //Save the save game settings
-        gGameSettings.SaveGameSettings();
+        GameSettings.SaveGameSettings();
 
         //
         // Display a screen message that the save was succesful
@@ -1866,7 +1866,7 @@ public class SaveLoadGame
         gGameSettings.bLastSavedGameSlot = ubSavedGameID;
 
         //Save the save game settings
-        gGameSettings.SaveGameSettings();
+        GameSettings.SaveGameSettings();
 
 
         uiRelEndPerc += 1;

@@ -34,7 +34,7 @@ public class Emails
 
     // mouse regions
     private static MOUSE_REGION[] pEmailRegions = new MOUSE_REGION[MAX_MESSAGES_PAGE];
-    MOUSE_REGION pScreenMask;
+    private static MOUSE_REGION pScreenMask;
     private static MOUSE_REGION pDeleteScreenMask;
 
     // the email info struct to speed up email
@@ -117,19 +117,19 @@ public class Emails
         iCurrentPage = LaptopSaveInfo.iCurrentEmailPage;
 
         // title bar
-        video.GetVideoObject("LAPTOP\\programtitlebar.sti", out guiEmailTitle);
+        guiEmailTitle = video.GetVideoObject("LAPTOP\\programtitlebar.sti");
 
         // the list background
-        video.GetVideoObject("LAPTOP\\Mailwindow.sti", out guiEmailBackground);
+        guiEmailBackground = video.GetVideoObject("LAPTOP\\Mailwindow.sti");
 
         // the indication/notification box
-        video.GetVideoObject("LAPTOP\\MailIndicator.sti", out guiEmailIndicator);
+        guiEmailIndicator = video.GetVideoObject("LAPTOP\\MailIndicator.sti");
 
         // the message background
-        video.GetVideoObject("LAPTOP\\emailviewer.sti", out guiEmailMessage);
+        guiEmailMessage = video.GetVideoObject("LAPTOP\\emailviewer.sti");
 
         // the message background
-        video.GetVideoObject("LAPTOP\\maillistdivider.sti", out guiMAILDIVIDER);
+        guiMAILDIVIDER = video.GetVideoObject("LAPTOP\\maillistdivider.sti");
 
         //AddEmail(IMP_EMAIL_PROFILE_RESULTS, IMP_EMAIL_PROFILE_RESULTS_LENGTH, IMP_PROFILE_RESULTS, GetWorldTotalMin( ) );
         // initialize mouse regions
@@ -195,11 +195,11 @@ public class Emails
         SetUnNewMessages();
 
         // remove video objects being used by email screen
-        video.DeleteVideoObjectFromIndex(guiEmailTitle);
-        video.DeleteVideoObjectFromIndex(guiEmailBackground);
-        video.DeleteVideoObjectFromIndex(guiMAILDIVIDER);
-        video.DeleteVideoObjectFromIndex(guiEmailIndicator);
-        video.DeleteVideoObjectFromIndex(guiEmailMessage);
+        //video.DeleteVideoObjectFromIndex(guiEmailTitle);
+        //video.DeleteVideoObjectFromIndex(guiEmailBackground);
+        //video.DeleteVideoObjectFromIndex(guiMAILDIVIDER);
+        //video.DeleteVideoObjectFromIndex(guiEmailIndicator);
+        //video.DeleteVideoObjectFromIndex(guiEmailMessage);
 
 
         // remove buttons
@@ -297,7 +297,7 @@ public class Emails
         return;
     }
 
-    private static void DisplayEmailHeaders()
+    public static void DisplayEmailHeaders()
     {
         // draw the text at the top of the screen
 
@@ -331,13 +331,13 @@ public class Emails
         int iCounter = 0;
 
         // get and blt the email list background
-        hHandle = video.GetVideoObject(guiEmailBackground);
-        //        video.BltVideoObject(Surfaces.FRAME_BUFFER, hHandle, 0, LAPTOP_SCREEN_UL_X, EMAIL_LIST_WINDOW_Y + LAPTOP_SCREEN_UL_Y, VO_BLT.SRCTRANSPARENCY, null);
+        //hHandle = video.GetVideoObject(guiEmailBackground);
+        video.BltVideoObject(SurfaceType.FRAME_BUFFER, guiEmailBackground, 0, LAPTOP_SCREEN_UL_X, EMAIL_LIST_WINDOW_Y + LAPTOP_SCREEN_UL_Y, VO_BLT.SRCTRANSPARENCY, null);
 
 
         // get and blt the email title bar
-        hHandle = video.GetVideoObject(guiEmailTitle);
-        //        video.BltVideoObject(Surfaces.FRAME_BUFFER, hHandle, 0, LAPTOP_SCREEN_UL_X, LAPTOP_SCREEN_UL_Y - 2, VO_BLT.SRCTRANSPARENCY, null);
+        //hHandle = video.GetVideoObject(guiEmailTitle);
+        video.BltVideoObject(SurfaceType.FRAME_BUFFER, guiEmailTitle, 0, LAPTOP_SCREEN_UL_X, LAPTOP_SCREEN_UL_Y - 2, VO_BLT.SRCTRANSPARENCY, null);
 
         // show text on titlebar
         DisplayTextOnTitleBar();
@@ -684,20 +684,16 @@ public class Emails
 
     private static void DrawLetterIcon(int iCounter, bool fRead)
     {
-        HVOBJECT hHandle;
         // will draw the icon for letter in mail list depending if the mail has been read or not
-
-        // grab video object
-        hHandle = video.GetVideoObject(guiEmailIndicator);
 
         // is it read or not?
         if (fRead)
         {
-            //            video.BltVideoObject(Surfaces.FRAME_BUFFER, hHandle, 0, INDIC_X, (MIDDLE_Y + iCounter * MIDDLE_WIDTH + 2), VO_BLT.SRCTRANSPARENCY, null);
+            video.BltVideoObject(SurfaceType.FRAME_BUFFER, guiEmailIndicator, 0, INDIC_X, (MIDDLE_Y + iCounter * MIDDLE_WIDTH + 2), VO_BLT.SRCTRANSPARENCY, null);
         }
         else
         {
-            //            video.BltVideoObject(Surfaces.FRAME_BUFFER, hHandle, 1, INDIC_X, (MIDDLE_Y + iCounter * MIDDLE_WIDTH + 2), VO_BLT.SRCTRANSPARENCY, null);
+            video.BltVideoObject(SurfaceType.FRAME_BUFFER, guiEmailIndicator, 1, INDIC_X, (MIDDLE_Y + iCounter * MIDDLE_WIDTH + 2), VO_BLT.SRCTRANSPARENCY, null);
         }
 
         return;
@@ -1119,25 +1115,22 @@ public class Emails
 
         // blt in top line of message as a blank graphic
         // get a handle to the bitmap of EMAIL VIEWER Background
-        hHandle = video.GetVideoObject(guiEmailMessage);
 
         // place the graphic on the frame buffer
-        //        video.BltVideoObject(Surfaces.FRAME_BUFFER, hHandle, 1, VIEWER_X, VIEWER_MESSAGE_BODY_START_Y + iViewerPositionY, VO_BLT.SRCTRANSPARENCY, null);
-        //        video.BltVideoObject(Surfaces.FRAME_BUFFER, hHandle, 1, VIEWER_X, VIEWER_MESSAGE_BODY_START_Y + FontSubSystem.GetFontHeight(MESSAGE_FONT) + iViewerPositionY, VO_BLT.SRCTRANSPARENCY, null);
+        video.BltVideoObject(SurfaceType.FRAME_BUFFER, guiEmailMessage, 1, VIEWER_X, VIEWER_MESSAGE_BODY_START_Y + iViewerPositionY, VO_BLT.SRCTRANSPARENCY, null);
+        video.BltVideoObject(SurfaceType.FRAME_BUFFER, guiEmailMessage, 1, VIEWER_X, VIEWER_MESSAGE_BODY_START_Y + FontSubSystem.GetFontHeight(MESSAGE_FONT) + iViewerPositionY, VO_BLT.SRCTRANSPARENCY, null);
 
         // set shadow
         FontSubSystem.SetFontShadow(FontShadow.NO_SHADOW);
 
         // get a handle to the bitmap of EMAIL VIEWER
-        hHandle = video.GetVideoObject(guiEmailMessage);
 
         // place the graphic on the frame buffer
-        //        video.BltVideoObject(Surfaces.FRAME_BUFFER, hHandle, 0, VIEWER_X, VIEWER_Y + iViewerPositionY, VO_BLT.SRCTRANSPARENCY, null);
+        video.BltVideoObject(SurfaceType.FRAME_BUFFER, guiEmailMessage, 0, VIEWER_X, VIEWER_Y + iViewerPositionY, VO_BLT.SRCTRANSPARENCY, null);
 
 
         // the icon for the title of this box
-        guiTITLEBARICONS = video.GetVideoObject("");
-        //        video.BltVideoObject(Surfaces.FRAME_BUFFER, hHandle, 0, VIEWER_X + 5, VIEWER_Y + iViewerPositionY + 2, VO_BLT.SRCTRANSPARENCY, null);
+        video.BltVideoObject(SurfaceType.FRAME_BUFFER, guiTITLEBARICONS, 0, VIEWER_X + 5, VIEWER_Y + iViewerPositionY + 2, VO_BLT.SRCTRANSPARENCY, null);
 
         // display header text
         DisplayEmailMessageSubjectDateFromLines(pMail, iViewerPositionY);
@@ -1152,26 +1145,22 @@ public class Emails
         for (iCounter = 2; iCounter < (iTotalHeight / FontSubSystem.GetFontHeight(MESSAGE_FONT)); iCounter++)
         {
             // get a handle to the bitmap of EMAIL VIEWER Background
-            hHandle = video.GetVideoObject(guiEmailMessage);
 
             // place the graphic on the frame buffer
-            //            video.BltVideoObject(Surfaces.FRAME_BUFFER, hHandle, 1, VIEWER_X, iViewerPositionY + VIEWER_MESSAGE_BODY_START_Y + ((FontSubSystem.GetFontHeight(MESSAGE_FONT)) * (iCounter)), VO_BLT.SRCTRANSPARENCY, null);
+            video.BltVideoObject(SurfaceType.FRAME_BUFFER, guiEmailMessage, 1, VIEWER_X, iViewerPositionY + VIEWER_MESSAGE_BODY_START_Y + ((FontSubSystem.GetFontHeight(MESSAGE_FONT)) * (iCounter)), VO_BLT.SRCTRANSPARENCY, null);
 
         }
 
-
         // now the bottom piece to the message viewer
-        hHandle = video.GetVideoObject(guiEmailMessage);
-
         if (giNumberOfPagesToCurrentEmail <= 2)
         {
             // place the graphic on the frame buffer
-            //            video.BltVideoObject(Surfaces.FRAME_BUFFER, hHandle, 2, VIEWER_X, iViewerPositionY + VIEWER_MESSAGE_BODY_START_Y + ((FontSubSystem.GetFontHeight(MESSAGE_FONT)) * (iCounter)), VO_BLT.SRCTRANSPARENCY, null);
+            video.BltVideoObject(SurfaceType.FRAME_BUFFER, guiEmailMessage, 2, VIEWER_X, iViewerPositionY + VIEWER_MESSAGE_BODY_START_Y + ((FontSubSystem.GetFontHeight(MESSAGE_FONT)) * (iCounter)), VO_BLT.SRCTRANSPARENCY, null);
         }
         else
         {
             // place the graphic on the frame buffer
-            //            video.BltVideoObject(Surfaces.FRAME_BUFFER, hHandle, 3, VIEWER_X, iViewerPositionY + VIEWER_MESSAGE_BODY_START_Y + ((FontSubSystem.GetFontHeight(MESSAGE_FONT)) * (iCounter)), VO_BLT.SRCTRANSPARENCY, null);
+            video.BltVideoObject(SurfaceType.FRAME_BUFFER, guiEmailMessage, 3, VIEWER_X, iViewerPositionY + VIEWER_MESSAGE_BODY_START_Y + ((FontSubSystem.GetFontHeight(MESSAGE_FONT)) * (iCounter)), VO_BLT.SRCTRANSPARENCY, null);
         }
 
         // reset iCounter and iHeight
@@ -1309,7 +1298,7 @@ public class Emails
 
 
 
-    void BtnNewOkback(ref GUI_BUTTON btn, MSYS_CALLBACK_REASON reason)
+    private static void BtnNewOkback(ref GUI_BUTTON btn, MSYS_CALLBACK_REASON reason)
     {
         if (!btn.uiFlags.HasFlag(ButtonFlags.BUTTON_ENABLED))
         {
@@ -1412,7 +1401,7 @@ public class Emails
     }
 
     static bool fOldNewMailFlag = false;
-    void CreateDestroyNewMailButton()
+    public static void CreateDestroyNewMailButton()
     {
 
         // check if we are video conferencing, if so, do nothing
@@ -1431,23 +1420,29 @@ public class Emails
 
             // load image and setup button
             giNewMailButtonImage[0] = ButtonSubSystem.LoadButtonImage("LAPTOP\\YesNoButtons.sti", -1, 0, -1, 1, -1);
-            giNewMailButton[0] = ButtonSubSystem.QuickCreateButton(giNewMailButtonImage[0], new(NEW_BTN_X + 10, NEW_BTN_Y),
-                                                  ButtonFlags.BUTTON_TOGGLE, MSYS_PRIORITY.HIGHEST - 2,
-                                                  (GUI_CALLBACK)MouseSubSystem.BtnGenericMouseMoveButtonCallback, (GUI_CALLBACK)this.BtnNewOkback);
+            giNewMailButton[0] = ButtonSubSystem.QuickCreateButton(
+                giNewMailButtonImage[0],
+                new(NEW_BTN_X + 10, NEW_BTN_Y),
+                ButtonFlags.BUTTON_TOGGLE,
+                MSYS_PRIORITY.HIGHEST - 2,
+                MouseSubSystem.BtnGenericMouseMoveButtonCallback,
+                BtnNewOkback);
+
+            Laptop.buttonList.AddRange(giNewMailButton);
 
             // set cursor
             ButtonSubSystem.SetButtonCursor(giNewMailButton[0], CURSOR.LAPTOP_SCREEN);
 
             // set up screen mask region
             MouseSubSystem.MSYS_DefineRegion(
-                this.pScreenMask,
+                pScreenMask,
                 new(0, 0, 640, 480),
                 MSYS_PRIORITY.HIGHEST - 3,
                 CURSOR.LAPTOP_SCREEN,
                 MSYS_NO_CALLBACK,
                 Laptop.LapTopScreenCallBack);
 
-            MouseSubSystem.MSYS_AddRegion(ref this.pScreenMask);
+            MouseSubSystem.MSYS_AddRegion(ref pScreenMask);
             ButtonSubSystem.MarkAButtonDirty(giNewMailButton[0]);
             fReDrawScreenFlag = true;
         }
@@ -1463,7 +1458,7 @@ public class Emails
             ButtonSubSystem.UnloadButtonImage(giNewMailButtonImage[0]);
 
             // remove screen mask
-            MouseSubSystem.MSYS_RemoveRegion(this.pScreenMask);
+            MouseSubSystem.MSYS_RemoveRegion(pScreenMask);
 
 
             //re draw screen
@@ -1474,7 +1469,7 @@ public class Emails
         }
     }
 
-    private static bool DisplayNewMailBox()
+    public static bool DisplayNewMailBox()
     {
         HVOBJECT hHandle;
         // will display a new mail box whenever new mail has arrived
@@ -2391,14 +2386,11 @@ public class Emails
     {
         // this function draws divider lines between lines of text
         int iCounter = 0;
-        HVOBJECT hHandle;
 
         for (iCounter = 1; iCounter < 19; iCounter++)
         {
-            hHandle = video.GetVideoObject(guiMAILDIVIDER);
-            //            video.BltVideoObject(Surfaces.FRAME_BUFFER, hHandle, 0, INDIC_X - 10, (MIDDLE_Y + iCounter * MIDDLE_WIDTH - 1), VO_BLT.SRCTRANSPARENCY, null);
+            video.BltVideoObject(SurfaceType.FRAME_BUFFER, guiMAILDIVIDER, 0, INDIC_X - 10, (MIDDLE_Y + iCounter * MIDDLE_WIDTH - 1), VO_BLT.SRCTRANSPARENCY, null);
         }
-
 
         return;
     }

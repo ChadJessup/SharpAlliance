@@ -2,15 +2,22 @@
 using System.Threading.Tasks;
 using SharpAlliance.Core.Interfaces;
 using SharpAlliance.Core.Managers;
+using SharpAlliance.Core.SubSystems.LaptopSubSystem;
 using SixLabors.ImageSharp;
 
 namespace SharpAlliance.Core.Screens;
 
 public class HelpScreen : IScreen
 {
+    private static IVideoManager video;
+
     public bool IsInitialized { get; set; }
     public ScreenState State { get; set; }
 
+    public HelpScreen(IVideoManager videoManager)
+    {
+        video = videoManager;
+    }
 
     public static bool ShouldTheHelpScreenComeUp(HELP_SCREEN ubScreenID, bool fForceHelpScreenToComeUp)
     {
@@ -31,7 +38,7 @@ public class HelpScreen : IScreen
         }
 
         //has the player been in the screen before
-        if ((gHelpScreen.usHasPlayerSeenHelpScreenInCurrentScreen))// >> ubScreenID) & 0x01)
+        if (((gHelpScreen.usHasPlayerSeenHelpScreenInCurrentScreen >> (byte)ubScreenID) & 0x01) != 0)
         {
             goto HELP_SCREEN_WAIT_1_FRAME;
         }
@@ -58,7 +65,7 @@ public class HelpScreen : IScreen
         {
             gHelpScreen.bDelayEnteringHelpScreenBy1FrameCount += 1;
 
-//            ButtonSubSystem.UnmarkButtonsDirty();
+            ButtonSubSystem.UnmarkButtonsDirty(Laptop.buttonList);
 
             return (false);
         }
@@ -89,7 +96,59 @@ public class HelpScreen : IScreen
 
     internal static void HelpScreenHandler()
     {
-        throw new NotImplementedException();
+        //if we are just entering the help screen
+        if (HelpScreenSubSystem.gfHelpScreenEntry)
+        {
+            //setup the help screen
+            EnterHelpScreen();
+
+            HelpScreenSubSystem.gfHelpScreenEntry = false;
+            HelpScreenSubSystem.gfHelpScreenExit = false;
+        }
+
+        video.RestoreBackgroundRects();
+
+
+        //get the mouse and keyboard inputs
+        GetHelpScreenUserInput();
+
+        //handle the help screen
+        HandleHelpScreen();
+
+        //if the help screen is dirty, re-render it
+        if (gHelpScreen.ubHelpScreenDirty != HLP_SCRN_DRTY_LVL_NOT_DIRTY)
+        {
+            //temp
+            //		gHelpScreen.ubHelpScreenDirty = HLP_SCRN_DRTY_LVL_REFRESH_ALL;
+
+
+            RenderHelpScreen();
+            gHelpScreen.ubHelpScreenDirty = HLP_SCRN_DRTY_LVL_NOT_DIRTY;
+        }
+
+        // render buttons marked dirty	
+        //  MarkButtonsDirty( );
+        ButtonSubSystem.RenderButtons(Laptop.buttonList);
+
+        video.SaveBackgroundRects();
+        RenderButtonsFastHelp();
+
+        video.ExecuteBaseDirtyRectQueue();
+        video.EndFrameBufferRender();
+
+        //if we are leaving the help screen
+        if (HelpScreenSubSystem.gfHelpScreenExit)
+        {
+            HelpScreenSubSystem.gfHelpScreenExit = false;
+
+            HelpScreenSubSystem.gfHelpScreenEntry = true;
+
+            //exit mouse regions etc..
+            ExitHelpScreen();
+
+            //reset the helpscreen id
+            gHelpScreen.bCurrentHelpScreen = HELP_SCREEN.UNSET;
+        }
     }
 
     private static HELP_SCREEN HelpScreenDetermineWhichMapScreenHelpToShow()
@@ -155,6 +214,8 @@ public enum HELP_SCREEN
     LOAD_GAME,
 
     NUMBER_OF_HELP_SCREENS,
+
+    UNSET = -1,
 };
 
 public enum HELP_SCREEN_ACTIVE
@@ -168,7 +229,7 @@ public class HELP_SCREEN_STRUCT
 {
     public HELP_SCREEN bCurrentHelpScreen;
     public HELP_SCREEN_ACTIVE uiFlags;
-    public bool usHasPlayerSeenHelpScreenInCurrentScreen;
+    public ushort usHasPlayerSeenHelpScreenInCurrentScreen;
     public bool ubHelpScreenDirty;
     public Point usScreenLoc;
     public Size usScreenSize;

@@ -123,8 +123,8 @@ public class History
         if (files.FileExists(HISTORY_DATA_FILE))
         {
             // unlink history file
-//            files.FileClearAttributes(HISTORY_DATA_FILE);
-//            files.FileDelete(HISTORY_DATA_FILE);
+            files.FileClearAttributes(HISTORY_DATA_FILE);
+            files.FileDelete(HISTORY_DATA_FILE);
         }
 
         AddHistoryToPlayersLog(HISTORY.ACCEPTED_ASSIGNMENT_FROM_ENRICO, 0, GameClock.GetWorldTotalMin(), -1, MAP_ROW.UNSET);

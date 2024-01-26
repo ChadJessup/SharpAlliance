@@ -11,8 +11,8 @@ namespace SharpAlliance.Core.SubSystems;
 
 public class HelpScreenSubSystem : IDisposable
 {
-    private bool gfHelpScreenEntry;
-    private bool gfHelpScreenExit;
+    public static bool gfHelpScreenEntry;
+    public static bool gfHelpScreenExit;
 
     public bool IsInitialized { get; }
 
