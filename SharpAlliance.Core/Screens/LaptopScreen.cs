@@ -1864,7 +1864,7 @@ public partial class Laptop : IScreen
         return;
     }
 
-    private void PrintBalance()
+    public static void PrintBalance()
     {
         string pString;
         //	UINT16 usX, usY;
@@ -1891,7 +1891,7 @@ public partial class Laptop : IScreen
         FontSubSystem.SetFontShadow(FontShadow.DEFAULT_SHADOW);
     }
 
-    private void PrintDate()
+    public static void PrintDate()
     {
         FontSubSystem.SetFont(FontStyle.FONT10ARIAL);
         FontSubSystem.SetFontForeground(FontColor.FONT_BLACK);
@@ -2134,7 +2134,7 @@ public partial class Laptop : IScreen
         }
     }
 
-    private void PrintNumberOnTeam()
+    public static void PrintNumberOnTeam()
     {
         string pString;
         SOLDIERTYPE? pSoldier;
