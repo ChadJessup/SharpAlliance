@@ -1967,15 +1967,15 @@ public class SDL2VideoManager : IVideoManager
             {
                 if (hVObject.pShades[x] != null)
                 {
-                    f16BitPal = hVObject.pShades[x] == hVObject.Palette;
+//                    f16BitPal = hVObject.pShades[x] == hVObject.Palette[0];
 
-                    MemFree(hVObject.pShades[x]);
-                    hVObject.pShades[x] = null;
-
-                    if (f16BitPal)
-                    {
-                        hVObject.p16BPPPalette = null;
-                    }
+//                    MemFree(hVObject.pShades[x]);
+//                    hVObject.pShades[x] = null;
+//
+//                    if (f16BitPal)
+//                    {
+//                        hVObject.p16BPPPalette = null;
+//                    }
                 }
             }
         }

@@ -96,7 +96,7 @@ public class RenderDirty
         return true;
     }
 
-    private static bool EmptyBackgroundRects()
+    public static bool EmptyBackgroundRects()
     {
         int uiCount;
 
