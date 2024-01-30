@@ -2387,4 +2387,9 @@ public class SDL2VideoManager : IVideoManager
 
         return (true);
     }
+
+    public void BltVSurfaceUsingDD(HVSURFACE hDestVSurface, HVSURFACE hSrcVSurface, VO_BLT sRCTRANSPARENCY, int usLeftMarginPosX, int v, out Rectangle srcRect)
+    {
+        throw new NotImplementedException();
+    }
 }

@@ -341,4 +341,9 @@ public class InputManager : IInputManager
     public void DequeueAllKeyBoardEvents()
     {
     }
+
+    public bool HandleTextInput(IInputSnapshot @event)
+    {
+        throw new NotImplementedException();
+    }
 }

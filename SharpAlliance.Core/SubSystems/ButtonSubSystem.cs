@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using SharpAlliance.Core.Interfaces;
@@ -10,8 +9,6 @@ using SharpAlliance.Core.Managers.VideoSurfaces;
 using SharpAlliance.Platform;
 using SixLabors.ImageSharp;
 using SixLabors.ImageSharp.PixelFormats;
-using static System.Net.Mime.MediaTypeNames;
-using static System.Runtime.InteropServices.JavaScript.JSType;
 using Point = SixLabors.ImageSharp.Point;
 using Rectangle = SixLabors.ImageSharp.Rectangle;
 
@@ -560,7 +557,7 @@ public class ButtonSubSystem : ISharpAllianceManager
         btn.UserData[index] = userData;
     }
 
-    public GUI_BUTTON CreateCheckBoxButton(
+    public static GUI_BUTTON CreateCheckBoxButton(
         Point loc,
         string filename,
         MSYS_PRIORITY Priority,
@@ -2321,6 +2318,11 @@ public class ButtonSubSystem : ISharpAllianceManager
         //Copy over information
         b.bTextOffset = new(bTextXOffset, bTextYOffset);
         b.fShiftText = fShiftText;
+    }
+
+    internal static GUI_BUTTON CreateCheckBoxButton(int usPosX, int v1, string v2, MSYS_PRIORITY hIGHEST, object btnHelpScreenDontShowHelpAgainCallback)
+    {
+        throw new NotImplementedException();
     }
 }
 

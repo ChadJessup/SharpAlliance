@@ -649,7 +649,7 @@ public class OptionsScreen : IScreen
             var option = cnt;
 
             //Check box to toggle tracking mode
-            this.guiOptionsToggles[option] = this.buttons.CreateCheckBoxButton(
+            this.guiOptionsToggles[option] = ButtonSubSystem.CreateCheckBoxButton(
                 new(OPT_TOGGLE_BOX_FIRST_COLUMN_X, usPosY),
                 "INTERFACE\\OptionsCheckBoxes.sti",
                 MSYS_PRIORITY.HIGH + 10,
@@ -726,7 +726,7 @@ public class OptionsScreen : IScreen
             var option = cnt;
 
             //Check box to toggle tracking mode
-            this.guiOptionsToggles[option] = this.buttons.CreateCheckBoxButton(
+            this.guiOptionsToggles[option] = ButtonSubSystem.CreateCheckBoxButton(
                 new(OPT_TOGGLE_BOX_SECOND_COLUMN_X, usPosY),
                 "INTERFACE\\OptionsCheckBoxes.sti",
                 MSYS_PRIORITY.HIGH + 10,
@@ -736,11 +736,9 @@ public class OptionsScreen : IScreen
 
             ButtonSubSystem.SetButtonUserData(this.guiOptionsToggles[option], 0, option);
 
-
             //
             // Create mouse regions for the option toggle text
             //
-
 
             TextSize.Width = FontSubSystem.StringPixLength(EnglishText.zOptionsToggleText[(int)cnt], OPT_MAIN_FONT);
 

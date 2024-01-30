@@ -10,12 +10,17 @@ using SharpAlliance.Core.SubSystems;
 using SharpAlliance.Core.SubSystems.LaptopSubSystem;
 using SharpAlliance.Platform;
 using SixLabors.ImageSharp;
+using SixLabors.ImageSharp.Drawing.Processing;
 using SixLabors.ImageSharp.PixelFormats;
+using SixLabors.ImageSharp.Processing;
 
 namespace SharpAlliance.Core.Screens;
 
 public class HelpScreen : IScreen
 {
+    private const string HELPSCREEN_FILE = "BINARYDATA\\Help.edt";
+    private const int HELPSCREEN_RECORD_SIZE = 80 * 8 * 2;
+
     //The defualt size and placement of the screen
     private const int HELP_SCREEN_DEFUALT_LOC_X = 155;
     private const int HELP_SCREEN_DEFUALT_LOC_Y = 105;
@@ -78,6 +83,8 @@ public class HelpScreen : IScreen
     private const int HLP_SCRN__SCROLL_UP_ARROW_Y = 43;
     private const int HLP_SCRN__SCROLL_DWN_ARROW_X = HLP_SCRN__SCROLL_UP_ARROW_X;
     private const int HLP_SCRN__SCROLL_DWN_ARROW_Y = HLP_SCRN__SCROLL_UP_ARROW_Y + 202;
+
+    private static IFileManager files;
     private static IInputManager inputs;
     private static IVideoManager video;
     private static MOUSE_REGION gHelpScreenFullScreenMask = new(nameof(gHelpScreenFullScreenMask));
@@ -87,8 +94,17 @@ public class HelpScreen : IScreen
     private static GUI_BUTTON guiHelpScreenExitBtn;
     private static GUI_BUTTON[] guiHelpScreenBtns = new GUI_BUTTON[HELP_SCREEN_NUM_BTNS];
     private static ButtonPic[] giHelpScreenButtonsImage = new ButtonPic[HELP_SCREEN_NUM_BTNS];
+    
     private static GUI_BUTTON[] giHelpScreenScrollArrows = new GUI_BUTTON[2];
+    private static ButtonPic[] guiHelpScreenScrollArrowImage = new ButtonPic[2];
+
     private static HVOBJECT guiHelpScreenBackGround;
+    private static SurfaceType guiHelpScreenTextBufferSurface;
+    private static bool gfHelpScreenExit;
+    private static int gubRenderHelpScreenTwiceInaRow;
+    private static bool gfScrollBoxIsScrolling;
+    private static bool gfHaveRenderedFirstFrameToSaveBuffer;
+    private static MOUSE_REGION? gHelpScreenScrollArea;
 
     public bool IsInitialized { get; set; }
     public ScreenState State { get; set; }
@@ -96,8 +112,10 @@ public class HelpScreen : IScreen
     public HelpScreen(
         ILogger<HelpScreen> logger,
         IVideoManager videoManager,
+        IFileManager fileManager,
         IInputManager inputManager)
     {
+        files = fileManager;
         inputs = inputManager;
         video = videoManager;
     }
@@ -306,6 +324,18 @@ public class HelpScreen : IScreen
         GameSettings.SaveGameSettings();
     }
 
+    private static void DeleteScrollArrowButtons()
+    {
+        //remove the mouse region that blankets
+        MouseSubSystem.MSYS_RemoveRegion(gHelpScreenScrollArea);
+
+        for (int i = 0; i < 2; i++)
+        {
+            ButtonSubSystem.RemoveButton(giHelpScreenScrollArrows[i]);
+            ButtonSubSystem.UnloadButtonImage(guiHelpScreenScrollArrowImage[i]);
+        }
+    }
+
     private static void DestroyHelpScreenTextBuffer()
     {
         //        DeleteVideoSurfaceFromIndex(guiHelpScreenTextBufferSurface);
@@ -372,7 +402,7 @@ public class HelpScreen : IScreen
 
             //blit everything to the save buffer ( cause the save buffer can bleed through )
             video.BlitBufferToBuffer(
-                SurfaceType.RENDER_BUFFER, 
+                SurfaceType.RENDER_BUFFER,
                 SurfaceType.SAVE_BUFFER,
                 new(gHelpScreen.usScreenLoc.X, gHelpScreen.usScreenLoc.Y, (int)(gHelpScreen.usScreenLoc.X + gHelpScreen.usScreenSize.Width), (int)(gHelpScreen.usScreenLoc.Y + gHelpScreen.usScreenSize.Height)));
 
@@ -385,6 +415,106 @@ public class HelpScreen : IScreen
         {
             RenderTextBufferToScreen();
         }
+    }
+
+    private static void DisplayCurrentScreenTitleAndFooter()
+    {
+        int iStartLoc = -1;
+        string zText;
+        int usPosX = 0, usPosY = 0, usWidth = 0;
+
+        //new screen:
+
+        //switch on the current screen
+        switch (gHelpScreen.bCurrentHelpScreen)
+        {
+            case HELP_SCREEN.LAPTOP:
+                iStartLoc = HELPSCREEN_RECORD_SIZE * (int)HLP_TXT.LAPTOP_TITLE;
+                break;
+            case HELP_SCREEN.MAPSCREEN:
+                iStartLoc = HELPSCREEN_RECORD_SIZE * (int)HLP_TXT.WELCOM_TO_ARULCO_TITLE;
+                break;
+            case HELP_SCREEN.TACTICAL:
+                iStartLoc = HELPSCREEN_RECORD_SIZE * (int)HLP_TXT.TACTICAL_TITLE;
+                break;
+            case HELP_SCREEN.MAPSCREEN_NO_ONE_HIRED:
+                iStartLoc = HELPSCREEN_RECORD_SIZE * (int)HLP_TXT.MPSCRN_NO_1_HIRED_YET_TITLE;
+                break;
+            case HELP_SCREEN.MAPSCREEN_NOT_IN_ARULCO:
+                iStartLoc = HELPSCREEN_RECORD_SIZE * (int)HLP_TXT.MPSCRN_NOT_IN_ARULCO_TITLE;
+                break;
+            case HELP_SCREEN.MAPSCREEN_SECTOR_INVENTORY:
+                iStartLoc = HELPSCREEN_RECORD_SIZE * (int)HLP_TXT.SECTOR_INVTRY_TITLE;
+                break;
+            case HELP_SCREEN.OPTIONS:
+                break;
+            case HELP_SCREEN.LOAD_GAME:
+                break;
+
+            default:
+                break;
+        }
+
+        //	GetHelpScreenTextPositions( NULL, NULL, &usWidth );
+
+        if (gHelpScreen.bNumberOfButtons != 0)
+            usWidth = gHelpScreen.usScreenSize.Width - HELP_SCREEN_TEXT_LEFT_MARGIN_WITH_BTN - HELP_SCREEN_TEXT_RIGHT_MARGIN_SPACE;
+        else
+            usWidth = gHelpScreen.usScreenSize.Width - HELP_SCREEN_TEXT_LEFT_MARGIN - HELP_SCREEN_TEXT_RIGHT_MARGIN_SPACE;
+
+        //if this screen has a valid title
+        if (iStartLoc != -1)
+        {
+            files.LoadEncryptedDataFromFile(HELPSCREEN_FILE, out zText, iStartLoc, HELPSCREEN_RECORD_SIZE);
+
+            FontSubSystem.SetFontShadow(FontShadow.NO_SHADOW);
+
+            usPosX = gHelpScreen.usLeftMarginPosX;
+
+            //		DrawTextToScreen( zText, usPosX, (UINT16)(gHelpScreen.usScreenLocY+HELP_SCREEN_TITLE_OFFSET_Y), usWidth, 
+            //									 HELP_SCREEN_TITLE_BODY_FONT, HELP_SCREEN_TITLE_BODY_COLOR, HELP_SCREEN_TEXT_BACKGROUND, FALSE, CENTER_JUSTIFIED );
+
+            //Display the Title
+//            IanDisplayWrappedString(usPosX, (gHelpScreen.usScreenLoc.Y + HELP_SCREEN_TITLE_OFFSET_Y), usWidth, HELP_SCREEN_GAP_BTN_LINES,
+//                                                             HELP_SCREEN_TITLE_BODY_FONT, HELP_SCREEN_TITLE_BODY_COLOR, zText,
+//                                                             HELP_SCREEN_TEXT_BACKGROUND, false, 0);
+
+        }
+
+        //Display the '( press H to get help... )'
+        iStartLoc = HELPSCREEN_RECORD_SIZE * (int)HLP_TXT.CONSTANT_SUBTITLE;
+        files.LoadEncryptedDataFromFile(HELPSCREEN_FILE, out zText, iStartLoc, HELPSCREEN_RECORD_SIZE);
+
+        usPosX = gHelpScreen.usLeftMarginPosX;
+
+        usPosY = gHelpScreen.usScreenLoc.Y + HELP_SCREEN_HELP_REMINDER_Y;
+        //	DrawTextToScreen( zText, usPosX, usPosY, usWidth, 
+        //								 HELP_SCREEN_TEXT_BODY_FONT, HELP_SCREEN_TITLE_BODY_COLOR, HELP_SCREEN_TEXT_BACKGROUND, FALSE, CENTER_JUSTIFIED );
+
+
+//        IanDisplayWrappedString(usPosX, usPosY, usWidth, HELP_SCREEN_GAP_BTN_LINES,
+//                                                         HELP_SCREEN_TITLE_BODY_FONT, HELP_SCREEN_TITLE_BODY_COLOR, zText,
+//                                                         HELP_SCREEN_TEXT_BACKGROUND, false, 0);
+
+
+        if (!gHelpScreen.fForceHelpScreenToComeUp)
+        {
+            //calc location for the ' [ x ] Dont display again...'
+            iStartLoc = HELPSCREEN_RECORD_SIZE * (int)HLP_TXT.CONSTANT_FOOTER;
+            files.LoadEncryptedDataFromFile(HELPSCREEN_FILE, out zText, iStartLoc, HELPSCREEN_RECORD_SIZE);
+
+            usPosX = gHelpScreen.usLeftMarginPosX + HELP_SCREEN_SHOW_HELP_AGAIN_REGION_TEXT_OFFSET_X;
+
+            usPosY = gHelpScreen.usScreenLoc.Y + gHelpScreen.usScreenSize.Height - HELP_SCREEN_SHOW_HELP_AGAIN_REGION_TEXT_OFFSET_Y + 2;
+
+
+            //Display the ' [ x ] Dont display again...'
+//            IanDisplayWrappedString(usPosX, usPosY, usWidth, HELP_SCREEN_GAP_BTN_LINES,
+//                                                             HELP_SCREEN_TEXT_BODY_FONT, HELP_SCREEN_TITLE_BODY_COLOR, zText,
+//                                                             HELP_SCREEN_TEXT_BACKGROUND, false, 0);
+        }
+
+        FontSubSystem.SetFontShadow(FontShadow.DEFAULT_SHADOW);
     }
 
     private static bool DrawHelpScreenBackGround()
@@ -416,7 +546,7 @@ public class HelpScreen : IScreen
 
 
         video.GetVideoSurface(out hDestVSurface, guiRENDERBUFFER);
-        video.GetVideoSurface(out hSrcVSurface, guiHelpScreenTextBufferSurface);
+        //video.GetVideoSurface(out hSrcVSurface, guiHelpScreenTextBufferSurface);
 
         SrcRect = new()
         {
@@ -426,7 +556,7 @@ public class HelpScreen : IScreen
             Height = 0 + HLP_SCRN__HEIGHT_OF_TEXT_AREA - (2 * 8),
         };
 
-        video.BltVSurfaceUsingDD(hDestVSurface, hSrcVSurface, VO_BLT.SRCTRANSPARENCY, gHelpScreen.usLeftMarginPosX, (gHelpScreen.usScreenLoc.Y + HELP_SCREEN_TEXT_OFFSET_Y), out SrcRect);
+        //video.BltVSurfaceUsingDD(hDestVSurface, hSrcVSurface, VO_BLT.SRCTRANSPARENCY, gHelpScreen.usLeftMarginPosX, (gHelpScreen.usScreenLoc.Y + HELP_SCREEN_TEXT_OFFSET_Y), out SrcRect);
 
         DisplayHelpScreenTextBufferScrollBox();
     }
@@ -467,7 +597,7 @@ public class HelpScreen : IScreen
                 FROMRGB(227, 198, 88));
 
             //display the line
-            //pDestBuf = LockVideoSurface(FRAME_BUFFER, &uiDestPitchBYTES);
+            pDestBuf = video.Surfaces[SurfaceType.FRAME_BUFFER];
             video.SetClippingRegionAndImageWidth(uiDestPitchBYTES, new(0, 0, 640, 480));
 
             // draw the gold highlite line on the top and left
@@ -767,18 +897,18 @@ public class HelpScreen : IScreen
                 case MouseButton.Right:
                     MouseSubSystem.MouseHook(MouseEvents.RIGHT_BUTTON_DOWN, MousePos, inputs.gfLeftButtonState, inputs.gfRightButtonState);
                     break;
-//                case MouseButton.Left:// LEFT_BUTTON_UP:
-//                    MouseSubSystem.MouseHook(MouseEvents.LEFT_BUTTON_UP, MousePos.X, MousePos.Y, _LeftButtonDown, _RightButtonDown);
-//                    break;
-//                case MouseButton.Right:// RIGHT_BUTTON_UP:
-//                    MouseSubSystem.MouseHook(MouseEvents.RIGHT_BUTTON_UP, MousePos.X, MousePos.Y, _LeftButtonDown, _RightButtonDown);
-//                    break;
-//                case MouseButton.Right://_BUTTON_REPEAT:
-//                    MouseSubSystem.MouseHook(MouseEvents.RIGHT_BUTTON_REPEAT, MousePos.X, MousePos.Y, _LeftButtonDown, _RightButtonDown);
-//                    break;
-//                case MouseButton.Left://LEFT_BUTTON_REPEAT:
-//                    MouseSubSystem.MouseHook(MouseEvents.LEFT_BUTTON_REPEAT, MousePos.X, MousePos.Y, _LeftButtonDown, _RightButtonDown);
-//                    break;
+                    //                case MouseButton.Left:// LEFT_BUTTON_UP:
+                    //                    MouseSubSystem.MouseHook(MouseEvents.LEFT_BUTTON_UP, MousePos.X, MousePos.Y, _LeftButtonDown, _RightButtonDown);
+                    //                    break;
+                    //                case MouseButton.Right:// RIGHT_BUTTON_UP:
+                    //                    MouseSubSystem.MouseHook(MouseEvents.RIGHT_BUTTON_UP, MousePos.X, MousePos.Y, _LeftButtonDown, _RightButtonDown);
+                    //                    break;
+                    //                case MouseButton.Right://_BUTTON_REPEAT:
+                    //                    MouseSubSystem.MouseHook(MouseEvents.RIGHT_BUTTON_REPEAT, MousePos.X, MousePos.Y, _LeftButtonDown, _RightButtonDown);
+                    //                    break;
+                    //                case MouseButton.Left://LEFT_BUTTON_REPEAT:
+                    //                    MouseSubSystem.MouseHook(MouseEvents.LEFT_BUTTON_REPEAT, MousePos.X, MousePos.Y, _LeftButtonDown, _RightButtonDown);
+                    //                    break;
             }
 
 
@@ -841,7 +971,7 @@ public class HelpScreen : IScreen
                 }
 
                 //if (!HandleTextInput(Event) && Event.usEvent == KEY_REPEAT)
-                if(keyEvent.Repeat)
+                if (keyEvent.Repeat)
                 {
                     switch (keyEvent.Key)
                     {
@@ -871,6 +1001,53 @@ public class HelpScreen : IScreen
                 }
             }
         }
+    }
+
+    private static void ChangeToHelpScreenSubPage(int bNewPage)
+    {
+        //if for some reason, we are assigning a lower number
+        if (bNewPage < 0)
+        {
+            gHelpScreen.bCurrentHelpScreenActiveSubPage = 0;
+        }
+
+        //for some reason if the we are passing in a # that is greater then the max, set it to the max
+        else if (bNewPage >= gHelpScreen.bNumberOfButtons)
+        {
+            gHelpScreen.bCurrentHelpScreenActiveSubPage = (gHelpScreen.bNumberOfButtons == 0) ? 0 : gHelpScreen.bNumberOfButtons - 1;
+        }
+
+        //if we are selecting the current su page, exit
+        else if (bNewPage == gHelpScreen.bCurrentHelpScreenActiveSubPage)
+        {
+            return;
+        }
+
+        //else assign the new subpage
+        else
+        {
+            gHelpScreen.bCurrentHelpScreenActiveSubPage = bNewPage;
+        }
+
+        //refresh the screen
+        gHelpScreen.ubHelpScreenDirty = HLP_SCRN_DRTY_LVL.REFRESH_TEXT;
+
+        //'undepress' all the buttons
+        for (int i = 0; i < gHelpScreen.bNumberOfButtons; i++)
+        {
+            guiHelpScreenBtns[i].uiFlags &= (~ButtonFlags.BUTTON_CLICKED_ON);
+        }
+
+        //depress the proper button
+        guiHelpScreenBtns[gHelpScreen.bCurrentHelpScreenActiveSubPage].uiFlags |= ButtonFlags.BUTTON_CLICKED_ON;
+
+        //change the current sub page, and render it to the buffer
+        ChangeHelpScreenSubPage();
+    }
+
+    private static void PrepareToExitHelpScreen()
+    {
+        gfHelpScreenExit = true;
     }
 
     private static bool EnterHelpScreen()
@@ -927,7 +1104,7 @@ public class HelpScreen : IScreen
             giExitBtnImage,
             "",
             HELP_SCREEN_BTN_FONT,
-            HELP_SCREEN_BTN_FONT_ON_COLOR,  FontShadow.DEFAULT_SHADOW,
+            HELP_SCREEN_BTN_FONT_ON_COLOR, FontShadow.DEFAULT_SHADOW,
             HELP_SCREEN_BTN_FONT_OFF_COLOR, FontShadow.DEFAULT_SHADOW,
             ButtonTextJustifies.TEXT_CJUSTIFIED,
             new Point(usPosX, usPosY),
@@ -935,7 +1112,7 @@ public class HelpScreen : IScreen
             MSYS_PRIORITY.HIGHEST,
             MouseSubSystem.DefaultMoveCallback,
             BtnHelpScreenExitCallback);
-        ButtonSubSystem.SetButtonFastHelpText(guiHelpScreenExitBtn, gzHelpScreenText[HLP_SCRN_TXT__EXIT_SCREEN]);
+        ButtonSubSystem.SetButtonFastHelpText(guiHelpScreenExitBtn, gzHelpScreenText[0]);
         ButtonSubSystem.SetButtonCursor(guiHelpScreenExitBtn, gHelpScreen.usCursor);
 
 
@@ -980,7 +1157,7 @@ public class HelpScreen : IScreen
 
         /*
             ///creatre a region for the text that says ' [ x ] click to continue seeing ....'
-            iStartLoc = HELPSCREEN_RECORD_SIZE * HLP_TXT_CONSTANT_FOOTER;
+            iStartLoc = HELPSCREEN_RECORD_SIZE * CONSTANT_FOOTER;
             LoadEncryptedDataFromFile(HELPSCREEN_FILE, zText, iStartLoc, HELPSCREEN_RECORD_SIZE );
 
             usWidth = StringPixLength( zText, HELP_SCREEN.TEXT_BODY_FONT );
@@ -997,7 +1174,6 @@ public class HelpScreen : IScreen
 
         //create the text buffer
         CreateHelpScreenTextBuffer();
-
 
         //make sure we redraw everything
         gHelpScreen.ubHelpScreenDirty = HLP_SCRN_DRTY_LVL.REFRESH_ALL;
@@ -1031,6 +1207,198 @@ public class HelpScreen : IScreen
         return (true);
     }
 
+    private static void CreateScrollAreaButtons()
+    {
+        throw new NotImplementedException();
+    }
+
+    private static void ChangeHelpScreenSubPage()
+    {
+        //reset
+        gHelpScreen.iLineAtTopOfTextBuffer = 0;
+
+        RenderCurrentHelpScreenTextToBuffer();
+
+        //enable or disable the help screen arrow buttons
+        if (gHelpScreen.usTotalNumberOfLinesInBuffer <= HLP_SCRN__MAX_NUMBER_DISPLAYED_LINES_IN_BUFFER)
+        {
+            ButtonSubSystem.DisableButton(giHelpScreenScrollArrows[0]);
+            ButtonSubSystem.DisableButton(giHelpScreenScrollArrows[1]);
+        }
+        else
+        {
+            ButtonSubSystem.EnableButton(giHelpScreenScrollArrows[0]);
+            ButtonSubSystem.EnableButton(giHelpScreenScrollArrows[1]);
+        }
+    }
+
+    private static void RenderCurrentHelpScreenTextToBuffer()
+    {
+        //clear the buffer ( use 0, black as a transparent color
+        ClearHelpScreenTextBuffer();
+
+        //Render the current screen, and get the number of pixels it used to display
+        gHelpScreen.usTotalNumberOfPixelsInBuffer = RenderSpecificHelpScreen();
+
+        //calc the number of lines in the buffer
+        gHelpScreen.usTotalNumberOfLinesInBuffer = gHelpScreen.usTotalNumberOfPixelsInBuffer / (HLP_SCRN__HEIGHT_OF_1_LINE_IN_BUFFER);
+
+    }
+
+    private static int RenderSpecificHelpScreen()
+    {
+        int usNumVerticalPixelsDisplayed = 0;
+        //new screen:
+
+        //set the buffer for the text to go to
+        //	SetFontDestBuffer( guiHelpScreenTextBufferSurface, gHelpScreen.usLeftMarginPosX, gHelpScreen.usScreenLocY + HELP_SCREEN_TEXT_OFFSET_Y,
+        //										 HLP_SCRN__WIDTH_OF_TEXT_BUFFER, HLP_SCRN__NUMBER_BYTES_IN_TEXT_BUFFER, FALSE );
+        FontSubSystem.SetFontDestBuffer(
+            guiHelpScreenTextBufferSurface, 0, 0,
+            HLP_SCRN__WIDTH_OF_TEXT_BUFFER, HLP_SCRN__HEIGHT_OF_TEXT_BUFFER, false);
+
+
+        //switch on the current screen
+        switch (gHelpScreen.bCurrentHelpScreen)
+        {
+            case HELP_SCREEN.LAPTOP:
+                usNumVerticalPixelsDisplayed = RenderLaptopHelpScreen();
+                break;
+            case HELP_SCREEN.MAPSCREEN:
+                usNumVerticalPixelsDisplayed = RenderMapScreenHelpScreen();
+                break;
+            case HELP_SCREEN.TACTICAL:
+                usNumVerticalPixelsDisplayed = RenderTacticalHelpScreen();
+                break;
+            case HELP_SCREEN.MAPSCREEN_NO_ONE_HIRED:
+                usNumVerticalPixelsDisplayed = RenderMapScreenNoOneHiredYetHelpScreen();
+                break;
+            case HELP_SCREEN.MAPSCREEN_NOT_IN_ARULCO:
+                usNumVerticalPixelsDisplayed = RenderMapScreenNotYetInArulcoHelpScreen();
+                break;
+            case HELP_SCREEN.MAPSCREEN_SECTOR_INVENTORY:
+                usNumVerticalPixelsDisplayed = RenderMapScreenSectorInventoryHelpScreen();
+                break;
+            case HELP_SCREEN.OPTIONS:
+                break;
+            case HELP_SCREEN.LOAD_GAME:
+                break;
+
+            default:
+                break;
+        }
+
+        FontSubSystem.SetFontDestBuffer(SurfaceType.FRAME_BUFFER, 0, 0, 640, 480, false);
+
+        //add 1 line to the bottom of the buffer
+        usNumVerticalPixelsDisplayed += 10;
+
+        return (usNumVerticalPixelsDisplayed);
+    }
+
+    private static int RenderMapScreenSectorInventoryHelpScreen()
+    {
+        throw new NotImplementedException();
+    }
+
+    private static int RenderMapScreenNotYetInArulcoHelpScreen()
+    {
+        throw new NotImplementedException();
+    }
+
+    private static int RenderMapScreenNoOneHiredYetHelpScreen()
+    {
+        throw new NotImplementedException();
+    }
+
+    private static int RenderTacticalHelpScreen()
+    {
+        throw new NotImplementedException();
+    }
+
+    private static int RenderMapScreenHelpScreen()
+    {
+        throw new NotImplementedException();
+    }
+
+    private static int RenderLaptopHelpScreen()
+    {
+        throw new NotImplementedException();
+    }
+
+    private static void ClearHelpScreenTextBuffer()
+    {
+        // CLEAR THE FRAME BUFFER
+        Image<Rgba32> pDestBuf = video.Surfaces[guiHelpScreenTextBufferSurface];
+        pDestBuf.Mutate(ctx => ctx.Clear(Color.AliceBlue));
+
+        video.InvalidateScreen();
+    }
+
+    private static void BtnHelpScreenDontShowHelpAgainCallback(ref GUI_BUTTON button, MSYS_CALLBACK_REASON reason)
+    {
+        //	UINT8	ubButton = (UINT8)MSYS_GetBtnUserData( btn, 0 );
+
+        if (reason.HasFlag(MSYS_CALLBACK_REASON.LBUTTON_UP))
+        {
+        }
+        else if (reason.HasFlag(MSYS_CALLBACK_REASON.LBUTTON_DWN))
+        {
+            /*
+                    btn->uiFlags &= ~BUTTON_CLICKED_ON;
+
+                    if( gHelpScreen.usHasPlayerSeenHelpScreenInCurrentScreen & ( 1 << gHelpScreen.bCurrentHelpScreen ) )
+                    {
+            //
+                        gHelpScreen.usHasPlayerSeenHelpScreenInCurrentScreen &= ~( 1 << gHelpScreen.bCurrentHelpScreen );
+                    }
+                    else
+                    {
+            //			gHelpScreen.usHasPlayerSeenHelpScreenInCurrentScreen |= ( 1 << gHelpScreen.bCurrentHelpScreen );
+
+                    }
+            //		btn->uiFlags |= BUTTON_CLICKED_ON;
+            */
+        }
+    }
+
+    private static bool CreateHelpScreenTextBuffer()
+    {
+        // Create a background video surface to blt the face onto
+        Image<Rgba32> textBuffer = new(HLP_SCRN__WIDTH_OF_TEXT_BUFFER, HLP_SCRN__HEIGHT_OF_TEXT_BUFFER);
+
+//        guiHelpScreenTextBufferSurface = new HVOBJECT
+//        {
+//            Images = [textBuffer],
+//        };
+//
+//        video.Surfaces[]Surfaces.LockSurface((guiHelpScreenTextBufferSurface);
+
+        return true;
+    }
+
+    private static void BtnHelpScreenExitCallback(ref GUI_BUTTON btn, MSYS_CALLBACK_REASON reason)
+    {
+        if (reason.HasFlag(MSYS_CALLBACK_REASON.LBUTTON_DWN))
+        {
+            btn.uiFlags |= ButtonFlags.BUTTON_CLICKED_ON;
+            video.InvalidateRegion(btn.MouseRegion.Bounds);
+        }
+        if (reason.HasFlag(MSYS_CALLBACK_REASON.LBUTTON_UP))
+        {
+            video.InvalidateRegion(btn.MouseRegion.Bounds);
+
+            PrepareToExitHelpScreen();
+
+            btn.uiFlags &= (~ButtonFlags.BUTTON_CLICKED_ON);
+        }
+        if (reason.HasFlag(MSYS_CALLBACK_REASON.LOST_MOUSE))
+        {
+            btn.uiFlags &= (~ButtonFlags.BUTTON_CLICKED_ON);
+            video.InvalidateRegion(btn.MouseRegion.Bounds);
+        }
+    }
+
     private static void CreateHelpScreenButtons()
     {
         int usPosX, usPosY;
@@ -1049,7 +1417,7 @@ public class HelpScreen : IScreen
             for (i = 0; i < gHelpScreen.bNumberOfButtons; i++)
             {
                 //get the text for the button
-                GetHelpScreenText(gHelpScreenBtnTextRecordNum[gHelpScreen.bCurrentHelpScreen].iButtonTextNum[i], sText);
+//               sText = GetHelpScreenText(gHelpScreenBtnTextRecordNum[gHelpScreen.bCurrentHelpScreen].iButtonTextNum[i]);
 
                 /*
                             guiHelpScreenBtns[i] = CreateTextButton( sText, HELP_SCREEN_BTN_FONT, HELP_SCREEN_BTN_FONT_COLOR, HELP_SCREEN_BTN_FONT_BACK_COLOR, 
@@ -1064,9 +1432,9 @@ public class HelpScreen : IScreen
                     giHelpScreenButtonsImage[i],
                     sText,
                     HELP_SCREEN_BTN_FONT,
-                    HELP_SCREEN_BTN_FONT_ON_COLOR,  
+                    HELP_SCREEN_BTN_FONT_ON_COLOR,
                     FontShadow.DEFAULT_SHADOW,
-                    HELP_SCREEN_BTN_FONT_OFF_COLOR, 
+                    HELP_SCREEN_BTN_FONT_OFF_COLOR,
                     FontShadow.DEFAULT_SHADOW,
                     ButtonTextJustifies.TEXT_CJUSTIFIED,
                     new Point(usPosX, usPosY),
@@ -1085,6 +1453,16 @@ public class HelpScreen : IScreen
 
             guiHelpScreenBtns[0].uiFlags |= ButtonFlags.BUTTON_CLICKED_ON;
         }
+    }
+
+    private static string GetHelpScreenText(int uiRecordToGet)
+    {
+        int iStartLoc = -1;
+
+        iStartLoc = HELPSCREEN_RECORD_SIZE * uiRecordToGet;
+        files.LoadEncryptedDataFromFile(HELPSCREEN_FILE, out string pText, iStartLoc, HELPSCREEN_RECORD_SIZE);
+
+        return pText;
     }
 
     private static void BtnHelpScreenBtnsCallback(ref GUI_BUTTON button, MSYS_CALLBACK_REASON reason)
@@ -1117,7 +1495,7 @@ public class HelpScreen : IScreen
         switch (gHelpScreen.bCurrentHelpScreen)
         {
             case HELP_SCREEN.LAPTOP:
-                gHelpScreen.bNumberOfButtons = HLP_SCRN_LPTP_NUM_PAGES;
+                gHelpScreen.bNumberOfButtons = (int)HLP_SCRN_LPTP.HLP_SCRN_LPTP_NUM_PAGES;
                 gHelpScreen.usCursor = CURSOR.LAPTOP_SCREEN;
 
                 //center the screen inside the laptop screen
@@ -1126,13 +1504,13 @@ public class HelpScreen : IScreen
 
                 break;
             case HELP_SCREEN.MAPSCREEN:
-                gHelpScreen.bNumberOfButtons = HLP_SCRN_NUM_MPSCRN_BTNS;
+                gHelpScreen.bNumberOfButtons = (int)HLP_SCRN_MPSCRN.HLP_SCRN_NUM_MPSCRN_BTNS;
 
                 //calc the center position based on the current panel thats being displayed
                 gHelpScreen.usScreenLoc.Y = (gsVIEWPORT_END_Y - gHelpScreen.usScreenSize.Height) / 2;
                 break;
             case HELP_SCREEN.TACTICAL:
-                gHelpScreen.bNumberOfButtons = HLP_SCRN_NUM_TACTICAL_PAGES;
+                gHelpScreen.bNumberOfButtons = (int)HLP_SCRN_TACTICAL.NUM_TACTICAL_PAGES;
 
                 //calc the center position based on the current panel thats being displayed
                 gHelpScreen.usScreenLoc.Y = (gsVIEWPORT_END_Y - gHelpScreen.usScreenSize.Height) / 2;
@@ -1155,8 +1533,8 @@ public class HelpScreen : IScreen
                 break;
 
 
-            case HELP_SCREEN_OPTIONS:
-            case HELP_SCREEN_LOAD_GAME:
+            case HELP_SCREEN.OPTIONS:
+            case HELP_SCREEN.LOAD_GAME:
                 break;
 
             default:
@@ -1280,4 +1658,214 @@ public enum HLP_SCRN_DRTY_LVL
     NOT_DIRTY,
     REFRESH_TEXT,
     REFRESH_ALL,
+};
+
+//Tactical
+public enum HLP_SCRN_TACTICAL
+{
+    OVERVIEW,
+    MOVEMENT,
+    SIGHT,
+    ATTACKING,
+    ITEMS,
+    KEYBOARD,
+
+    NUM_TACTICAL_PAGES,
+};
+
+//mapscreen, welcome to arulco
+public enum HLP_SCRN_MPSCRN
+{
+    OVERVIEW,
+    ASSIGNMENTS,
+    DESTINATIONS,
+    MAP,
+    MILITIA,
+    AIRSPACE,
+    ITEMS,
+    KEYBOARD,
+
+    HLP_SCRN_NUM_MPSCRN_BTNS,
+
+};
+//laptop sub pages
+public enum HLP_SCRN_LPTP
+{
+    OVERVIEW,
+    EMAIL,
+    WEB,
+    FILES,
+    HISTORY,
+    PERSONNEL,
+    FINANCIAL,
+    MERC_STATS,
+
+    HLP_SCRN_LPTP_NUM_PAGES,
+};
+
+//enum for the help text paragrphs
+public enum HLP_TXT
+{
+    CONSTANT_SUBTITLE,          //0
+    CONSTANT_FOOTER,
+    LAPTOP_TITLE,
+    LAPTOP_BUTTON_1,
+    LAPTOP_OVERVIEW_P1,
+    LAPTOP_OVERVIEW_P2,
+    LAPTOP_BUTTON_2,
+    LAPTOP_EMAIL_P1,
+    LAPTOP_BUTTON_3,
+    LAPTOP_WEB_P1,
+
+    LAPTOP_BUTTON_4,        //10
+    LAPTOP_FILES_P1,
+    LAPTOP_BUTTON_5,
+    LAPTOP_HISTORY_P1,
+    LAPTOP_BUTTON_6,
+    LAPTOP_PERSONNEL_P1,
+
+    LAPTOP_BUTTON_7,
+    FINANCES_P1,
+    FINANCES_P2,
+
+    LAPTOP_BUTTON_8,
+    MERC_STATS_P1,
+    MERC_STATS_P2,
+    MERC_STATS_P3,
+    MERC_STATS_P4,
+    MERC_STATS_P5,
+    MERC_STATS_P6,
+    MERC_STATS_P7,
+    MERC_STATS_P8,
+    MERC_STATS_P9,
+    MERC_STATS_P10,
+    MERC_STATS_P11,
+    MERC_STATS_P12,
+    MERC_STATS_P13,
+    MERC_STATS_P14,
+    MERC_STATS_P15,
+
+    //mapscreen no one hired yet
+    MPSCRN_NO_1_HIRED_YET_TITLE,
+    MPSCRN_NO_1_HIRED_YET_P1,                                   //20
+    MPSCRN_NO_1_HIRED_YET_P2,
+
+    //mapscreen not in arulco yet
+    MPSCRN_NOT_IN_ARULCO_TITLE,
+
+    MPSCRN_NOT_IN_ARULCO_P1,
+    MPSCRN_NOT_IN_ARULCO_P2,
+    MPSCRN_NOT_IN_ARULCO_P3,
+
+    WELCOM_TO_ARULCO_TITLE,
+    WELCOM_TO_ARULCO_BUTTON_1,
+    WELCOM_TO_ARULCO_OVERVIEW_P1,
+    WELCOM_TO_ARULCO_OVERVIEW_P2,
+
+
+
+
+
+    WELCOM_TO_ARULCO_OVERVIEW_P3,       //30
+    WELCOM_TO_ARULCO_OVERVIEW_P4,
+    WELCOM_TO_ARULCO_OVERVIEW_P5,
+    WELCOM_TO_ARULCO_BUTTON_2,
+    WELCOM_TO_ARULCO_ASSNMNT_P1,
+    WELCOM_TO_ARULCO_ASSNMNT_P2,
+    WELCOM_TO_ARULCO_ASSNMNT_P3,
+    WELCOM_TO_ARULCO_ASSNMNT_P4,
+    WELCOM_TO_ARULCO_ASSNMNT_P5,
+    WELCOM_TO_ARULCO_ASSNMNT_P6,
+
+
+    WELCOM_TO_ARULCO_ASSNMNT_P7,        //40
+    WELCOM_TO_ARULCO_ASSNMNT_P8,
+    WELCOM_TO_ARULCO_BUTTON_3,
+    WELCOM_TO_ARULCO_DSTINATION_P1,
+    WELCOM_TO_ARULCO_DSTINATION_P2,
+    WELCOM_TO_ARULCO_DSTINATION_P3,
+    WELCOM_TO_ARULCO_DSTINATION_P4,
+    WELCOM_TO_ARULCO_DSTINATION_P5,
+    WELCOM_TO_ARULCO_BUTTON_4,
+    WELCOM_TO_ARULCO_MAP_P1,
+
+    WELCOM_TO_ARULCO_MAP_P2,        //50
+    WELCOM_TO_ARULCO_MAP_P3,
+    WELCOM_TO_ARULCO_MAP_P4,
+    WELCOM_TO_ARULCO_MAP_P5,
+    WELCOM_TO_ARULCO_MAP_P6,
+    WELCOM_TO_ARULCO_MAP_P7,
+    WELCOM_TO_ARULCO_BUTTON_5,
+    WELCOM_TO_ARULCO_MILITIA_P1,
+    WELCOM_TO_ARULCO_MILITIA_P2,
+
+
+    WELCOM_TO_ARULCO_MILITIA_P3,            //60
+
+    WELCOM_TO_ARULCO_BUTTON_6,
+    WELCOM_TO_ARULCO_AIRSPACE_P1,
+    WELCOM_TO_ARULCO_AIRSPACE_P2,
+
+
+    WELCOM_TO_ARULCO_BUTTON_7,
+    WELCOM_TO_ARULCO_ITEMS_P1,
+
+    WELCOM_TO_ARULCO_BUTTON_8,
+    WELCOM_TO_ARULCO_KEYBOARD_P1,
+    WELCOM_TO_ARULCO_KEYBOARD_P2,
+    WELCOM_TO_ARULCO_KEYBOARD_P3,
+    WELCOM_TO_ARULCO_KEYBOARD_P4,
+
+
+    TACTICAL_TITLE,
+    TACTICAL_BUTTON_1,
+    TACTICAL_OVERVIEW_P1,
+    TACTICAL_OVERVIEW_P2,
+    TACTICAL_OVERVIEW_P3,
+    TACTICAL_OVERVIEW_P4,
+
+    TACTICAL_BUTTON_2,
+    TACTICAL_MOVEMENT_P1,
+    TACTICAL_MOVEMENT_P2,
+    TACTICAL_MOVEMENT_P3,
+    TACTICAL_MOVEMENT_P4,
+
+
+    TACTICAL_BUTTON_3,
+    TACTICAL_SIGHT_P1,
+    TACTICAL_SIGHT_P2,
+    TACTICAL_SIGHT_P3,
+    TACTICAL_SIGHT_P4,
+
+    TACTICAL_BUTTON_4,
+    TACTICAL_ATTACKING_P1,
+    TACTICAL_ATTACKING_P2,
+    TACTICAL_ATTACKING_P3,
+
+    TACTICAL_BUTTON_5,
+
+    TACTICAL_ITEMS_P1,
+    TACTICAL_ITEMS_P2,
+    TACTICAL_ITEMS_P3,
+    TACTICAL_ITEMS_P4,
+    TACTICAL_BUTTON_6,
+
+
+    TACTICAL_KEYBOARD_P1,
+    TACTICAL_KEYBOARD_P2,
+    TACTICAL_KEYBOARD_P3,
+    TACTICAL_KEYBOARD_P4,
+    TACTICAL_KEYBOARD_P5,
+    TACTICAL_KEYBOARD_P6,
+    TACTICAL_KEYBOARD_P7,
+    TACTICAL_KEYBOARD_P8,
+
+
+    SECTOR_INVTRY_TITLE,
+    //	SECTOR_INVTRY_BUTTON_1,
+    SECTOR_INVTRY_OVERVIEW_P1,
+    SECTOR_INVTRY_OVERVIEW_P2,
+
+
+    //	,
 };

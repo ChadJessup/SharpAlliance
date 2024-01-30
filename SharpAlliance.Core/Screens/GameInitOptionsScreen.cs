@@ -172,7 +172,7 @@ public class GameInitOptionsScreen : IScreen
 
         for (GameDifficulty cnt = 0; cnt < GameDifficulty.NUM_DIFF_SETTINGS; cnt++)
         {
-            this.guiDifficultySettingsToggles[cnt] = this.buttons.CreateCheckBoxButton(
+            this.guiDifficultySettingsToggles[cnt] = ButtonSubSystem.CreateCheckBoxButton(
                 new(GIO_DIF_SETTINGS_X + GIO_OFFSET_TO_TOGGLE_BOX, usPosY),
                 "INTERFACE\\OptionsCheck.sti",
                 MSYS_PRIORITY.HIGH + 10,
@@ -207,7 +207,7 @@ public class GameInitOptionsScreen : IScreen
         usPosY = GIO_GAME_SETTINGS_Y - GIO_OFFSET_TO_TOGGLE_BOX_Y;
         for (GameStyle gameStyle = 0; gameStyle < GameStyle.NUM_GAME_STYLES; gameStyle++)
         {
-            this.guiGameStyleToggles[gameStyle] = this.buttons.CreateCheckBoxButton(
+            this.guiGameStyleToggles[gameStyle] = ButtonSubSystem.CreateCheckBoxButton(
                 new(GIO_GAME_SETTINGS_X + GIO_OFFSET_TO_TOGGLE_BOX, usPosY),
                 "INTERFACE\\OptionsCheck.sti", MSYS_PRIORITY.HIGH + 10,
                 this.BtnGameStyleTogglesCallback);
@@ -231,7 +231,7 @@ public class GameInitOptionsScreen : IScreen
         usPosY = GIO_IRON_MAN_SETTING_Y - GIO_OFFSET_TO_TOGGLE_BOX_Y;
         for (IronManMode opt = 0; opt < IronManMode.NUM_SAVE_OPTIONS; opt++)
         {
-            this.guiGameSaveToggles[opt] = this.buttons.CreateCheckBoxButton(
+            this.guiGameSaveToggles[opt] = ButtonSubSystem.CreateCheckBoxButton(
                 new(GIO_IRON_MAN_SETTING_X + GIO_OFFSET_TO_TOGGLE_BOX, usPosY),
                 "INTERFACE\\OptionsCheck.sti", MSYS_PRIORITY.HIGH + 10,
                 this.BtnGameSaveTogglesCallback);
@@ -259,7 +259,7 @@ public class GameInitOptionsScreen : IScreen
         usPosY = GIO_GUN_SETTINGS_Y - GIO_OFFSET_TO_TOGGLE_BOX_Y;
         for (GunOption cnt = 0; cnt < GunOption.NUM_GUN_OPTIONS; cnt++)
         {
-            this.guiGunOptionToggles[cnt] = this.buttons.CreateCheckBoxButton(
+            this.guiGunOptionToggles[cnt] = ButtonSubSystem.CreateCheckBoxButton(
                 new(GIO_GUN_SETTINGS_X + GIO_OFFSET_TO_TOGGLE_BOX, usPosY),
                 "INTERFACE\\OptionsCheck.sti", MSYS_PRIORITY.HIGH + 10,
                 this.BtnGunOptionsTogglesCallback);

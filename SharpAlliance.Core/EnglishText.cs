@@ -28,6 +28,11 @@ public static class EnglishText
         "Links",
     };
 
+    public static string[] gzHelpScreenText =
+    {
+        "Exit help screen",
+    };
+
 
     // bookmarks for different websites
     // IMPORTANT make sure you move down the Cancel string as bookmarks are being added

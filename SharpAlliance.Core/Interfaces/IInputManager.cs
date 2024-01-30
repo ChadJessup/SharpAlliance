@@ -22,4 +22,5 @@ public interface IInputManager : ISharpAllianceManager
     void ProcessEvents();
     void DequeueAllKeyBoardEvents();
     void GetMousePos(out Point pPosition);
+    bool HandleTextInput(IInputSnapshot @event);
 }

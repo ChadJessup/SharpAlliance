@@ -75,4 +75,5 @@ public interface IVideoManager : ISharpAllianceManager
     void BltVideoSurface(SurfaceType uiBuffer, SurfaceType surfaceType, int v, Point sDest, BlitTypes blitTypes, object value);
     void StartFrameBufferRender();
     bool BltStretchVideoSurface(SurfaceType uiDestVSurface, SurfaceType uiSrcVSurface, Point iDest, VO_BLT fBltFlags, Rectangle SrcRect, Rectangle DestRect);
+    void BltVSurfaceUsingDD(HVSURFACE hDestVSurface, HVSURFACE hSrcVSurface, VO_BLT sRCTRANSPARENCY, int usLeftMarginPosX, int v, out Rectangle srcRect);
 }
