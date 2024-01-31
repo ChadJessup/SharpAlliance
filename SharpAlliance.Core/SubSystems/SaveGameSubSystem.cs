@@ -194,12 +194,13 @@ public class SaveGameSubSystem : IDisposable
         //if the user doesnt want the help screens present
         if (gGameSettings.fHideHelpInAllScreens)
         {
-            gHelpScreen.usHasPlayerSeenHelpScreenInCurrentScreen = 0;
+            gHelpScreen.usHasPlayerSeenHelpScreenInCurrentScreen = true;
         }
         else
         {
             //Set it so that every screens help will come up the first time ( the 'x' will be set )
-            gHelpScreen.usHasPlayerSeenHelpScreenInCurrentScreen = 0xffff;
+            // gHelpScreen.usHasPlayerSeenHelpScreenInCurrentScreen = 0xffff;
+            gHelpScreen.usHasPlayerSeenHelpScreenInCurrentScreen = false;
         }
 
         return true;

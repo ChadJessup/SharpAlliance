@@ -332,6 +332,16 @@ public class FontSubSystem : ISharpAllianceManager
         return 0;
     }
 
+    public static void DrawTextToScreen(string text, PointF location)
+        => DrawTextToScreen(
+            text,
+            location,
+            width: text.Length * 16,
+            font: FontDefault,
+            foregroundColor: FontForeground16,
+            backgroundColor: FontBackground16,
+            justification: TextJustifies.LEFT_JUSTIFIED);
+
     public static void DrawTextToScreen(
         string text,
         PointF location,
@@ -1015,12 +1025,12 @@ public class FontSubSystem : ISharpAllianceManager
         }
 
         FontObjs[LoadIndex] = video.GetVideoObject(filename, out var key)!;
-//        if ((FontObjs[LoadIndex] = textures.LoadTexture(filename)) == null)
-//        {
-//            //DbgMessage(TOPIC_FONT_HANDLER, DBG_LEVEL_0, String("Error creating VOBJECT (%s)", filename);
-//
-//            return FontStyle.None;
-//        }
+        //        if ((FontObjs[LoadIndex] = textures.LoadTexture(filename)) == null)
+        //        {
+        //            //DbgMessage(TOPIC_FONT_HANDLER, DBG_LEVEL_0, String("Error creating VOBJECT (%s)", filename);
+        //
+        //            return FontStyle.None;
+        //        }
 
         if (FontDefault == FontStyle.None)
         {

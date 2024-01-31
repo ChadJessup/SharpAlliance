@@ -104,7 +104,7 @@ public class HelpScreen : IScreen
     private static int gubRenderHelpScreenTwiceInaRow;
     private static bool gfScrollBoxIsScrolling;
     private static bool gfHaveRenderedFirstFrameToSaveBuffer;
-    private static MOUSE_REGION? gHelpScreenScrollArea;
+    private static MOUSE_REGION gHelpScreenScrollArea = new(nameof(gHelpScreenScrollArea));
 
     public bool IsInitialized { get; set; }
     public ScreenState State { get; set; }
@@ -112,6 +112,7 @@ public class HelpScreen : IScreen
     public HelpScreen(
         ILogger<HelpScreen> logger,
         IVideoManager videoManager,
+        ILibraryManager libraryManager,
         IFileManager fileManager,
         IInputManager inputManager)
     {
@@ -122,7 +123,6 @@ public class HelpScreen : IScreen
 
     public static bool ShouldTheHelpScreenComeUp(HELP_SCREEN ubScreenID, bool fForceHelpScreenToComeUp)
     {
-
         //if the screen is being forsced to come up ( user pressed 'h' )
         if (fForceHelpScreenToComeUp)
         {
@@ -139,7 +139,7 @@ public class HelpScreen : IScreen
         }
 
         //has the player been in the screen before
-        if (((gHelpScreen.usHasPlayerSeenHelpScreenInCurrentScreen >> (byte)ubScreenID) & 0x01) != 0)
+        if (!gHelpScreen.usHasPlayerSeenHelpScreenInCurrentScreen)
         {
             goto HELP_SCREEN_WAIT_1_FRAME;
         }
@@ -262,7 +262,7 @@ public class HelpScreen : IScreen
             if (gHelpScreenDontShowHelpAgainToggle.uiFlags.HasFlag(ButtonFlags.BUTTON_CLICKED_ON))
             {
                 gGameSettings.fHideHelpInAllScreens = true;
-                gHelpScreen.usHasPlayerSeenHelpScreenInCurrentScreen = 0;
+                gHelpScreen.usHasPlayerSeenHelpScreenInCurrentScreen = false;
             }
             else
             {
@@ -404,7 +404,7 @@ public class HelpScreen : IScreen
             video.BlitBufferToBuffer(
                 SurfaceType.RENDER_BUFFER,
                 SurfaceType.SAVE_BUFFER,
-                new(gHelpScreen.usScreenLoc.X, gHelpScreen.usScreenLoc.Y, (int)(gHelpScreen.usScreenLoc.X + gHelpScreen.usScreenSize.Width), (int)(gHelpScreen.usScreenLoc.Y + gHelpScreen.usScreenSize.Height)));
+                new Rectangle(gHelpScreen.usScreenLoc, gHelpScreen.usScreenSize));
 
             ButtonSubSystem.UnmarkButtonsDirty(buttonList);
         }
@@ -458,9 +458,13 @@ public class HelpScreen : IScreen
         //	GetHelpScreenTextPositions( NULL, NULL, &usWidth );
 
         if (gHelpScreen.bNumberOfButtons != 0)
+        {
             usWidth = gHelpScreen.usScreenSize.Width - HELP_SCREEN_TEXT_LEFT_MARGIN_WITH_BTN - HELP_SCREEN_TEXT_RIGHT_MARGIN_SPACE;
+        }
         else
+        {
             usWidth = gHelpScreen.usScreenSize.Width - HELP_SCREEN_TEXT_LEFT_MARGIN - HELP_SCREEN_TEXT_RIGHT_MARGIN_SPACE;
+        }
 
         //if this screen has a valid title
         if (iStartLoc != -1)
@@ -1003,7 +1007,7 @@ public class HelpScreen : IScreen
         }
     }
 
-    private static void ChangeToHelpScreenSubPage(int bNewPage)
+    private static void ChangeToHelpScreenSubPage(HLP_SCRN_LPTP bNewPage)
     {
         //if for some reason, we are assigning a lower number
         if (bNewPage < 0)
@@ -1012,9 +1016,11 @@ public class HelpScreen : IScreen
         }
 
         //for some reason if the we are passing in a # that is greater then the max, set it to the max
-        else if (bNewPage >= gHelpScreen.bNumberOfButtons)
+        else if ((int)bNewPage >= gHelpScreen.bNumberOfButtons)
         {
-            gHelpScreen.bCurrentHelpScreenActiveSubPage = (gHelpScreen.bNumberOfButtons == 0) ? 0 : gHelpScreen.bNumberOfButtons - 1;
+            gHelpScreen.bCurrentHelpScreenActiveSubPage = (gHelpScreen.bNumberOfButtons == 0)
+                ? (HLP_SCRN_LPTP)0
+                : (HLP_SCRN_LPTP)gHelpScreen.bNumberOfButtons - 1;
         }
 
         //if we are selecting the current su page, exit
@@ -1039,7 +1045,7 @@ public class HelpScreen : IScreen
         }
 
         //depress the proper button
-        guiHelpScreenBtns[gHelpScreen.bCurrentHelpScreenActiveSubPage].uiFlags |= ButtonFlags.BUTTON_CLICKED_ON;
+        guiHelpScreenBtns[(int)gHelpScreen.bCurrentHelpScreenActiveSubPage].uiFlags |= ButtonFlags.BUTTON_CLICKED_ON;
 
         //change the current sub page, and render it to the buffer
         ChangeHelpScreenSubPage();
@@ -1137,7 +1143,7 @@ public class HelpScreen : IScreen
         {
             gHelpScreenDontShowHelpAgainToggle = ButtonSubSystem.CreateCheckBoxButton(
                 usPosX,
-                (int)(usPosY - 3),
+                (usPosY - 3),
                 "INTERFACE\\OptionsCheckBoxes.sti",
                 MSYS_PRIORITY.HIGHEST,
                 BtnHelpScreenDontShowHelpAgainCallback);
@@ -1182,7 +1188,7 @@ public class HelpScreen : IScreen
         gHelpScreen.fHaveAlreadyBeenInHelpScreenSinceEnteringCurrenScreen = true;
 
         //set the fact that we have been to the screen
-        gHelpScreen.usHasPlayerSeenHelpScreenInCurrentScreen &= (ushort)~(1 << (ushort)gHelpScreen.bCurrentHelpScreen);
+        gHelpScreen.usHasPlayerSeenHelpScreenInCurrentScreen = true;
 
         //always start at the top
         gHelpScreen.iLineAtTopOfTextBuffer = 0;
@@ -1209,7 +1215,150 @@ public class HelpScreen : IScreen
 
     private static void CreateScrollAreaButtons()
     {
-        throw new NotImplementedException();
+        int  usPosX, usWidth, usPosY;
+        int iPosY, iHeight;
+
+        if (gHelpScreen.bNumberOfButtons != 0)
+        {
+            usPosX = gHelpScreen.usScreenLoc.X + HLP_SCRN__SCROLL_POSX + HELP_SCREEN_BUTTON_BORDER_WIDTH;
+        }
+        else
+        {
+            usPosX = gHelpScreen.usScreenLoc.X + HLP_SCRN__SCROLL_POSX;
+        }
+
+        usWidth = HLP_SCRN__WIDTH_OF_SCROLL_AREA;
+
+        //Get the height and position of the scroll box
+        CalculateHeightAndPositionForHelpScreenScrollBox(out iHeight, out iPosY);
+
+        //Create a mouse region 'mask' the entrire screen
+        MouseSubSystem.MSYS_DefineRegion(
+            gHelpScreenScrollArea,
+            new Rectangle(usPosX, iPosY, usPosX + usWidth, iPosY + HLP_SCRN__HEIGHT_OF_SCROLL_AREA),
+            MSYS_PRIORITY.HIGHEST,
+            gHelpScreen.usCursor,
+            SelectHelpScrollAreaMovementCallBack,
+            SelectHelpScrollAreaCallBack);
+
+        MouseSubSystem.MSYS_AddRegion(ref gHelpScreenScrollArea);
+
+        guiHelpScreenScrollArrowImage[0] = ButtonSubSystem.LoadButtonImage("INTERFACE\\HelpScreen.sti", 14, 10, 11, 12, 13);
+        guiHelpScreenScrollArrowImage[1] = ButtonSubSystem.UseLoadedButtonImage(guiHelpScreenScrollArrowImage[0], 19, 15, 16, 17, 18);
+
+        if (gHelpScreen.bNumberOfButtons != 0)
+            usPosX = gHelpScreen.usScreenLoc.X + HLP_SCRN__SCROLL_UP_ARROW_X + HELP_SCREEN_BUTTON_BORDER_WIDTH;
+        else
+            usPosX = gHelpScreen.usScreenLoc.X + HLP_SCRN__SCROLL_UP_ARROW_X;
+
+        usPosY = gHelpScreen.usScreenLoc.Y + HLP_SCRN__SCROLL_UP_ARROW_Y;
+
+        //Create the scroll arrows
+        giHelpScreenScrollArrows[0] = ButtonSubSystem.QuickCreateButton(
+            guiHelpScreenScrollArrowImage[0],
+            new Point(usPosX, usPosY),
+            ButtonFlags.BUTTON_TOGGLE, MSYS_PRIORITY.HIGHEST,
+            MouseSubSystem.DefaultMoveCallback,
+            BtnHelpScreenScrollArrowsCallback);
+
+        ButtonSubSystem.MSYS_SetBtnUserData(giHelpScreenScrollArrows[0], 0, 0);
+        ButtonSubSystem.SetButtonCursor(giHelpScreenScrollArrows[0], gHelpScreen.usCursor);
+
+        usPosY = gHelpScreen.usScreenLoc.Y + HLP_SCRN__SCROLL_DWN_ARROW_Y;
+
+        //Create the scroll arrows
+        giHelpScreenScrollArrows[1] = ButtonSubSystem.QuickCreateButton(
+            guiHelpScreenScrollArrowImage[1],
+            new Point(usPosX, usPosY),
+            ButtonFlags.BUTTON_TOGGLE, MSYS_PRIORITY.HIGHEST,
+            MouseSubSystem.DefaultMoveCallback,
+            BtnHelpScreenScrollArrowsCallback);
+
+        ButtonSubSystem.MSYS_SetBtnUserData(giHelpScreenScrollArrows[1], 0, 1);
+        ButtonSubSystem.SetButtonCursor(giHelpScreenScrollArrows[1], gHelpScreen.usCursor);
+    }
+
+    private static void SelectHelpScrollAreaCallBack(ref MOUSE_REGION pRegion, MSYS_CALLBACK_REASON iReason)
+    {
+        if (iReason.HasFlag(MSYS_CALLBACK_REASON.INIT))
+        {
+        }
+        else if (iReason.HasFlag(MSYS_CALLBACK_REASON.LBUTTON_UP))
+        {
+            gfScrollBoxIsScrolling = false;
+            gHelpScreen.iLastMouseClickY = -1;
+        }
+        else if (iReason.HasFlag(MSYS_CALLBACK_REASON.LBUTTON_DWN))
+        {
+            gfScrollBoxIsScrolling = true;
+            HelpScreenMouseMoveScrollBox(pRegion.MousePos.Y);
+        }
+        else if (iReason.HasFlag(MSYS_CALLBACK_REASON.RBUTTON_UP))
+        {
+        }
+    }
+
+    private static void BtnHelpScreenScrollArrowsCallback(ref GUI_BUTTON btn, MSYS_CALLBACK_REASON reason)
+    {
+        if (reason.HasFlag(MSYS_CALLBACK_REASON.LBUTTON_UP))
+        {
+            btn.uiFlags &= (~ButtonFlags.BUTTON_CLICKED_ON);
+            video.InvalidateRegion(btn.MouseRegion.Bounds);
+        }
+
+        if (reason.HasFlag(MSYS_CALLBACK_REASON.LBUTTON_DWN))
+        {
+            int iButtonID = (int)ButtonSubSystem.MSYS_GetBtnUserData(btn, 0);
+
+            btn.uiFlags |= ButtonFlags.BUTTON_CLICKED_ON;
+
+            //if up
+            if (iButtonID == 0)
+            {
+                ChangeTopLineInTextBufferByAmount(-1);
+            }
+            else
+            {
+                ChangeTopLineInTextBufferByAmount(1);
+            }
+
+            video.InvalidateRegion(btn.MouseRegion.Bounds);
+        }
+
+        if (reason.HasFlag(MSYS_CALLBACK_REASON.LBUTTON_REPEAT))
+        {
+            int iButtonID = (int)ButtonSubSystem.MSYS_GetBtnUserData(btn, 0);
+
+            //if up
+            if (iButtonID == 0)
+            {
+                ChangeTopLineInTextBufferByAmount(-1);
+            }
+            else
+            {
+                ChangeTopLineInTextBufferByAmount(1);
+            }
+
+            video.InvalidateRegion(btn.MouseRegion.Bounds);
+        }
+    }
+
+    private static void SelectHelpScrollAreaMovementCallBack(ref MOUSE_REGION pRegion, MSYS_CALLBACK_REASON iReason)
+    {
+        if (iReason.HasFlag(MSYS_CALLBACK_REASON.LOST_MOUSE))
+        {
+            //		InvalidateRegion(pRegion.RegionTopLeftX, pRegion.RegionTopLeftY, pRegion.RegionBottomRightX, pRegion.RegionBottomRightY);
+        }
+        else if (iReason.HasFlag(MSYS_CALLBACK_REASON.GAIN_MOUSE))
+        {
+        }
+        else if (iReason.HasFlag(MSYS_CALLBACK_REASON.MOVE))
+        {
+            if (inputs.gfLeftButtonState)
+            {
+                HelpScreenMouseMoveScrollBox(pRegion.MousePos.Y);
+            }
+        }
     }
 
     private static void ChangeHelpScreenSubPage()
@@ -1323,14 +1472,130 @@ public class HelpScreen : IScreen
 
     private static int RenderLaptopHelpScreen()
     {
-        throw new NotImplementedException();
+        int  usPosX, usPosY, usWidth, usNumVertPixels = 100;
+        int ubCnt;
+        int  usTotalNumberOfVerticalPixels = 0;
+        int  usFontHeight = FontSubSystem.GetFontHeight(HELP_SCREEN_TEXT_BODY_FONT);
+
+
+        if (gHelpScreen.bCurrentHelpScreenActiveSubPage == HLP_SCRN_LPTP.UNSET)
+        {
+            return (0);
+        }
+
+        //Get the position for the text
+        GetHelpScreenTextPositions(out usPosX, out usPosY, out usWidth);
+
+        //switch on the current screen
+        switch (gHelpScreen.bCurrentHelpScreenActiveSubPage)
+        {
+            case HLP_SCRN_LPTP.OVERVIEW:
+                //Display all the paragraphs
+                for (ubCnt = 0; ubCnt < 2; ubCnt++)
+                {
+                    //Display the text, and get the number of pixels it used to display it
+          //          usNumVertPixels = GetAndDisplayHelpScreenText(HLP_TXT_LAPTOP_OVERVIEW_P1 + ubCnt, usPosX, usPosY, usWidth);
+
+                    //move the next text down by the right amount
+                    usPosY = usPosY + usNumVertPixels + usFontHeight;
+
+                    //add the total amount of pixels used
+                    usTotalNumberOfVerticalPixels += usNumVertPixels + usFontHeight;
+                }
+
+                /*
+                            //Display the first paragraph
+                            usTotalNumberOfVerticalPixels = GetAndDisplayHelpScreenText( HLP_TXT_LAPTOP_OVERVIEW_P1, usPosX, usPosY, usWidth );
+
+                            usPosY = usPosY+ usNumVertPixels + GetFontHeight( HELP_SCREEN_TEXT_BODY_FONT );
+
+                            //Display the second paragraph
+                            usTotalNumberOfVerticalPixels += GetAndDisplayHelpScreenText( HLP_TXT_LAPTOP_OVERVIEW_P2, usPosX, usPosY, usWidth );
+                */
+                break;
+
+            case HLP_SCRN_LPTP.EMAIL:
+
+                //Display the first paragraph
+       //         usTotalNumberOfVerticalPixels = GetAndDisplayHelpScreenText(HLP_TXT_LAPTOP_EMAIL_P1, usPosX, usPosY, usWidth);
+                break;
+
+
+            case HLP_SCRN_LPTP.WEB:
+
+                //Display the first paragraph
+         //       usTotalNumberOfVerticalPixels = GetAndDisplayHelpScreenText(HLP_TXT_LAPTOP_WEB_P1, usPosX, usPosY, usWidth);
+
+                break;
+
+
+            case HLP_SCRN_LPTP.FILES:
+
+                //Display the first paragraph
+          //      usTotalNumberOfVerticalPixels = GetAndDisplayHelpScreenText(HLP_TXT_LAPTOP_FILES_P1, usPosX, usPosY, usWidth);
+                break;
+
+
+            case HLP_SCRN_LPTP.HISTORY:
+                //Display the first paragraph
+            //    usTotalNumberOfVerticalPixels = GetAndDisplayHelpScreenText(HLP_TXT_LAPTOP_HISTORY_P1, usPosX, usPosY, usWidth);
+
+                break;
+
+
+            case HLP_SCRN_LPTP.PERSONNEL:
+
+                //Display the first paragraph
+            //    usTotalNumberOfVerticalPixels = GetAndDisplayHelpScreenText(HLP_TXT_LAPTOP_PERSONNEL_P1, usPosX, usPosY, usWidth);
+                break;
+
+            case HLP_SCRN_LPTP.FINANCIAL:
+                //Display all the paragraphs
+                for (ubCnt = 0; ubCnt < 2; ubCnt++)
+                {
+                  //  usNumVertPixels = GetAndDisplayHelpScreenText(HLP_TXT_FINANCES_P1 + ubCnt, usPosX, usPosY, usWidth);
+
+                    //move the next text down by the right amount
+                    usPosY = usPosY + usNumVertPixels + usFontHeight;
+
+                    //add the total amount of pixels used
+                    usTotalNumberOfVerticalPixels += usNumVertPixels + usFontHeight;
+                }
+
+                break;
+
+            case HLP_SCRN_LPTP.MERC_STATS:
+                //Display all the paragraphs
+                for (ubCnt = 0; ubCnt < 15; ubCnt++)
+                {
+                 //   usNumVertPixels = GetAndDisplayHelpScreenText(HLP_TXT_MERC_STATS_P1 + ubCnt, usPosX, usPosY, usWidth);
+
+                    //move the next text down by the right amount
+                    usPosY = usPosY + usNumVertPixels + usFontHeight;
+
+                    //add the total amount of pixels used
+                    usTotalNumberOfVerticalPixels += usNumVertPixels + usFontHeight;
+                }
+
+                break;
+        }
+
+        return (usTotalNumberOfVerticalPixels);
+    }
+
+    private static void GetHelpScreenTextPositions(out int pusPosX, out int pusPosY, out int pusWidth)
+    {
+        //if there are buttons
+            pusPosX = 0;
+            pusWidth = HLP_SCRN__WIDTH_OF_TEXT_BUFFER - 1 * HELP_SCREEN_MARGIN_SIZE;       //DEF was 2
+            pusPosY = 0;
     }
 
     private static void ClearHelpScreenTextBuffer()
     {
         // CLEAR THE FRAME BUFFER
         Image<Rgba32> pDestBuf = video.Surfaces[guiHelpScreenTextBufferSurface];
-        pDestBuf.Mutate(ctx => ctx.Clear(Color.AliceBlue));
+       // pDestBuf.Mutate(ctx => ctx.Clear(Color.AliceBlue));
 
         video.InvalidateScreen();
     }
@@ -1345,7 +1610,7 @@ public class HelpScreen : IScreen
         else if (reason.HasFlag(MSYS_CALLBACK_REASON.LBUTTON_DWN))
         {
             /*
-                    btn->uiFlags &= ~BUTTON_CLICKED_ON;
+                    btn.uiFlags &= ~BUTTON_CLICKED_ON;
 
                     if( gHelpScreen.usHasPlayerSeenHelpScreenInCurrentScreen & ( 1 << gHelpScreen.bCurrentHelpScreen ) )
                     {
@@ -1357,7 +1622,7 @@ public class HelpScreen : IScreen
             //			gHelpScreen.usHasPlayerSeenHelpScreenInCurrentScreen |= ( 1 << gHelpScreen.bCurrentHelpScreen );
 
                     }
-            //		btn->uiFlags |= BUTTON_CLICKED_ON;
+            //		btn.uiFlags |= BUTTON_CLICKED_ON;
             */
         }
     }
@@ -1630,12 +1895,12 @@ public class HELP_SCREEN_STRUCT
 {
     public HELP_SCREEN bCurrentHelpScreen;
     public HELP_SCREEN_ACTIVE uiFlags;
-    public ushort usHasPlayerSeenHelpScreenInCurrentScreen;
+    public bool usHasPlayerSeenHelpScreenInCurrentScreen;
     public HLP_SCRN_DRTY_LVL ubHelpScreenDirty;
     public Point usScreenLoc;
     public Size usScreenSize;
     public int iLastMouseClickY;         //last position the mouse was clicked ( if != -1 )
-    public int bCurrentHelpScreenActiveSubPage;  //used to keep track of the current page being displayed
+    public HLP_SCRN_LPTP bCurrentHelpScreenActiveSubPage;  //used to keep track of the current page being displayed
     public int bNumberOfButtons;
 
     //used so if the user checked the box to show the help, it doesnt automatically come up every frame
@@ -1701,6 +1966,8 @@ public enum HLP_SCRN_LPTP
     MERC_STATS,
 
     HLP_SCRN_LPTP_NUM_PAGES,
+
+    UNSET = -1,
 };
 
 //enum for the help text paragrphs

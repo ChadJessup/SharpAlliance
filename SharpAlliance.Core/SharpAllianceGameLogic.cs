@@ -231,14 +231,15 @@ public class SharpAllianceGameLogic : IGameLogic
         var sm = screen;
 
         sm.AddScreen<MapScreen>(ScreenName.MAP_SCREEN);
+        sm.AddScreen<Laptop>(ScreenName.LAPTOP_SCREEN);
         sm.AddScreen<InitScreen>(ScreenName.InitScreen);
+        sm.AddScreen<HelpScreen>(ScreenName.HelpScreen);
         sm.AddScreen<FadeScreen>(ScreenName.FADE_SCREEN);
         sm.AddScreen<IntroScreen>(ScreenName.INTRO_SCREEN);
-        sm.AddScreen<Laptop>(ScreenName.LAPTOP_SCREEN);
         sm.AddScreen<CreditsScreen>(ScreenName.CREDIT_SCREEN);
-        sm.AddScreen<MessageBoxScreen>(ScreenName.MSG_BOX_SCREEN);
-        sm.AddScreen<MainMenuScreen>(ScreenName.MAINMENU_SCREEN);
         sm.AddScreen<OptionsScreen>(ScreenName.OPTIONS_SCREEN);
+        sm.AddScreen<MainMenuScreen>(ScreenName.MAINMENU_SCREEN);
+        sm.AddScreen<MessageBoxScreen>(ScreenName.MSG_BOX_SCREEN);
         sm.AddScreen<GameInitOptionsScreen>(ScreenName.GAME_INIT_OPTIONS_SCREEN);
     }
 

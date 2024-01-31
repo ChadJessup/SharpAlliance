@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using SharpAlliance.Core.Interfaces;
@@ -2320,9 +2321,32 @@ public class ButtonSubSystem : ISharpAllianceManager
         b.fShiftText = fShiftText;
     }
 
-    internal static GUI_BUTTON CreateCheckBoxButton(int usPosX, int v1, string v2, MSYS_PRIORITY hIGHEST, object btnHelpScreenDontShowHelpAgainCallback)
+    internal static GUI_BUTTON CreateCheckBoxButton(
+        int x,
+        int y,
+        string filename,
+        MSYS_PRIORITY Priority,
+        GUI_CALLBACK ClickCallback)
     {
-        throw new NotImplementedException();
+        ButtonPic ButPic;
+        Debug.Assert(filename != null);
+        Debug.Assert(filename.Length > 0);
+
+        ButPic = LoadButtonImage(filename, -1, 0, 1, 2, 3);
+
+        GUI_BUTTON b = QuickCreateButton(
+            ButPic,
+            new Point(x, y),
+            ButtonFlags.BUTTON_CHECKBOX,
+            Priority,
+            MouseSubSystem.DefaultMoveCallback,
+            ClickCallback);
+
+        //change the flags so that it isn't a quick button anymore
+        b.uiFlags &= (~ButtonFlags.BUTTON_QUICK);
+        b.uiFlags |= (ButtonFlags.BUTTON_CHECKBOX | ButtonFlags.BUTTON_SELFDELETE_IMAGE);
+
+        return b;
     }
 }
 

@@ -1,11 +1,8 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using SharpAlliance.Platform.Interfaces;
-
-using static SharpAlliance.Core.Globals;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
+using SharpAlliance.Core.Screens;
+using SharpAlliance.Platform;
 
 namespace SharpAlliance.Core.SubSystems;
 
@@ -13,8 +10,14 @@ public class HelpScreenSubSystem : IDisposable
 {
     public static bool gfHelpScreenEntry;
     public static bool gfHelpScreenExit;
+    private readonly ILogger<HelpScreenSubSystem> logger;
 
     public bool IsInitialized { get; }
+
+    public HelpScreenSubSystem(ILogger<HelpScreenSubSystem> logger, GameContext gameContext)
+    {
+        this.logger = logger;
+    }
 
     public void Dispose()
     {
@@ -29,7 +32,7 @@ public class HelpScreenSubSystem : IDisposable
         gfHelpScreenEntry = true;
         gfHelpScreenExit = false;
 
-        gHelpScreen.bCurrentHelpScreenActiveSubPage = -1;
+        gHelpScreen.bCurrentHelpScreenActiveSubPage = HLP_SCRN_LPTP.UNSET;
 
         gHelpScreen.fHaveAlreadyBeenInHelpScreenSinceEnteringCurrenScreen = false;
     }

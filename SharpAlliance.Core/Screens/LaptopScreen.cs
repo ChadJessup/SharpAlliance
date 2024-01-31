@@ -12,7 +12,6 @@ using SharpAlliance.Core.SubSystems.LaptopSubSystem.FloristSubSystem;
 using SharpAlliance.Core.SubSystems.LaptopSubSystem.IMPSubSystem;
 using SharpAlliance.Core.SubSystems.LaptopSubSystem.InsuranceSubSystem;
 using SixLabors.ImageSharp;
-using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace SharpAlliance.Core.SubSystems.LaptopSubSystem;
 
@@ -40,6 +39,7 @@ public partial class Laptop : IScreen
         Laptop.history = history;
         video = videoManager;
         screens = screenManager;
+        screens.GetScreen<HelpScreen>(ScreenName.HelpScreen, activate: false);
     }
 
     public ValueTask Activate()
@@ -1899,7 +1899,9 @@ public partial class Laptop : IScreen
 
         FontSubSystem.SetFontShadow(FontShadow.NO_SHADOW);
 
-        mprintf(30 + (70 - FontSubSystem.StringPixLength(gswzWorldTimeStr, FontStyle.FONT10ARIAL)) / 2, 433, gswzWorldTimeStr);
+        FontSubSystem.DrawTextToScreen(
+            gswzWorldTimeStr,
+            new(30 + (70 - FontSubSystem.StringPixLength(gswzWorldTimeStr, FontStyle.FONT10ARIAL)) / 2, 433));
 
         FontSubSystem.SetFontShadow(FontShadow.DEFAULT_SHADOW);
 

@@ -133,13 +133,13 @@ public static class StandardSharpAllianceExtensions
         builder.Services.AddSingleton<World>();
         builder.Services.AddSingleton<WorldStructures>();
         builder.Services.AddSingleton<AnimatedProgressBar>();
-        builder.Services.AddSingleton<HelpScreenSubSystem>();
         builder.Services.AddSingleton<DialogControl>();
         builder.Services.AddSingleton<AirRaid>();
         builder.Services.AddSingleton<QuestEngine>();
         builder.Services.AddSingleton<InterfaceDialogSubSystem>();
         builder.Services.AddSingleton<Faces>();
         builder.Services.AddSingleton<Keys>();
+        builder.Services.AddSingleton<HelpScreen>();
         builder.Services.AddSingleton<AIMain>();
         builder.Services.AddSingleton<Shading>();
         builder.Services.AddSingleton<TextUtils>();

@@ -9,6 +9,6 @@ namespace SharpAlliance.Core;
 
 public partial class Globals
 {
-    public static HELP_SCREEN_STRUCT gHelpScreen;
+    public static HELP_SCREEN_STRUCT gHelpScreen = new();
 
 }
