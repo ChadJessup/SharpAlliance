@@ -1105,7 +1105,7 @@ public class FontSubSystem : ISharpAllianceManager
     public static int WFStringPixLength(string pString, FontStyle UseFont)
     {
         // return how many Y pixels we used
-        return StringPixLength(pString, UseFont);
+        return StringPixLength(pString.TrimEnd('\0'), UseFont);
     }
 
     public static void SetFontDestBuffer(SurfaceType DestBuffer, int x, int y, int width, int height, bool wrap)

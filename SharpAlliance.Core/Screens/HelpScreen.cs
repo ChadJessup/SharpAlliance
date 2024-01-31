@@ -48,10 +48,10 @@ public class HelpScreen : IScreen
     private const FontColor HELP_SCREEN_TITLE_BODY_COLOR = FontColor.FONT_MCOLOR_WHITE;//FONT_NEARBLACK;
     private const FontStyle HELP_SCREEN_TEXT_BODY_FONT = FontStyle.FONT10ARIAL;
     private const FontColor HELP_SCREEN_TEXT_BODY_COLOR = FontColor.FONT_MCOLOR_WHITE;//FONT_NEARBLACK;
-    private const int HELP_SCREEN_TEXT_BACKGROUND = 0;//NO_SHADOW//FONT_MCOLOR_WHITE;
+    private const FontColor HELP_SCREEN_TEXT_BACKGROUND = 0;//NO_SHADOW//FONT_MCOLOR_WHITE;
     private const int HELP_SCREEN_TITLE_OFFSET_Y = 7;
     private const int HELP_SCREEN_HELP_REMINDER_Y = HELP_SCREEN_TITLE_OFFSET_Y + 15;
-    private const int HELP_SCREEN_NUM_BTNS = 8;
+    public const int HELP_SCREEN_NUM_BTNS = 8;
     private const int HELP_SCREEN_SHOW_HELP_AGAIN_REGION_OFFSET_X = 4;
     private const int HELP_SCREEN_SHOW_HELP_AGAIN_REGION_OFFSET_Y = 18;
     private const int HELP_SCREEN_SHOW_HELP_AGAIN_REGION_TEXT_OFFSET_X = 25 + HELP_SCREEN_SHOW_HELP_AGAIN_REGION_OFFSET_X;
@@ -63,6 +63,71 @@ public class HelpScreen : IScreen
     private const int HLP_SCRN_DEFAULT_TYPE = 9;
     private const int HLP_SCRN_BUTTON_BORDER = 8;
 
+    //An array of record nums for the text on the help buttons
+    private static Dictionary<HELP_SCREEN, List<HLP_TXT>> gHelpScreenBtnTextRecordNum = new()
+    {
+        //new screen:
+
+        //Laptop button record nums
+        {
+            HELP_SCREEN.LAPTOP, new()
+            {
+                 HLP_TXT.LAPTOP_BUTTON_1,
+                 HLP_TXT.LAPTOP_BUTTON_2,
+                 HLP_TXT.LAPTOP_BUTTON_3,
+                 HLP_TXT.LAPTOP_BUTTON_4,
+                 HLP_TXT.LAPTOP_BUTTON_5,
+                 HLP_TXT.LAPTOP_BUTTON_6,
+                 HLP_TXT.LAPTOP_BUTTON_7,
+                 HLP_TXT.LAPTOP_BUTTON_8,
+            }
+        },
+        {
+            HELP_SCREEN.MAPSCREEN, new()
+            {
+                 HLP_TXT.WELCOM_TO_ARULCO_BUTTON_1,
+                 HLP_TXT.WELCOM_TO_ARULCO_BUTTON_2,
+                 HLP_TXT.WELCOM_TO_ARULCO_BUTTON_3,
+                 HLP_TXT.WELCOM_TO_ARULCO_BUTTON_4,
+                 HLP_TXT.WELCOM_TO_ARULCO_BUTTON_5,
+                 HLP_TXT.WELCOM_TO_ARULCO_BUTTON_6,
+                 HLP_TXT.WELCOM_TO_ARULCO_BUTTON_7,
+                 HLP_TXT.WELCOM_TO_ARULCO_BUTTON_8,
+            }
+        },
+        {
+            HELP_SCREEN.MAPSCREEN_NO_ONE_HIRED, new()
+            { HLP_TXT.UNSET, HLP_TXT.UNSET, HLP_TXT.UNSET, HLP_TXT.UNSET, HLP_TXT.UNSET, HLP_TXT.UNSET, HLP_TXT.UNSET, HLP_TXT.UNSET, }
+        },
+        {
+            HELP_SCREEN.MAPSCREEN_NOT_IN_ARULCO, new()
+            { HLP_TXT.UNSET, HLP_TXT.UNSET, HLP_TXT.UNSET, HLP_TXT.UNSET, HLP_TXT.UNSET, HLP_TXT.UNSET, HLP_TXT.UNSET, HLP_TXT.UNSET, }
+        },
+        {
+            HELP_SCREEN.MAPSCREEN_SECTOR_INVENTORY, new()
+            { HLP_TXT.UNSET, HLP_TXT.UNSET, HLP_TXT.UNSET, HLP_TXT.UNSET, HLP_TXT.UNSET, HLP_TXT.UNSET, HLP_TXT.UNSET, HLP_TXT.UNSET, }
+        },
+        {
+            HELP_SCREEN.TACTICAL, new()
+             {
+                HLP_TXT.TACTICAL_BUTTON_1,
+                HLP_TXT.TACTICAL_BUTTON_2,
+                HLP_TXT.TACTICAL_BUTTON_3,
+                HLP_TXT.TACTICAL_BUTTON_4,
+                HLP_TXT.TACTICAL_BUTTON_5,
+                HLP_TXT.TACTICAL_BUTTON_6,
+                HLP_TXT.UNSET, HLP_TXT.UNSET,
+            }
+        },
+        {
+            HELP_SCREEN.OPTIONS, new()
+            { HLP_TXT.UNSET, HLP_TXT.UNSET, HLP_TXT.UNSET, HLP_TXT.UNSET, HLP_TXT.UNSET, HLP_TXT.UNSET, HLP_TXT.UNSET, HLP_TXT.UNSET, }
+        },
+        {
+            HELP_SCREEN.LOAD_GAME, new()
+            { HLP_TXT.UNSET, HLP_TXT.UNSET, HLP_TXT.UNSET, HLP_TXT.UNSET, HLP_TXT.UNSET, HLP_TXT.UNSET, HLP_TXT.UNSET, HLP_TXT.UNSET, }
+        },
+    };
 
 
     //this is the size of the text buffer where everything will be blitted.
@@ -94,7 +159,7 @@ public class HelpScreen : IScreen
     private static GUI_BUTTON guiHelpScreenExitBtn;
     private static GUI_BUTTON[] guiHelpScreenBtns = new GUI_BUTTON[HELP_SCREEN_NUM_BTNS];
     private static ButtonPic[] giHelpScreenButtonsImage = new ButtonPic[HELP_SCREEN_NUM_BTNS];
-    
+
     private static GUI_BUTTON[] giHelpScreenScrollArrows = new GUI_BUTTON[2];
     private static ButtonPic[] guiHelpScreenScrollArrowImage = new ButtonPic[2];
 
@@ -166,7 +231,7 @@ public class HelpScreen : IScreen
         {
             gHelpScreen.bDelayEnteringHelpScreenBy1FrameCount += 1;
 
-            ButtonSubSystem.UnmarkButtonsDirty(Laptop.buttonList);
+            ButtonSubSystem.UnmarkButtonsDirty(buttonList);
 
             return (false);
         }
@@ -229,7 +294,7 @@ public class HelpScreen : IScreen
 
         // render buttons marked dirty	
         //  MarkButtonsDirty( );
-        ButtonSubSystem.RenderButtons(Laptop.buttonList);
+        ButtonSubSystem.RenderButtons(buttonList);
 
         video.SaveBackgroundRects();
         GuiManager.RenderButtonsFastHelp();
@@ -479,9 +544,9 @@ public class HelpScreen : IScreen
             //									 HELP_SCREEN_TITLE_BODY_FONT, HELP_SCREEN_TITLE_BODY_COLOR, HELP_SCREEN_TEXT_BACKGROUND, FALSE, CENTER_JUSTIFIED );
 
             //Display the Title
-//            IanDisplayWrappedString(usPosX, (gHelpScreen.usScreenLoc.Y + HELP_SCREEN_TITLE_OFFSET_Y), usWidth, HELP_SCREEN_GAP_BTN_LINES,
-//                                                             HELP_SCREEN_TITLE_BODY_FONT, HELP_SCREEN_TITLE_BODY_COLOR, zText,
-//                                                             HELP_SCREEN_TEXT_BACKGROUND, false, 0);
+            //            IanDisplayWrappedString(usPosX, (gHelpScreen.usScreenLoc.Y + HELP_SCREEN_TITLE_OFFSET_Y), usWidth, HELP_SCREEN_GAP_BTN_LINES,
+            //                                                             HELP_SCREEN_TITLE_BODY_FONT, HELP_SCREEN_TITLE_BODY_COLOR, zText,
+            //                                                             HELP_SCREEN_TEXT_BACKGROUND, false, 0);
 
         }
 
@@ -496,9 +561,9 @@ public class HelpScreen : IScreen
         //								 HELP_SCREEN_TEXT_BODY_FONT, HELP_SCREEN_TITLE_BODY_COLOR, HELP_SCREEN_TEXT_BACKGROUND, FALSE, CENTER_JUSTIFIED );
 
 
-//        IanDisplayWrappedString(usPosX, usPosY, usWidth, HELP_SCREEN_GAP_BTN_LINES,
-//                                                         HELP_SCREEN_TITLE_BODY_FONT, HELP_SCREEN_TITLE_BODY_COLOR, zText,
-//                                                         HELP_SCREEN_TEXT_BACKGROUND, false, 0);
+        //        IanDisplayWrappedString(usPosX, usPosY, usWidth, HELP_SCREEN_GAP_BTN_LINES,
+        //                                                         HELP_SCREEN_TITLE_BODY_FONT, HELP_SCREEN_TITLE_BODY_COLOR, zText,
+        //                                                         HELP_SCREEN_TEXT_BACKGROUND, false, 0);
 
 
         if (!gHelpScreen.fForceHelpScreenToComeUp)
@@ -513,9 +578,9 @@ public class HelpScreen : IScreen
 
 
             //Display the ' [ x ] Dont display again...'
-//            IanDisplayWrappedString(usPosX, usPosY, usWidth, HELP_SCREEN_GAP_BTN_LINES,
-//                                                             HELP_SCREEN_TEXT_BODY_FONT, HELP_SCREEN_TITLE_BODY_COLOR, zText,
-//                                                             HELP_SCREEN_TEXT_BACKGROUND, false, 0);
+            //            IanDisplayWrappedString(usPosX, usPosY, usWidth, HELP_SCREEN_GAP_BTN_LINES,
+            //                                                             HELP_SCREEN_TEXT_BODY_FONT, HELP_SCREEN_TITLE_BODY_COLOR, zText,
+            //                                                             HELP_SCREEN_TEXT_BACKGROUND, false, 0);
         }
 
         FontSubSystem.SetFontShadow(FontShadow.DEFAULT_SHADOW);
@@ -1215,7 +1280,7 @@ public class HelpScreen : IScreen
 
     private static void CreateScrollAreaButtons()
     {
-        int  usPosX, usWidth, usPosY;
+        int usPosX, usWidth, usPosY;
         int iPosY, iHeight;
 
         if (gHelpScreen.bNumberOfButtons != 0)
@@ -1472,10 +1537,10 @@ public class HelpScreen : IScreen
 
     private static int RenderLaptopHelpScreen()
     {
-        int  usPosX, usPosY, usWidth, usNumVertPixels = 100;
+        int usPosX, usPosY, usWidth, usNumVertPixels = 100;
         int ubCnt;
-        int  usTotalNumberOfVerticalPixels = 0;
-        int  usFontHeight = FontSubSystem.GetFontHeight(HELP_SCREEN_TEXT_BODY_FONT);
+        int usTotalNumberOfVerticalPixels = 0;
+        int usFontHeight = FontSubSystem.GetFontHeight(HELP_SCREEN_TEXT_BODY_FONT);
 
 
         if (gHelpScreen.bCurrentHelpScreenActiveSubPage == HLP_SCRN_LPTP.UNSET)
@@ -1494,7 +1559,7 @@ public class HelpScreen : IScreen
                 for (ubCnt = 0; ubCnt < 2; ubCnt++)
                 {
                     //Display the text, and get the number of pixels it used to display it
-          //          usNumVertPixels = GetAndDisplayHelpScreenText(HLP_TXT_LAPTOP_OVERVIEW_P1 + ubCnt, usPosX, usPosY, usWidth);
+                    usNumVertPixels = GetAndDisplayHelpScreenText(HLP_TXT.LAPTOP_OVERVIEW_P1 + ubCnt, usPosX, usPosY, usWidth);
 
                     //move the next text down by the right amount
                     usPosY = usPosY + usNumVertPixels + usFontHeight;
@@ -1505,26 +1570,26 @@ public class HelpScreen : IScreen
 
                 /*
                             //Display the first paragraph
-                            usTotalNumberOfVerticalPixels = GetAndDisplayHelpScreenText( HLP_TXT_LAPTOP_OVERVIEW_P1, usPosX, usPosY, usWidth );
+                            usTotalNumberOfVerticalPixels = GetAndDisplayHelpScreenText( HLP_TXT.LAPTOP_OVERVIEW_P1, usPosX, usPosY, usWidth );
 
                             usPosY = usPosY+ usNumVertPixels + GetFontHeight( HELP_SCREEN_TEXT_BODY_FONT );
 
                             //Display the second paragraph
-                            usTotalNumberOfVerticalPixels += GetAndDisplayHelpScreenText( HLP_TXT_LAPTOP_OVERVIEW_P2, usPosX, usPosY, usWidth );
+                            usTotalNumberOfVerticalPixels += GetAndDisplayHelpScreenText( HLP_TXT.LAPTOP_OVERVIEW_P2, usPosX, usPosY, usWidth );
                 */
                 break;
 
             case HLP_SCRN_LPTP.EMAIL:
 
                 //Display the first paragraph
-       //         usTotalNumberOfVerticalPixels = GetAndDisplayHelpScreenText(HLP_TXT_LAPTOP_EMAIL_P1, usPosX, usPosY, usWidth);
+                //         usTotalNumberOfVerticalPixels = GetAndDisplayHelpScreenText(HLP_TXT.LAPTOP_EMAIL_P1, usPosX, usPosY, usWidth);
                 break;
 
 
             case HLP_SCRN_LPTP.WEB:
 
                 //Display the first paragraph
-         //       usTotalNumberOfVerticalPixels = GetAndDisplayHelpScreenText(HLP_TXT_LAPTOP_WEB_P1, usPosX, usPosY, usWidth);
+                //       usTotalNumberOfVerticalPixels = GetAndDisplayHelpScreenText(HLP_TXT.LAPTOP_WEB_P1, usPosX, usPosY, usWidth);
 
                 break;
 
@@ -1532,13 +1597,13 @@ public class HelpScreen : IScreen
             case HLP_SCRN_LPTP.FILES:
 
                 //Display the first paragraph
-          //      usTotalNumberOfVerticalPixels = GetAndDisplayHelpScreenText(HLP_TXT_LAPTOP_FILES_P1, usPosX, usPosY, usWidth);
+                //      usTotalNumberOfVerticalPixels = GetAndDisplayHelpScreenText(HLP_TXT.LAPTOP_FILES_P1, usPosX, usPosY, usWidth);
                 break;
 
 
             case HLP_SCRN_LPTP.HISTORY:
                 //Display the first paragraph
-            //    usTotalNumberOfVerticalPixels = GetAndDisplayHelpScreenText(HLP_TXT_LAPTOP_HISTORY_P1, usPosX, usPosY, usWidth);
+                //    usTotalNumberOfVerticalPixels = GetAndDisplayHelpScreenText(HLP_TXT.LAPTOP_HISTORY_P1, usPosX, usPosY, usWidth);
 
                 break;
 
@@ -1546,14 +1611,14 @@ public class HelpScreen : IScreen
             case HLP_SCRN_LPTP.PERSONNEL:
 
                 //Display the first paragraph
-            //    usTotalNumberOfVerticalPixels = GetAndDisplayHelpScreenText(HLP_TXT_LAPTOP_PERSONNEL_P1, usPosX, usPosY, usWidth);
+                //    usTotalNumberOfVerticalPixels = GetAndDisplayHelpScreenText(HLP_TXT.LAPTOP_PERSONNEL_P1, usPosX, usPosY, usWidth);
                 break;
 
             case HLP_SCRN_LPTP.FINANCIAL:
                 //Display all the paragraphs
                 for (ubCnt = 0; ubCnt < 2; ubCnt++)
                 {
-                  //  usNumVertPixels = GetAndDisplayHelpScreenText(HLP_TXT_FINANCES_P1 + ubCnt, usPosX, usPosY, usWidth);
+                    //  usNumVertPixels = GetAndDisplayHelpScreenText(HLP_TXT.FINANCES_P1 + ubCnt, usPosX, usPosY, usWidth);
 
                     //move the next text down by the right amount
                     usPosY = usPosY + usNumVertPixels + usFontHeight;
@@ -1568,7 +1633,7 @@ public class HelpScreen : IScreen
                 //Display all the paragraphs
                 for (ubCnt = 0; ubCnt < 15; ubCnt++)
                 {
-                 //   usNumVertPixels = GetAndDisplayHelpScreenText(HLP_TXT_MERC_STATS_P1 + ubCnt, usPosX, usPosY, usWidth);
+                    //   usNumVertPixels = GetAndDisplayHelpScreenText(HLP_TXT.MERC_STATS_P1 + ubCnt, usPosX, usPosY, usWidth);
 
                     //move the next text down by the right amount
                     usPosY = usPosY + usNumVertPixels + usFontHeight;
@@ -1583,19 +1648,60 @@ public class HelpScreen : IScreen
         return (usTotalNumberOfVerticalPixels);
     }
 
+    private static int GetAndDisplayHelpScreenText(
+        HLP_TXT record,
+        int usPosX,
+        int usPosY,
+        int usWidth)
+    {
+        int uiRecord = (int)record;
+        string zText;
+        int usNumVertPixels = 0;
+        int uiStartLoc;
+
+        FontSubSystem.SetFontShadow(FontShadow.NO_SHADOW);
+
+        zText = GetHelpScreenText(uiRecord);
+
+        //Get the record
+        uiStartLoc = HELPSCREEN_RECORD_SIZE * uiRecord;
+        files.LoadEncryptedDataFromFile(HELPSCREEN_FILE, out zText, uiStartLoc, HELPSCREEN_RECORD_SIZE);
+
+        if(zText is null)
+        {
+
+        }
+
+        //Display the text
+        usNumVertPixels = WordWrap.IanDisplayWrappedString(
+            new Point(usPosX, usPosY),
+            usWidth,
+            ubGap: HELP_SCREEN_GAP_BTN_LINES,
+            uiFont: HELP_SCREEN_TEXT_BODY_FONT,
+            ubColor: HELP_SCREEN_TEXT_BODY_COLOR,
+            pString: zText,
+            ubBackGroundColor: HELP_SCREEN_TEXT_BACKGROUND,
+            fDirty: false,
+            uiFlags: 0);
+
+        FontSubSystem.SetFontShadow(FontShadow.DEFAULT_SHADOW);
+
+        return (usNumVertPixels);
+    }
+
     private static void GetHelpScreenTextPositions(out int pusPosX, out int pusPosY, out int pusWidth)
     {
         //if there are buttons
-            pusPosX = 0;
-            pusWidth = HLP_SCRN__WIDTH_OF_TEXT_BUFFER - 1 * HELP_SCREEN_MARGIN_SIZE;       //DEF was 2
-            pusPosY = 0;
+        pusPosX = 0;
+        pusWidth = HLP_SCRN__WIDTH_OF_TEXT_BUFFER - 1 * HELP_SCREEN_MARGIN_SIZE;       //DEF was 2
+        pusPosY = 0;
     }
 
     private static void ClearHelpScreenTextBuffer()
     {
         // CLEAR THE FRAME BUFFER
         Image<Rgba32> pDestBuf = video.Surfaces[guiHelpScreenTextBufferSurface];
-       // pDestBuf.Mutate(ctx => ctx.Clear(Color.AliceBlue));
+        // pDestBuf.Mutate(ctx => ctx.Clear(Color.AliceBlue));
 
         video.InvalidateScreen();
     }
@@ -1632,12 +1738,12 @@ public class HelpScreen : IScreen
         // Create a background video surface to blt the face onto
         Image<Rgba32> textBuffer = new(HLP_SCRN__WIDTH_OF_TEXT_BUFFER, HLP_SCRN__HEIGHT_OF_TEXT_BUFFER);
 
-//        guiHelpScreenTextBufferSurface = new HVOBJECT
-//        {
-//            Images = [textBuffer],
-//        };
-//
-//        video.Surfaces[]Surfaces.LockSurface((guiHelpScreenTextBufferSurface);
+        //        guiHelpScreenTextBufferSurface = new HVOBJECT
+        //        {
+        //            Images = [textBuffer],
+        //        };
+        //
+        //        video.Surfaces[]Surfaces.LockSurface((guiHelpScreenTextBufferSurface);
 
         return true;
     }
@@ -1682,7 +1788,7 @@ public class HelpScreen : IScreen
             for (i = 0; i < gHelpScreen.bNumberOfButtons; i++)
             {
                 //get the text for the button
-//               sText = GetHelpScreenText(gHelpScreenBtnTextRecordNum[gHelpScreen.bCurrentHelpScreen].iButtonTextNum[i]);
+                sText = GetHelpScreenText((int)gHelpScreenBtnTextRecordNum[gHelpScreen.bCurrentHelpScreen][i]);
 
                 /*
                             guiHelpScreenBtns[i] = CreateTextButton( sText, HELP_SCREEN_BTN_FONT, HELP_SCREEN_BTN_FONT_COLOR, HELP_SCREEN_BTN_FONT_BACK_COLOR, 
@@ -1708,6 +1814,8 @@ public class HelpScreen : IScreen
                     MouseSubSystem.DefaultMoveCallback,
                     BtnHelpScreenBtnsCallback);
 
+                buttonList.Add(guiHelpScreenBtns[i]);
+
                 ButtonSubSystem.SetButtonCursor(guiHelpScreenBtns[i], gHelpScreen.usCursor);
                 ButtonSubSystem.MSYS_SetBtnUserData(guiHelpScreenBtns[i], 0, i);
 
@@ -1730,9 +1838,43 @@ public class HelpScreen : IScreen
         return pText;
     }
 
-    private static void BtnHelpScreenBtnsCallback(ref GUI_BUTTON button, MSYS_CALLBACK_REASON reason)
+    private static void BtnHelpScreenBtnsCallback(ref GUI_BUTTON btn, MSYS_CALLBACK_REASON reason)
     {
-        throw new NotImplementedException();
+        if (reason.HasFlag(MSYS_CALLBACK_REASON.LBUTTON_DWN))
+        {
+            //		btn.uiFlags |= BUTTON_CLICKED_ON;
+            video.InvalidateRegion(btn.MouseRegion.Bounds);
+        }
+        if (reason.HasFlag(MSYS_CALLBACK_REASON.LBUTTON_UP))
+        {
+            //Get the btn id
+            HLP_SCRN_LPTP bRetValue = (HLP_SCRN_LPTP)ButtonSubSystem.MSYS_GetBtnUserData(btn, 0);
+
+            ChangeToHelpScreenSubPage(bRetValue);
+            /*
+                    //change the current page to the new one
+                    gHelpScreen.bCurrentHelpScreenActiveSubPage = ( bRetValue > gHelpScreen.bNumberOfButtons ) ? gHelpScreen.bNumberOfButtons-1 : bRetValue; 
+
+                    gHelpScreen.ubHelpScreenDirty = HLP_SCRN_DRTY_LVL_REFRESH_TEXT;
+
+                    for( i=0; i< gHelpScreen.bNumberOfButtons; i++ )
+                    {
+                        ButtonList[ guiHelpScreenBtns[i] ].uiFlags &= (~BUTTON_CLICKED_ON );
+                    }
+
+                    //change the current sub page, and render it to the buffer
+                    ChangeHelpScreenSubPage();
+            */
+            btn.uiFlags |= ButtonFlags.BUTTON_CLICKED_ON;
+
+            video.InvalidateRegion(btn.MouseRegion.Bounds);
+        }
+
+        if (reason.HasFlag(MSYS_CALLBACK_REASON.LOST_MOUSE))
+        {
+            //		btn.uiFlags &= (~BUTTON_CLICKED_ON );
+            video.InvalidateRegion(btn.MouseRegion.Bounds);
+        }
     }
 
     private static void SetSizeAndPropertiesOfHelpScreen()
@@ -2132,7 +2274,13 @@ public enum HLP_TXT
     //	SECTOR_INVTRY_BUTTON_1,
     SECTOR_INVTRY_OVERVIEW_P1,
     SECTOR_INVTRY_OVERVIEW_P2,
-
-
     //	,
+
+    UNSET = -1,
 };
+
+
+public class HELP_SCREEN_BTN_TEXT_RECORD
+{
+    public int[] iButtonTextNum = new int[HelpScreen.HELP_SCREEN_NUM_BTNS];
+}

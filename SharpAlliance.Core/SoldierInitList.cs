@@ -54,7 +54,7 @@ public partial class Globals
     {
     }
 
-    internal static string wcscat(string src1, string src2) => src1 + src2;
+    internal static string wcscat(string src1, string src2) => src1.TrimEnd('\0') + src2.TrimEnd('\0');
 
     internal static int wcscmp(string? value1, string value2) => string.Compare(value1, value2, ignoreCase: true);
 
