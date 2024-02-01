@@ -1998,7 +1998,7 @@ public class SDL2VideoManager : IVideoManager
     }
 
 
-    public bool BlitBufferToBuffer(SurfaceType srcBuffer, SurfaceType dstBuffer, Rectangle srcRect)
+    public bool BlitBufferToBuffer(SurfaceType srcBuffer, SurfaceType dstBuffer, Rectangle srcRect, Point? dstPoint = null)
     {
         bool fRetVal;
 
@@ -2008,9 +2008,10 @@ public class SDL2VideoManager : IVideoManager
         fRetVal = this.Blt16BPPTo16BPP(
             dst,
             src,
+            dstPoint ?? srcRect.ToPoint(),
             srcRect.ToPoint(),
-            srcRect.ToPoint(),
-            new(srcRect.Width, srcRect.Height));
+            new(srcRect.Width, srcRect.Height),
+            debug: true);
 
         return (fRetVal);
     }

@@ -435,6 +435,9 @@ public class WordWrap
 
                         usLineLengthPixels = 0;
                         currentLine.Clear();
+                        usPos.Y += (FontSubSystem.WFGetFontHeight(uiLocalFont)) + ubGap;//; // +ubGap
+                        usLocalPosX = usPos.X;
+                        usLinesUsed++;
                         break;
                     case TEXT_CODE_BOLD:
                         break;

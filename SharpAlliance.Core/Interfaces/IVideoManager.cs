@@ -47,7 +47,7 @@ public interface IVideoManager : ISharpAllianceManager
     void ColorFillVideoSurfaceArea(Image<Rgba32> surface, Rectangle rectangle, Color color);
     bool ShadowVideoSurfaceRectUsingLowPercentTable(SurfaceType surface, Rectangle rectangle);
     bool DeleteVideoObject(HVOBJECT vobj);
-    bool BlitBufferToBuffer(SurfaceType srcBuffer, SurfaceType dstBuffer, Rectangle srcRect);
+    bool BlitBufferToBuffer(SurfaceType srcBuffer, SurfaceType dstBuffer, Rectangle srcRect, Point? dstPoint = null);
     void SetVideoSurfaceTransparency(HVOBJECT vobj, Rgba32 pixel);
     void ClearElements();
     Texture CreateSurface(Image<Rgba32> image, SurfaceType? surfaceType = null);

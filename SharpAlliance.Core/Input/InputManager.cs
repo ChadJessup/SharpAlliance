@@ -344,6 +344,6 @@ public class InputManager : IInputManager
 
     public bool HandleTextInput(IInputSnapshot @event)
     {
-        throw new NotImplementedException();
+        return true;
     }
 }

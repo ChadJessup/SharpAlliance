@@ -624,12 +624,17 @@ public class HelpScreen : IScreen
             Height = 0 + HLP_SCRN__HEIGHT_OF_TEXT_AREA - (2 * 8),
         };
 
+        Point dstPoint = new(
+            gHelpScreen.usLeftMarginPosX,
+            gHelpScreen.usScreenLoc.Y + HELP_SCREEN_TEXT_OFFSET_Y);
+
         video.BlitBufferToBuffer(
             guiHelpScreenTextBufferSurface,
-            SurfaceType.RENDER_BUFFER,
-            SrcRect);
+            SurfaceType.FRAME_BUFFER,
+            SrcRect,
+            dstPoint);
 
-        video.Surfaces[guiHelpScreenTextBufferSurface].SaveAsPng($@"C:\temp\text.png");
+//        video.Surfaces[SurfaceType.RENDER_BUFFER].SaveAsPng($@"C:\temp\text.png");
 
         DisplayHelpScreenTextBufferScrollBox();
     }
@@ -1345,6 +1350,8 @@ public class HelpScreen : IScreen
 
         ButtonSubSystem.MSYS_SetBtnUserData(giHelpScreenScrollArrows[1], 0, 1);
         ButtonSubSystem.SetButtonCursor(giHelpScreenScrollArrows[1], gHelpScreen.usCursor);
+
+        buttonList.AddRange(giHelpScreenScrollArrows);
     }
 
     private static void SelectHelpScrollAreaCallBack(ref MOUSE_REGION pRegion, MSYS_CALLBACK_REASON iReason)
@@ -1586,14 +1593,15 @@ public class HelpScreen : IScreen
             case HLP_SCRN_LPTP.EMAIL:
 
                 //Display the first paragraph
-                //         usTotalNumberOfVerticalPixels = GetAndDisplayHelpScreenText(HLP_TXT.LAPTOP_EMAIL_P1, usPosX, usPosY, usWidth);
+                usTotalNumberOfVerticalPixels = GetAndDisplayHelpScreenText(
+                    HLP_TXT.LAPTOP_EMAIL_P1, usPosX, usPosY, usWidth);
                 break;
 
 
             case HLP_SCRN_LPTP.WEB:
 
                 //Display the first paragraph
-                //       usTotalNumberOfVerticalPixels = GetAndDisplayHelpScreenText(HLP_TXT.LAPTOP_WEB_P1, usPosX, usPosY, usWidth);
+                usTotalNumberOfVerticalPixels = GetAndDisplayHelpScreenText(HLP_TXT.LAPTOP_WEB_P1, usPosX, usPosY, usWidth);
 
                 break;
 
@@ -1601,13 +1609,13 @@ public class HelpScreen : IScreen
             case HLP_SCRN_LPTP.FILES:
 
                 //Display the first paragraph
-                //      usTotalNumberOfVerticalPixels = GetAndDisplayHelpScreenText(HLP_TXT.LAPTOP_FILES_P1, usPosX, usPosY, usWidth);
+                usTotalNumberOfVerticalPixels = GetAndDisplayHelpScreenText(HLP_TXT.LAPTOP_FILES_P1, usPosX, usPosY, usWidth);
                 break;
 
 
             case HLP_SCRN_LPTP.HISTORY:
                 //Display the first paragraph
-                //    usTotalNumberOfVerticalPixels = GetAndDisplayHelpScreenText(HLP_TXT.LAPTOP_HISTORY_P1, usPosX, usPosY, usWidth);
+                usTotalNumberOfVerticalPixels = GetAndDisplayHelpScreenText(HLP_TXT.LAPTOP_HISTORY_P1, usPosX, usPosY, usWidth);
 
                 break;
 
@@ -1615,14 +1623,14 @@ public class HelpScreen : IScreen
             case HLP_SCRN_LPTP.PERSONNEL:
 
                 //Display the first paragraph
-                //    usTotalNumberOfVerticalPixels = GetAndDisplayHelpScreenText(HLP_TXT.LAPTOP_PERSONNEL_P1, usPosX, usPosY, usWidth);
+                usTotalNumberOfVerticalPixels = GetAndDisplayHelpScreenText(HLP_TXT.LAPTOP_PERSONNEL_P1, usPosX, usPosY, usWidth);
                 break;
 
             case HLP_SCRN_LPTP.FINANCIAL:
                 //Display all the paragraphs
                 for (ubCnt = 0; ubCnt < 2; ubCnt++)
                 {
-                    //  usNumVertPixels = GetAndDisplayHelpScreenText(HLP_TXT.FINANCES_P1 + ubCnt, usPosX, usPosY, usWidth);
+                    usNumVertPixels = GetAndDisplayHelpScreenText(HLP_TXT.FINANCES_P1 + ubCnt, usPosX, usPosY, usWidth);
 
                     //move the next text down by the right amount
                     usPosY = usPosY + usNumVertPixels + usFontHeight;
@@ -1637,7 +1645,7 @@ public class HelpScreen : IScreen
                 //Display all the paragraphs
                 for (ubCnt = 0; ubCnt < 15; ubCnt++)
                 {
-                    //   usNumVertPixels = GetAndDisplayHelpScreenText(HLP_TXT.MERC_STATS_P1 + ubCnt, usPosX, usPosY, usWidth);
+                    usNumVertPixels = GetAndDisplayHelpScreenText(HLP_TXT.MERC_STATS_P1 + ubCnt, usPosX, usPosY, usWidth);
 
                     //move the next text down by the right amount
                     usPosY = usPosY + usNumVertPixels + usFontHeight;
@@ -1706,6 +1714,7 @@ public class HelpScreen : IScreen
         // CLEAR THE FRAME BUFFER
         Image<Rgba32> pDestBuf = video.Surfaces[guiHelpScreenTextBufferSurface];
 
+        pDestBuf = new(pDestBuf.Width, pDestBuf.Height);
         var rawPixels = pDestBuf.GetPixelMemoryGroup()[0];
         rawPixels.Span.Clear();
 
