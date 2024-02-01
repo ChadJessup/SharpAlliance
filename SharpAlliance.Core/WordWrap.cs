@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Linq;
 using SixLabors.ImageSharp;
 
 namespace SharpAlliance.Core;
@@ -413,407 +415,17 @@ public class WordWrap
         usHeight = FontSubSystem.WFGetFontHeight(uiFont);
 
         var words = pString.Split(" ", StringSplitOptions.None);
+        List<string> currentLine = [];
 
-        do
+        foreach (var word in words)
         {
-            if(pString is null)
+            if (word[0] >= TEXT_CODE_NEWLINE && word[0] <= TEXT_CODE_DEFCOLOR)
             {
-
-            }
-            // each character goes towards building a new word
-            if (pString[usSourceCounter] != TEXT_SPACE && pString[usSourceCounter] != 0)
-            {
-                zWordString[usDestCounter++] = pString[usSourceCounter];
-            }
-            else
-            {
-                // we hit a space (or end of record), so this is the END of a word!
-
-                // is this a special CODE?
-                if (zWordString[0] >= TEXT_CODE_NEWLINE && zWordString[0] <= TEXT_CODE_DEFCOLOR)
+                switch (word[0])
                 {
-                    switch (zWordString[0])
-                    {
-                        case TEXT_CODE_CENTER:
-
-                            if (usJustification != TextJustifies.CENTER_JUSTIFIED)
-                            {
-                                usJustification = TextJustifies.CENTER_JUSTIFIED;
-
-                                // erase this word string we've been building - it was just a code
-                                Array.Fill(zWordString, '\0');
-
-                                // erase the line string, we're starting from scratch
-                                Array.Fill(zLineString, '\0');
-
-                                // reset the line length - we're starting from scratch
-                                usLineLengthPixels = '\0';
-
-                                // reset dest char counter
-                                usDestCounter = '\0';
-                            }
-                            else    // turn OFF centering...
-                            {
-
-                                // shadow control
-                                if (uiFlags.HasFlag(IAN_TEXT_FLAGS.IAN_WRAP_NO_SHADOW))
-                                {
-                                    // turn off shadow
-                                    FontSubSystem.SetFontShadow(FontShadow.NO_SHADOW);
-                                }
-
-
-                                // time to draw this line of text (centered)!
-                                FontSubSystem.DrawTextToScreen(
-                                    new(zLineString),
-                                    new(usLocalPosX, usPos.Y),
-                                    usLocalWidth,
-                                    uiLocalFont,
-                                    ubLocalColor,
-                                    ubBackGroundColor,
-                                    usJustification);
-
-                                // shadow control
-                                if (uiFlags.HasFlag(IAN_TEXT_FLAGS.IAN_WRAP_NO_SHADOW))
-                                {
-                                    // turn on shadow
-                                    FontSubSystem.SetFontShadow(FontShadow.DEFAULT_SHADOW);
-                                }
-
-                                // increment Y position for next time
-                                usPos.Y += (FontSubSystem.WFGetFontHeight(uiLocalFont)) + ubGap; //; // +ubGap
-
-                                // we just used a line, so note that
-                                usLinesUsed++;
-
-                                // reset x position
-                                usLocalPosX = usPos.X;
-
-                                // erase line string
-                                Array.Fill(zLineString, '\0');
-
-                                // erase word string
-                                Array.Fill(zWordString, '\0');
-
-                                // reset the line length
-                                usLineLengthPixels = '\0';
-
-                                // reset dest char counter
-                                usDestCounter = '\0';
-
-                                // turn off centering...
-                                usJustification = TextJustifies.LEFT_JUSTIFIED;
-                            }
-
-                            break;
-
-
-
-                        case TEXT_CODE_NEWLINE:
-
-                            // NEWLINE character!
-
-                            // shadow control
-                            if (uiFlags.HasFlag(IAN_TEXT_FLAGS.IAN_WRAP_NO_SHADOW))
-                            {
-                                // turn off shadow
-                                FontSubSystem.SetFontShadow(FontShadow.NO_SHADOW);
-                            }
-
-                            // Display what we have up to now
-                            FontSubSystem.DrawTextToScreen(
-                                new(zLineString),
-                                new(usLocalPosX, usPos.Y),
-                                usLocalWidth,
-                                uiLocalFont,
-                                ubLocalColor,
-                                ubBackGroundColor,
-                                usJustification);
-
-                            // shadow control
-                            if (uiFlags.HasFlag(IAN_TEXT_FLAGS.IAN_WRAP_NO_SHADOW))
-                            {
-                                // turn on shadow
-                                FontSubSystem.SetFontShadow(FontShadow.DEFAULT_SHADOW);
-                            }
-
-
-                            // increment Y position for next time
-                            usPos.Y += (FontSubSystem.WFGetFontHeight(uiLocalFont)) + ubGap; //; // +ubGap
-
-                            // we just used a line, so note that
-                            usLinesUsed++;
-
-                            // reset x position
-                            usLocalPosX = usPos.X;
-
-                            // erase line string
-                            Array.Fill(zLineString, '\0');
-
-                            // erase word string
-                            Array.Fill(zWordString, '\0');
-
-                            // reset the line length
-                            usLineLengthPixels = '\0';
-
-                            // reset width 
-                            usLocalWidth = usWidth;
-
-                            // reset dest char counter
-                            usDestCounter = '\0';
-
-                            break;
-
-
-                        case TEXT_CODE_BOLD:
-
-                            if (!fBoldOn)
-                            {
-
-                                // shadow control
-                                if (uiFlags.HasFlag(IAN_TEXT_FLAGS.IAN_WRAP_NO_SHADOW))
-                                {
-                                    // turn off shadow
-                                    FontSubSystem.SetFontShadow(FontShadow.NO_SHADOW);
-                                }
-
-                                // turn bold ON.... but first, write whatever we have in normal now...
-                                FontSubSystem.DrawTextToScreen(new(zLineString), new(usLocalPosX, usPos.Y), usLocalWidth, uiLocalFont, ubColor, ubBackGroundColor, usJustification);
-
-                                // shadow control
-                                if (uiFlags.HasFlag(IAN_TEXT_FLAGS.IAN_WRAP_NO_SHADOW))
-                                {
-                                    // turn on shadow
-                                    FontSubSystem.SetFontShadow(FontShadow.DEFAULT_SHADOW);
-                                }
-
-                                // calc length of what we just wrote
-                                usPhraseLengthPixels = FontSubSystem.WFStringPixLength(new(zLineString), uiLocalFont);
-
-                                // calculate new x position for next time
-                                usLocalPosX += usPhraseLengthPixels;
-
-                                // shorten width for next time
-                                usLocalWidth -= usLineLengthPixels;
-
-                                // erase line string
-                                Array.Fill(zLineString, '\0');
-
-                                // erase word string
-                                Array.Fill(zWordString, '\0');
-
-                                // turn bold ON
-                                uiLocalFont = FontStyle.FONT10ARIALBOLD;
-                                FontSubSystem.SetFontShadow(FontShadow.NO_SHADOW);
-                                fBoldOn = true;
-
-                                // reset dest char counter
-                                usDestCounter = '\0';
-                            }
-                            else
-                            {
-
-
-                                // shadow control
-                                if (uiFlags.HasFlag(IAN_TEXT_FLAGS.IAN_WRAP_NO_SHADOW))
-                                {
-                                    // turn off shadow
-                                    FontSubSystem.SetFontShadow(FontShadow.NO_SHADOW);
-                                }
-
-                                // turn bold OFF - write whatever we have in bold now...
-                                FontSubSystem.DrawTextToScreen(new(zLineString), new(usLocalPosX, usPos.Y), usLocalWidth, uiLocalFont, ubColor, ubBackGroundColor, usJustification);
-
-                                // shadow control
-                                if (uiFlags.HasFlag(IAN_TEXT_FLAGS.IAN_WRAP_NO_SHADOW))
-                                {
-                                    // turn on shadow
-                                    FontSubSystem.SetFontShadow(FontShadow.DEFAULT_SHADOW);
-                                }
-
-                                // calc length of what we just wrote
-                                usPhraseLengthPixels = FontSubSystem.WFStringPixLength(new(zLineString), uiLocalFont);
-
-                                // calculate new x position for next time
-                                usLocalPosX += usPhraseLengthPixels;
-
-                                // shorten width for next time
-                                usLocalWidth -= usLineLengthPixels;
-
-                                // erase line string
-                                Array.Fill(zLineString, '\0');
-
-                                // new by Ian Nov 30th, 1998
-
-                                /*
-                                DEF: commented out for Beta.  Nov 30
-
-                                                            // measure length of WordString and if length > 1, then we have a word to deal with
-                                                            if (wcslen(zWordString) > 1)
-                                                            {
-                                                                // need to reduce the usSourceCounter by the true word length (not counting the code char)
-                                                                usSourceCounter -= (wcslen(zWordString) - 1);
-                                                            }
-
-                                */
-                                // erase word string
-                                Array.Fill(zWordString, '\0');
-
-                                // turn bold OFF
-                                uiLocalFont = uiFont;
-                                fBoldOn = false;
-
-                                // reset dest char counter
-                                usDestCounter = '\0';
-                            }
-
-                            break;
-
-
-
-
-                        case TEXT_CODE_NEWCOLOR:
-
-
-                            // shadow control
-                            if (uiFlags.HasFlag(IAN_TEXT_FLAGS.IAN_WRAP_NO_SHADOW))
-                            {
-                                // turn off shadow
-                                FontSubSystem.SetFontShadow(FontShadow.NO_SHADOW);
-                            }
-
-                            // change to new color.... but first, write whatever we have in normal now...
-                            FontSubSystem.DrawTextToScreen(new(zLineString), new(usLocalPosX, usPos.Y), usLocalWidth, uiLocalFont, ubLocalColor, ubBackGroundColor, usJustification);
-
-                            // shadow control
-                            if (uiFlags.HasFlag(IAN_TEXT_FLAGS.IAN_WRAP_NO_SHADOW))
-                            {
-                                // turn on shadow
-                                FontSubSystem.SetFontShadow(FontShadow.DEFAULT_SHADOW);
-                            }
-
-
-                            // the new color value is the next character in the word
-                            if (zWordString[1] != TEXT_SPACE && zWordString[1] < 256)
-                            {
-                                ubLocalColor = (FontColor)zWordString[1];
-                            }
-
-                            ubLocalColor = (FontColor)184;
-                            ;
-
-                            // calc length of what we just wrote
-                            usPhraseLengthPixels = FontSubSystem.WFStringPixLength(new(zLineString), uiLocalFont);
-
-                            // calculate new x position for next time
-                            usLocalPosX += usPhraseLengthPixels;
-
-                            // shorten width for next time
-                            usLocalWidth -= usLineLengthPixels;
-
-                            // erase line string
-                            Array.Fill(zLineString, '\0');
-
-                            // erase word string
-                            Array.Fill(zWordString, '\0');
-
-                            // reset dest char counter
-                            usDestCounter = '\0';
-                            break;
-
-
-
-                        case TEXT_CODE_DEFCOLOR:
-
-                            // shadow control
-                            if (uiFlags.HasFlag(IAN_TEXT_FLAGS.IAN_WRAP_NO_SHADOW))
-                            {
-                                // turn off shadow
-                                FontSubSystem.SetFontShadow(FontShadow.NO_SHADOW);
-                            }
-
-                            // turn color back to default - write whatever we have in bold now...
-                            FontSubSystem.DrawTextToScreen(new(zLineString), new(usLocalPosX, usPos.Y), usLocalWidth, uiLocalFont, ubLocalColor, ubBackGroundColor, usJustification);
-
-                            // shadow control
-                            if (uiFlags.HasFlag(IAN_TEXT_FLAGS.IAN_WRAP_NO_SHADOW))
-                            {
-                                // turn on shadow
-                                FontSubSystem.SetFontShadow(FontShadow.DEFAULT_SHADOW);
-                            }
-
-                            // calc length of what we just wrote
-                            usPhraseLengthPixels = FontSubSystem.WFStringPixLength(new(zLineString), uiLocalFont);
-
-                            // calculate new x position for next time
-                            usLocalPosX += usPhraseLengthPixels;
-
-                            // shorten width for next time
-                            usLocalWidth -= usLineLengthPixels;
-
-                            // erase line string
-                            Array.Fill(zLineString, '\0');
-
-                            // erase word string
-                            Array.Fill(zWordString, '\0');
-
-                            // change color back to default color
-                            ubLocalColor = ubColor;
-
-                            // reset dest char counter
-                            usDestCounter = '\0';
-                            break;
-
-
-                    }       // end of switch of CODES
-
-                }
-                else // not a special character
-                {
-                    // terminate the string TEMPORARILY
-                    zWordString[usDestCounter] = '\0';
-
-                    // get the length (in pixels) of this word
-                    usWordLengthPixels = FontSubSystem.WFStringPixLength(new(zWordString), uiLocalFont);
-
-                    // add a space (in case we add another word to it)
-                    zWordString[usDestCounter++] = (char)32;
-
-                    // RE-terminate the string
-                    zWordString[usDestCounter] = '\0';
-
-                    // can we fit it onto the length of our "line" ?
-                    if ((usLineLengthPixels + usWordLengthPixels) < usWidth)
-                    {
-                        // yes we can fit this word.
-
-                        // get the length AGAIN (in pixels with the SPACE) for this word
-                        usWordLengthPixels = FontSubSystem.WFStringPixLength(new string(zWordString).Trim('\0'), uiLocalFont);
-
-                        // calc new pixel length for the line
-                        usLineLengthPixels += usWordLengthPixels;
-
-                        // reset dest char counter
-                        usDestCounter = (char)0;
-
-                        // add the word (with the space) to the line
-                        zLineString = wcscat(new(zLineString), new(zWordString)).ToCharArray();
-                    }
-                    else
-                    {
-                        // can't fit this word!
-
-                        // shadow control
-                        if (uiFlags.HasFlag(IAN_TEXT_FLAGS.IAN_WRAP_NO_SHADOW))
-                        {
-                            // turn off shadow
-                            FontSubSystem.SetFontShadow(FontShadow.NO_SHADOW);
-                        }
-
-
-                        // Display what we have up to now
+                    case TEXT_CODE_NEWLINE:
                         FontSubSystem.DrawTextToScreen(
-                            new(zLineString),
+                            string.Join(' ', currentLine),
                             new(usLocalPosX, usPos.Y),
                             usLocalWidth,
                             uiLocalFont,
@@ -821,46 +433,69 @@ public class WordWrap
                             ubBackGroundColor,
                             usJustification);
 
-                        // shadow control
-                        if (uiFlags.HasFlag(IAN_TEXT_FLAGS.IAN_WRAP_NO_SHADOW))
-                        {
-                            // turn off shadow
-                            FontSubSystem.SetFontShadow(FontShadow.DEFAULT_SHADOW);
-                        }
-
-
-                        // increment Y position for next time
-                        usPos.Y += (FontSubSystem.WFGetFontHeight(uiLocalFont)) + ubGap;//; // +ubGap
-
-                        // reset x position
-                        usLocalPosX = usPos.X;
-
-                        // we just used a line, so note that
-                        usLinesUsed++;
-
-                        // start off next line string with the word we couldn't fit
-                        zLineString = (char[])zWordString.Clone();
-
-                        // remeasure the line length
-                        usLineLengthPixels = FontSubSystem.WFStringPixLength(new(zLineString), uiLocalFont);
-
-                        // reset dest char counter
-                        usDestCounter = '\0';
-
-                        // reset width 
-                        usLocalWidth = usWidth;
-                    }
-                }       // end of this word was NOT a special code
-
+                        usLineLengthPixels = 0;
+                        currentLine.Clear();
+                        break;
+                    case TEXT_CODE_BOLD:
+                        break;
+                    default:
+                        break;
+                }
             }
+            else
+            {
+                usWordLengthPixels = FontSubSystem.WFStringPixLength(word, uiLocalFont);
 
+                if ((usLineLengthPixels + usWordLengthPixels) < usWidth)
+                {
+                    // get the length AGAIN (in pixels with the SPACE) for this word
+                    usWordLengthPixels = FontSubSystem.WFStringPixLength(word + " ", uiLocalFont);
 
+                    // calc new pixel length for the line
+                    usLineLengthPixels += usWordLengthPixels;
+                    currentLine.Add(word);
 
-        } while (pString[usSourceCounter++] != 0);
+                }
+                else
+                {
+                    // shadow control
+                    if (uiFlags.HasFlag(IAN_TEXT_FLAGS.IAN_WRAP_NO_SHADOW))
+                    {
+                        // turn off shadow
+                        FontSubSystem.SetFontShadow(FontShadow.NO_SHADOW);
+                    }
 
+                    // Display what we have up to now
+                    FontSubSystem.DrawTextToScreen(
+                        string.Join(' ', currentLine),
+                        new(usLocalPosX, usPos.Y),
+                        usLocalWidth,
+                        uiLocalFont,
+                        ubLocalColor,
+                        ubBackGroundColor,
+                        usJustification);
 
-        // terminate the entire paragraph with a null string (null character guaranteed)
-        zLineString = wcscat(new(zLineString), "").ToCharArray();
+                    usLineLengthPixels = 0;
+                    currentLine.Clear();
+
+                    // shadow control
+                    if (uiFlags.HasFlag(IAN_TEXT_FLAGS.IAN_WRAP_NO_SHADOW))
+                    {
+                        // turn off shadow
+                        FontSubSystem.SetFontShadow(FontShadow.DEFAULT_SHADOW);
+                    }
+
+                    // increment Y position for next time
+                    usPos.Y += (FontSubSystem.WFGetFontHeight(uiLocalFont)) + ubGap;//; // +ubGap
+
+                    // reset x position
+                    usLocalPosX = usPos.X;
+
+                    // we just used a line, so note that
+                    usLinesUsed++;
+                }
+            }
+        }
 
         // shadow control
         if (uiFlags.HasFlag(IAN_TEXT_FLAGS.IAN_WRAP_NO_SHADOW))
@@ -870,8 +505,7 @@ public class WordWrap
         }
 
         // draw the paragraph
-        FontSubSystem.DrawTextToScreen(new(zLineString), new(usLocalPosX, usPos.Y), usLocalWidth, uiLocalFont, ubLocalColor, ubBackGroundColor, usJustification);
-
+        FontSubSystem.DrawTextToScreen(string.Join(' ', currentLine), new(usLocalPosX, usPos.Y), usLocalWidth, uiLocalFont, ubLocalColor, ubBackGroundColor, usJustification);
 
         // shadow control
         if (uiFlags.HasFlag(IAN_TEXT_FLAGS.IAN_WRAP_NO_SHADOW))

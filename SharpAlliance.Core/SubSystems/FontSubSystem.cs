@@ -152,7 +152,7 @@ public class FontSubSystem : ISharpAllianceManager
 
     public static void SetFontForeground(FontColor ubForeground)
     {
-        int uiRed, uiGreen, uiBlue;
+        byte uiRed, uiGreen, uiBlue;
 
         if ((FontDefault < 0) || (((int)FontDefault) > MAX_FONTS))
         {
@@ -161,11 +161,16 @@ public class FontSubSystem : ISharpAllianceManager
 
         FontForeground8 = ubForeground;
 
-        uiRed = (int)FontObjs[FontDefault].pPaletteEntry[(int)ubForeground].peRed;
-        uiGreen = (int)FontObjs[FontDefault].pPaletteEntry[(int)ubForeground].peGreen;
-        uiBlue = (int)FontObjs[FontDefault].pPaletteEntry[(int)ubForeground].peBlue;
+        uiRed = FontObjs[FontDefault].pPaletteEntry[(int)ubForeground].peRed;
+        uiGreen = FontObjs[FontDefault].pPaletteEntry[(int)ubForeground].peGreen;
+        uiBlue = FontObjs[FontDefault].pPaletteEntry[(int)ubForeground].peBlue;
 
-        FontForeground16 = FontColor.FONT_MCOLOR_LTBLUE; // Get16BPPColor(FROMRGB(uiRed, uiGreen, uiBlue));
+        if (!fontColorLookup.ContainsKey(ubForeground))
+        {
+            fontColorLookup.Add(ubForeground, FROMRGB(uiRed, uiGreen, uiBlue));
+        }
+
+        FontForeground16 = ubForeground; // Get16BPPColor();
     }
 
     public void SaveFontSettings()
@@ -219,6 +224,11 @@ public class FontSubSystem : ISharpAllianceManager
 
     public static void SetFontDestBuffer(SurfaceType DestBuffer, SixLabors.ImageSharp.Rectangle bounds, bool wrap)
     {
+        if (DestBuffer == SurfaceType.Unknown)
+        {
+
+        }
+
         FontDestBuffer = DestBuffer;
 
         FontDestRegion.X = bounds.X;
@@ -364,21 +374,14 @@ public class FontSubSystem : ISharpAllianceManager
             _ => TextAlignment.Center,
         };
 
-        try
-        {
-            FontSubSystem.TextRenderer.DrawText(
-                text,
-                location,
-                width,
-                alignment,
-                fontLookup[font],
-                fontColorLookup[foregroundColor],
-                fontColorLookup[foregroundColor]);
-        }
-        catch (Exception e)
-        {
-
-        }
+        FontSubSystem.TextRenderer.DrawText(
+            text,
+            location,
+            width,
+            alignment,
+            fontLookup[font],
+            fontColorLookup[foregroundColor],
+            fontColorLookup[foregroundColor]);
     }
 
     public void Dispose()
@@ -1105,7 +1108,7 @@ public class FontSubSystem : ISharpAllianceManager
     public static int WFStringPixLength(string pString, FontStyle UseFont)
     {
         // return how many Y pixels we used
-        return StringPixLength(pString.TrimEnd('\0'), UseFont);
+        return StringPixLength(pString, UseFont);
     }
 
     public static void SetFontDestBuffer(SurfaceType DestBuffer, int x, int y, int width, int height, bool wrap)

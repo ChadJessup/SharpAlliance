@@ -50,6 +50,7 @@ public interface IVideoManager : ISharpAllianceManager
     bool BlitBufferToBuffer(SurfaceType srcBuffer, SurfaceType dstBuffer, Rectangle srcRect);
     void SetVideoSurfaceTransparency(HVOBJECT vobj, Rgba32 pixel);
     void ClearElements();
+    Texture CreateSurface(Image<Rgba32> image, SurfaceType? surfaceType = null);
     bool Blt16BPPTo16BPP(Image<Rgba32> pDest, Image<Rgba32> pSrc, Point iDestPos, Point iSrcPos, Size size, bool debug = false);
     bool Blt8BPPDataSubTo16BPPBuffer(Image<Rgba32> pDestBuf, Size size, Image<Rgba32> pSrcBuf, HVOBJECT srcvObj, Point i, Rectangle clip);
     void Blt8BPPTo8BPP(Image<Rgba32> pDestBuf, int uiDestPitchBYTES, Image<Rgba32> pSrcBuf, int uiSrcPitchBYTES, int sLeft1, int sTop1, int sLeft2, int sTop2, int sWidth, int sHeight);

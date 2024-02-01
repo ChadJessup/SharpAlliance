@@ -77,13 +77,20 @@ public class TextRenderer
         Brush brush = Brushes.Solid(foreColor);//, backColor);
         Pen pen = Pens.Solid(backColor, 0.1f);
 
-        buffer.Mutate(ctx =>
+        try
         {
-            ctx.DrawText(
-                options,
-                text,
-                brush,
-                pen);
-        });
+            buffer.Mutate(ctx =>
+            {
+                ctx.DrawText(
+                    options,
+                    text,
+                    brush,
+                    pen);
+            });
+        }
+        catch (Exception ex)
+        {
+
+        }
     }
 }

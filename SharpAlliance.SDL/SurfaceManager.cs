@@ -42,6 +42,8 @@ public class SurfaceManager : ISurfaceManager
         var extraSurface = this.CreateSurface(renderer, blankImage.Clone(), SurfaceType.EXTRA_BUFFER);
         var backbufferSurface = this.CreateSurface(renderer, blankImage.Clone(), SurfaceType.BACKBUFFER);
         var zBuffer = this.CreateSurface(renderer, blankImage.Clone(), SurfaceType.Z_BUFFER);
+       // var fontBuffer = this.CreateSurface(renderer, blankImage.Clone(), SurfaceType.FONT_BUFFER);
+
         //        frameSurface.Image.SaveAsPng($@"c:\temp\{nameof(InitializeSurfaces)}-frameSurface.png");
 
         //        this.surfaces.Add(primarySurface, primarySurface.Image);

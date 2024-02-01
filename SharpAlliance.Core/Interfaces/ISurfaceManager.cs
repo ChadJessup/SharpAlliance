@@ -10,7 +10,6 @@ namespace SharpAlliance.Core.Interfaces
         Image<Rgba32> this[SurfaceType surface] { get; }
 
         Dictionary<SurfaceType, Texture> SurfaceByTypes { get; }
-
         Texture CreateSurface(nint renderer, Image<Rgba32> image, SurfaceType? surfaceType = null);
         Texture CreateSurface(VSURFACE_DESC vs_desc);
         SurfaceType CreateSurface(HVOBJECT vObjectDesc, int idx = 0);

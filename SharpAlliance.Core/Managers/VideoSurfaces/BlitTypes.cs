@@ -74,6 +74,8 @@ public enum SurfaceType : uint
     SAVE_BUFFER     = 0x00000002,
     EXTRA_BUFFER    = 0x00000003,
     Z_BUFFER        = 0x00000004,
+
+//    FONT_BUFFER     = 0x00000008,
 }
 
 public enum VO_BLT

@@ -10,6 +10,7 @@ using SharpAlliance.Core.SubSystems;
 using SharpAlliance.Core.SubSystems.LaptopSubSystem;
 using SharpAlliance.Platform;
 using SixLabors.ImageSharp;
+using SixLabors.ImageSharp.Advanced;
 using SixLabors.ImageSharp.Drawing.Processing;
 using SixLabors.ImageSharp.PixelFormats;
 using SixLabors.ImageSharp.Processing;
@@ -610,12 +611,10 @@ public class HelpScreen : IScreen
 
     private static void RenderTextBufferToScreen()
     {
-        HVSURFACE hDestVSurface, hSrcVSurface;
         Rectangle SrcRect;
 
-
-        video.GetVideoSurface(out hDestVSurface, guiRENDERBUFFER);
-        //video.GetVideoSurface(out hSrcVSurface, guiHelpScreenTextBufferSurface);
+        //var renderBuffer = video.Surfaces[SurfaceType.RENDER_BUFFER];
+        //var textBuffer = video.Surfaces[guiHelpScreenTextBufferSurface];
 
         SrcRect = new()
         {
@@ -625,7 +624,12 @@ public class HelpScreen : IScreen
             Height = 0 + HLP_SCRN__HEIGHT_OF_TEXT_AREA - (2 * 8),
         };
 
-        //video.BltVSurfaceUsingDD(hDestVSurface, hSrcVSurface, VO_BLT.SRCTRANSPARENCY, gHelpScreen.usLeftMarginPosX, (gHelpScreen.usScreenLoc.Y + HELP_SCREEN_TEXT_OFFSET_Y), out SrcRect);
+        video.BlitBufferToBuffer(
+            guiHelpScreenTextBufferSurface,
+            SurfaceType.RENDER_BUFFER,
+            SrcRect);
+
+        video.Surfaces[guiHelpScreenTextBufferSurface].SaveAsPng($@"C:\temp\text.png");
 
         DisplayHelpScreenTextBufferScrollBox();
     }
@@ -1701,7 +1705,9 @@ public class HelpScreen : IScreen
     {
         // CLEAR THE FRAME BUFFER
         Image<Rgba32> pDestBuf = video.Surfaces[guiHelpScreenTextBufferSurface];
-        // pDestBuf.Mutate(ctx => ctx.Clear(Color.AliceBlue));
+
+        var rawPixels = pDestBuf.GetPixelMemoryGroup()[0];
+        rawPixels.Span.Clear();
 
         video.InvalidateScreen();
     }
@@ -1738,12 +1744,9 @@ public class HelpScreen : IScreen
         // Create a background video surface to blt the face onto
         Image<Rgba32> textBuffer = new(HLP_SCRN__WIDTH_OF_TEXT_BUFFER, HLP_SCRN__HEIGHT_OF_TEXT_BUFFER);
 
-        //        guiHelpScreenTextBufferSurface = new HVOBJECT
-        //        {
-        //            Images = [textBuffer],
-        //        };
-        //
-        //        video.Surfaces[]Surfaces.LockSurface((guiHelpScreenTextBufferSurface);
+        var tex = video.CreateSurface(textBuffer);
+
+        guiHelpScreenTextBufferSurface = tex.SurfaceType;
 
         return true;
     }

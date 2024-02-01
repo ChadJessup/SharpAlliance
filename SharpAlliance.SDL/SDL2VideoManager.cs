@@ -216,6 +216,11 @@ public class SDL2VideoManager : IVideoManager
         return this.IsInitialized;
     }
 
+    public Texture CreateSurface(Image<Rgba32> image, SurfaceType? surfaceType = null)
+    {
+        return this.Surfaces.CreateSurface(this.Renderer, image, surfaceType);
+    }
+
     /**********************************************************************************************
 	Blt16BPPTo16BPP
 
