@@ -132,12 +132,12 @@ public class MapScreenInterfaceMap
         VSURFACE_DESC vs_desc;
 
         // load image
-        var vobj = video.GetVideoObject("INTERFACE\\b_map.pcx", out string uiTempMap);
+        HVOBJECT uiTempMap = video.GetVideoObject("INTERFACE\\b_map.pcx");
 
         // get video surface
-        var surfType = video.Surfaces.CreateSurface(vobj);
+        var surfType = video.Surfaces.CreateSurface(uiTempMap);
         var surf = video.GetVideoSurface(out hSrcVSurface, surfType);
-        var palette = video.GetVSurfacePaletteEntries(vobj);
+        var palette = video.GetVSurfacePaletteEntries(uiTempMap);
 
         // set up various palettes
         this.pMapLTRedPalette = video.Create16BPPPaletteShaded(palette, redScale: 400, greenScale: 0, blueScale: 0, mono: true);

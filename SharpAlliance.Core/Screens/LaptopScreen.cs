@@ -12,6 +12,7 @@ using SharpAlliance.Core.SubSystems.LaptopSubSystem.FloristSubSystem;
 using SharpAlliance.Core.SubSystems.LaptopSubSystem.IMPSubSystem;
 using SharpAlliance.Core.SubSystems.LaptopSubSystem.InsuranceSubSystem;
 using SixLabors.ImageSharp;
+using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace SharpAlliance.Core.SubSystems.LaptopSubSystem;
 
@@ -39,7 +40,6 @@ public partial class Laptop : IScreen
         Laptop.history = history;
         video = videoManager;
         screens = screenManager;
-        screens.GetScreen<HelpScreen>(ScreenName.HelpScreen, activate: false);
     }
 
     public ValueTask Activate()
@@ -315,7 +315,7 @@ public partial class Laptop : IScreen
         if ((fLoadPendingFlag == false) || (Emails.fNewMailFlag))
         {
             // render buttons marked dirty
-            ButtonSubSystem.RenderButtons(gLaptopButtons);
+            ButtonSubSystem.RenderButtons(buttonList);
 
             // render fast help 'quick created' buttons
             //		RenderFastHelp( );
@@ -485,7 +485,7 @@ public partial class Laptop : IScreen
                     break;
             }
 
-            ButtonSubSystem.MarkButtonsDirty(Laptop.buttonList);
+            ButtonSubSystem.MarkButtonsDirty(buttonList);
         }
         else
         {
@@ -814,10 +814,178 @@ public partial class Laptop : IScreen
 
     private void DisplayErrorBox()
     {
+        // this function will display the error graphic
+        HVOBJECT hLapTopIconHandle;
+        if (!fErrorFlag)
+        {
+            return;
+        }
+
+        // get and blt top portion
+        video.BltVideoObject(SurfaceType.FRAME_BUFFER, guiBOOKTOP, 0, ERROR_X, ERROR_Y, VO_BLT.SRCTRANSPARENCY);
+
+        // middle * 5
+        video.BltVideoObject(SurfaceType.FRAME_BUFFER, guiBOOKMID, 0, ERROR_X, ERROR_Y + BOOK_HEIGHT, VO_BLT.SRCTRANSPARENCY);
+        video.BltVideoObject(SurfaceType.FRAME_BUFFER, guiBOOKMID, 0, ERROR_X, ERROR_Y + 2 * BOOK_HEIGHT, VO_BLT.SRCTRANSPARENCY);
+        video.BltVideoObject(SurfaceType.FRAME_BUFFER, guiBOOKMID, 0, ERROR_X, ERROR_Y + 3 * BOOK_HEIGHT, VO_BLT.SRCTRANSPARENCY);
+        video.BltVideoObject(SurfaceType.FRAME_BUFFER, guiBOOKMID, 0, ERROR_X, ERROR_Y + 4 * BOOK_HEIGHT, VO_BLT.SRCTRANSPARENCY);
+        video.BltVideoObject(SurfaceType.FRAME_BUFFER, guiBOOKMID, 0, ERROR_X, ERROR_Y + 5 * BOOK_HEIGHT, VO_BLT.SRCTRANSPARENCY);
+        video.BltVideoObject(SurfaceType.FRAME_BUFFER, guiBOOKBOT, 0, ERROR_X, ERROR_Y + 6 * BOOK_HEIGHT, VO_BLT.SRCTRANSPARENCY);
+
+        // font stuff
+        FontSubSystem.SetFont(ERROR_TITLE_FONT);
+        FontSubSystem.SetFontForeground(FontColor.FONT_WHITE);
+        FontSubSystem.SetFontBackground(FontColor.FONT_BLACK);
+        FontSubSystem.SetFontShadow(FontShadow.NO_SHADOW);
+
+        // print title
+        mprintf(ERROR_TITLE_X, ERROR_TITLE_Y, pErrorStrings[0]);
+        FontSubSystem.SetFontForeground(FontColor.FONT_BLACK);
+        FontSubSystem.SetFont(ERROR_FONT);
+
+        // display error string
+        FontSubSystem.DisplayWrappedString(
+            new Point(
+                ERROR_X + ERROR_TEXT_X,(ERROR_Y + ERROR_TEXT_Y + FontSubSystem.DisplayWrappedString(
+                    new Point(ERROR_X + ERROR_TEXT_X, ERROR_Y + ERROR_TEXT_Y),
+                    BOOK_WIDTH,
+                    2,
+                    ERROR_FONT,
+                    FontColor.FONT_BLACK,
+                    pErrorStrings[1],
+                    FontColor.FONT_BLACK,
+                    TextJustifies.CENTER_JUSTIFIED))),
+                BOOK_WIDTH,
+                2,
+                ERROR_FONT,
+                FontColor.FONT_BLACK,
+                pErrorStrings[2],
+                FontColor.FONT_BLACK,
+                TextJustifies.CENTER_JUSTIFIED);
+
+        FontSubSystem.SetFontShadow(FontShadow.DEFAULT_SHADOW);
     }
 
+    private static bool fOldShow = false;
     private void DisplayWebBookMarkNotify()
     {
+        HVOBJECT hLapTopIconHandle;
+
+
+        // handle the timer for this thing
+        HandleWebBookMarkNotifyTimer();
+
+        // are we about to start showing box? or did we just stop?
+        if (((fOldShow == false) || (fReDrawBookMarkInfo)) && (fShowBookmarkInfo))
+        {
+            fOldShow = true;
+            fReDrawBookMarkInfo = false;
+
+            // show background objects
+            video.BltVideoObject(SurfaceType.FRAME_BUFFER, guiDOWNLOADTOP, 0, DOWNLOAD_X, DOWNLOAD_Y, VO_BLT.SRCTRANSPARENCY);
+            video.BltVideoObject(SurfaceType.FRAME_BUFFER, guiDOWNLOADMID, 0, DOWNLOAD_X, DOWNLOAD_Y + DOWN_HEIGHT, VO_BLT.SRCTRANSPARENCY);
+            video.BltVideoObject(SurfaceType.FRAME_BUFFER, guiDOWNLOADBOT, 0, DOWNLOAD_X, DOWNLOAD_Y + 2 * DOWN_HEIGHT, VO_BLT.SRCTRANSPARENCY);
+            video.BltVideoObject(SurfaceType.FRAME_BUFFER, guiTITLEBARICONS, 1, DOWNLOAD_X + 4, DOWNLOAD_Y + 1, VO_BLT.SRCTRANSPARENCY);
+
+            //	MSYS_DefineRegion( &gLapTopScreenRegion, ( UINT16 )( LaptopScreenRect.iLeft ),( UINT16 )( LaptopScreenRect.iTop ),( UINT16 ) ( LaptopScreenRect.iRight ),( UINT16 )( LaptopScreenRect.iBottom ), MSYS_PRIORITY_NORMAL+1,
+            //					CURSOR_LAPTOP_SCREEN, ScreenRegionMvtCallback, LapTopScreenCallBack ); 
+
+            // font stuff
+            FontSubSystem.SetFont(DOWNLOAD_FONT);
+            FontSubSystem.SetFontForeground(FontColor.FONT_WHITE);
+            FontSubSystem.SetFontBackground(FontColor.FONT_BLACK);
+            FontSubSystem.SetFontShadow(FontShadow.NO_SHADOW);
+
+
+            // display download string
+            mprintf(DOWN_STRING_X, DOWN_STRING_Y, pShowBookmarkString[0]);
+
+            FontSubSystem.SetFont(BOOK_FONT);
+            FontSubSystem.SetFontForeground(FontColor.FONT_BLACK);
+            FontSubSystem.SetFontBackground(FontColor.FONT_BLACK);
+            FontSubSystem.SetFontShadow(FontShadow.NO_SHADOW);
+
+            // now draw the message
+            FontSubSystem.DisplayWrappedString(
+                new Point((DOWN_STRING_X - 42), (DOWN_STRING_Y + 20)),
+                BOOK_WIDTH + 45,
+                2,
+                BOOK_FONT,
+                FontColor.FONT_BLACK,
+                pShowBookmarkString[1],
+                FontColor.FONT_BLACK,
+                TextJustifies.CENTER_JUSTIFIED);
+
+            // invalidate region
+            video.InvalidateRegion(DOWNLOAD_X, DOWNLOAD_Y, DOWNLOAD_X + 150, DOWNLOAD_Y + 100);
+
+        }
+        else if ((fOldShow) && (fShowBookmarkInfo == false))
+        {
+            //MSYS_RemoveRegion( &gLapTopScreenRegion );
+            fOldShow = false;
+            fPausedReDrawScreenFlag = true;
+        }
+
+        FontSubSystem.SetFontShadow(FontShadow.DEFAULT_SHADOW);
+    }
+
+    private static uint iBaseTimeHandleWebBookMarkNotifyTimer = 0;
+    private static bool fOldShowBookMarkInfo = false;
+    private void HandleWebBookMarkNotifyTimer()
+    {
+        uint iDifference = 0;
+
+        // check if maxing or mining?
+        if ((fMaximizingProgram) || (fMinizingProgram))
+        {
+            fOldShowBookMarkInfo |= fShowBookmarkInfo;
+            fShowBookmarkInfo = false;
+            return;
+        }
+
+        // if we were going to show this pop up, but were delayed, then do so now
+        fShowBookmarkInfo |= fOldShowBookMarkInfo;
+
+        // reset old flag
+        fOldShowBookMarkInfo = false;
+
+        // if current mode is too low, then reset
+        if (guiCurrentLaptopMode < LAPTOP_MODE.WWW)
+        {
+            fShowBookmarkInfo = false;
+        }
+
+        // if showing bookmarks, don't show help
+        if (gfShowBookmarks)
+        {
+            fShowBookmarkInfo = false;
+        }
+
+        // check if flag false, is so, leave
+        if (fShowBookmarkInfo == false)
+        {
+            iBaseTimeHandleWebBookMarkNotifyTimer = 0;
+            return;
+        }
+
+        // check if this is the first time in here
+        if (iBaseTimeHandleWebBookMarkNotifyTimer == 0)
+        {
+            iBaseTimeHandleWebBookMarkNotifyTimer = GetJA2Clock();
+            return;
+        }
+
+        iDifference = GetJA2Clock() - iBaseTimeHandleWebBookMarkNotifyTimer;
+
+        fReDrawBookMarkInfo = true;
+
+        if (iDifference > DISPLAY_TIME_FOR_WEB_BOOKMARK_NOTIFY)
+        {
+            // waited long enough, stop showing
+            iBaseTimeHandleWebBookMarkNotifyTimer = 0;
+            fShowBookmarkInfo = false;
+        }
     }
 
     private static uint iTotalTime = 0;
@@ -1399,8 +1567,64 @@ public partial class Laptop : IScreen
     {
     }
 
+    private static bool fOldErrorFlag = false;
     private void CreateDestroyErrorButton()
     {
+        if ((fErrorFlag) && (!fOldErrorFlag))
+        {
+            // create inventory button
+            fOldErrorFlag = true;
+
+            // load image and create error confirm button
+            giErrorButtonImage[0] = ButtonSubSystem.LoadButtonImage("LAPTOP\\errorbutton.sti", -1, 0, -1, 1, -1);
+            giErrorButton[0] = ButtonSubSystem.QuickCreateButton(
+                giErrorButtonImage[0],
+                new Point(ERROR_X + ERROR_BTN_X, ERROR_BTN_Y),
+                ButtonFlags.BUTTON_TOGGLE,
+                MSYS_PRIORITY.HIGHEST,
+                BtnGenericMouseMoveButtonCallback,
+                BtnErrorCallback);
+
+            // define the cursor
+            ButtonSubSystem.SetButtonCursor(giErrorButton[0], CURSOR.LAPTOP_SCREEN);
+
+            // define the screen mask
+            MouseSubSystem.MSYS_DefineRegion(
+                pScreenMask,
+                new Rectangle(0, 0, 640, 480),
+                MSYS_PRIORITY.HIGHEST - 3,
+                CURSOR.LAPTOP_SCREEN,
+                MSYS_NO_CALLBACK,
+                LapTopScreenCallBack);
+
+            // add region 
+            MouseSubSystem.MSYS_AddRegion(ref pScreenMask);
+
+            buttonList.AddRange(giErrorButton);
+        }
+        else if ((!fErrorFlag) && (fOldErrorFlag))
+        {
+            // done dsiplaying, get rid of button and screen mask
+            fOldErrorFlag = false;
+
+            ButtonSubSystem.RemoveButton(giErrorButton[0]);
+            ButtonSubSystem.UnloadButtonImage(giErrorButtonImage[0]);
+
+            MouseSubSystem.MSYS_RemoveRegion(pScreenMask);
+
+            // re draw screen
+            fReDrawScreenFlag = true;
+        }
+    }
+
+    private void BtnErrorCallback(ref GUI_BUTTON button, MSYS_CALLBACK_REASON reason)
+    {
+        throw new NotImplementedException();
+    }
+
+    private void BtnGenericMouseMoveButtonCallback(ref GUI_BUTTON button, MSYS_CALLBACK_REASON reason)
+    {
+        throw new NotImplementedException();
     }
 
     private static bool fOldShowBookmarks = false;

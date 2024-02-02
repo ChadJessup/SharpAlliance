@@ -12,6 +12,7 @@ namespace SharpAlliance.Core.Screens;
 public class MapScreen : IScreen
 {
     private readonly IVideoManager video;
+    private readonly ILibraryManager library;
     private readonly MapScreenInterfaceMap mapScreenInterface;
     private readonly MessageSubSystem messages;
     public static List<MERC_LEAVE_ITEM?> gpLeaveListHead = [];
@@ -26,9 +27,11 @@ public class MapScreen : IScreen
     public MapScreen(
         MapScreenInterfaceMap mapScreenInterfaceMap,
         IVideoManager videoManager,
+        ILibraryManager libraryManager,
         MessageSubSystem messageSubSystem)
     {
         video = videoManager;
+        this.library = libraryManager;
         this.mapScreenInterface = mapScreenInterfaceMap;
         this.messages = messageSubSystem;
     }
@@ -49,6 +52,11 @@ public class MapScreen : IScreen
 
     public ValueTask<bool> Initialize()
     {
+        if(!LibraryFileManager.IsInitialized)
+        {
+            this.library.Initialize();
+        }
+
         this.mapScreenInterface.SetUpBadSectorsList();
 
         // setup message box system

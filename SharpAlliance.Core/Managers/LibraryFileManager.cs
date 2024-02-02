@@ -45,12 +45,17 @@ public class LibraryFileManager : ILibraryManager
     public string ManagerName { get; set; }
     public Dictionary<LibraryNames, LibraryHeader> Libraries { get; set; } = new();
     public int NumberOfLibraries => this.Libraries.Count;
-    public static bool IsInitialized { get; set; }
+    public static bool IsInitialized { get; private set; }
     public RealFileHeader RealFiles { get; } = new RealFileHeader();
     public string DataDirectory { get; init; }
 
     public ValueTask<bool> Initialize()
     {
+        if (IsInitialized)
+        {
+            return ValueTask.FromResult(true);
+        }
+
         bool fLibraryInited = false;
 
         //Load up each library
@@ -403,7 +408,7 @@ public class LibraryFileManager : ILibraryManager
                 //			FastDebugMsg(String("\n*******\nOpenFileFromLibrary():  Warning!:  Trying to load file '%s' from the library '%s' which already has a file open ( file open is '%s')\n", pName, gGameLibaries[ sLibraryID ].sLibraryName, gFileDataBase.pLibraries[ sLibraryID ].pOpenFiles[ gFileDataBase.pLibraries[ sLibraryID ].uiIdOfOtherFileAlreadyOpenedLibrary ].pFileHeader.pFileName ) );
             }
 
-            if(sLibraryID == LibraryNames.BINARY_DATA)
+            if (sLibraryID == LibraryNames.BINARY_DATA)
             {
 
             }

@@ -6,14 +6,10 @@ using Microsoft.Extensions.Logging;
 using SharpAlliance.Core.Interfaces;
 using SharpAlliance.Core.Managers;
 using SharpAlliance.Core.Managers.VideoSurfaces;
-using SharpAlliance.Core.SubSystems;
 using SharpAlliance.Core.SubSystems.LaptopSubSystem;
 using SharpAlliance.Platform;
 using SixLabors.ImageSharp;
-using SixLabors.ImageSharp.Advanced;
-using SixLabors.ImageSharp.Drawing.Processing;
 using SixLabors.ImageSharp.PixelFormats;
-using SixLabors.ImageSharp.Processing;
 
 namespace SharpAlliance.Core.Screens;
 
@@ -63,6 +59,26 @@ public class HelpScreen : IScreen
     //the type of help screen
     private const int HLP_SCRN_DEFAULT_TYPE = 9;
     private const int HLP_SCRN_BUTTON_BORDER = 8;
+
+    public static HELP_SCREEN_STRUCT gHelpScreen = new();
+
+    private static bool gfHelpScreenEntry;
+    private static bool gfHelpScreenExit;
+
+
+    public void InitHelpScreenSystem()
+    {
+        //set some values
+        gHelpScreen = new();
+
+        //set it up so we can enter the screen
+        gfHelpScreenEntry = true;
+        gfHelpScreenExit = false;
+
+        gHelpScreen.bCurrentHelpScreenActiveSubPage = HLP_SCRN_LPTP.UNSET;
+
+        gHelpScreen.fHaveAlreadyBeenInHelpScreenSinceEnteringCurrenScreen = false;
+    }
 
     //An array of record nums for the text on the help buttons
     private static Dictionary<HELP_SCREEN, List<HLP_TXT>> gHelpScreenBtnTextRecordNum = new()
@@ -144,7 +160,7 @@ public class HelpScreen : IScreen
     private const int HLP_SCRN__HEIGHT_OF_SCROLL_AREA = 182;
     private const int HLP_SCRN__WIDTH_OF_SCROLL_AREA = 20;
     private const int HLP_SCRN__SCROLL_POSX = 292;
-    private static int HLP_SCRN__SCROLL_POSY = (gHelpScreen.usScreenLoc.Y + 63);
+    private static int HLP_SCRN__SCROLL_POSY => (gHelpScreen.usScreenLoc.Y + 63);
     private const int HLP_SCRN__SCROLL_UP_ARROW_X = 292;
     private const int HLP_SCRN__SCROLL_UP_ARROW_Y = 43;
     private const int HLP_SCRN__SCROLL_DWN_ARROW_X = HLP_SCRN__SCROLL_UP_ARROW_X;
@@ -166,7 +182,6 @@ public class HelpScreen : IScreen
 
     private static HVOBJECT guiHelpScreenBackGround;
     private static SurfaceType guiHelpScreenTextBufferSurface;
-    private static bool gfHelpScreenExit;
     private static int gubRenderHelpScreenTwiceInaRow;
     private static bool gfScrollBoxIsScrolling;
     private static bool gfHaveRenderedFirstFrameToSaveBuffer;
@@ -264,13 +279,13 @@ public class HelpScreen : IScreen
     internal static void HelpScreenHandler()
     {
         //if we are just entering the help screen
-        if (HelpScreenSubSystem.gfHelpScreenEntry)
+        if (HelpScreen.gfHelpScreenEntry)
         {
             //setup the help screen
             EnterHelpScreen();
 
-            HelpScreenSubSystem.gfHelpScreenEntry = false;
-            HelpScreenSubSystem.gfHelpScreenExit = false;
+            HelpScreen.gfHelpScreenEntry = false;
+            HelpScreen.gfHelpScreenExit = false;
         }
 
         video.RestoreBackgroundRects();
@@ -304,11 +319,11 @@ public class HelpScreen : IScreen
         video.EndFrameBufferRender();
 
         //if we are leaving the help screen
-        if (HelpScreenSubSystem.gfHelpScreenExit)
+        if (HelpScreen.gfHelpScreenExit)
         {
-            HelpScreenSubSystem.gfHelpScreenExit = false;
+            HelpScreen.gfHelpScreenExit = false;
 
-            HelpScreenSubSystem.gfHelpScreenEntry = true;
+            HelpScreen.gfHelpScreenEntry = true;
 
             //exit mouse regions etc..
             ExitHelpScreen();
@@ -713,7 +728,7 @@ public class HelpScreen : IScreen
             iSizeOfBox = HLP_SCRN__HEIGHT_OF_SCROLL_AREA;
 
             //no need to calc the top spot for the box
-            iTopPosScrollBox = HLP_SCRN__SCROLL_POSY;
+            iTopPosScrollBox = (gHelpScreen.usScreenLoc.Y + 63);//HLP_SCRN__SCROLL_POSY;
         }
         else
         {
@@ -1195,7 +1210,7 @@ public class HelpScreen : IScreen
         ButtonSubSystem.SetButtonFastHelpText(guiHelpScreenExitBtn, gzHelpScreenText[0]);
         ButtonSubSystem.SetButtonCursor(guiHelpScreenExitBtn, gHelpScreen.usCursor);
 
-
+        buttonList.Add(guiHelpScreenExitBtn);
 
         //Create the buttons needed for the screen
         CreateHelpScreenButtons();
@@ -1223,6 +1238,8 @@ public class HelpScreen : IScreen
                 BtnHelpScreenDontShowHelpAgainCallback);
 
             ButtonSubSystem.SetButtonCursor(gHelpScreenDontShowHelpAgainToggle, gHelpScreen.usCursor);
+
+            buttonList.Add(gHelpScreenDontShowHelpAgainToggle);
 
             // Set the state of the chec box
             if (gGameSettings.fHideHelpInAllScreens)
@@ -1321,9 +1338,13 @@ public class HelpScreen : IScreen
         guiHelpScreenScrollArrowImage[1] = ButtonSubSystem.UseLoadedButtonImage(guiHelpScreenScrollArrowImage[0], 19, 15, 16, 17, 18);
 
         if (gHelpScreen.bNumberOfButtons != 0)
+        {
             usPosX = gHelpScreen.usScreenLoc.X + HLP_SCRN__SCROLL_UP_ARROW_X + HELP_SCREEN_BUTTON_BORDER_WIDTH;
+        }
         else
+        {
             usPosX = gHelpScreen.usScreenLoc.X + HLP_SCRN__SCROLL_UP_ARROW_X;
+        }
 
         usPosY = gHelpScreen.usScreenLoc.Y + HLP_SCRN__SCROLL_UP_ARROW_Y;
 
@@ -1467,7 +1488,6 @@ public class HelpScreen : IScreen
 
         //calc the number of lines in the buffer
         gHelpScreen.usTotalNumberOfLinesInBuffer = gHelpScreen.usTotalNumberOfPixelsInBuffer / (HLP_SCRN__HEIGHT_OF_1_LINE_IN_BUFFER);
-
     }
 
     private static int RenderSpecificHelpScreen()
@@ -1481,7 +1501,6 @@ public class HelpScreen : IScreen
         FontSubSystem.SetFontDestBuffer(
             guiHelpScreenTextBufferSurface, 0, 0,
             HLP_SCRN__WIDTH_OF_TEXT_BUFFER, HLP_SCRN__HEIGHT_OF_TEXT_BUFFER, false);
-
 
         //switch on the current screen
         switch (gHelpScreen.bCurrentHelpScreen)
@@ -1679,11 +1698,6 @@ public class HelpScreen : IScreen
         uiStartLoc = HELPSCREEN_RECORD_SIZE * uiRecord;
         files.LoadEncryptedDataFromFile(HELPSCREEN_FILE, out zText, uiStartLoc, HELPSCREEN_RECORD_SIZE);
 
-        if(zText is null)
-        {
-
-        }
-
         //Display the text
         usNumVertPixels = WordWrap.IanDisplayWrappedString(
             new Point(usPosX, usPosY),
@@ -1715,8 +1729,6 @@ public class HelpScreen : IScreen
         Image<Rgba32> pDestBuf = video.Surfaces[guiHelpScreenTextBufferSurface];
 
         pDestBuf = new(pDestBuf.Width, pDestBuf.Height);
-        var rawPixels = pDestBuf.GetPixelMemoryGroup()[0];
-        rawPixels.Span.Clear();
 
         video.InvalidateScreen();
     }

@@ -64,11 +64,11 @@ namespace SharpAlliance.Platform
             this.State = GameState.Initializing;
             var success = true;
 
-            success &= await this.GameLogic.Initialize();
             success &= await this.FileManager.Initialize();
             success &= await this.SoundManager.Initialize();
             success &= await this.TimerManager.Initialize();
             success &= await this.ClockManager.Initialize();
+            success &= await this.GameLogic.Initialize();
 
             if (success)
             {

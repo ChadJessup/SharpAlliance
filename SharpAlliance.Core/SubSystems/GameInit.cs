@@ -24,7 +24,7 @@ public class GameInit
     private static SoldierProfileSubSystem soldierProfile;
     private readonly World world;
     private readonly NPC npc;
-    private readonly HelpScreenSubSystem helpScreen;
+    private readonly HelpScreen helpScreen;
     private readonly ShopKeeper shopKeeper;
     private readonly TurnBasedInput turnBasedInput;
     private readonly Cheats cheats;
@@ -50,7 +50,7 @@ public class GameInit
         IScreenManager screenManager,
         ShopKeeper shopKeeper,
         World world,
-        HelpScreenSubSystem helpScreen,
+        HelpScreen helpScreen,
         BobbyR bobbyR,
         DialogControl dialogs,
         AirRaid airRaid)

@@ -983,9 +983,6 @@ public partial class Laptop
 
     private static void LoadBookmark()
     {
-        VOBJECT_DESC VObjectDesc;
-
-
         // grab download bars too
 
         guiDOWNLOADTOP = video.GetVideoObject(Utils.FilenameForBPP("LAPTOP\\downloadtop.sti"));

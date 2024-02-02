@@ -868,7 +868,7 @@ public class Assignments
         {
             MouseSubSystem.MSYS_DefineRegion(
                 gAssignmentScreenMaskRegion,
-                0, 0, 640, 480,
+                new(0, 0, 640, 480),
                 MSYS_PRIORITY.HIGHEST - 4,
                 MSYS_NO_CURSOR,
                 MSYS_NO_CALLBACK,

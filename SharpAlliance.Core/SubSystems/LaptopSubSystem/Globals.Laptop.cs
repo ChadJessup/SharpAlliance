@@ -256,8 +256,8 @@ public partial class Globals
     // BUTTON IMAGES
     public static int[] giLapTopButton = new int[MAX_BUTTON_COUNT];
     public static int[] giLapTopButtonImage = new int[MAX_BUTTON_COUNT];
-    public static int[] giErrorButton = new int[1];
-    public static int[] giErrorButtonImage = new int[1];
+    public static GUI_BUTTON[] giErrorButton = new GUI_BUTTON[1];
+    public static ButtonPic[] giErrorButtonImage = new ButtonPic[1];
     public static GUI_BUTTON[] gLaptopButtons = new GUI_BUTTON[7];
     public static ButtonPic[] gLaptopButtonImage = new ButtonPic[7];
 

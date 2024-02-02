@@ -7,8 +7,71 @@ namespace SharpAlliance.Core;
 // TODO: Move to built-in internationalization stuff.
 public static class EnglishText
 {
-    // When loading or download a web page
+    public static string[] pEmailHeaders =
+    {
+        "From:",
+        "Subject:",
+        "Day:",
+    };
 
+    // the list of email sender names
+
+    public static string[] pSenderNameList =
+    {
+        "Enrico",
+        "Psych Pro Inc",
+        "Help Desk",
+        "Psych Pro Inc",
+        "Speck",
+        "R.I.S.",//5
+    	"Barry",
+        "Blood",
+        "Lynx",
+        "Grizzly",
+        "Vicki",			//10
+    	"Trevor",
+        "Grunty",
+        "Ivan",
+        "Steroid",
+        "Igor",			//15
+    	"Shadow",
+        "Red",
+        "Reaper",
+        "Fidel",
+        "Fox",				//20
+    	"Sidney",
+        "Gus",
+        "Buns",
+        "Ice",
+        "Spider",		//25
+    	"Cliff",
+        "Bull",
+        "Hitman",
+        "Buzz",
+        "Raider",		//30
+    	"Raven",
+        "Static",
+        "Len",
+        "Danny",
+        "Magic",
+        "Stephen",
+        "Scully",
+        "Malice",
+        "Dr.Q",
+        "Nails",
+        "Thor",
+        "Scope",
+        "Wolf",
+        "MD",
+        "Meltdown",
+        "M.I.S. Insurance",
+        "Bobby Rays",
+        "Kingpin",
+        "John Kulba",
+        "A.I.M.",
+    };
+
+    // When loading or download a web page
     public static string[] pDownloadString =
     {
         "Downloading",

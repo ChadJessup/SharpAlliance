@@ -5,6 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Text.Json;
 using System.Threading.Tasks;
+using SharpAlliance.Core.Screens;
 using static SharpAlliance.Core.Globals;
 
 namespace SharpAlliance.Core.SubSystems;
@@ -194,13 +195,13 @@ public class SaveGameSubSystem : IDisposable
         //if the user doesnt want the help screens present
         if (gGameSettings.fHideHelpInAllScreens)
         {
-            gHelpScreen.usHasPlayerSeenHelpScreenInCurrentScreen = true;
+            HelpScreen.gHelpScreen.usHasPlayerSeenHelpScreenInCurrentScreen = true;
         }
         else
         {
             //Set it so that every screens help will come up the first time ( the 'x' will be set )
             // gHelpScreen.usHasPlayerSeenHelpScreenInCurrentScreen = 0xffff;
-            gHelpScreen.usHasPlayerSeenHelpScreenInCurrentScreen = false;
+            HelpScreen.gHelpScreen.usHasPlayerSeenHelpScreenInCurrentScreen = false;
         }
 
         return true;

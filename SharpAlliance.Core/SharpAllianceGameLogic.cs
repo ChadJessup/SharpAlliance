@@ -15,7 +15,6 @@ public class SharpAllianceGameLogic : IGameLogic
 {
     private readonly GameContext context;
     private readonly IStringLocalizer<string> strings;
-    private readonly HelpScreenSubSystem helpScreen;
     private readonly CursorSubSystem cursors;
     private readonly SaveGameSubSystem saves;
     private readonly IVideoManager video;
@@ -27,6 +26,7 @@ public class SharpAllianceGameLogic : IGameLogic
     private readonly IMusicManager music;
     private readonly MessageBoxSubSystem messageBox;
     private MapScreen mapScreen;
+    private HelpScreen helpScreen;
 
     public bool IsInitialized { get; private set; }
 
@@ -35,7 +35,6 @@ public class SharpAllianceGameLogic : IGameLogic
         IStringLocalizer<string> strings,
         MouseSubSystem mouseSubSystem,
         CursorSubSystem cursorSubSystem,
-        HelpScreenSubSystem helpScreenSubSystem,
         IFileManager fileManager,
         IInputManager inputManager,
         SaveGameSubSystem saveGameSubSystem,
@@ -52,7 +51,6 @@ public class SharpAllianceGameLogic : IGameLogic
         // These should be initialized already
         this.mouse = mouseSubSystem;
         this.cursors = cursorSubSystem;
-        this.helpScreen = helpScreenSubSystem;
         this.inputs = inputManager;
         this.saves = saveGameSubSystem;
         this.music = musicManager;
@@ -67,9 +65,6 @@ public class SharpAllianceGameLogic : IGameLogic
         this.RegisterGameScreens(this.context, this.screen);
         await this.InitializeScreens(this.screen.Screens);
 
-        //Init the help screen system
-        this.helpScreen.InitHelpScreenSystem();
-
         this.saves.LoadGameSettings();
         this.saves.InitGameOptions();
 
@@ -78,6 +73,11 @@ public class SharpAllianceGameLogic : IGameLogic
         this.mapScreen = (await this.screen.GetScreen(ScreenName.MAP_SCREEN, activate: false) as MapScreen)!;
         var introScreen = (await this.screen.GetScreen(ScreenName.INTRO_SCREEN, activate: false) as IntroScreen)!;
         introScreen.SetIntroType(IntroScreenType.INTRO_SPLASH);
+
+        this.helpScreen = (await this.screen.GetScreen<HelpScreen>(ScreenName.HelpScreen, activate: false) as HelpScreen)!;
+
+        //Init the help screen system
+        this.helpScreen.InitHelpScreenSystem();
 
         this.mapScreen.HandlePreloadOfMapGraphics();
         this.IsInitialized = true;

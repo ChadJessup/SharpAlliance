@@ -77,10 +77,8 @@ public class Emails
             var region = pEmailRegions[iCounter];
             MouseSubSystem.MSYS_DefineRegion(
                 region,
-                new(MIDDLE_X,
-                    (MIDDLE_Y + iCounter * MIDDLE_WIDTH),
-                    MIDDLE_X + LINE_WIDTH,
-                    (MIDDLE_Y + iCounter * MIDDLE_WIDTH + MIDDLE_WIDTH)),
+                new(MIDDLE_X, (MIDDLE_Y + iCounter * MIDDLE_WIDTH),
+                    MIDDLE_X + LINE_WIDTH, (MIDDLE_Y + iCounter * MIDDLE_WIDTH + MIDDLE_WIDTH)),
                 MSYS_PRIORITY.NORMAL + 2,
                 CURSOR.MSYS_NO_CURSOR,
                 EmailMvtCallBack,
@@ -106,9 +104,9 @@ public class Emails
         {
             MouseSubSystem.MSYS_RemoveRegion(pEmailRegions[iCounter]);
         }
+
         //DeleteSortRegions();
         CreateDestroyNextPreviousRegions();
-
     }
 
     public static bool EnterEmail()
@@ -1499,13 +1497,11 @@ public class Emails
         //if( ( fNewMailFlag ) && ( fOldNewMailFlag ) )
         //	return ( false );
 
-//        hHandle = video.GetVideoObject(guiEmailWarning);
-        //        video.BltVideoObject(Surfaces.FRAME_BUFFER, hHandle, 0, EMAIL_WARNING_X, EMAIL_WARNING_Y, VO_BLT.SRCTRANSPARENCY, null);
+        video.BltVideoObject(SurfaceType.FRAME_BUFFER, guiEmailWarning, 0, EMAIL_WARNING_X, EMAIL_WARNING_Y, VO_BLT.SRCTRANSPARENCY, null);
 
 
         // the icon for the title of this box
-//        hHandle = video.GetVideoObject(guiTITLEBARICONS);
-        //        video.BltVideoObject(Surfaces.FRAME_BUFFER, hHandle, 0, EMAIL_WARNING_X + 5, EMAIL_WARNING_Y + 2, VO_BLT.SRCTRANSPARENCY, null);
+        video.BltVideoObject(SurfaceType.FRAME_BUFFER, guiTITLEBARICONS, 0, EMAIL_WARNING_X + 5, EMAIL_WARNING_Y + 2, VO_BLT.SRCTRANSPARENCY, null);
 
         // font stuff 
         FontSubSystem.SetFont(EMAIL_HEADER_FONT);
@@ -1539,15 +1535,12 @@ public class Emails
         // set box as displayed
         fOldNewMailFlag = true;
 
-
-
         // return
         return true;
     }
 
     void ReDrawNewMailBox()
     {
-
         // this function will check to see if the new mail region needs to be redrawn
         if (fReDrawNewMailFlag == true)
         {
@@ -1898,7 +1891,7 @@ public class Emails
     private readonly FontSubSystem fonts;
     private readonly ButtonSubSystem buttons;
     private static IFileManager files;
-    private static IEnumerable<GUI_BUTTON> buttonList;
+    private static List<GUI_BUTTON> buttonList;
 
     private static void CreateDestroyDeleteNoticeMailButton()
     {
@@ -2272,7 +2265,6 @@ public class Emails
 
     private static void CreateMailScreenButtons()
     {
-
         // create sort buttons, right now - not finished
 
         // read sort
@@ -2315,6 +2307,9 @@ public class Emails
         //        SpecifyFullButtonTextAttributes(giSortButton[3], pEmailHeaders[RECD_HEADER], EMAIL_WARNING_FONT,
         //                                                                              FontColor.FONT_BLACK, FontColor.FONT_BLACK,
         //                                                                                FontColor.FONT_BLACK, FontColor.FONT_BLACK, TEXT_CJUSTIFIED);
+
+        buttonList.AddRange(giSortButton);
+
         return;
     }
 
@@ -2335,16 +2330,16 @@ public class Emails
         // all headers, but not info are right justified 
 
         // print from
-        //        FontSubSystem.FindFontRightCoordinates(MESSAGE_HEADER_X - 20, (int)(MESSAGE_FROM_Y + (int)iViewerY), MESSAGE_HEADER_WIDTH, (int)(MESSAGE_FROM_Y + FontSubSystem.GetFontHeight(MESSAGE_FONT)), pEmailHeaders[0], MESSAGE_FONT, out usX, out usY);
-        //        mprintf(usX, MESSAGE_FROM_Y + (int)iViewerY, pEmailHeaders[0]);
+        FontSubSystem.FindFontRightCoordinates(MESSAGE_HEADER_X - 20, (int)(MESSAGE_FROM_Y + (int)iViewerY), MESSAGE_HEADER_WIDTH, (int)(MESSAGE_FROM_Y + FontSubSystem.GetFontHeight(MESSAGE_FONT)), pEmailHeaders[0], MESSAGE_FONT, out usX, out usY);
+        mprintf(usX, MESSAGE_FROM_Y + (int)iViewerY, pEmailHeaders[0]);
 
         // the actual from info
-        //        mprintf(MESSAGE_HEADER_X + MESSAGE_HEADER_WIDTH - 13, MESSAGE_FROM_Y + iViewerY, pSenderNameList[pMail.ubSender]);
+        mprintf(MESSAGE_HEADER_X + MESSAGE_HEADER_WIDTH - 13, MESSAGE_FROM_Y + iViewerY, pSenderNameList[(int)pMail.ubSender]);
 
 
         // print date
-        //        FontSubSystem.FindFontRightCoordinates(MESSAGE_HEADER_X + 168, (int)(MESSAGE_DATE_Y + (int)iViewerY), MESSAGE_HEADER_WIDTH, (int)(MESSAGE_DATE_Y + FontSubSystem.GetFontHeight(MESSAGE_FONT)), pEmailHeaders[2], MESSAGE_FONT, out usX, out usY);
-        //        mprintf(usX, MESSAGE_DATE_Y + (int)iViewerY, pEmailHeaders[2]);
+        FontSubSystem.FindFontRightCoordinates(MESSAGE_HEADER_X + 168, (int)(MESSAGE_DATE_Y + (int)iViewerY), MESSAGE_HEADER_WIDTH, (int)(MESSAGE_DATE_Y + FontSubSystem.GetFontHeight(MESSAGE_FONT)), pEmailHeaders[2], MESSAGE_FONT, out usX, out usY);
+        mprintf(usX, MESSAGE_DATE_Y + (int)iViewerY, pEmailHeaders[2]);
 
         // the actual date info
         sString = wprintf("%d", pMail.iDate / (24 * 60));
@@ -2353,12 +2348,12 @@ public class Emails
 
 
         // print subject
-        //        FontSubSystem.FindFontRightCoordinates(MESSAGE_HEADER_X - 20, MESSAGE_SUBJECT_Y, MESSAGE_HEADER_WIDTH, (int)(MESSAGE_SUBJECT_Y + FontSubSystem.GetFontHeight(MESSAGE_FONT)), pEmailHeaders[1], MESSAGE_FONT, out usX, out usY);
-        //        mprintf(usX, MESSAGE_SUBJECT_Y + (int)iViewerY, pEmailHeaders[1]);
+        FontSubSystem.FindFontRightCoordinates(MESSAGE_HEADER_X - 20, MESSAGE_SUBJECT_Y, MESSAGE_HEADER_WIDTH, (int)(MESSAGE_SUBJECT_Y + FontSubSystem.GetFontHeight(MESSAGE_FONT)), pEmailHeaders[1], MESSAGE_FONT, out usX, out usY);
+        mprintf(usX, MESSAGE_SUBJECT_Y + (int)iViewerY, pEmailHeaders[1]);
 
         // the actual subject info
         //mprintf( , MESSAGE_SUBJECT_Y, pMail.pSubject);
-        //        IanDisplayWrappedString(SUBJECT_LINE_X + 2, (int)(SUBJECT_LINE_Y + 2 + (int)iViewerY), SUBJECT_LINE_WIDTH, MESSAGE_GAP, MESSAGE_FONT, MESSAGE_COLOR, pMail.pSubject, 0, false, 0);
+        //FontSubSystem.IanDisplayWrappedString(SUBJECT_LINE_X + 2, (int)(SUBJECT_LINE_Y + 2 + (int)iViewerY), SUBJECT_LINE_WIDTH, MESSAGE_GAP, MESSAGE_FONT, MESSAGE_COLOR, pMail.pSubject, 0, false, 0);
 
 
         // reset shadow
