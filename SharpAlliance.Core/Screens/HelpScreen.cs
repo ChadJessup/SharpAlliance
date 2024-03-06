@@ -576,10 +576,16 @@ public class HelpScreen : IScreen
         //	DrawTextToScreen( zText, usPosX, usPosY, usWidth, 
         //								 HELP_SCREEN_TEXT_BODY_FONT, HELP_SCREEN_TITLE_BODY_COLOR, HELP_SCREEN_TEXT_BACKGROUND, FALSE, CENTER_JUSTIFIED );
 
-
-        //        IanDisplayWrappedString(usPosX, usPosY, usWidth, HELP_SCREEN_GAP_BTN_LINES,
-        //                                                         HELP_SCREEN_TITLE_BODY_FONT, HELP_SCREEN_TITLE_BODY_COLOR, zText,
-        //                                                         HELP_SCREEN_TEXT_BACKGROUND, false, 0);
+        WordWrap.IanDisplayWrappedString(
+            new(usPosX, usPosY),
+            usWidth,
+            HELP_SCREEN_GAP_BTN_LINES,
+            HELP_SCREEN_TITLE_BODY_FONT,
+            HELP_SCREEN_TITLE_BODY_COLOR,
+            zText,
+            HELP_SCREEN_TEXT_BACKGROUND,
+            false,
+            0);
 
 
         if (!gHelpScreen.fForceHelpScreenToComeUp)
@@ -649,7 +655,7 @@ public class HelpScreen : IScreen
             SrcRect,
             dstPoint);
 
-//        video.Surfaces[SurfaceType.RENDER_BUFFER].SaveAsPng($@"C:\temp\text.png");
+        //        video.Surfaces[SurfaceType.RENDER_BUFFER].SaveAsPng($@"C:\temp\text.png");
 
         DisplayHelpScreenTextBufferScrollBox();
     }

@@ -455,8 +455,14 @@ public class ButtonSubSystem : ISharpAllianceManager
             fShiftText = true,
 
             iIconID = -1,
-            usIconindex = 0
+            usIconindex = 0,
+            MouseRegion = new(text),
         };
+
+        if (string.IsNullOrEmpty(text))
+        {
+
+        }
 
         // Set the button click callback function (if any)
         if (ClickCallback != Globals.BUTTON_NO_CALLBACK)
@@ -2357,7 +2363,7 @@ public class GUI_BUTTON
 {
     // public int IdNum;                        // ID Number, contains it's own button number
     public ButtonPic ButtonPicture;                    // Image number to use (see DOCs for details)
-    public MOUSE_REGION MouseRegion = new(nameof(GUI_BUTTON.MouseRegion)); // Mouse System's mouse region to use for this button
+    public MOUSE_REGION MouseRegion;// = new(nameof(GUI_BUTTON.MouseRegion)); // Mouse System's mouse region to use for this button
     public GUI_CALLBACK? ClickCallback;     // Button Callback when button is clicked
     public GUI_CALLBACK? MoveCallback;          // Button Callback when mouse moved on this region
     public CURSOR Cursor;                       // Cursor to use for this button

@@ -203,7 +203,6 @@ public partial class Laptop
 
     public static void LapTopScreenCallBack(ref MOUSE_REGION pRegion, MSYS_CALLBACK_REASON iReason)
     {
-
         if (iReason.HasFlag(MSYS_CALLBACK_REASON.INIT))
         {
 
@@ -829,7 +828,7 @@ public partial class Laptop
 
 
         // clear guiSAVEBUFFER
-        //ColorFillVideoSurfaceArea(guiSAVEBUFFER,	0, 0, 640, 480, Get16BPPColor(FROMRGB(0, 0, 0)) );
+        //video.ColorFillVideoSurfaceArea(guiSAVEBUFFER,	0, 0, 640, 480, Get16BPPColor(FROMRGB(0, 0, 0)) );
         // disable characters panel buttons
 
         // reset redraw flag and redraw new mail
@@ -908,7 +907,7 @@ public partial class Laptop
         fExitingLaptopFlag = false;
 
         // reset program we are maximizing
-        bProgramBeingMaximized = (LAPTOP_PROGRAM)(-1);
+        bProgramBeingMaximized = LAPTOP_PROGRAM.UNSET;
 
         // reset fact we are maximizing/ mining
         fMaximizingProgram = false;
@@ -1186,6 +1185,8 @@ public enum LAPTOP_PROGRAM
     PERSONNEL,
     FINANCES,
     HISTORY,
+
+    UNSET = -1,
 };
 
 // laptop program states

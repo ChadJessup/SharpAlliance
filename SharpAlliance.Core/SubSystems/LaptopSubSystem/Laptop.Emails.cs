@@ -34,8 +34,8 @@ public class Emails
 
     // mouse regions
     private static MOUSE_REGION[] pEmailRegions = new MOUSE_REGION[MAX_MESSAGES_PAGE];
-    private static MOUSE_REGION pScreenMask;
-    private static MOUSE_REGION pDeleteScreenMask;
+    private static MOUSE_REGION pScreenMask = new(nameof(pScreenMask));
+    private static MOUSE_REGION pDeleteScreenMask = new(nameof(pDeleteScreenMask));
 
     // the email info struct to speed up email
     private static EmailPageInfoStruct[] pEmailPageInfo = new EmailPageInfoStruct[MAX_NUMBER_EMAIL_PAGES];
@@ -815,10 +815,10 @@ public class Emails
         }
 
         // loop until we get to the current page
-//        while ((pPage.iPageId != iCurrentPage) && (iCurrentPage <= iLastPage))
-//        {
-//            pPage = pPage.Next;
-//        }
+        //        while ((pPage.iPageId != iCurrentPage) && (iCurrentPage <= iLastPage))
+        //        {
+        //            pPage = pPage.Next;
+        //        }
 
         // now we have current page, display it
         pEmail = GetEmailMessage(pPage.iIds[iCounter]);
@@ -940,7 +940,7 @@ public class Emails
                 fDisplayMessageFlag = false;
                 return;
             }
-            
+
             // Get email and display
             fDisplayMessageFlag = true;
             giMessagePage = 0;
@@ -1398,7 +1398,7 @@ public class Emails
 
     }
 
-    static bool fOldNewMailFlag = false;
+    static bool CreateDestroyNewMailButtonfOldNewMailFlag = false;
     public static void CreateDestroyNewMailButton()
     {
 
@@ -1409,12 +1409,12 @@ public class Emails
         }
 
 
-        if (fNewMailFlag && (!fOldNewMailFlag))
+        if (fNewMailFlag && (!CreateDestroyNewMailButtonfOldNewMailFlag))
         {
             // create new mail dialog box button 
 
             // set old flag (stating button has been created)
-            fOldNewMailFlag = true;
+            CreateDestroyNewMailButtonfOldNewMailFlag = true;
 
             // load image and setup button
             giNewMailButtonImage[0] = ButtonSubSystem.LoadButtonImage("LAPTOP\\YesNoButtons.sti", -1, 0, -1, 1, -1);
@@ -1444,12 +1444,10 @@ public class Emails
             ButtonSubSystem.MarkAButtonDirty(giNewMailButton[0]);
             fReDrawScreenFlag = true;
         }
-        else if ((!fNewMailFlag) && fOldNewMailFlag)
+        else if ((!fNewMailFlag) && CreateDestroyNewMailButtonfOldNewMailFlag)
         {
-
-
             // reset old flag
-            fOldNewMailFlag = false;
+            CreateDestroyNewMailButtonfOldNewMailFlag = false;
 
             // remove the button
             ButtonSubSystem.RemoveButton(giNewMailButton[0]);
@@ -1457,7 +1455,6 @@ public class Emails
 
             // remove screen mask
             MouseSubSystem.MSYS_RemoveRegion(pScreenMask);
-
 
             //re draw screen
             fReDraw = true;
@@ -1467,6 +1464,7 @@ public class Emails
         }
     }
 
+    static bool DisplayNewMailBoxfOldNewMailFlag = false;
     public static bool DisplayNewMailBox()
     {
         HVOBJECT hHandle;
@@ -1479,9 +1477,9 @@ public class Emails
         }
 
         // just stopped displaying box, reset old flag
-        if ((!fNewMailFlag) && fOldNewMailFlag)
+        if ((!fNewMailFlag) && DisplayNewMailBoxfOldNewMailFlag)
         {
-            fOldNewMailFlag = false;
+            DisplayNewMailBoxfOldNewMailFlag = false;
             return false;
         }
 
@@ -1491,14 +1489,11 @@ public class Emails
             return false;
         }
 
-
-
         // is set but already drawn, LEAVE NOW!
         //if( ( fNewMailFlag ) && ( fOldNewMailFlag ) )
         //	return ( false );
 
         video.BltVideoObject(SurfaceType.FRAME_BUFFER, guiEmailWarning, 0, EMAIL_WARNING_X, EMAIL_WARNING_Y, VO_BLT.SRCTRANSPARENCY, null);
-
 
         // the icon for the title of this box
         video.BltVideoObject(SurfaceType.FRAME_BUFFER, guiTITLEBARICONS, 0, EMAIL_WARNING_X + 5, EMAIL_WARNING_Y + 2, VO_BLT.SRCTRANSPARENCY, null);
@@ -1510,7 +1505,7 @@ public class Emails
         FontSubSystem.SetFontShadow(FontShadow.DEFAULT_SHADOW);
 
         // print warning
-        //        mprintf(EMAIL_WARNING_X + 30, EMAIL_WARNING_Y + 8, pEmailTitleText[0]);
+        FontSubSystem.DrawTextToScreen(pEmailTitleText[0], new(EMAIL_WARNING_X + 30, EMAIL_WARNING_Y + 8));
 
         // font stuff
         FontSubSystem.SetFontShadow(FontShadow.NO_SHADOW);
@@ -1518,7 +1513,7 @@ public class Emails
         FontSubSystem.SetFontForeground(FontColor.FONT_BLACK);
 
         // printf warning string
-        mprintf(EMAIL_WARNING_X + 60, EMAIL_WARNING_Y + 63, pNewMailStrings[0]);
+        FontSubSystem.DrawTextToScreen(pNewMailStrings[0], new(EMAIL_WARNING_X + 60, EMAIL_WARNING_Y + 63));
         Laptop.DrawLapTopIcons();
 
         // invalidate region
@@ -1533,13 +1528,13 @@ public class Emails
         // redraw icons
 
         // set box as displayed
-        fOldNewMailFlag = true;
+        DisplayNewMailBoxfOldNewMailFlag = true;
 
         // return
         return true;
     }
 
-    void ReDrawNewMailBox()
+    public static void ReDrawNewMailBox()
     {
         // this function will check to see if the new mail region needs to be redrawn
         if (fReDrawNewMailFlag == true)
@@ -1892,6 +1887,7 @@ public class Emails
     private readonly ButtonSubSystem buttons;
     private static IFileManager files;
     private static List<GUI_BUTTON> buttonList;
+    private static bool fOldNewMailFlag;
 
     private static void CreateDestroyDeleteNoticeMailButton()
     {
@@ -1970,7 +1966,7 @@ public class Emails
 
         // load graphics
 
-//        hHandle = video.GetVideoObject(guiEmailWarning);
+        //        hHandle = video.GetVideoObject(guiEmailWarning);
         //        video.BltVideoObject(Surfaces.FRAME_BUFFER, hHandle, 0, EMAIL_WARNING_X, EMAIL_WARNING_Y, VO_BLT.SRCTRANSPARENCY, null);
 
 
@@ -1981,7 +1977,7 @@ public class Emails
         FontSubSystem.SetFontShadow(FontShadow.DEFAULT_SHADOW);
 
         // the icon for the title of this box
-//        hHandle = video.GetVideoObject(guiTITLEBARICONS);
+        //        hHandle = video.GetVideoObject(guiTITLEBARICONS);
         //        video.BltVideoObject(Surfaces.FRAME_BUFFER, hHandle, 0, EMAIL_WARNING_X + 5, EMAIL_WARNING_Y + 2, VO_BLT.SRCTRANSPARENCY, null);
 
         // title 

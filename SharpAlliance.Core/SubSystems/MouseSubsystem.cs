@@ -74,8 +74,8 @@ public class MouseSubSystem : ISharpAllianceManager
     public MouseSubSystem(
         ILogger<MouseSubSystem> logger,
         IServiceProvider serviceProvider,
-//        GameContext gameContext,
-//        IClockManager clockManager,
+        //        GameContext gameContext,
+        //        IClockManager clockManager,
         CursorSubSystem cursorSubSystem)
     {
         this.logger = logger;
@@ -83,7 +83,7 @@ public class MouseSubSystem : ISharpAllianceManager
         services = serviceProvider;
         DefaultMoveCallback = BtnGenericMouseMoveButtonCallback;
         logger.LogDebug(LoggingEventId.MouseSystem, "Mouse Region System");
-     //   this.clock = clockManager;
+        //   this.clock = clockManager;
         cursors = cursorSubSystem;
         //gameContext = gameContext;
 
@@ -412,7 +412,7 @@ public class MouseSubSystem : ISharpAllianceManager
                 && CurrentRegion.HasMoveCallback
                 && MouseAction.HasFlag(MouseDos.MOVE))
             {
-//                IVideoManager.DebugRenderer.DrawRectangle(CurrentRegion.Bounds, Color.Yellow);
+                //                IVideoManager.DebugRenderer.DrawRectangle(CurrentRegion.Bounds, Color.Yellow);
                 CurrentRegion.MovementCallback?.Invoke(ref CurrentRegion, MSYS_CALLBACK_REASON.MOVE);
             }
 
@@ -598,7 +598,7 @@ public class MouseSubSystem : ISharpAllianceManager
 
     public static void Draw(IVideoManager videoManager)
     {
-//        cursors.Draw(sr, gd, cl);
+        //        cursors.Draw(sr, gd, cl);
     }
 
     public static void Draw(
@@ -745,6 +745,11 @@ public class MouseSubSystem : ISharpAllianceManager
         MouseCallback? movecallback,
         MouseCallback? buttoncallback)
     {
+        if (region.Name == "MouseRegion")
+        {
+
+        }
+
         region.IdNumber = MSYS_ID.BASE;
 
         region.PriorityLevel = priority switch
@@ -822,8 +827,12 @@ public class MouseSubSystem : ISharpAllianceManager
     {
     }
 
-    public static void MSYS_AddRegion(ref MOUSE_REGION gUserTurnRegion)
+    public static void MSYS_AddRegion(ref MOUSE_REGION mouseRegion)
     {
+        if (mouseRegion.Name.Equals("MouseRegion"))
+        {
+
+        }
         // this didn't do anything in original code?
     }
 
@@ -863,12 +872,12 @@ public class MouseSubSystem : ISharpAllianceManager
 
     internal static void MSYS_EnableRegion(MOUSE_REGION region)
     {
-            region.uiFlags |= MouseRegionFlags.MSYS_REGION_ENABLED;
+        region.uiFlags |= MouseRegionFlags.MSYS_REGION_ENABLED;
     }
 
     internal static void RenderFastHelp()
     {
-        
+
     }
 }
 

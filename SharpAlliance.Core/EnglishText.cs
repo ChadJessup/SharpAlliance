@@ -78,6 +78,13 @@ public static class EnglishText
         "Reloading",
     };
 
+    // email titlebar text
+
+    public static string[] pEmailTitleText =
+    {
+        "Mail Box",
+    };
+
     //Aim Home Page
 
     public static string[] AimBottomMenuText =

@@ -52,6 +52,7 @@ public partial class Globals
 
     internal static void mprintf(int sNewX, int sNewY, string format, params object?[] args)
     {
+
     }
 
     internal static string wcscat(string src1, string src2) => src1.TrimEnd('\0') + src2.TrimEnd('\0');

@@ -298,7 +298,7 @@ public partial class Laptop : IScreen
         ShouldNewMailBeDisplayed();
 
         // check to see if new mail box needs to be displayed
-        ReDrawNewMailBox();
+        Emails.ReDrawNewMailBox();
 
 
         // look for unread email
@@ -747,36 +747,6 @@ public partial class Laptop : IScreen
         }
 
         return;
-    }
-
-    private void ReDrawNewMailBox()
-    {
-        // this function will check to see if the new mail region needs to be redrawn
-        if (Emails.fReDrawNewMailFlag)
-        {
-            if (Emails.fNewMailFlag)
-            {
-                // set display flag back to orginal
-                Emails.fNewMailFlag = false;
-
-                // display new mail box
-                Emails.DisplayNewMailBox();
-
-                // dirty buttons
-                ButtonSubSystem.MarkAButtonDirty(giNewMailButton[0]);
-
-                // set display flag back to orginal
-                Emails.fNewMailFlag = true;
-
-                // time to redraw
-                Emails.DisplayNewMailBox();
-            }
-
-            // return;
-
-            // reset flag for redraw 
-            Emails.fReDrawNewMailFlag = false;
-        }
     }
 
     private void ShouldNewMailBeDisplayed()
@@ -3188,7 +3158,7 @@ public partial class Laptop : IScreen
             ButtonFlags.BUTTON_TOGGLE,
             MSYS_PRIORITY.HIGH,
             MouseSubSystem.BtnGenericMouseMoveButtonCallback,
-            (GUI_CALLBACK)WWWRegionButtonCallback);
+            WWWRegionButtonCallback);
 
         CreateLaptopButtonHelpText(gLaptopButtons[1], LaptopText.LAPTOP_BN_HLP_TXT_BROWSE_VARIOUS_WEB_SITES);
 
