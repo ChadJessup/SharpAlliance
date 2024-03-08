@@ -4,6 +4,7 @@ using System.Runtime.CompilerServices;
 using SDL2;
 using SharpAlliance.Core.Interfaces;
 using SharpAlliance.Core.Managers;
+using SixLabors.ImageSharp;
 using Point = SixLabors.ImageSharp.Point;
 using Rectangle = SixLabors.ImageSharp.Rectangle;
 

@@ -3,6 +3,8 @@ using Microsoft.Extensions.Logging;
 using SDL2;
 using SharpAlliance.Core.Interfaces;
 using SharpAlliance.Core.Managers.VideoSurfaces;
+using SixLabors.ImageSharp;
+using SixLabors.ImageSharp.PixelFormats;
 
 namespace SharpAlliance.Core.Managers;
 

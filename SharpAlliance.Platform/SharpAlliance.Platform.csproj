@@ -13,6 +13,6 @@
     <PackageReference Include="Microsoft.Extensions.Localization" Version="7.0.12" />
     <PackageReference Include="Microsoft.Extensions.Logging" Version="7.0.0" />
     <PackageReference Include="Veldrid.SDL2" Version="4.9.0" />
-    <PackageReference Update="Microsoft.SourceLink.GitHub" Version="1.1.1" />
+    <PackageReference Update="Microsoft.SourceLink.GitHub" Version="8.0.0" />
   </ItemGroup>
 </Project>

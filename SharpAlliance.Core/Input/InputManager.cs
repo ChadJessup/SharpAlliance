@@ -228,10 +228,6 @@ public class InputManager : IInputManager
         var input = inputSnapshot.MouseEvents.First();
 
         MouseEvents mouseEvent = MouseEvents.Unknown;
-        if (!input.Down && input.MouseButton == MouseButton.Left)
-        {
-
-        }
 
         if (input.MouseButton == MouseButton.Left)
         {

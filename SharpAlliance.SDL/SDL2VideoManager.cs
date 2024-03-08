@@ -9,8 +9,11 @@ using SharpAlliance.Core.Screens;
 using SharpAlliance.Core.SubSystems;
 using SharpAlliance.Platform;
 using SharpAlliance.Platform.Interfaces;
+using SixLabors.ImageSharp;
 using SixLabors.ImageSharp.Advanced;
 using SixLabors.ImageSharp.Drawing.Processing;
+using SixLabors.ImageSharp.PixelFormats;
+using SixLabors.ImageSharp.Processing;
 using static SharpAlliance.Core.Globals;
 using FontStyle = SharpAlliance.Core.SubSystems.FontStyle;
 using Point = SixLabors.ImageSharp.Point;
@@ -1852,9 +1855,9 @@ public class SDL2VideoManager : IVideoManager
                         Blt16BPPTo16BPP(
                             gBackSaves[uiCount].pSaveArea,
                             pSrcBuf,
-                            new(0, 0),
-                            new(gBackSaves[uiCount].sLeft, gBackSaves[uiCount].sTop),
-                            new(gBackSaves[uiCount].sWidth, gBackSaves[uiCount].sHeight));
+                            new Point(0, 0),
+                            new Point(gBackSaves[uiCount].sLeft, gBackSaves[uiCount].sTop),
+                            new Size(gBackSaves[uiCount].sWidth, gBackSaves[uiCount].sHeight));
                     }
 
                 }
