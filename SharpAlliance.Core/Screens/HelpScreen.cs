@@ -988,28 +988,30 @@ public class HelpScreen : IScreen
             MouseEvent me = Event.MouseEvents.LastOrDefault();
 
             // HOOK INTO MOUSE HOOKS
-            switch (me.MouseButton)
+            if (me.Down)
             {
-                case MouseButton.Left:
-                    MouseSubSystem.MouseHook(MouseEvents.LEFT_BUTTON_DOWN, MousePos, inputs.gfLeftButtonState, inputs.gfRightButtonState);
-                    break;
-                case MouseButton.Right:
-                    MouseSubSystem.MouseHook(MouseEvents.RIGHT_BUTTON_DOWN, MousePos, inputs.gfLeftButtonState, inputs.gfRightButtonState);
-                    break;
-                    //                case MouseButton.Left:// LEFT_BUTTON_UP:
-                    //                    MouseSubSystem.MouseHook(MouseEvents.LEFT_BUTTON_UP, MousePos.X, MousePos.Y, _LeftButtonDown, _RightButtonDown);
-                    //                    break;
-                    //                case MouseButton.Right:// RIGHT_BUTTON_UP:
-                    //                    MouseSubSystem.MouseHook(MouseEvents.RIGHT_BUTTON_UP, MousePos.X, MousePos.Y, _LeftButtonDown, _RightButtonDown);
-                    //                    break;
-                    //                case MouseButton.Right://_BUTTON_REPEAT:
-                    //                    MouseSubSystem.MouseHook(MouseEvents.RIGHT_BUTTON_REPEAT, MousePos.X, MousePos.Y, _LeftButtonDown, _RightButtonDown);
-                    //                    break;
-                    //                case MouseButton.Left://LEFT_BUTTON_REPEAT:
-                    //                    MouseSubSystem.MouseHook(MouseEvents.LEFT_BUTTON_REPEAT, MousePos.X, MousePos.Y, _LeftButtonDown, _RightButtonDown);
-                    //                    break;
+                switch (me.MouseButton)
+                {
+                    case MouseButton.Left:
+                        MouseSubSystem.MouseHook(MouseEvents.LEFT_BUTTON_DOWN, MousePos, inputs.gfLeftButtonState, inputs.gfRightButtonState);
+                        break;
+                    case MouseButton.Right:
+                        MouseSubSystem.MouseHook(MouseEvents.RIGHT_BUTTON_DOWN, MousePos, inputs.gfLeftButtonState, inputs.gfRightButtonState);
+                        break;
+                        //                case MouseButton.Left:// LEFT_BUTTON_UP:
+                        //                    MouseSubSystem.MouseHook(MouseEvents.LEFT_BUTTON_UP, MousePos.X, MousePos.Y, _LeftButtonDown, _RightButtonDown);
+                        //                    break;
+                        //                case MouseButton.Right:// RIGHT_BUTTON_UP:
+                        //                    MouseSubSystem.MouseHook(MouseEvents.RIGHT_BUTTON_UP, MousePos.X, MousePos.Y, _LeftButtonDown, _RightButtonDown);
+                        //                    break;
+                        //                case MouseButton.Right://_BUTTON_REPEAT:
+                        //                    MouseSubSystem.MouseHook(MouseEvents.RIGHT_BUTTON_REPEAT, MousePos.X, MousePos.Y, _LeftButtonDown, _RightButtonDown);
+                        //                    break;
+                        //                case MouseButton.Left://LEFT_BUTTON_REPEAT:
+                        //                    MouseSubSystem.MouseHook(MouseEvents.LEFT_BUTTON_REPEAT, MousePos.X, MousePos.Y, _LeftButtonDown, _RightButtonDown);
+                        //                    break;
+                }
             }
-
 
             var keyEvent = Event!.KeyEvents.LastOrDefault();
 
@@ -1785,6 +1787,7 @@ public class HelpScreen : IScreen
             btn.uiFlags |= ButtonFlags.BUTTON_CLICKED_ON;
             video.InvalidateRegion(btn.MouseRegion.Bounds);
         }
+
         if (reason.HasFlag(MSYS_CALLBACK_REASON.LBUTTON_UP))
         {
             video.InvalidateRegion(btn.MouseRegion.Bounds);
@@ -1793,6 +1796,7 @@ public class HelpScreen : IScreen
 
             btn.uiFlags &= (~ButtonFlags.BUTTON_CLICKED_ON);
         }
+
         if (reason.HasFlag(MSYS_CALLBACK_REASON.LOST_MOUSE))
         {
             btn.uiFlags &= (~ButtonFlags.BUTTON_CLICKED_ON);
