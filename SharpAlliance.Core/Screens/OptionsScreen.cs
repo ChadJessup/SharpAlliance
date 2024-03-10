@@ -222,7 +222,7 @@ public class OptionsScreen : IScreen
 
         if (this.gfRedrawOptionsScreen)
         {
-            this.guiManager.RenderButtons(this.buttonList);
+            ButtonSubSystem.RenderButtons(this.buttonList);
             this.RenderOptionsScreen();
 
             this.gfRedrawOptionsScreen = false;
@@ -233,7 +233,7 @@ public class OptionsScreen : IScreen
 
         // render buttons marked dirty	
         ButtonSubSystem.MarkButtonsDirty(this.buttonList);
-        this.guiManager.RenderButtons(this.buttonList);
+        ButtonSubSystem.RenderButtons(this.buttonList);
 
         // ATE: Put here to save RECTS before any fast help being drawn...
         video.SaveBackgroundRects();

@@ -1339,7 +1339,8 @@ public class ButtonSubSystem : ISharpAllianceManager
                 b.ButtonPicture.vobj.Images[UseImage],
                 ButtonDestBuffer,
                 b.Loc,
-                VO_BLT.SRCTRANSPARENCY);
+                VO_BLT.SRCTRANSPARENCY,
+                debug: true);
         }
     }
 

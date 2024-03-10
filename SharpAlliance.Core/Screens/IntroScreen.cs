@@ -4,9 +4,6 @@ using SharpAlliance.Core.Managers;
 using SharpAlliance.Core.Managers.Library;
 using SharpAlliance.Core.Managers.VideoSurfaces;
 using SharpAlliance.Platform;
-using SixLabors.ImageSharp;
-using SixLabors.ImageSharp.PixelFormats;
-using Veldrid;
 using Point = SixLabors.ImageSharp.Point;
 
 namespace SharpAlliance.Core.Screens;

@@ -628,7 +628,8 @@ public class RenderDirty
             pSrcBuf,
             new(sLeft, sTop),
             new(sLeft, sTop),
-            new(sWidth, sHeight));
+            new(sWidth, sHeight),
+            debug: true);
 
         if (debug)
         {

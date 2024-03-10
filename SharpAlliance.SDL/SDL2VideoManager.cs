@@ -234,7 +234,7 @@ public class SDL2VideoManager : IVideoManager
 **********************************************************************************************/
     public bool Blt16BPPTo16BPP(Image<Rgba32> pDest, Image<Rgba32> pSrc, Point iDestPos, Point iSrcPos, Size size, bool debug = false)
     {
-        Rectangle destRect = new(iSrcPos, size);
+        Rectangle destRect = new(iDestPos, size);
 
         if (debug)
         {
@@ -255,7 +255,11 @@ public class SDL2VideoManager : IVideoManager
 
         pDest.Mutate(ctx =>
         {
-            ctx.DrawImage(srcClone, iDestPos, new Rectangle(iDestPos, size), 1.0f);
+            ctx.DrawImage(
+                foreground: srcClone,
+                backgroundLocation: iDestPos,
+                foregroundRectangle: new Rectangle(0, 0, size.Width, size.Height),
+                opacity: 1.0f);
         });
 
         if (debug)
@@ -970,10 +974,10 @@ public class SDL2VideoManager : IVideoManager
             dstImage.Mutate(ctx =>
             {
                 ctx.DrawImage(
-                    srcImage,
-                    finalRect,
-                    PixelColorBlendingMode.Normal,
-                    1.0f);
+                    foreground: srcImage,
+                    foregroundRectangle: finalRect,
+                    colorBlending: PixelColorBlendingMode.Normal,
+                    opacity: 1.0f);
             });
         }
         catch (Exception e)
@@ -1975,15 +1979,15 @@ public class SDL2VideoManager : IVideoManager
             {
                 if (hVObject.pShades[x] != null)
                 {
-//                    f16BitPal = hVObject.pShades[x] == hVObject.Palette[0];
+                    //                    f16BitPal = hVObject.pShades[x] == hVObject.Palette[0];
 
-//                    MemFree(hVObject.pShades[x]);
-//                    hVObject.pShades[x] = null;
-//
-//                    if (f16BitPal)
-//                    {
-//                        hVObject.p16BPPPalette = null;
-//                    }
+                    //                    MemFree(hVObject.pShades[x]);
+                    //                    hVObject.pShades[x] = null;
+                    //
+                    //                    if (f16BitPal)
+                    //                    {
+                    //                        hVObject.p16BPPPalette = null;
+                    //                    }
                 }
             }
         }
@@ -2330,18 +2334,14 @@ public class SDL2VideoManager : IVideoManager
 
     public void BlitSurfaceToSurface(Image<Rgba32> src, SurfaceType dst, Point dstPoint, VO_BLT bltFlags = VO_BLT.SRCTRANSPARENCY, bool debug = false)
     {
-        if (debug)
-        {
-
-        }
         var dstSurface = this.Surfaces.SurfaceByTypes[dst];
 
         Rectangle dstRectangle = new()
         {
             Height = src.Height,
             Width = src.Width,
-            X = dstPoint.X,
-            Y = dstPoint.Y,
+            X = 0,//dstPoint.X,
+            Y = 0,//dstPoint.Y,
         };
 
         if (debug)
@@ -2353,12 +2353,12 @@ public class SDL2VideoManager : IVideoManager
         dstSurface.Image.Mutate(ctx =>
         {
             ctx.DrawImage(
-                src,
-                dstPoint,
-                dstRectangle,
+                foreground: src,
+                backgroundLocation: dstPoint,
+                foregroundRectangle: dstRectangle,
                 colorBlending: PixelColorBlendingMode.Normal,
                 //                alphaComposition: PixelAlphaCompositionMode.Dest,
-                1.0f);
+                opacity: 1.0f);
         });
 
         if (debug)
@@ -2391,7 +2391,11 @@ public class SDL2VideoManager : IVideoManager
 
         dest.Mutate(ctx =>
         {
-            ctx.DrawImage(src, iDest, SrcRect, 1.0f);
+            ctx.DrawImage(
+                foreground: src,
+                backgroundLocation: iDest,
+                foregroundRectangle: SrcRect,
+                1.0f);
         });
 
         return (true);

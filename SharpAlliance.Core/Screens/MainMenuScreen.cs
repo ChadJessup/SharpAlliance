@@ -274,7 +274,8 @@ public class MainMenuScreen : IScreen
                 (ushort)(320 - Globals.gusMainMenuButtonWidths[cnt] / 2),
                 (short)(Globals.MAINMENU_Y + (cnt * Globals.MAINMENU_Y_SPACE) - 1),
                 (ushort)(Globals.gusMainMenuButtonWidths[cnt] + 1),
-                23);
+                23,
+                debug: true);
         }
     }
 
@@ -287,7 +288,7 @@ public class MainMenuScreen : IScreen
         video.BlitSurfaceToSurface(hPixHandle.Images[0], SurfaceType.FRAME_BUFFER, new(0, 0), VO_BLT.SRCTRANSPARENCY);
 
         hPixHandle = video.GetVideoObject(this.ja2LogoImageKey);
-        video.BlitSurfaceToSurface(hPixHandle.Images[0], SurfaceType.FRAME_BUFFER, new(188, 15), VO_BLT.SRCTRANSPARENCY);
+        video.BlitSurfaceToSurface(hPixHandle.Images[0], SurfaceType.FRAME_BUFFER, new(188, 15), VO_BLT.SRCTRANSPARENCY, debug: true);
         video.BlitSurfaceToSurface(hPixHandle.Images[0], SurfaceType.SAVE_BUFFER, new(188, 15), VO_BLT.SRCTRANSPARENCY);
 
         FontSubSystem.DrawTextToScreen(

@@ -1,17 +1,7 @@
 ﻿using System.Threading.Tasks;
 using SharpAlliance.Core.Interfaces;
 using SharpAlliance.Core.Managers;
-using SharpAlliance.Core.SubSystems;
 using SharpAlliance.Platform;
-using SharpAlliance.Platform.Interfaces;
-using Veldrid;
-using Rectangle = SixLabors.ImageSharp.Rectangle;
-
-using static SharpAlliance.Core.Globals;
-using System;
-using SixLabors.ImageSharp.PixelFormats;
-using SixLabors.ImageSharp;
-using SharpAlliance.Core.Managers.VideoSurfaces;
 
 namespace SharpAlliance.Core.Screens;
 
