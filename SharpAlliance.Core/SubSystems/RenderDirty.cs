@@ -637,9 +637,8 @@ public class RenderDirty
             pSrcBuf.SaveAsPng($@"c:\temp\{nameof(RestoreExternBackgroundRect)}-pSrcBuf-after.png");
         }
 
-
         // Add rect to frame buffer queue
-        video.InvalidateRegionEx(sLeft, sTop, sWidth, sHeight, 0);
+        video.InvalidateRegionEx(sLeft, sTop, (sLeft + sWidth), (sTop + sHeight), 0);
 
         return true;
     }
