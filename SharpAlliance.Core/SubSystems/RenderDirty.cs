@@ -629,7 +629,7 @@ public class RenderDirty
             new(sLeft, sTop),
             new(sLeft, sTop),
             new(sWidth, sHeight),
-            debug: true);
+            debug: false);
 
         if (debug)
         {

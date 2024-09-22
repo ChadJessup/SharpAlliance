@@ -1340,7 +1340,7 @@ public class ButtonSubSystem : ISharpAllianceManager
                 ButtonDestBuffer,
                 b.Loc,
                 VO_BLT.SRCTRANSPARENCY,
-                debug: true);
+                debug: false);
         }
     }
 
