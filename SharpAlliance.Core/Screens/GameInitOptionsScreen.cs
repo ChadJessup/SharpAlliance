@@ -147,6 +147,7 @@ public class GameInitOptionsScreen : IScreen
 
         //Cancel button
         this.giGIOCancelBtnImage = ButtonSubSystem.UseLoadedButtonImage(this.giGIODoneBtnImage, -1, 1, -1, 3, -1);
+
         this.guiGIOCancelButton = ButtonSubSystem.CreateIconAndTextButton(
             this.giGIOCancelBtnImage,
             EnglishText.gzGIOScreenText[GameInitOptionScreenText.GIO_CANCEL_TEXT],
@@ -176,13 +177,15 @@ public class GameInitOptionsScreen : IScreen
                 new(GIO_DIF_SETTINGS_X + GIO_OFFSET_TO_TOGGLE_BOX, usPosY),
                 "INTERFACE\\OptionsCheck.sti",
                 MSYS_PRIORITY.HIGH + 10,
-                this.BtnDifficultyTogglesCallback);
+                this.BtnDifficultyTogglesCallback,
+                cnt.ToString());
 
             ButtonSubSystem.SetButtonUserData(this.guiDifficultySettingsToggles[cnt], 0, (int)cnt);
             buttonList.Add(this.guiDifficultySettingsToggles[cnt]);
 
             usPosY += GIO_GAP_BN_SETTINGS;
         }
+
         if (this.gGameOptions.ubDifficultyLevel == DifficultyLevel.Easy)
         {
             this.guiDifficultySettingsToggles[GameDifficulty.GIO_DIFF_EASY].uiFlags |= ButtonFlags.BUTTON_CLICKED_ON;

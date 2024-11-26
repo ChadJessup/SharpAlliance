@@ -345,9 +345,10 @@ public class IntroScreen : IScreen
         //Texture[] surface = video.CreateSurfaces(video.Renderer, image.Images);
 
         video.BlitSurfaceToSurface(
-            src: image.Images[0],
-            dst: SurfaceType.FRAME_BUFFER,
-            dstPoint: new Point(0, 0),
+            foreground: image.Images[0],
+            backgroundSurface: SurfaceType.FRAME_BUFFER,
+            foregroundPoint: new Point(0, 0),
+            backgroundPoint: new Point(0, 0),
             bltFlags: VO_BLT.SRCTRANSPARENCY);
 
 //        var videoObject = video.AddVideoObject("INTERFACE\\SirtechSplash.sti", out logoKey);

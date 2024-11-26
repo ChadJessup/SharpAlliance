@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using SharpAlliance.Core.Managers.VideoSurfaces;
 using SharpAlliance.Core.SubSystems;
 using SixLabors.ImageSharp;
+using SixLabors.ImageSharp.PixelFormats;
 
 namespace SharpAlliance.Core;
 
@@ -53,6 +54,19 @@ public partial class Globals
     internal static void mprintf(int sNewX, int sNewY, string format, params object?[] args)
     {
 
+    }
+
+    public static Image<Rgba32> Save(Image<Rgba32> image, string name)
+    {
+        return image;
+
+        try
+        {
+            image.SaveAsPng($@"C:\temp\{name}");
+        }
+        catch { }
+
+        return image;
     }
 
     internal static string wcscat(string src1, string src2) => src1.TrimEnd('\0') + src2.TrimEnd('\0');

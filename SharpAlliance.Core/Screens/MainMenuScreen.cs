@@ -174,6 +174,8 @@ public class MainMenuScreen : IScreen
             Globals.gfMainMenuScreenEntry = true;
         }
 
+        Globals.Save(video.Surfaces[SurfaceType.FRAME_BUFFER], "render.png");
+
         return this.guiMainMenuExitScreen;
     }
 
@@ -283,13 +285,14 @@ public class MainMenuScreen : IScreen
     private void RenderMainMenu()
     {
         //Get and display the background image
-        HVOBJECT hPixHandle = video.GetVideoObject(this.mainMenuBackGroundImageKey);
-        video.BlitSurfaceToSurface(hPixHandle.Images[0], SurfaceType.SAVE_BUFFER, new(0, 0), VO_BLT.SRCTRANSPARENCY);
-        video.BlitSurfaceToSurface(hPixHandle.Images[0], SurfaceType.FRAME_BUFFER, new(0, 0), VO_BLT.SRCTRANSPARENCY);
+        HVOBJECT background = video.GetVideoObject(this.mainMenuBackGroundImageKey);
+        video.BlitSurfaceToSurface(background.Images[0], SurfaceType.SAVE_BUFFER, new(0, 0), new(0, 0), VO_BLT.SRCTRANSPARENCY);
+        video.BlitSurfaceToSurface(background.Images[0], SurfaceType.FRAME_BUFFER, new(0, 0), new(0, 0), VO_BLT.SRCTRANSPARENCY);
 
-        hPixHandle = video.GetVideoObject(this.ja2LogoImageKey);
-        video.BlitSurfaceToSurface(hPixHandle.Images[0], SurfaceType.FRAME_BUFFER, new(188, 15), VO_BLT.SRCTRANSPARENCY, debug: false);
-        video.BlitSurfaceToSurface(hPixHandle.Images[0], SurfaceType.SAVE_BUFFER, new(188, 15), VO_BLT.SRCTRANSPARENCY);
+        HVOBJECT logo = video.GetVideoObject(this.ja2LogoImageKey);
+        Globals.Save(logo.Images[0], "logo.png");
+        video.BlitSurfaceToSurface(logo.Images[0], SurfaceType.FRAME_BUFFER, new(0, 0), new(188, 15), VO_BLT.SRCTRANSPARENCY, debug: false);
+        video.BlitSurfaceToSurface(logo.Images[0], SurfaceType.SAVE_BUFFER, new(0, 0), new(188, 15), VO_BLT.SRCTRANSPARENCY);
 
         FontSubSystem.DrawTextToScreen(
             EnglishText.gzCopyrightText[0],

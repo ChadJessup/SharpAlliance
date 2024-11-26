@@ -568,7 +568,8 @@ public class ButtonSubSystem : ISharpAllianceManager
         Point loc,
         string filename,
         MSYS_PRIORITY Priority,
-        GUI_CALLBACK ClickCallback)
+        GUI_CALLBACK ClickCallback,
+        string buttonName = nameof(CreateCheckBoxButton))
     {
         ButtonPic ButPic;
 
@@ -586,7 +587,8 @@ public class ButtonSubSystem : ISharpAllianceManager
             ButtonFlags.BUTTON_CHECKBOX,
             Priority,
             null,
-            ClickCallback);
+            ClickCallback,
+            buttonName);
 
         if (iButtonID is null)
         {
@@ -945,8 +947,9 @@ public class ButtonSubSystem : ISharpAllianceManager
 
         // Display the button image
         video.BlitSurfaceToSurface(
-            b.ButtonPicture.vobj.Images[UseImage],
+            Globals.Save(b.ButtonPicture.vobj.Images[UseImage], $"button-{UseImage}.png"),
             ButtonDestBuffer,
+            new(0, 0),
             b.Loc);
     }
 
@@ -1335,11 +1338,24 @@ public class ButtonSubSystem : ISharpAllianceManager
         // Display the button image
         if (b.ButtonPicture.vobj is not null)
         {
+            if (UseImage == 1)
+            {
+                Globals.Save(b.ButtonPicture.vobj.Images[UseImage], $"image-{UseImage}.png");
+
+            }
+
+            if (UseImage == 0)
+            {
+                Globals.Save(b.ButtonPicture.vobj.Images[UseImage], $"image-{UseImage}.png");
+
+            }
+
             video.BlitSurfaceToSurface(
-                b.ButtonPicture.vobj.Images[UseImage],
-                ButtonDestBuffer,
-                b.Loc,
-                VO_BLT.SRCTRANSPARENCY,
+                foreground: b.ButtonPicture.vobj.Images[UseImage],
+                backgroundSurface: ButtonDestBuffer,
+                foregroundPoint: new Point(0,0),
+                backgroundPoint: b.Loc, //206,277 new game
+                bltFlags: VO_BLT.SRCTRANSPARENCY,
                 debug: false);
         }
     }
@@ -1802,7 +1818,8 @@ public class ButtonSubSystem : ISharpAllianceManager
         ButtonFlags Type,
         MSYS_PRIORITY Priority,
         GUI_CALLBACK? MoveCallback,
-        GUI_CALLBACK ClickCallback)
+        GUI_CALLBACK ClickCallback,
+        string buttonName = nameof(QuickCreateButton))
     {
         int ButtonNum;
         ButtonFlags BType;
@@ -1850,7 +1867,7 @@ public class ButtonSubSystem : ISharpAllianceManager
             ubToggleButtonOldState = 0,
             ubToggleButtonActivated = 0,
 
-            MouseRegion = new(nameof(QuickCreateButton)),
+            MouseRegion = new(buttonName),
         };
 
 
@@ -2414,6 +2431,11 @@ public class GUI_BUTTON
     public int ubSoundSchemeID;
 
     public bool IsDirty { get; internal set; }
+
+    public override string ToString()
+    {
+        return this.MouseRegion.Name ?? nameof(GUI_BUTTON);
+    }
 }
 
 public class ButtonPic

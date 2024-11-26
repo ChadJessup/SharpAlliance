@@ -234,7 +234,7 @@ public class SDL2VideoManager : IVideoManager
 **********************************************************************************************/
     public bool Blt16BPPTo16BPP(Image<Rgba32> pDest, Image<Rgba32> pSrc, Point iDestPos, Point iSrcPos, Size size, bool debug = false)
     {
-// mods        Rectangle destRect = new(iDestPos, size);
+        // mods        Rectangle destRect = new(iDestPos, size);
         Rectangle destRect = new(iSrcPos, size);
 
         if (debug)
@@ -258,11 +258,11 @@ public class SDL2VideoManager : IVideoManager
         {
             ctx.DrawImage(srcClone, iDestPos, new Rectangle(iDestPos, size), 1.0f);
 
-//            ctx.DrawImage(
-//                srcClone,
-//                iDestPos,
-//                new Rectangle(0, 0, size.Width, size.Height),
-//                opacity: 1.0f);
+            //            ctx.DrawImage(
+            //                srcClone,
+            //                iDestPos,
+            //                new Rectangle(0, 0, size.Width, size.Height),
+            //                opacity: 1.0f);
         });
 
         if (debug)
@@ -499,7 +499,9 @@ public class SDL2VideoManager : IVideoManager
                             this.Surfaces[SurfaceType.BACKBUFFER],
                             new Point(this.Region.X, this.Region.Y),
                             this.Region,
-                            this.Surfaces[SurfaceType.FRAME_BUFFER]);
+                            Globals.Save(this.Surfaces[SurfaceType.FRAME_BUFFER],"FRAME_BUFFER.png"));
+
+                        Globals.Save(this.Surfaces[SurfaceType.BACKBUFFER], "BACKBUFFER.png");
                     }
 
                     // Now do new, extended dirty regions
@@ -959,29 +961,38 @@ public class SDL2VideoManager : IVideoManager
         Image<Rgba32> dstImage,
         Point destinationPoint,
         Rectangle sourceRegion,
-        Image<Rgba32> srcImage,
+        Image<Rgba32> foreground,
         bool debug = false)
     {
-        var finalRect = new Rectangle(
+        var foregroundRectangle = new Rectangle(
             new Point(destinationPoint.X, destinationPoint.Y),
             new Size(sourceRegion.Width, sourceRegion.Height));
 
+        dstImage.Mutate(c => c.Draw(Color.Blue, 1.0f, foregroundRectangle));
+        Globals.Save(dstImage, "dstImageTop.png");
+
         if (debug)
         {
-            srcImage.SaveAsPng($@"C:\temp\{nameof(BlitRegion)}-srcImage.png");
+            foreground.SaveAsPng($@"C:\temp\{nameof(BlitRegion)}-srcImage.png");
             dstImage.SaveAsPng($@"C:\temp\{nameof(BlitRegion)}-dstImage-before.png");
         }
 
         try
         {
+            Globals.Save(dstImage, "dstImage.png");
+            Globals.Save(foreground, "foreground.png");
             dstImage.Mutate(ctx =>
             {
                 ctx.DrawImage(
-                    srcImage,
-                    finalRect,
+                    foreground,
+                    sourceRegion.ToPoint(),
+                    foregroundRectangle,
                     colorBlending: PixelColorBlendingMode.Normal,
                     opacity: 1.0f);
             });
+
+            Globals.Save(dstImage, "dstImage-aftermutate.png");
+
         }
         catch (Exception e)
         {
@@ -2335,47 +2346,40 @@ public class SDL2VideoManager : IVideoManager
         return [.. surfaces];
     }
 
-    static int count = 0;
-    public void BlitSurfaceToSurface(Image<Rgba32> src, SurfaceType dst, Point dstPoint, VO_BLT bltFlags = VO_BLT.SRCTRANSPARENCY, bool debug = false)
+    public void BlitSurfaceToSurface(
+        Image<Rgba32> foreground,
+        SurfaceType backgroundSurface,
+        Point foregroundPoint,
+        Point backgroundPoint,
+        VO_BLT bltFlags = VO_BLT.SRCTRANSPARENCY,
+        bool debug = false)
     {
-        var dstSurface = this.Surfaces.SurfaceByTypes[dst];
-        Rectangle dstRectangle = new()
+        var background = this.Surfaces.SurfaceByTypes[backgroundSurface];
+
+        Rectangle foregroundRectangle = new()
         {
-            Height = src.Height,
-            Width = src.Width,
-            X = dstPoint.X,
-            Y = dstPoint.Y,
+            Height = foreground.Height,
+            Width = foreground.Width,
+            X = 0,
+            Y = 0,
         };
 
-//        Rectangle dstRectangle = new()
-//        {
-//            Height = src.Height,
-//            Width = src.Width,
-//            X = 0,//dstPoint.X,
-//            Y = 0,//dstPoint.Y,
-//        };
+        Globals.Save(foreground, "foreground.png");
+        Globals.Save(background.Image, "backgroundbefore.png");
 
-        if (dstPoint.X == 206 || debug)
+        background.Image.Mutate(c =>
         {
-            src.SaveAsPng(@$"C:\temp\{nameof(BlitSurfaceToSurface)}-src.png");
-            dstSurface.Image.SaveAsPng(@$"C:\temp\{nameof(BlitSurfaceToSurface)}-dstSurface-before.png");
-        }
-
-        dstSurface.Image.Mutate(ctx =>
-        {
-            ctx.DrawImage(
-                src,
-                dstPoint,
-                dstRectangle,
+            c.DrawImage(
+                foreground,
+                backgroundPoint,
+                foregroundRectangle,
                 colorBlending: PixelColorBlendingMode.Normal,
-                //                alphaComposition: PixelAlphaCompositionMode.Dest,
+                // alphaComposition: PixelAlphaCompositionMode.Dest,
                 opacity: 1.0f);
+            c.Draw(Color.Red, 1.0f, new Rectangle(backgroundPoint, new(foreground.Width, foreground.Height)));
         });
 
-        if (dstPoint.X == 206 || debug)
-        {
-            dstSurface.Image.SaveAsPng(@$"C:\temp\{nameof(BlitSurfaceToSurface)}-dstSurface.png");
-        }
+//        background.Image.SaveAsPng($@"C:\temp\background-after.png");
     }
 
     public bool ShadowVideoSurfaceRect(SurfaceType buffer, Rectangle rectangle)
@@ -2383,12 +2387,12 @@ public class SDL2VideoManager : IVideoManager
         return InternalShadowVideoSurfaceRect(buffer, rectangle, false);
     }
 
-    public void BltVideoSurface(SurfaceType dstSurf, SurfaceType srcSurf, int usRegionIndex, Point sDest, BlitTypes blitTypes, object value)
+    public void BltVideoSurface(SurfaceType backgroundSrf, SurfaceType foregroundSrf, int usRegionIndex, Point foregroundPoint, BlitTypes blitTypes, object value)
     {
-        var dst = this.Surfaces[dstSurf];
-        var src = this.Surfaces[srcSurf];
+        var background = this.Surfaces[backgroundSrf];
+        var foreground = this.Surfaces[foregroundSrf];
 
-        this.BlitSurfaceToSurface(src, dstSurf, sDest, VO_BLT.DESTTRANSPARENCY, debug: false);
+        this.BlitSurfaceToSurface(foreground, backgroundSrf, foregroundPoint, new(0, 0), VO_BLT.DESTTRANSPARENCY, debug: false);
     }
 
     public void StartFrameBufferRender()
