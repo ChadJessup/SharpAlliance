@@ -56,15 +56,17 @@ public partial class Globals
 
     }
 
+    public static bool saveEnabled = false;
     public static Image<Rgba32> Save(Image<Rgba32> image, string name)
     {
-        return image;
-
-        try
+        if (saveEnabled)
         {
-            image.SaveAsPng($@"C:\temp\{name}");
+            try
+            {
+                image.SaveAsPng($@"C:\temp\{name}");
+            }
+            catch { }
         }
-        catch { }
 
         return image;
     }

@@ -243,21 +243,16 @@ public class SDL2VideoManager : IVideoManager
             pSrc.SaveAsPng($@"C:\temp\{nameof(Blt16BPPTo16BPP)}-src.png");
         }
 
-        var srcClone = pSrc.Clone();
-        srcClone.Mutate(ctx =>
-        {
-            ctx.Crop(destRect);
-        });
-
-        if (debug)
-        {
-            srcClone.SaveAsPng($@"C:\temp\{nameof(Blt16BPPTo16BPP)}-clone.png");
-        }
-
+        var foregroundRect = new Rectangle(iDestPos, size);
         pDest.Mutate(ctx =>
         {
-            ctx.DrawImage(srcClone, iDestPos, new Rectangle(iDestPos, size), 1.0f);
+            ctx.DrawImage(
+                pSrc, 
+                iDestPos, 
+                foregroundRect,
+                1.0f);
 
+            ctx.Draw(Color.Red, 1.0f, foregroundRect);
             //            ctx.DrawImage(
             //                srcClone,
             //                iDestPos,
@@ -968,7 +963,11 @@ public class SDL2VideoManager : IVideoManager
             new Point(destinationPoint.X, destinationPoint.Y),
             new Size(sourceRegion.Width, sourceRegion.Height));
 
-        dstImage.Mutate(c => c.Draw(Color.Blue, 1.0f, foregroundRectangle));
+        if (debug)
+        {
+            dstImage.Mutate(c => c.Draw(Color.Blue, 1.0f, foregroundRectangle));
+        }
+
         Globals.Save(dstImage, "dstImageTop.png");
 
         if (debug)
@@ -2026,6 +2025,9 @@ public class SDL2VideoManager : IVideoManager
         var src = this.Surfaces[srcBuffer];
         var dst = this.Surfaces[dstBuffer];
 
+        Globals.Save(src, "src.png");
+        Globals.Save(dst, "dst.png");
+
         fRetVal = this.Blt16BPPTo16BPP(
             dst,
             src,
@@ -2376,10 +2378,12 @@ public class SDL2VideoManager : IVideoManager
                 colorBlending: PixelColorBlendingMode.Normal,
                 // alphaComposition: PixelAlphaCompositionMode.Dest,
                 opacity: 1.0f);
-            c.Draw(Color.Red, 1.0f, new Rectangle(backgroundPoint, new(foreground.Width, foreground.Height)));
-        });
 
-//        background.Image.SaveAsPng($@"C:\temp\background-after.png");
+            if (debug)
+            {
+                c.Draw(Color.Red, 1.0f, new Rectangle(backgroundPoint, new(foreground.Width, foreground.Height)));
+            }
+        });
     }
 
     public bool ShadowVideoSurfaceRect(SurfaceType buffer, Rectangle rectangle)

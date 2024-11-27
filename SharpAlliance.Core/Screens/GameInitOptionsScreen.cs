@@ -126,6 +126,7 @@ public class GameInitOptionsScreen : IScreen
 
         //Ok button
         this.giGIODoneBtnImage = ButtonSubSystem.LoadButtonImage("INTERFACE\\PreferencesButtons.sti", -1, 0, -1, 2, -1);
+
         this.guiGIODoneButton = ButtonSubSystem.CreateIconAndTextButton(
             this.giGIODoneBtnImage,
             EnglishText.gzGIOScreenText[GameInitOptionScreenText.GIO_OK_TEXT],
@@ -213,7 +214,8 @@ public class GameInitOptionsScreen : IScreen
             this.guiGameStyleToggles[gameStyle] = ButtonSubSystem.CreateCheckBoxButton(
                 new(GIO_GAME_SETTINGS_X + GIO_OFFSET_TO_TOGGLE_BOX, usPosY),
                 "INTERFACE\\OptionsCheck.sti", MSYS_PRIORITY.HIGH + 10,
-                this.BtnGameStyleTogglesCallback);
+                this.BtnGameStyleTogglesCallback,
+                gameStyle.ToString());
 
             ButtonSubSystem.SetButtonUserData(this.guiGameStyleToggles[gameStyle], 0, (int)gameStyle);
 
@@ -236,8 +238,10 @@ public class GameInitOptionsScreen : IScreen
         {
             this.guiGameSaveToggles[opt] = ButtonSubSystem.CreateCheckBoxButton(
                 new(GIO_IRON_MAN_SETTING_X + GIO_OFFSET_TO_TOGGLE_BOX, usPosY),
-                "INTERFACE\\OptionsCheck.sti", MSYS_PRIORITY.HIGH + 10,
-                this.BtnGameSaveTogglesCallback);
+                "INTERFACE\\OptionsCheck.sti",
+                MSYS_PRIORITY.HIGH + 10,
+                this.BtnGameSaveTogglesCallback,
+                opt.ToString());
 
             ButtonSubSystem.SetButtonUserData(this.guiGameSaveToggles[opt], 0, (int)opt);
 
@@ -264,8 +268,10 @@ public class GameInitOptionsScreen : IScreen
         {
             this.guiGunOptionToggles[cnt] = ButtonSubSystem.CreateCheckBoxButton(
                 new(GIO_GUN_SETTINGS_X + GIO_OFFSET_TO_TOGGLE_BOX, usPosY),
-                "INTERFACE\\OptionsCheck.sti", MSYS_PRIORITY.HIGH + 10,
-                this.BtnGunOptionsTogglesCallback);
+                "INTERFACE\\OptionsCheck.sti",
+                MSYS_PRIORITY.HIGH + 10,
+                this.BtnGunOptionsTogglesCallback,
+                cnt.ToString());
 
             ButtonSubSystem.SetButtonUserData(this.guiGunOptionToggles[cnt], 0, (int)cnt);
 
@@ -291,7 +297,7 @@ public class GameInitOptionsScreen : IScreen
         //REnder the screen once so we can blt ot to ths save buffer
         this.RenderGIOScreen();
 
-        video.BlitBufferToBuffer(SurfaceType.RENDER_BUFFER, SurfaceType.SAVE_BUFFER, new(0, 0, 639, 439));
+        video.BlitBufferToBuffer(SurfaceType.FRAME_BUFFER, SurfaceType.SAVE_BUFFER, new(0, 0, 639, 439));
 
         this.gfGIOButtonsAllocated = true;
 
@@ -542,14 +548,19 @@ public class GameInitOptionsScreen : IScreen
 
     private bool RenderGIOScreen()
     {
+        Globals.saveEnabled = true;
         int usPosY;
 
         //Get the main background screen graphic and blt it
         HVOBJECT background = video.GetVideoObject(this.guiGIOMainBackGroundImageKey);
         video.BltVideoObject(SurfaceType.FRAME_BUFFER, background, 0, 0, 0, VO_BLT.SRCTRANSPARENCY);
-        
+
+        Globals.Save(background.Images[0], "background.png");
+
         //Shade the background
         video.ShadowVideoSurfaceRect(SurfaceType.FRAME_BUFFER, new Rectangle(48, 55, 592, 378)); //358
+        Globals.Save(background.Images[0], "background-shaded.png");
+
 
         //Display the title
         FontSubSystem.DrawTextToScreen(
@@ -624,6 +635,8 @@ public class GameInitOptionsScreen : IScreen
 
         usPosY += 20;
         FontSubSystem.DisplayWrappedString(new(GIO_IRON_MAN_SETTING_X + GIO_OFFSET_TO_TEXT, usPosY), 220, 2, FontStyle.FONT12ARIAL, GIO_TOGGLE_TEXT_COLOR, EnglishText.zNewTacticalMessages[(int)TCTL_MSG__.CANNOT_SAVE_DURING_COMBAT], FontColor.FONT_MCOLOR_BLACK, TextJustifies.LEFT_JUSTIFIED);
+
+        Globals.saveEnabled = false;
 
         return true;
     }
