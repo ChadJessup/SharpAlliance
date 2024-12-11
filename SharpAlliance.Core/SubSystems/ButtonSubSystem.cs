@@ -947,7 +947,7 @@ public class ButtonSubSystem : ISharpAllianceManager
 
         // Display the button image
         video.BlitSurfaceToSurface(
-            Globals.Save(b.ButtonPicture.vobj.Images[UseImage], $"button-{UseImage}.png"),
+            Globals.Save(b.ButtonPicture.vobj.Images[UseImage], $"{b.MouseRegion.Name}-{UseImage}.png"),
             ButtonDestBuffer,
             new(0, 0),
             b.Loc);

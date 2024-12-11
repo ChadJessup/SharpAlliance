@@ -614,21 +614,13 @@ public class RenderDirty
     {
         Debug.Assert((sLeft >= 0) && (sTop >= 0) && (sLeft + sWidth <= 640) && (sTop + sHeight <= 480));
 
-        Image<Rgba32> renderBuffer = video.Surfaces[SurfaceType.RENDER_BUFFER];
+        Image<Rgba32> renderBuffer = video.Surfaces[guiRENDERBUFFER];
         Image<Rgba32> saveBuffer = video.Surfaces[SurfaceType.SAVE_BUFFER];
-
-        Globals.saveEnabled = true;
-
-        Globals.Save(renderBuffer, "renderbuffer.png");
-        Globals.Save(saveBuffer, "savebuffer.png");
 
         Globals.saveEnabled = false;
 
-        if (debug)
-        {
-            renderBuffer.SaveAsPng($@"c:\temp\{nameof(RestoreExternBackgroundRect)}-pDestBuf-before.png");
-            saveBuffer.SaveAsPng($@"c:\temp\{nameof(RestoreExternBackgroundRect)}-pSrcBuf-before.png");
-        }
+        Globals.Save(renderBuffer, "renderbuffer.png");
+        Globals.Save(saveBuffer, "savebuffer.png");
 
         video.Blt16BPPTo16BPP(
             renderBuffer,
@@ -638,11 +630,10 @@ public class RenderDirty
             new(sWidth, sHeight),
             debug: false);
 
-        if (debug)
-        {
-            renderBuffer.SaveAsPng($@"c:\temp\{nameof(RestoreExternBackgroundRect)}-pDestBuf-after.png");
-            saveBuffer.SaveAsPng($@"c:\temp\{nameof(RestoreExternBackgroundRect)}-pSrcBuf-after.png");
-        }
+        Globals.Save(renderBuffer, "renderbuffer-after.png");
+        Globals.Save(saveBuffer, "savebuffer-after.png");
+
+        Globals.saveEnabled = false;
 
         // Add rect to frame buffer queue
         video.InvalidateRegionEx(sLeft, sTop, (sLeft + sWidth), (sTop + sHeight), 0);

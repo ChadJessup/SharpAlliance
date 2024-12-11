@@ -299,6 +299,13 @@ public class GameInitOptionsScreen : IScreen
 
         video.BlitBufferToBuffer(SurfaceType.FRAME_BUFFER, SurfaceType.SAVE_BUFFER, new(0, 0, 639, 439));
 
+        Globals.saveEnabled = false;
+
+        Globals.Save(video.Surfaces[SurfaceType.SAVE_BUFFER], "savebuffer.png");
+        Globals.Save(video.Surfaces[SurfaceType.FRAME_BUFFER], "frame.png");
+
+        Globals.saveEnabled = false;
+
         this.gfGIOButtonsAllocated = true;
 
     }
@@ -548,7 +555,7 @@ public class GameInitOptionsScreen : IScreen
 
     private bool RenderGIOScreen()
     {
-        Globals.saveEnabled = true;
+        Globals.saveEnabled = false;
         int usPosY;
 
         //Get the main background screen graphic and blt it

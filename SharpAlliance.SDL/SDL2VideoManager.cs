@@ -232,39 +232,24 @@ public class SDL2VideoManager : IVideoManager
 	etc. to their unblit buffer, for later reblitting. Does NOT clip.
 
 **********************************************************************************************/
-    public bool Blt16BPPTo16BPP(Image<Rgba32> pDest, Image<Rgba32> pSrc, Point iDestPos, Point iSrcPos, Size size, bool debug = false)
+    public bool Blt16BPPTo16BPP(Image<Rgba32> background, Image<Rgba32> foreground, Point backgroundLocation, Point foregroundLocation, Size size, bool debug = false)
     {
-        // mods        Rectangle destRect = new(iDestPos, size);
-        Rectangle destRect = new(iSrcPos, size);
+        Rectangle foregroundRectangle = new(foregroundLocation, size);
+        Rectangle backgroundRectangle = new(backgroundLocation, size);
 
-        if (debug)
-        {
-            pDest.SaveAsPng($@"C:\temp\{nameof(Blt16BPPTo16BPP)}-dst.png");
-            pSrc.SaveAsPng($@"C:\temp\{nameof(Blt16BPPTo16BPP)}-src.png");
-        }
-
-        var foregroundRect = new Rectangle(iDestPos, size);
-        pDest.Mutate(ctx =>
+        background.Mutate(ctx =>
         {
             ctx.DrawImage(
-                pSrc, 
-                iDestPos, 
-                foregroundRect,
+                foreground,
+                backgroundLocation,
+                foregroundRectangle,
                 1.0f);
 
-            ctx.Draw(Color.Red, 1.0f, foregroundRect);
-            //            ctx.DrawImage(
-            //                srcClone,
-            //                iDestPos,
-            //                new Rectangle(0, 0, size.Width, size.Height),
-            //                opacity: 1.0f);
+            if (Globals.saveEnabled)
+            {
+                ctx.Draw(Color.Red, 1.0f, backgroundRectangle);
+            }
         });
-
-        if (debug)
-        {
-            pDest.SaveAsPng($@"C:\temp\{nameof(Blt16BPPTo16BPP)}-dst-after.png");
-            pSrc.SaveAsPng($@"C:\temp\{nameof(Blt16BPPTo16BPP)}-src-after.png");
-        }
 
         return true;
     }
@@ -494,7 +479,7 @@ public class SDL2VideoManager : IVideoManager
                             this.Surfaces[SurfaceType.BACKBUFFER],
                             new Point(this.Region.X, this.Region.Y),
                             this.Region,
-                            Globals.Save(this.Surfaces[SurfaceType.FRAME_BUFFER],"FRAME_BUFFER.png"));
+                            Globals.Save(this.Surfaces[SurfaceType.FRAME_BUFFER], "FRAME_BUFFER.png"));
 
                         Globals.Save(this.Surfaces[SurfaceType.BACKBUFFER], "BACKBUFFER.png");
                     }
@@ -2034,7 +2019,7 @@ public class SDL2VideoManager : IVideoManager
             dstPoint ?? srcRect.ToPoint(),
             srcRect.ToPoint(),
             new(srcRect.Width, srcRect.Height),
-            debug: false);
+            debug: true);
 
         return (fRetVal);
     }
@@ -2379,7 +2364,8 @@ public class SDL2VideoManager : IVideoManager
                 // alphaComposition: PixelAlphaCompositionMode.Dest,
                 opacity: 1.0f);
 
-            if (debug)
+
+            if (Globals.saveEnabled)
             {
                 c.Draw(Color.Red, 1.0f, new Rectangle(backgroundPoint, new(foreground.Width, foreground.Height)));
             }
