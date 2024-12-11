@@ -28,6 +28,11 @@ public class SurfaceManager : ISurfaceManager
     public Image<Rgba32> this[SurfaceType surface]
     {
         get => this.surfaces.FirstOrDefault(s => s.Key.SurfaceType == surface).Value;
+        set
+        {
+            var found = this.surfaces.First(s => s.Key.SurfaceType == surface).Value;
+            found = value;
+        }
     }
 
     public void InitializeSurfaces(nint renderer, int width, int height)

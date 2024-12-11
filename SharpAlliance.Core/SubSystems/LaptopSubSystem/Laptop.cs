@@ -664,6 +664,7 @@ public partial class Laptop
             new(LAPTOP_SCREEN_UL_X - 2, LAPTOP_SCREEN_UL_Y - 3),
             clip);
 
+        Globals.Save(pDestBuf, "pDestBuf.png");
         return true;
     }
 

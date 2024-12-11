@@ -568,7 +568,6 @@ public class GameInitOptionsScreen : IScreen
         video.ShadowVideoSurfaceRect(SurfaceType.FRAME_BUFFER, new Rectangle(48, 55, 592, 378)); //358
         Globals.Save(background.Images[0], "background-shaded.png");
 
-
         //Display the title
         FontSubSystem.DrawTextToScreen(
             EnglishText.gzGIOScreenText[GameInitOptionScreenText.GIO_INITIAL_GAME_SETTINGS],
@@ -891,7 +890,6 @@ public class GameInitOptionsScreen : IScreen
                 gubGameOptionScreenHandler = GameMode.GIO_EXIT;
             }
         }
-
 
         DifficultyLevel ubDiffLevel = GetCurrentDifficultyButtonSetting();
 

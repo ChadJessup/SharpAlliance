@@ -77,7 +77,7 @@ public interface IVideoManager : ISharpAllianceManager
 
     void Draw();
     void BltVideoObject(SurfaceType surface, HVOBJECT hPixHandle, int index, int x, int y, VO_BLT bltFlags = VO_BLT.SRCTRANSPARENCY, int? _ = default)
-        => this.BlitSurfaceToSurface(hPixHandle.Images[index], surface, new(x, y), new(0,0), bltFlags);
+        => this.BlitSurfaceToSurface(hPixHandle.Images[index], surface, Point.Empty, new(x, y), bltFlags);
     void SetClippingRegionAndImageWidth(int width, Rectangle rectangle);
     bool ShadowVideoSurfaceRect(SurfaceType fRAME_BUFFER, Rectangle rectangle);
     void BltVideoSurface(SurfaceType uiBuffer, SurfaceType surfaceType, int v, Point sDest, BlitTypes blitTypes, object value);

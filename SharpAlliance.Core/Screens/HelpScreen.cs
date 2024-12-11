@@ -483,7 +483,7 @@ public class HelpScreen : IScreen
 
             //blit everything to the save buffer ( cause the save buffer can bleed through )
             video.BlitBufferToBuffer(
-                SurfaceType.RENDER_BUFFER,
+                guiRENDERBUFFER,
                 SurfaceType.SAVE_BUFFER,
                 new Rectangle(gHelpScreen.usScreenLoc, gHelpScreen.usScreenSize));
 
@@ -1735,8 +1735,10 @@ public class HelpScreen : IScreen
     {
         // CLEAR THE FRAME BUFFER
         Image<Rgba32> pDestBuf = video.Surfaces[guiHelpScreenTextBufferSurface];
-
+        
         pDestBuf = new(pDestBuf.Width, pDestBuf.Height);
+
+        video.Surfaces[guiHelpScreenTextBufferSurface] = pDestBuf;
 
         video.InvalidateScreen();
     }

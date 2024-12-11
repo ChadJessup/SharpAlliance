@@ -12,7 +12,6 @@ using SharpAlliance.Core.SubSystems.LaptopSubSystem.FloristSubSystem;
 using SharpAlliance.Core.SubSystems.LaptopSubSystem.IMPSubSystem;
 using SharpAlliance.Core.SubSystems.LaptopSubSystem.InsuranceSubSystem;
 using SixLabors.ImageSharp;
-using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace SharpAlliance.Core.SubSystems.LaptopSubSystem;
 

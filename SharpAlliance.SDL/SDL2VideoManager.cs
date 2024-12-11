@@ -477,7 +477,7 @@ public class SDL2VideoManager : IVideoManager
 
                         this.BlitRegion(
                             this.Surfaces[SurfaceType.BACKBUFFER],
-                            new Point(this.Region.X, this.Region.Y),
+                            this.Region.ToPoint(),
                             this.Region,
                             Globals.Save(this.Surfaces[SurfaceType.FRAME_BUFFER], "FRAME_BUFFER.png"));
 
@@ -1857,8 +1857,8 @@ public class SDL2VideoManager : IVideoManager
                         Blt16BPPTo16BPP(
                             gBackSaves[uiCount].pSaveArea,
                             pSrcBuf,
-                            new Point(0, 0),
                             new Point(gBackSaves[uiCount].sLeft, gBackSaves[uiCount].sTop),
+                            Point.Empty,
                             new Size(gBackSaves[uiCount].sWidth, gBackSaves[uiCount].sHeight));
                     }
 
@@ -1868,8 +1868,8 @@ public class SDL2VideoManager : IVideoManager
                     Blt16BPPTo16BPP(
                         gBackSaves[uiCount].pZSaveArea,
                         this.Surfaces[SurfaceType.Z_BUFFER],
-                        new(0, 0),
                         new(gBackSaves[uiCount].sLeft, gBackSaves[uiCount].sTop),
+                        Point.Empty,
                         new(gBackSaves[uiCount].sWidth, gBackSaves[uiCount].sHeight));
                 }
                 else
@@ -2377,12 +2377,18 @@ public class SDL2VideoManager : IVideoManager
         return InternalShadowVideoSurfaceRect(buffer, rectangle, false);
     }
 
-    public void BltVideoSurface(SurfaceType backgroundSrf, SurfaceType foregroundSrf, int usRegionIndex, Point foregroundPoint, BlitTypes blitTypes, object value)
+    public void BltVideoSurface(SurfaceType backgroundSrf, SurfaceType foregroundSrf, int usRegionIndex, Point backgroundPoint, BlitTypes blitTypes, object value)
     {
         var background = this.Surfaces[backgroundSrf];
         var foreground = this.Surfaces[foregroundSrf];
 
-        this.BlitSurfaceToSurface(foreground, backgroundSrf, foregroundPoint, new(0, 0), VO_BLT.DESTTRANSPARENCY, debug: false);
+        Globals.Save(background, $"{ nameof(BltVideoSurface)}-background-before.png");
+        Globals.Save(foreground, $"{nameof(BltVideoSurface)}-foreground-before.png");
+
+        this.BlitSurfaceToSurface(foreground, backgroundSrf, Point.Empty, backgroundPoint, VO_BLT.DESTTRANSPARENCY, debug: false);
+
+        Globals.Save(background, $"{nameof(BltVideoSurface)}-background-after.png");
+        Globals.Save(foreground, $"{nameof(BltVideoSurface)}-foreground-after.png");
     }
 
     public void StartFrameBufferRender()
