@@ -945,12 +945,16 @@ public class ButtonSubSystem : ISharpAllianceManager
             }
         }
 
+        var backgroundLocationOffsetX = b.ButtonPicture.vobj.pETRLEObject[UseImage].sOffsetX;
+        var backgroundLocationOffsetY = b.ButtonPicture.vobj.pETRLEObject[UseImage].sOffsetY;
+
         // Display the button image
         video.BlitSurfaceToSurface(
             Globals.Save(b.ButtonPicture.vobj.Images[UseImage], $"{b.MouseRegion.Name}-{UseImage}.png"),
             ButtonDestBuffer,
             new(0, 0),
-            b.Loc);
+            new(b.Loc.X + backgroundLocationOffsetX, b.Loc.Y + backgroundLocationOffsetY));
+
     }
 
     public static void DrawCheckBoxButtonOff(GUI_BUTTON btn)

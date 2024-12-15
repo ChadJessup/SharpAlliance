@@ -636,7 +636,7 @@ public class RenderDirty
         Globals.saveEnabled = false;
 
         // Add rect to frame buffer queue
-        video.InvalidateRegionEx(sLeft, sTop, (sLeft + sWidth), (sTop + sHeight), 0);
+        video.InvalidateRegionEx(sLeft, sTop, sWidth, sHeight, 0);
 
         return true;
     }
