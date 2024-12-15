@@ -27,7 +27,7 @@ public class MessageBoxSubSystem : ISharpAllianceManager
     private readonly IVideoManager video;
     private readonly ButtonSubSystem buttons;
     private static GameSettings gGameSettings;
-    private static MercTextBox mercTextBox;
+    private static MercTextBox? mercTextBox;
     private static IScreenManager screens;
     private readonly Overhead overhead;
     private readonly RenderWorld renderWorld;
@@ -862,7 +862,7 @@ public class MessageBoxSubSystem : ISharpAllianceManager
         Image<Rgba32> pDestBuf, pSrcBuf;
 
         // Delete popup!
-        MercTextBox.RemoveMercPopupBoxFromIndex(gMsgBox.iBoxId);
+        mercTextBox?.RemoveMercPopupBoxFromIndex(gMsgBox.iBoxId);
         gMsgBox.iBoxId = -1;
 
         //Delete buttons!

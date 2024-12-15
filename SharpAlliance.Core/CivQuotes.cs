@@ -218,7 +218,7 @@ public class CivQuotes
             // Remove mouse region...
             MouseSubSystem.MSYS_RemoveRegion(gCivQuoteData.MouseRegion);
 
-            MercTextBox.RemoveMercPopupBoxFromIndex(gCivQuoteData.iDialogueBox);
+            CivQuotes.mercTextBox.RemoveMercPopupBoxFromIndex(gCivQuoteData.iDialogueBox);
             gCivQuoteData.iDialogueBox = -1;
 
             gCivQuoteData.bActive = false;

@@ -31,7 +31,7 @@ public class MessageBoxScreen : IScreen
     {
         this.inputs = inputManager;
         this.logger = logger;
-        messageBoxSubSystem = messageBoxSubSystem;
+       MessageBoxScreen.messageBoxSubSystem = messageBoxSubSystem;
         video = videoManager;
         this.mercTextBox = mercTextBox;
     }
@@ -284,7 +284,7 @@ public class MessageBoxScreen : IScreen
         Image<Rgba32> pDestBuf, pSrcBuf;
 
         // Delete popup!
-        MercTextBox.RemoveMercPopupBoxFromIndex(gMsgBox.iBoxId);
+        this.mercTextBox.RemoveMercPopupBoxFromIndex(gMsgBox.iBoxId);
         gMsgBox.iBoxId = -1;
 
         //Delete buttons!

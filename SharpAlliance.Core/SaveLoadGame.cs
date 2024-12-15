@@ -118,7 +118,7 @@ public class SaveLoadGame
         video.EndFrameBufferRender();
         video.RefreshScreen();
 
-        if (MercTextBox.RemoveMercPopupBoxFromIndex(iSaveLoadGameMessageBoxID))
+        if (this.mercTextBox.RemoveMercPopupBoxFromIndex(iSaveLoadGameMessageBoxID))
         {
             iSaveLoadGameMessageBoxID = -1;
         }

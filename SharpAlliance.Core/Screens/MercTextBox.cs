@@ -1,6 +1,4 @@
 ﻿using System;
-using System.Diagnostics;
-using System.Reflection.PortableExecutable;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using SharpAlliance.Core.Interfaces;
@@ -8,7 +6,6 @@ using SharpAlliance.Core.Managers;
 using SharpAlliance.Core.Managers.VideoSurfaces;
 using SixLabors.ImageSharp;
 using SixLabors.ImageSharp.PixelFormats;
-using static SharpAlliance.Core.Globals;
 
 namespace SharpAlliance.Core.Screens;
 
@@ -43,13 +40,13 @@ public class MercTextBox
     private MercPopUpBox gBasicPopUpTextBox;
 
     // the current pop up box
-    private MercPopUpBox gPopUpTextBox;
+    private MercPopUpBox? gPopUpTextBox;
 
     // the old one
     private MercPopUpBox gOldPopUpTextBox;
 
     // the list of boxes
-    private MercPopUpBox[] gpPopUpBoxList = new MercPopUpBox[MAX_NUMBER_OF_POPUP_BOXES];
+    private MercPopUpBox?[] gpPopUpBoxList = new MercPopUpBox?[MAX_NUMBER_OF_POPUP_BOXES];
 
     public MercTextBox(
         ILogger<MercTextBox> logger,
@@ -70,8 +67,58 @@ public class MercTextBox
         return ValueTask.FromResult(true);
     }
 
-    public static bool RemoveMercPopupBoxFromIndex(int iBoxId)
+    public bool RemoveMercPopupBoxFromIndex(int uiId)
     {
+        // find this box, set it to current, and delete it
+        if (SetCurrentPopUpBox(uiId) == false)
+        {
+            // failed
+            return false;
+        }
+
+        // now try to remove it
+        return (RemoveMercPopupBox());
+    }
+
+    //Deletes the surface thats contains the border, background and the text.
+    private bool RemoveMercPopupBox()
+    {
+
+        int iCounter = 0;
+
+        // make sure the current box does in fact exist
+        if (gPopUpTextBox is null)
+        {
+            // failed..
+            return false;
+        }
+
+        // now check to see if inited...
+        if (gPopUpTextBox.fMercTextPopupSurfaceInitialized)
+        {
+
+            // now find this box in the list
+            for (iCounter = 0; iCounter < MAX_NUMBER_OF_POPUP_BOXES; iCounter++)
+            {
+                if (gpPopUpBoxList[iCounter] == gPopUpTextBox)
+                {
+                    gpPopUpBoxList[iCounter] = null;
+                    iCounter = MAX_NUMBER_OF_POPUP_BOXES;
+                }
+            }
+
+            video.DeleteVideoSurfaceFromIndex(gPopUpTextBox.uiSourceBufferIndex);
+
+            //DEF Added 5/26
+            //Delete the background and the border
+            RemoveTextMercPopupImages();
+
+            MemFree(gPopUpTextBox);
+
+            // reset current ptr
+            this.gPopUpTextBox = null;
+        }
+
         return true;
     }
 

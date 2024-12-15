@@ -2154,7 +2154,6 @@ public class SDL2VideoManager : IVideoManager
 
     public void DeleteVideoObjectFromIndex(SurfaceType guiWoodBackground)
     {
-        throw new NotImplementedException();
     }
 
     public void InvalidateRegion(int v1, int v2, int v3, int v4) => this.InvalidateRegion(new(v1, v2, v3, v4));

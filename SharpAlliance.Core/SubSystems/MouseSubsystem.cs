@@ -688,6 +688,8 @@ public class MouseSubSystem : ISharpAllianceManager
         }
 
         //clear all internal values (including the region exists flag)
+        region.uiFlags = 0;
+        region.IsEnabled = false;
         //memset(region, 0, sizeof(MOUSE_REGION));
     }
 
