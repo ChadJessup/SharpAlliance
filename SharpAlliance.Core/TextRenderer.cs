@@ -17,7 +17,7 @@ namespace SharpAlliance.Core;
 
 public class TextRenderer
 {
-    private Rgba32 White = Rgba32.ParseHex("FFFFFF");
+    private Rgba32 White = Color.White.ToPixel<Rgba32>();
     private readonly IVideoManager video;
     private readonly Font font;
     private readonly Image<Rgba32> _image;
@@ -72,21 +72,21 @@ public class TextRenderer
             //LayoutMode = LayoutMode.HorizontalTopBottom,
         };
 
-        var foreColor = new Color(foreground);
-        var backColor = new Color(background);
+        var foreColor = Color.FromPixel<Rgba32>(foreground);
+        var backColor = Color.FromPixel<Rgba32>(background);
         Brush brush = Brushes.Solid(foreColor);//, backColor);
         Pen pen = Pens.Solid(backColor, 0.1f);
 
         try
         {
-            buffer.Mutate(ctx =>
+            buffer.Mutate(ctx => ctx.Paint(canvas =>
             {
-                ctx.DrawText(
+                canvas.DrawText(
                     options,
                     text,
                     brush,
                     pen);
-            });
+            }));
         }
         catch (Exception ex)
         {

@@ -400,9 +400,9 @@ public class FontSubSystem : ISharpAllianceManager
 
         }
 
-        fontColorLookup.Add(FontColor.FONT_YELLOW, Color.Yellow);
-        fontColorLookup.Add(FontColor.FONT_WHITE, Color.White);
-        fontColorLookup.Add(FontColor.FONT_MCOLOR_WHITE, Color.White);
+        fontColorLookup.Add(FontColor.FONT_YELLOW, Color.Yellow.ToPixel<Rgba32>());
+        fontColorLookup.Add(FontColor.FONT_WHITE, Color.White.ToPixel<Rgba32>());
+        fontColorLookup.Add(FontColor.FONT_MCOLOR_WHITE, Color.White.ToPixel<Rgba32>());
 
         InitializeFonts();
 

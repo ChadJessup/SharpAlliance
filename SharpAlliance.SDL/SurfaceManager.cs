@@ -40,7 +40,7 @@ public class SurfaceManager : ISurfaceManager
         this.width = width;
         this.height = height;
 
-        Image<Rgba32> blankImage = new(width, height, Rgba32.ParseHex("FF000000"));
+        Image<Rgba32> blankImage = new(width, height, Color.ParseHex("FF000000").ToPixel<Rgba32>());
 
         var primarySurface = this.CreateSurface(renderer, blankImage.Clone(), SurfaceType.PRIMARY_SURFACE);
         var frameSurface = this.CreateSurface(renderer, blankImage.Clone(), SurfaceType.FRAME_BUFFER);

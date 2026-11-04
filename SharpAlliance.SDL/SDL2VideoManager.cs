@@ -237,7 +237,7 @@ public class SDL2VideoManager : IVideoManager
         Rectangle foregroundRectangle = new(foregroundLocation, size);
         Rectangle backgroundRectangle = new(backgroundLocation, size);
 
-        background.Mutate(ctx =>
+        background.Mutate(ctx => ctx.Paint(canvas =>
         {
             ctx.DrawImage(
                 foreground,
@@ -247,9 +247,10 @@ public class SDL2VideoManager : IVideoManager
 
             if (Globals.saveEnabled)
             {
-                ctx.Draw(Color.Red, 1.0f, backgroundRectangle);
+                var p = new SolidPen(Color.Red, 1.0f);
+                canvas.Draw(p, backgroundRectangle);
             }
-        });
+        }));
 
         return true;
     }
@@ -950,7 +951,8 @@ public class SDL2VideoManager : IVideoManager
 
         if (debug)
         {
-            dstImage.Mutate(c => c.Draw(Color.Blue, 1.0f, foregroundRectangle));
+            Pen p = new SolidPen(Color.Blue, 1.0f);
+            dstImage.Mutate(c => c.Paint(canvas => canvas.Draw(p, foregroundRectangle)));
         }
 
         Globals.Save(dstImage, "dstImageTop.png");
@@ -1693,12 +1695,13 @@ public class SDL2VideoManager : IVideoManager
         //loadedTextures.Remove(logoKey);
     }
 
-    public void LineDraw(bool fClip, PointF startPoint, PointF endPoint, Color Color, Image<Rgba32> dst)
+    public void LineDraw(bool fClip, PointF startPoint, PointF endPoint, Rgba32 color, Image<Rgba32> dst)
     {
-        dst.Mutate(ctx =>
+        var pen = new SolidPen(Color.FromPixel(color), 1.0f);
+        dst.Mutate(ctx => ctx.Paint(canvas =>
         {
-            ctx.DrawLine(Color, 1.0f, [startPoint, endPoint]);
-        });
+            canvas.DrawLine(pen, [startPoint, endPoint]);
+        }));
     }
 
     public void GetClippingRect(out Rectangle clipRect)
@@ -2032,7 +2035,7 @@ public class SDL2VideoManager : IVideoManager
     {
     }
 
-    public void ColorFillVideoSurfaceArea(SurfaceType surface, Rectangle rectangle, Color color)
+    public void ColorFillVideoSurfaceArea(SurfaceType surface, Rectangle rectangle, Rgba32 color)
     {
     }
 
@@ -2366,7 +2369,7 @@ public class SDL2VideoManager : IVideoManager
 
             if (Globals.saveEnabled)
             {
-                c.Draw(Color.Red, 1.0f, new Rectangle(backgroundPoint, new(foreground.Width, foreground.Height)));
+                c.Paint(canvas => canvas.Draw(new SolidPen(Color.Red, 1.0f), new Rectangle(backgroundPoint, new(foreground.Width, foreground.Height))));
             }
         });
     }

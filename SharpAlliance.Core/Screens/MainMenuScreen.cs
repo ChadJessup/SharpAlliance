@@ -12,6 +12,7 @@ using static SharpAlliance.Core.Globals;
 using SixLabors.ImageSharp.Processing;
 using SixLabors.ImageSharp.Drawing.Processing;
 using SharpAlliance.Platform;
+using SixLabors.ImageSharp.PixelFormats;
 
 namespace SharpAlliance.Core.Screens;
 
@@ -106,7 +107,7 @@ public class MainMenuScreen : IScreen
             }
             else if (Globals.guiSplashFrameFade > 1)
             {
-                video.ColorFillVideoSurfaceArea(SurfaceType.FRAME_BUFFER, new Rectangle(0, 0, 640, 480), Color.Black);
+                video.ColorFillVideoSurfaceArea(SurfaceType.FRAME_BUFFER, new Rectangle(0, 0, 640, 480), Color.Black.ToPixel<Rgba32>());
             }
             else
             {
@@ -559,7 +560,7 @@ public class MainMenuScreen : IScreen
 
     public void ClearMainMenu()
     {
-        video.Surfaces[SurfaceType.FRAME_BUFFER].Mutate(ctx => ctx.Clear(Color.Blue));
+        video.Surfaces[SurfaceType.FRAME_BUFFER].Mutate(ctx => ctx.Paint(canvas => canvas.Clear(new SolidBrush(Color.Blue))));
         video.InvalidateScreen();
     }
 

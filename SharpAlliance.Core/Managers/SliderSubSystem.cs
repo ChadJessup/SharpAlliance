@@ -174,7 +174,7 @@ public class SliderSubSystem
         video.SetClippingRegionAndImageWidth(frame.Width, new Rectangle(0, 0, 640, 480));
 
         // draw the line 
-        video.LineDraw(false, usStart, usEnd, iColor, frame);
+        video.LineDraw(false, usStart, usEnd, iColor.ToPixel<Rgba32>(), frame);
     }
 
     private void CalculateNewSliderIncrement(ref Slider pSlider, int usPos)
@@ -323,7 +323,7 @@ public class SliderSubSystem
         pNewSlider.usNumberOfIncrements = usNumberOfIncrements;
         pNewSlider.SliderChangeCallback = SliderChangeCallback;
         pNewSlider.usCurrentIncrement = 0;
-        pNewSlider.usBackGroundColor = Color.FromRgb(255, 255, 255);
+        pNewSlider.usBackGroundColor = Color.FromPixel(new Rgba32(255, 255, 255));
         pNewSlider.uiFlags = uiFlags;
 
         //Get a new Identifier for the slider

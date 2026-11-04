@@ -462,9 +462,9 @@ public class PCXImageFileLoader : IImageFileLoader
               //          pixel = IVideoManager.AlphaPixel;
               //      }
 
-                    color.FromRgba32(pixel);
+                 //   color.FromRgba32(pixel);
 
-                    pixelRow[x] = color;
+                    pixelRow[x] = pixel;
                 }
             }
         });

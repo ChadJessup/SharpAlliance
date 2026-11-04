@@ -37,7 +37,7 @@ public interface IVideoManager : ISharpAllianceManager
     void DeleteVideoObjectFromIndex(string logoKey);
     void RestoreBackgroundRects();
     void GetCurrentVideoSettings(out int usWidth, out int usHeight, out int ubBitDepth);
-    void LineDraw(bool fClip, PointF startPoint, PointF endPoint, Color Color, Image<Rgba32> dst);
+    void LineDraw(bool fClip, PointF startPoint, PointF endPoint, Rgba32 Color, Image<Rgba32> dst);
     void GetClippingRect(out Rectangle clipRect);
     void ColorFillVideoSurfaceArea(Image<Rgba32> surface, Rectangle region, Rgba32 rgba32);
     void SaveBackgroundRects();
@@ -56,7 +56,7 @@ public interface IVideoManager : ISharpAllianceManager
     void Blt8BPPTo8BPP(Image<Rgba32> pDestBuf, int uiDestPitchBYTES, Image<Rgba32> pSrcBuf, int uiSrcPitchBYTES, int sLeft1, int sTop1, int sLeft2, int sTop2, int sWidth, int sHeight);
     void ColorFillVideoSurfaceArea(Rectangle rectangle, Color color);
     void ColorFillVideoSurfaceArea(Rectangle region, Rgba32 rgba32);
-    void ColorFillVideoSurfaceArea(SurfaceType buffer, Rectangle rectangle, Color black);
+    void ColorFillVideoSurfaceArea(SurfaceType buffer, Rectangle rectangle, Rgba32 black);
    // bool GetVideoObject(out HVOBJECT? hVObject, int uiIndex);
     static Stream OpenEmbeddedAssetStream(string name) => throw new NotImplementedException();
     static byte[] ReadEmbeddedAssetBytes(string name) => throw new NotImplementedException();

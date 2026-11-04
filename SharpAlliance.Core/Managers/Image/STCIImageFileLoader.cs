@@ -47,7 +47,9 @@ public class STCIImageFileLoader : ImageDecoder, IImageFormatDetector, IImageFil
             Configuration = config,
         };
 
-        var i = Image<Rgba32>.Load(dopt, stream);
+        try
+        {
+            var i = Image<Rgba32>.Load(dopt, stream);
 
         // parsing the image modifies the hImage, so reassign back.
         hImage = (HIMAGE)config.Properties[stream];
@@ -55,19 +57,25 @@ public class STCIImageFileLoader : ImageDecoder, IImageFormatDetector, IImageFil
         hImage.usWidth = i.Width;
         hImage.usHeight = i.Height;
 
+        }
+        catch (Exception ex)
+        {
+            //DbgMessage(TOPIC_HIMAGE, DBG_LEVEL_3, "Problem loading image: " + hImage.ImageFile);
+        };
         return true;
     }
 
+
     protected override SixLabors.ImageSharp.Image Decode(DecoderOptions options, Stream stream, CancellationToken cancellationToken)
-        => this.Decode<Rgba32>(options, stream, cancellationToken);
+        => Decode<Rgba32>(options, stream, cancellationToken);
 
     protected override Image<TPixel> Decode<TPixel>(DecoderOptions configuration, Stream stream, CancellationToken token)
     {
         Span<byte> buffer = stackalloc byte[Marshal.SizeOf<STCIHeader>()];
-        stream.Read(buffer);
+        stream.ReadExactly(buffer);
 
         var header = MemoryMarshal.Read<STCIHeader>(buffer);
-        Image<TPixel> image;
+        Image<TPixel>? image;
 
         if (header.fFlags.HasFlag(STCITypes.STCI_RGB))
         {
@@ -79,7 +87,7 @@ public class STCIImageFileLoader : ImageDecoder, IImageFormatDetector, IImageFil
         }
         else if (header.fFlags.HasFlag(STCITypes.STCI_ZLIB_COMPRESSED))
         {
-            image = new Image<TPixel>(1, 1);// this.DecodeETRLECompressed<TPixel>(header, configuration, stream);
+            image = new Image<TPixel>(1, 1);// this.DecodeETRLECompressed<Rgba32>(header, configuration, stream);
         }
         else
         {
@@ -245,9 +253,9 @@ public class STCIImageFileLoader : ImageDecoder, IImageFormatDetector, IImageFil
                             pixel = IVideoManager.AlphaPixel;
                         }
 
-                        color.FromRgba32(pixel);
+//                        color.FromRgba32(pixel);
 
-                        pixelRow[x] = color;
+                        pixelRow[x] = pixel;
                         idx++;
                     }
                 }
@@ -340,11 +348,11 @@ public class STCIImageFileLoader : ImageDecoder, IImageFormatDetector, IImageFil
     {
         var rgba32 = new Rgba32();
         TPixel color = default;
-
+        
         var numOfPixels = header.usHeight * header.usWidth;
 
         using var byteBuffer = configuration.Configuration.MemoryAllocator.Allocate<byte>(numOfPixels * header.ubDepth);
-        stream.Read(byteBuffer.Memory.Span);
+        stream.ReadExactly(byteBuffer.Memory.Span);
 
         var image = new Image<TPixel>(configuration.Configuration, header.usWidth, header.usHeight);
 
@@ -365,8 +373,8 @@ public class STCIImageFileLoader : ImageDecoder, IImageFormatDetector, IImageFil
                         PackedValue = pixelSpan[idx],
                     };
 
-                    bgr565.ToRgba32(ref rgba32);
-                    color.FromRgba32(rgba32);
+                    var rgba32 = bgr565.ToRgba32();
+                   // color.FromRgba32(rgba32.ToRgba32());
 
                     pixelRow[x] = color;
                     idx++;
@@ -376,14 +384,6 @@ public class STCIImageFileLoader : ImageDecoder, IImageFormatDetector, IImageFil
 
         return image;
     }
-
-    public Task<Image<TPixel>> DecodeAsync<TPixel>(DecoderOptions configuration, Stream stream, CancellationToken cancellationToken) where TPixel : unmanaged, IPixel<TPixel>
-    {
-        throw new NotImplementedException();
-    }
-
-    public async Task<SixLabors.ImageSharp.Image> DecodeAsync(DecoderOptions configuration, Stream stream, CancellationToken cancellationToken)
-        => await this.DecodeAsync<Rgba32>(configuration, stream, cancellationToken);
 
     public List<Image<Rgba32>> ApplyPalette(ref HVOBJECT hVObject, ref HIMAGE hImage)
     {

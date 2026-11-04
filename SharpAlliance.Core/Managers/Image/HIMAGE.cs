@@ -102,7 +102,7 @@ public class HIMAGE : IImageFormat
             b = pPalette[cnt].peBlue;
 
             var p = new Bgr24(r, g, b);
-            p.ToRgba32(ref palette[cnt]);
+            palette[cnt] = p.ToRgba32();
 
             if (gusRedShift < 0)
             {
@@ -151,7 +151,7 @@ public class HIMAGE : IImageFormat
                 PackedValue = usColor,
             };
 
-            pixel.ToRgba32(ref palette[cnt]);
+            palette[cnt] = pixel.ToRgba32();
         }
 
         return palette;
