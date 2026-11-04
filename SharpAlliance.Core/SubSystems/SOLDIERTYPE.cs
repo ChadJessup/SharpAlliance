@@ -22,7 +22,7 @@ public class SOLDIERTYPE
     public Dictionary<InventorySlot, OBJECTTYPE> inv = new();
 
     public OBJECTTYPE? pTempObject;
-    public KEY_ON_RING? pKeyRing;
+    public KEY_ON_RING[] pKeyRing = new KEY_ON_RING[Keys.NUM_KEYS];
 
     public int bOldLife;          // life at end of last turn, recorded for monster AI
                                   // attributes

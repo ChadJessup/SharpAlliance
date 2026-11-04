@@ -1,0 +1,8 @@
+{
+  "classes": {
+    "Items.c": "ItemSubSystem"
+  },
+  "aliases": {
+    "NOTHING": "Items.NONE"
+  }
+}

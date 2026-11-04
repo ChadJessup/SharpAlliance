@@ -24,6 +24,7 @@ public partial class Laptop : IScreen
     public bool IsInitialized { get; set; }
     public ScreenState State { get; set; }
     private static History history;
+    private static BobbyR bobbyR;
     private static IFileManager files;
     public static readonly List<GUI_BUTTON> buttonList = [];
 
@@ -32,11 +33,13 @@ public partial class Laptop : IScreen
         IVideoManager videoManager,
         IScreenManager screenManager,
         History history,
+        BobbyR bobbyR,
         IFileManager fileManager)
     {
         this.logger = logger;
         files = fileManager;
         Laptop.history = history;
+        Laptop.bobbyR = bobbyR;
         video = videoManager;
         screens = screenManager;
     }
@@ -60,7 +63,7 @@ public partial class Laptop : IScreen
         return ValueTask.CompletedTask;
     }
 
-    public ValueTask<ScreenName> Handle()
+    public async ValueTask<ScreenName> Handle()
     {
         //User just changed modes.  This is determined by the button callbacks 
         //created in LaptopScreenInit()
@@ -195,7 +198,7 @@ public partial class Laptop : IScreen
             // handle the help screen
             HelpScreen.HelpScreenHandler();
 
-            return ValueTask.FromResult(ScreenName.LAPTOP_SCREEN);
+            return ScreenName.LAPTOP_SCREEN;
         }
 
         video.RestoreBackgroundRects();
@@ -267,7 +270,7 @@ public partial class Laptop : IScreen
                 fExitDuringLoad = true;
             }
 
-            LeaveLapTopScreen();
+            await LeaveLapTopScreen();
         }
 
         if (fExitingLaptopFlag == false)
@@ -397,7 +400,7 @@ public partial class Laptop : IScreen
         video.EndFrameBufferRender();
 
 
-        return ValueTask.FromResult(ScreenName.LAPTOP_SCREEN);
+        return ScreenName.LAPTOP_SCREEN;
     }
 
     private void HandleSlidingTitleBar()
@@ -710,7 +713,7 @@ public partial class Laptop : IScreen
         video.DeleteVideoSurfaceFromIndex(guiTitleBarSurface);
     }
 
-    private void DisplayTaskBarIcons()
+    private static void DisplayTaskBarIcons()
     {
         if (fNewFilesInFileViewer)
         {
@@ -1458,10 +1461,6 @@ public partial class Laptop : IScreen
         }
     }
 
-    private void HandleBrokenLink()
-    {
-        throw new NotImplementedException();
-    }
 
     private void HandleFiles()
     {
@@ -1470,7 +1469,7 @@ public partial class Laptop : IScreen
 
     private void HandleHistory()
     {
-        throw new NotImplementedException();
+        history.HandleHistory();
     }
 
     private void HandlePersonnel()
@@ -1478,15 +1477,7 @@ public partial class Laptop : IScreen
         throw new NotImplementedException();
     }
 
-    private void HandleSirTech()
-    {
-        throw new NotImplementedException();
-    }
 
-    private void HandleFuneral()
-    {
-        throw new NotImplementedException();
-    }
 
     private void HandleCharProfile()
     {
@@ -1593,7 +1584,7 @@ public partial class Laptop : IScreen
 
     private void BtnGenericMouseMoveButtonCallback(ref GUI_BUTTON button, MSYS_CALLBACK_REASON reason)
     {
-        throw new NotImplementedException();
+        MouseSubSystem.BtnGenericMouseMoveButtonCallback(ref button, reason);
     }
 
     private static bool fOldShowBookmarks = false;
@@ -1623,7 +1614,7 @@ public partial class Laptop : IScreen
         {
             MouseSubSystem.MSYS_DefineRegion(
                 gBookmarkMouseRegions[iCounter],
-                new Rectangle(BOOK_X,
+                Rectangle.FromLTRB(BOOK_X,
                     (BOOK_TOP_Y + ((iCounter + 1) * (BOOK_HEIGHT + 6)) + 6),
                     BOOK_X + BOOK_WIDTH,
                     (BOOK_TOP_Y + ((iCounter + 2) * (BOOK_HEIGHT + 6)) + 6)),
@@ -1645,7 +1636,7 @@ public partial class Laptop : IScreen
         // for the cancel button
         MouseSubSystem.MSYS_DefineRegion(
             gBookmarkMouseRegions[iCounter],
-            new Rectangle(BOOK_X,
+            Rectangle.FromLTRB(BOOK_X,
                 (BOOK_TOP_Y + ((iCounter + 1) * (BOOK_HEIGHT + 6)) + 6),
                 BOOK_X + BOOK_WIDTH,
                 (BOOK_TOP_Y + ((iCounter + 2) * (BOOK_HEIGHT + 6)) + 6)),
@@ -1711,7 +1702,7 @@ public partial class Laptop : IScreen
         return;
     }
 
-    private void GoToWebPage(BOOKMARK iPageId)
+    private static void GoToWebPage(BOOKMARK iPageId)
     {
         //if it is raining, popup a warning first saying connection time may be slow
         if (IsItRaining())
@@ -1882,7 +1873,7 @@ public partial class Laptop : IScreen
         fReDrawScreenFlag = true;
     }
 
-    void InternetRainDelayMessageBoxCallBack(MessageBoxReturnCode bExitValue)
+    private static void InternetRainDelayMessageBoxCallBack(MessageBoxReturnCode bExitValue)
     {
         GoToWebPage(giRainDelayInternetSite);
 
@@ -1891,7 +1882,7 @@ public partial class Laptop : IScreen
     }
 
 
-    private void DoLapTopMessageBox(MessageBoxStyle mSG_BOX_LAPTOP_DEFAULT, string v, ScreenName lAPTOP_SCREEN, MSG_BOX_FLAG oK, MSGBOX_CALLBACK internetRainDelayMessageBoxCallBack)
+    private static void DoLapTopMessageBox(MessageBoxStyle mSG_BOX_LAPTOP_DEFAULT, string v, ScreenName lAPTOP_SCREEN, MSG_BOX_FLAG oK, MSGBOX_CALLBACK internetRainDelayMessageBoxCallBack)
     {
         throw new NotImplementedException();
     }
@@ -2143,7 +2134,7 @@ public partial class Laptop : IScreen
         }
     }
 
-    private bool LeaveLapTopScreen()
+    private async ValueTask<bool> LeaveLapTopScreen()
     {
         if (ExitLaptopDone())
         {
@@ -2166,7 +2157,7 @@ public partial class Laptop : IScreen
                     LaptopSaveInfo.gfNewGameLaptop = false;
                     fExitingLaptopFlag = true;
                     /*guiExitScreen = GAME_SCREEN; */
-                    GameInit.InitNewGame(false);
+                    await GameInit.InitNewGame(false);
                     gfDontStartTransitionFromLaptop = true;
                     /*InitHelicopterEntranceByMercs( );
                     fFirstTimeInGameScreen = true;*/
@@ -2178,7 +2169,7 @@ public partial class Laptop : IScreen
                 gfDontStartTransitionFromLaptop = true;
             }
 
-            screens.SetPendingNewScreen(guiExitScreen);
+            await screens.SetPendingNewScreen(guiExitScreen);
 
             if (!gfDontStartTransitionFromLaptop)
             {
@@ -2742,10 +2733,6 @@ public partial class Laptop : IScreen
         throw new NotImplementedException();
     }
 
-    private void EnterBrokenLink()
-    {
-        throw new NotImplementedException();
-    }
 
     private void EnterFiles()
     {
@@ -2754,7 +2741,7 @@ public partial class Laptop : IScreen
 
     private void EnterHistory()
     {
-        throw new NotImplementedException();
+        history.EnterHistory();
     }
 
     private void EnterPersonnel()
@@ -2762,15 +2749,7 @@ public partial class Laptop : IScreen
         throw new NotImplementedException();
     }
 
-    private void EnterSirTech()
-    {
-        throw new NotImplementedException();
-    }
 
-    private void EnterFuneral()
-    {
-        throw new NotImplementedException();
-    }
 
     private void EnterCharProfile()
     {
@@ -2809,7 +2788,7 @@ public partial class Laptop : IScreen
 
     private void EnterBobbyR()
     {
-        throw new NotImplementedException();
+        bobbyR.EnterBobbyR();
     }
 
     private void EnterMercsNoAccount()
@@ -2862,20 +2841,53 @@ public partial class Laptop : IScreen
         throw new NotImplementedException();
     }
 
-    private void DisplayProgramBoundingBox(bool v)
+    /// <summary>
+    /// Draws the frame around the running program (and the laptop's task bar contents: date, balance,
+    /// number of mercs on the team, new mail / new file icons).
+    /// </summary>
+    /// <param name="fMarkButtons">Also redraw all the laptop buttons.</param>
+    private static void DisplayProgramBoundingBox(bool fMarkButtons)
     {
-        throw new NotImplementedException();
+        // the border for the program
+        video.BltVideoObject(SurfaceType.FRAME_BUFFER, guiLaptopBACKGROUND, 1, 25, 23, VO_BLT.SRCTRANSPARENCY, null);
+
+        // no laptop mode, no border around the program
+        if (guiCurrentLaptopMode != LAPTOP_MODE.NONE)
+        {
+            video.BltVideoObject(SurfaceType.FRAME_BUFFER, guiLaptopBACKGROUND, 0, 108, 23, VO_BLT.SRCTRANSPARENCY, null);
+        }
+
+        if (fMarkButtons || fLoadPendingFlag)
+        {
+            ButtonSubSystem.MarkButtonsDirty(buttonList);
+            ButtonSubSystem.RenderButtons(buttonList);
+        }
+
+        PrintDate();
+
+        PrintBalance();
+
+        PrintNumberOnTeam();
+
+        // new files or email?
+        DisplayTaskBarIcons();
+
+        //InvalidateRegion( 0,0, 640, 480 );
     }
 
     private void SetSubSiteAsVisted()
     {
-        throw new NotImplementedException();
+        // sets a www sub site as visited
+        if (guiCurrentLaptopMode <= LAPTOP_MODE.WWW)
+        {
+            // not at a web page yet
+        }
+        else
+        {
+            gfWWWaitSubSitesVisitedFlags[guiCurrentLaptopMode - (LAPTOP_MODE.WWW + 1)] = true;
+        }
     }
 
-    private void CreateDestroyMinimizeButtonForCurrentMode()
-    {
-        throw new NotImplementedException();
-    }
 
     private bool InitTitleBarMaximizeGraphics(HVOBJECT uiBackgroundGraphic, string pTitle, HVOBJECT uiIconGraphic, int usIconGraphicIndex)
     {
@@ -3054,10 +3066,6 @@ public partial class Laptop : IScreen
         }
     }
 
-    private void ExitBrokenLink()
-    {
-        throw new NotImplementedException();
-    }
 
     private void ExitFiles()
     {
@@ -3066,7 +3074,7 @@ public partial class Laptop : IScreen
 
     private void ExitHistory()
     {
-        throw new NotImplementedException();
+        history.ExitHistory();
     }
 
     private void ExitPersonnel()
@@ -3074,15 +3082,7 @@ public partial class Laptop : IScreen
         throw new NotImplementedException();
     }
 
-    private void ExitSirTech()
-    {
-        throw new NotImplementedException();
-    }
 
-    private void ExitFuneral()
-    {
-        throw new NotImplementedException();
-    }
 
     private void ExitCharProfile()
     {

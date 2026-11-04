@@ -655,15 +655,14 @@ public class Overhead
             if (SoldierFind.FindSoldier(sGridNo, out int usSoldierIndex, out FIND_SOLDIER_RESPONSES uiMercFlags, FIND_SOLDIER.GRIDNO))
             {
                 sGridNo = MercPtrs[usSoldierIndex].sGridNo;
-                if (psAdjustedGridNo != null)
-                {
-                    psAdjustedGridNo = sGridNo;
+                // psAdjustedGridNo is an out parameter here, so it is always present
+                // (the C version null-checked the pointer).
+                psAdjustedGridNo = sGridNo;
 
-                    // Use direction to this guy!
-                    if (pubDirection > 0)
-                    {
-                        pubDirection = SoldierControl.GetDirectionFromGridNo(sGridNo, pSoldier);
-                    }
+                // Use direction to this guy!
+                if (pubDirection > 0)
+                {
+                    pubDirection = SoldierControl.GetDirectionFromGridNo(sGridNo, pSoldier);
                 }
             }
         }

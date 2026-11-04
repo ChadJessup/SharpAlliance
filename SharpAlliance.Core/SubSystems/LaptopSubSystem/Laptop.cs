@@ -53,8 +53,24 @@ public partial class Laptop
     private const FontColor AIM_FONT_GOLD = (FontColor)170;
 
 
+    private static bool fLaptopScreenInitialized;
+
+    /// <summary>
+    /// LaptopScreenInit() only runs from ReStartingGame in the original; the port can reach a new game
+    /// without it (intro skipped, straight from the main menu), so anything that needs the laptop state calls this first.
+    /// </summary>
+    public static void EnsureLaptopInitialized()
+    {
+        if (!fLaptopScreenInitialized)
+        {
+            LaptopScreenInit();
+        }
+    }
+
     public static bool LaptopScreenInit()
     {
+        fLaptopScreenInitialized = true;
+
         //Memset the whole structure, to make sure of no 'JUNK'
         LaptopSaveInfo = new();
 
@@ -160,6 +176,8 @@ public partial class Laptop
 
     public static bool InitLaptopAndLaptopScreens()
     {
+        EnsureLaptopInitialized();
+
         Finances.GameInitFinances();
         history.GameInitHistory();
 
@@ -179,11 +197,13 @@ public partial class Laptop
 
     public static void SetBookMark(BOOKMARK iBookId)
     {
+        EnsureLaptopInitialized();
+
         // find first empty spot, set to iBookId
         int iCounter = 0;
         if (iBookId != (BOOKMARK)(-2))
         {
-            while (LaptopSaveInfo.iBookMarkList[iCounter] != (BOOKMARK)(-1))
+            while (iCounter < LaptopSaveInfo.iBookMarkList.Length && LaptopSaveInfo.iBookMarkList[iCounter] != BOOKMARK.UNSET)
             {
                 // move trhough list until empty
                 if (LaptopSaveInfo.iBookMarkList[iCounter] == iBookId)
@@ -195,7 +215,10 @@ public partial class Laptop
                 iCounter++;
             }
 
-            LaptopSaveInfo.iBookMarkList[iCounter] = iBookId;
+            if (iCounter < LaptopSaveInfo.iBookMarkList.Length)
+            {
+                LaptopSaveInfo.iBookMarkList[iCounter] = iBookId;
+            }
         }
 
         return;
@@ -316,7 +339,7 @@ public partial class Laptop
                 break;
 
             case LAPTOP_MODE.BOBBY_R:
-                //                RenderBobbyR();
+                bobbyR.RenderBobbyR();
                 break;
 
             case LAPTOP_MODE.BOBBY_R_GUNS:
@@ -354,7 +377,7 @@ public partial class Laptop
                 break;
 
             case LAPTOP_MODE.INSURANCE:
-                //                RenderInsurance();
+                Insurance.RenderInsurance();
                 break;
 
             case LAPTOP_MODE.INSURANCE_INFO:
@@ -370,32 +393,32 @@ public partial class Laptop
                 break;
 
             case LAPTOP_MODE.FUNERAL:
-                //                RenderFuneral();
+                RenderFuneral();
                 break;
             case LAPTOP_MODE.SIRTECH:
-                //                RenderSirTech();
+                RenderSirTech();
                 break;
             case LAPTOP_MODE.FINANCES:
-                //                RenderFinances();
+                Finances.RenderFinances();
                 break;
             case LAPTOP_MODE.PERSONNEL:
                 //                RenderPersonnel();
                 break;
             case LAPTOP_MODE.HISTORY:
-                //                RenderHistory();
+                history.RenderHistory();
                 break;
             case LAPTOP_MODE.FILES:
                 //                RenderFiles();
                 break;
             case LAPTOP_MODE.EMAIL:
-                //                RenderEmail();
+                Emails.RenderEmail();
                 break;
             case LAPTOP_MODE.WWW:
                 DrawDeskTopBackground();
                 RenderWWWProgramTitleBar();
                 break;
             case LAPTOP_MODE.BROKEN_LINK:
-                //                RenderBrokenLink();
+                RenderBrokenLink();
                 break;
 
             case LAPTOP_MODE.BOBBYR_SHIPMENTS:
@@ -417,7 +440,7 @@ public partial class Laptop
             return;
         }
 
-        //        DisplayProgramBoundingBox(false);
+        DisplayProgramBoundingBox(false);
 
         // mark the buttons dirty at this point
         ButtonSubSystem.MarkButtonsDirty(buttonList);
@@ -711,7 +734,7 @@ public partial class Laptop
 
         BlitTitleBarIcons();
 
-        //        DisplayProgramBoundingBox(false);
+        DisplayProgramBoundingBox(false);
 
         //InvalidateRegion( 0, 0, 640, 480 );
         return true;
@@ -1098,7 +1121,7 @@ public partial class Laptop
             fCreated = true;
             MouseSubSystem.MSYS_DefineRegion(
                 gNewMailIconRegion,
-                new Rectangle(LAPTOP__NEW_EMAIL_ICON_X, LAPTOP__NEW_EMAIL_ICON_Y + 5, LAPTOP__NEW_EMAIL_ICON_X + 16, LAPTOP__NEW_EMAIL_ICON_Y + 16),
+                Rectangle.FromLTRB(LAPTOP__NEW_EMAIL_ICON_X, LAPTOP__NEW_EMAIL_ICON_Y + 5, LAPTOP__NEW_EMAIL_ICON_X + 16, LAPTOP__NEW_EMAIL_ICON_Y + 16),
                 MSYS_PRIORITY.HIGHEST - 3,
                 CURSOR.LAPTOP_SCREEN,
                 MSYS_NO_CALLBACK,
@@ -1110,7 +1133,7 @@ public partial class Laptop
 
             MouseSubSystem.MSYS_DefineRegion(
                 gNewFileIconRegion,
-                new Rectangle(LAPTOP__NEW_FILE_ICON_X, LAPTOP__NEW_FILE_ICON_Y + 5, LAPTOP__NEW_FILE_ICON_X + 16, LAPTOP__NEW_FILE_ICON_Y + 16),
+                Rectangle.FromLTRB(LAPTOP__NEW_FILE_ICON_X, LAPTOP__NEW_FILE_ICON_Y + 5, LAPTOP__NEW_FILE_ICON_X + 16, LAPTOP__NEW_FILE_ICON_Y + 16),
                 MSYS_PRIORITY.HIGHEST - 3,
                 CURSOR.LAPTOP_SCREEN,
                 MSYS_NO_CALLBACK,

@@ -182,6 +182,10 @@ public class SDL2VideoManager : IVideoManager
             flags,
             threadedProcessing: true);
 
+        // Closing the window asks the game loop to quit (C: WM_CLOSE / WM_DESTROY clearing gfProgramIsRunning).
+        // The event fires on the window thread; the game loop polls the flag every frame.
+        ((Sdl2Window)window).Closing += () => Globals.gfProgramIsRunning = false;
+
         this.Renderer = SDL.SDL_CreateRenderer(
             (window as Sdl2Window).Handle,
             -1,

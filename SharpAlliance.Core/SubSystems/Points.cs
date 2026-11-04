@@ -342,13 +342,13 @@ public class Points
 
                 if (Globals.Item[pSoldier.inv[bInvPos].usItem].usItemClass == IC.LAUNCHER || pSoldier.inv[bInvPos].usItem == Items.TANK_CANNON)
                 {
-                    if (ItemSubSystem.FindAttachmentByClass(pSoldier.inv[bInvPos], IC.GRENADE) != Globals.ITEM_NOT_FOUND)
+                    if (ItemSubSystem.FindAttachmentByClass(pSoldier.inv[bInvPos], IC.GRENADE) != -1)
                     {
                         return true;
                     }
 
                     // ATE: Did an else if here...
-                    if (ItemSubSystem.FindAttachmentByClass(pSoldier.inv[bInvPos], IC.BOMB) != Globals.ITEM_NOT_FOUND)
+                    if (ItemSubSystem.FindAttachmentByClass(pSoldier.inv[bInvPos], IC.BOMB) != -1)
                     {
                         return true;
                     }
@@ -415,17 +415,17 @@ public class Points
             }
             else if (Globals.Item[pObj.usItem].usItemClass == IC.LAUNCHER || pObj.usItem == Items.TANK_CANNON)
             {
-                Items? bAttachPos;
+                int bAttachPos;
 
                 bAttachPos = ItemSubSystem.FindAttachmentByClass(pObj, IC.GRENADE);
-                if (bAttachPos is null)
+                if (bAttachPos == -1)
                 {
                     bAttachPos = ItemSubSystem.FindAttachmentByClass(pObj, IC.BOMB);
                 }
 
-                if (bAttachPos is not null)
+                if (bAttachPos != -1)
                 {
-                    ItemSubSystem.RemoveAttachment(pObj, (int)bAttachPos, null);
+                    ItemSubSystem.RemoveAttachment(pObj, bAttachPos, null);
                 }
             }
 
@@ -621,11 +621,11 @@ public class Points
 
         if (pSoldier.bWeaponMode == WM.ATTACHED)
         {
-            InventorySlot bAttachSlot;
+            int bAttachSlot;
             // look for an attached grenade launcher
 
             bAttachSlot = ItemSubSystem.FindAttachment(pSoldier.inv[InventorySlot.HANDPOS], Items.UNDER_GLAUNCHER);
-            if (bAttachSlot == NO_SLOT)
+            if (bAttachSlot == -1)
             {
                 // default to hand
                 // LOOK IN BUDDY'S HAND TO DETERMINE WHAT TO DO HERE

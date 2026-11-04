@@ -467,6 +467,11 @@ public class LibraryFileManager : ILibraryManager
 
     private Stream CreateLibraryFileStream(LibraryNames sLibraryID, FileHeader? pFileHeader)
     {
+        if (pFileHeader is null)
+        {
+            return Stream.Null;
+        }
+
         if (!this.Libraries.TryGetValue(sLibraryID, out var libraryHeader))
         {
             return Stream.Null;

@@ -1126,7 +1126,7 @@ public class OptionsScreen : IScreen
         }
     }
 
-    private void ConfirmQuitToMainMenuMessageBoxCallBack(MessageBoxReturnCode bExitValue)
+    private async void ConfirmQuitToMainMenuMessageBoxCallBack(MessageBoxReturnCode bExitValue)
     {
         // yes, Quit to main menu
         if (bExitValue == MessageBoxReturnCode.MSG_BOX_RETURN_YES)
@@ -1136,7 +1136,7 @@ public class OptionsScreen : IScreen
             this.SetOptionsExitScreen(ScreenName.MAINMENU_SCREEN);
 
             //We want to reinitialize the game
-            this.gameInit.ReStartingGame();
+            await this.gameInit.ReStartingGame();
         }
         else
         {

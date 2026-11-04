@@ -675,6 +675,32 @@ public static class EnglishText
     };
 
 
+    public static string[] sFuneralString =
+    [
+        "McGillicutty's Mortuary: Helping families grieve since 1983.",
+        "Funeral Director and former A.I.M. mercenary Murray \"Pops\" McGillicutty is a highly skilled and experienced mortician.",
+        "Having been intimately involved in death and bereavement throughout his life, Pops knows how difficult it can be.",
+        "McGillicutty's Mortuary offers a wide range of bereavement services, from a shoulder to cry on to post-mortem reconstruction for badly disfigured remains.",
+        "Let McGillicutty's Mortuary help you and your loved one rest in peace.",
+
+        // Text for the various links available at the bottom of the page
+        "SEND FLOWERS",
+        "CASKET & URN COLLECTION",
+        "CREMATION SERVICES",
+        "PRE- FUNERAL PLANNING SERVICES",
+        "FUNERAL ETIQUETTE",
+
+        // The text that comes up when you click on any of the links ( except for send flowers ).
+        "Regretably, the remainder of this site has not been completed due to a death in the family. Pending reading of the will and disbursement of assets, the site will be completed as soon as possible.",
+        "Our sympathies do, however, go out to you at this trying time.  Please come again.",
+    ];
+
+    public static string[] BrokenLinkText =
+    [
+        "Error 404",
+        "Site not found.",
+    ];
+
     public static string[] pTraverseStrings =
     {
         "Previous",

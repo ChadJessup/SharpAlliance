@@ -5,3 +5,4 @@ obj/
 bin/
 *.user
 /SharpAlliance.Editor/Class1.cs
+/tools/__pycache__

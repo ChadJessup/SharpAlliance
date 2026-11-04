@@ -131,7 +131,7 @@ public class History
 
     }
 
-    void EnterHistory()
+    public void EnterHistory()
     {
 
         // load the graphics
@@ -173,7 +173,7 @@ public class History
         return;
     }
 
-    void ExitHistory()
+    public void ExitHistory()
     {
         LaptopSaveInfo.iCurrentHistoryPage = iCurrentHistoryPage;
 
@@ -196,14 +196,14 @@ public class History
         return;
     }
 
-    void HandleHistory()
+    public void HandleHistory()
     {
         // DEF 2/5/99 Dont need to update EVERY FRAME!!!!
         // check and update status of buttons  
         //  SetHistoryButtonStates( );
     }
 
-    void RenderHistory()
+    public void RenderHistory()
     {
         //render the background to the display
         this.RenderHistoryBackGround();

@@ -79,7 +79,7 @@ public class GameInit
     }
 
     //This function is called when the game is REstarted.  Things that need to be reinited are placed in here
-    public void ReStartingGame()
+    public async ValueTask ReStartingGame()
     {
         int cnt;
 
@@ -94,7 +94,7 @@ public class GameInit
         this.sound.SoundStopAll();
 
         //we are going to restart a game so initialize the variable so we can initialize a new game
-        InitNewGame(fReset: true);
+        await InitNewGame(fReset: true);
 
         
         //Deletes all the Temp files in the Maps\Temp directory

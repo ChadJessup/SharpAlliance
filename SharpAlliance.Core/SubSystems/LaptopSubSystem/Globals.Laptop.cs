@@ -262,8 +262,8 @@ public partial class Globals
     public static ButtonPic[] gLaptopButtonImage = new ButtonPic[7];
 
     // minimize button
-    public static int[] gLaptopMinButton = new int[1];
-    public static int[] gLaptopMinButtonImage = new int[1];
+    public static GUI_BUTTON[] gLaptopMinButton = new GUI_BUTTON[1];
+    public static ButtonPic[] gLaptopMinButtonImage = new ButtonPic[1];
 
     public static Dictionary<LAPTOP_PROGRAM, LAPTOP_PROGRAM_STATES> gLaptopProgramStates = new();
 
@@ -292,7 +292,7 @@ public partial class Globals
     public static bool fFlickerHD = false;
 
     // the screens limiting rect
-    public static Rectangle LaptopScreenRect = new(LAPTOP_UL_X, LAPTOP_UL_Y - 5, LAPTOP_SCREEN_LR_X + 2, LAPTOP_SCREEN_LR_Y + 5 + 19);
+    public static Rectangle LaptopScreenRect = Rectangle.FromLTRB(LAPTOP_UL_X, LAPTOP_UL_Y - 5, LAPTOP_SCREEN_LR_X + 2, LAPTOP_SCREEN_LR_Y + 5 + 19);
 
 
     // the sub pages vistsed or not status within the web browser
@@ -315,7 +315,7 @@ public partial class Globals
     public static MOUSE_REGION gNewFileIconRegion = new(nameof(gNewFileIconRegion));
 
     // highlighted mouse region
-    public LaptopRegions giHighLightRegion = LaptopRegions.NO_REGION;
+    public static LaptopRegions giHighLightRegion = LaptopRegions.NO_REGION;
 
     // highlighted regions
     public static LaptopRegions giCurrentRegion = LaptopRegions.NO_REGION;

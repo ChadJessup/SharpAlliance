@@ -106,7 +106,7 @@ public class InterfaceCursors
                 if (Globals.gsInterfaceLevel == InterfaceLevel.I_ROOF_LEVEL)
                 {
                     // Put one on the roof as well
-                    this.world.AddOnRoofToHead(Globals.gusCurMousePos, this.GetSnapCursorIndex(Globals.gUICursors[Globals.guiCurUICursor].usAdditionalData));
+                    WorldManager.AddOnRoofToHead(Globals.gusCurMousePos, this.GetSnapCursorIndex(Globals.gUICursors[Globals.guiCurUICursor].usAdditionalData));
                     Globals.gpWorldLevelData[Globals.gusCurMousePos].pOnRoofHead.ubShadeLevel = Shading.DEFAULT_SHADE_LEVEL;
                     Globals.gpWorldLevelData[Globals.gusCurMousePos].pOnRoofHead.ubNaturalShadeLevel = Shading.DEFAULT_SHADE_LEVEL;
                 }
@@ -178,7 +178,7 @@ public class InterfaceCursors
                 if (Globals.gsInterfaceLevel == InterfaceLevel.I_ROOF_LEVEL)
                 {
                     // Put one on the roof as well
-                    this.world.AddOnRoofToHead(Globals.gusCurMousePos, this.GetSnapCursorIndex(usTileCursor));
+                    WorldManager.AddOnRoofToHead(Globals.gusCurMousePos, this.GetSnapCursorIndex(usTileCursor));
                     Globals.gpWorldLevelData[Globals.gusCurMousePos].pOnRoofHead.ubShadeLevel = Shading.DEFAULT_SHADE_LEVEL;
                     Globals.gpWorldLevelData[Globals.gusCurMousePos].pOnRoofHead.ubNaturalShadeLevel = Shading.DEFAULT_SHADE_LEVEL;
                 }
@@ -436,7 +436,7 @@ public class InterfaceCursors
                         Globals.gpWorldLevelData[Globals.gusCurMousePos].pTopmostHead.ubNaturalShadeLevel = Shading.DEFAULT_SHADE_LEVEL;
                     }
 
-                    this.world.AddOnRoofToHead(Globals.gusCurMousePos, TileIndexes.FIRSTPOINTERS14);
+                    WorldManager.AddOnRoofToHead(Globals.gusCurMousePos, TileIndexes.FIRSTPOINTERS14);
                     Globals.gpWorldLevelData[Globals.gusCurMousePos].pOnRoofHead.ubShadeLevel = Shading.DEFAULT_SHADE_LEVEL;
                     Globals.gpWorldLevelData[Globals.gusCurMousePos].pOnRoofHead.ubNaturalShadeLevel = Shading.DEFAULT_SHADE_LEVEL;
 

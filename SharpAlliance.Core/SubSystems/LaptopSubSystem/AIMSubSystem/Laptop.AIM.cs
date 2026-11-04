@@ -159,7 +159,7 @@ public partial class Laptop
         //Mouse region for the MebershipCard
         MouseSubSystem.MSYS_DefineRegion(
             gSelectedMemberCardRegion,
-            new(MEMBERCARD_X, MEMBERCARD_Y, (MEMBERCARD_X + LINK_SIZE_X), (MEMBERCARD_Y + LINK_SIZE_Y)),
+            SixLabors.ImageSharp.Rectangle.FromLTRB(MEMBERCARD_X, MEMBERCARD_Y, (MEMBERCARD_X + LINK_SIZE_X), (MEMBERCARD_Y + LINK_SIZE_Y)),
             MSYS_PRIORITY.HIGH,
             CURSOR.WWW,
             MSYS_NO_CALLBACK,
@@ -169,7 +169,7 @@ public partial class Laptop
         //Mouse region for the Policies
         MouseSubSystem.MSYS_DefineRegion(
             gSelectedPoliciesRegion,
-            new(POLICIES_X, POLICIES_Y, (POLICIES_X + LINK_SIZE_X), (POLICIES_Y + LINK_SIZE_Y)),
+            SixLabors.ImageSharp.Rectangle.FromLTRB(POLICIES_X, POLICIES_Y, (POLICIES_X + LINK_SIZE_X), (POLICIES_Y + LINK_SIZE_Y)),
             MSYS_PRIORITY.HIGH,
             CURSOR.WWW,
             MSYS_NO_CALLBACK,
@@ -179,7 +179,7 @@ public partial class Laptop
         //Mouse region for the History
         MouseSubSystem.MSYS_DefineRegion(
             gSelectedHistoryRegion,
-            new(HISTORY_X, HISTORY_Y, (HISTORY_X + LINK_SIZE_X), (HISTORY_Y + LINK_SIZE_Y)),
+            SixLabors.ImageSharp.Rectangle.FromLTRB(HISTORY_X, HISTORY_Y, (HISTORY_X + LINK_SIZE_X), (HISTORY_Y + LINK_SIZE_Y)),
             MSYS_PRIORITY.HIGH,
             CURSOR.WWW,
             MSYS_NO_CALLBACK,
@@ -189,7 +189,7 @@ public partial class Laptop
         //Mouse region for the Links
         MouseSubSystem.MSYS_DefineRegion(
             gSelectedLinksRegion,
-            new(LINKS_X, LINKS_Y, (LINKS_X + LINK_SIZE_X), (LINKS_Y + LINK_SIZE_Y)),
+            SixLabors.ImageSharp.Rectangle.FromLTRB(LINKS_X, LINKS_Y, (LINKS_X + LINK_SIZE_X), (LINKS_Y + LINK_SIZE_Y)),
             MSYS_PRIORITY.HIGH,
             CURSOR.WWW,
             MSYS_NO_CALLBACK,
@@ -199,7 +199,7 @@ public partial class Laptop
         //Mouse region for the Links
         MouseSubSystem.MSYS_DefineRegion(
             gSelectedBannerRegion,
-            new(AIM_AD_TOP_LEFT_X,
+            SixLabors.ImageSharp.Rectangle.FromLTRB(AIM_AD_TOP_LEFT_X,
                 AIM_AD_TOP_LEFT_Y,
                 AIM_AD_BOTTOM_RIGHT_X,
                 AIM_AD_BOTTOM_RIGHT_Y),
@@ -255,7 +255,7 @@ public partial class Laptop
         //Mouse region for the Links
         MouseSubSystem.MSYS_DefineRegion(
             gSelectedAimLogo,
-            new(AIM_SYMBOL_X, AIM_SYMBOL_Y, AIM_SYMBOL_X + AIM_SYMBOL_WIDTH, AIM_SYMBOL_Y + AIM_SYMBOL_HEIGHT),
+            SixLabors.ImageSharp.Rectangle.FromLTRB(AIM_SYMBOL_X, AIM_SYMBOL_Y, AIM_SYMBOL_X + AIM_SYMBOL_WIDTH, AIM_SYMBOL_Y + AIM_SYMBOL_HEIGHT),
             MSYS_PRIORITY.HIGH,
             CURSOR.WWW,
             MSYS_NO_CALLBACK,

@@ -846,47 +846,49 @@ public unsafe partial class Sdl2Window : IWindow
 
     private void HandleWindowEvent(SDL.SDL_WindowEvent windowEvent)
     {
-        //            switch (windowEvent.@event)
-        //            {
-        //                case SDL.SDL_WindowEventID.Resized:
-        //                case SDL.SDL_WindowEventID.SizeChanged:
-        //                case SDL.SDL_WindowEventID.Minimized:
-        //                case SDL.SDL_WindowEventID.Maximized:
-        //                case SDL.SDL_WindowEventID.Restored:
-        //                    HandleResizedMessage();
-        //                    break;
-        //                case SDL.SDL_WindowEventID.FocusGained:
-        //                    FocusGained?.Invoke();
-        //                    break;
-        //                case SDL.SDL_WindowEventID.FocusLost:
-        //                    FocusLost?.Invoke();
-        //                    break;
-        //                case SDL.SDL_WindowEventID.Close:
-        //                    Close();
-        //                    break;
-        //                case SDL.SDL_WindowEventID.Shown:
-        //                    Shown?.Invoke();
-        //                    break;
-        //                case SDL.SDL_WindowEventID.Hidden:
-        //                    Hidden?.Invoke();
-        //                    break;
-        //                case SDL.SDL_WindowEventID.Enter:
-        //                    MouseEntered?.Invoke();
-        //                    break;
-        //                case SDL.SDL_WindowEventID.Leave:
-        //                    MouseLeft?.Invoke();
-        //                    break;
-        //                case SDL.SDL_WindowEventID.Exposed:
-        //                    Exposed?.Invoke();
-        //                    break;
-        //                case SDL.SDL_WindowEventID.Moved:
-        //                    _cachedPosition.Value = new Point(windowEvent.data1, windowEvent.data2);
-        //                    Moved?.Invoke(new Point(windowEvent.data1, windowEvent.data2));
-        //                    break;
-        //                default:
-        //                    Debug.WriteLine("Unhandled SDL WindowEvent: " + windowEvent.@event);
-        //                    break;
-        //            }
+        switch (windowEvent.windowEvent)
+        {
+            case SDL.SDL_WindowEventID.SDL_WINDOWEVENT_RESIZED:
+            case SDL.SDL_WindowEventID.SDL_WINDOWEVENT_SIZE_CHANGED:
+            case SDL.SDL_WindowEventID.SDL_WINDOWEVENT_MINIMIZED:
+            case SDL.SDL_WindowEventID.SDL_WINDOWEVENT_MAXIMIZED:
+            case SDL.SDL_WindowEventID.SDL_WINDOWEVENT_RESTORED:
+                this.HandleResizedMessage();
+                break;
+            case SDL.SDL_WindowEventID.SDL_WINDOWEVENT_FOCUS_GAINED:
+                this.FocusGained?.Invoke();
+                break;
+            case SDL.SDL_WindowEventID.SDL_WINDOWEVENT_FOCUS_LOST:
+                this.FocusLost?.Invoke();
+                break;
+            case SDL.SDL_WindowEventID.SDL_WINDOWEVENT_CLOSE:
+                // the title bar X button / Alt+F4
+                this.Close();
+                break;
+            case SDL.SDL_WindowEventID.SDL_WINDOWEVENT_SHOWN:
+                this.Shown?.Invoke();
+                break;
+            case SDL.SDL_WindowEventID.SDL_WINDOWEVENT_HIDDEN:
+                this.Hidden?.Invoke();
+                break;
+            case SDL.SDL_WindowEventID.SDL_WINDOWEVENT_ENTER:
+                this.MouseEntered?.Invoke();
+                break;
+            case SDL.SDL_WindowEventID.SDL_WINDOWEVENT_LEAVE:
+                this.MouseLeft?.Invoke();
+                break;
+            case SDL.SDL_WindowEventID.SDL_WINDOWEVENT_EXPOSED:
+                this.Exposed?.Invoke();
+                break;
+            case SDL.SDL_WindowEventID.SDL_WINDOWEVENT_MOVED:
+                var position = new Point(windowEvent.data1, windowEvent.data2);
+                this._cachedPosition.Value = position;
+                this.Moved?.Invoke(position);
+                break;
+            default:
+                Debug.WriteLine("Unhandled SDL WindowEvent: " + windowEvent.windowEvent);
+                break;
+        }
     }
 
     private void HandleResizedMessage()

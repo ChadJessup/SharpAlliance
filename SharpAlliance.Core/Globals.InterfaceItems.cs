@@ -228,7 +228,7 @@ public partial class Globals
     public static int guiMoneyDoneButtonImage;
 
     public static Items[] gusOriginalAttachItem = new Items[MAX_ATTACHMENTS];
-    public static Items[] gbOriginalAttachStatus = new Items[MAX_ATTACHMENTS];
+    public static int[] gbOriginalAttachStatus = new int[MAX_ATTACHMENTS];
     public static SOLDIERTYPE? gpAttachSoldier;
 
     public static MoneyLoc gMoneyButtonLoc = new(343, 351);

@@ -125,7 +125,7 @@ public partial class Insurance
 
             MouseSubSystem.MSYS_DefineRegion(
                 gSelectedInsuranceLinkRegion[i],
-                new Rectangle(usPosX, INSURANCE_BOTTOM_LINK_RED_BAR_Y - 37, (usPosX + INSURANCE_BOTTOM_LINK_RED_BAR_WIDTH), INSURANCE_BOTTOM_LINK_RED_BAR_Y + 2),
+                Rectangle.FromLTRB(usPosX, INSURANCE_BOTTOM_LINK_RED_BAR_Y - 37, usPosX + INSURANCE_BOTTOM_LINK_RED_BAR_WIDTH, INSURANCE_BOTTOM_LINK_RED_BAR_Y + 2),
                 MSYS_PRIORITY.HIGH,
                 CURSOR.WWW,
                 MSYS_NO_CALLBACK,
@@ -143,7 +143,7 @@ public partial class Insurance
         gsCurrentInsuranceMercIndex = 0;
     }
 
-    private static void RenderInsurance()
+    public static void RenderInsurance()
     {
         string sText = string.Empty;
 
@@ -378,7 +378,7 @@ public partial class Insurance
             //create the link to the home page on the small titles
             MouseSubSystem.MSYS_DefineRegion(
                 gSelectedInsuranceTitleLinkRegion,
-                new Rectangle(INSURANCE_SMALL_TITLE_X + 85, INSURANCE_SMALL_TITLE_Y, (INSURANCE_SMALL_TITLE_X + INSURANCE_SMALL_TITLE_WIDTH), (INSURANCE_SMALL_TITLE_Y + INSURANCE_SMALL_TITLE_HEIGHT)),
+                Rectangle.FromLTRB(INSURANCE_SMALL_TITLE_X + 85, INSURANCE_SMALL_TITLE_Y, INSURANCE_SMALL_TITLE_X + INSURANCE_SMALL_TITLE_WIDTH, INSURANCE_SMALL_TITLE_Y + INSURANCE_SMALL_TITLE_HEIGHT),
                 MSYS_PRIORITY.HIGH,
                 CURSOR.WWW,
                 MSYS_NO_CALLBACK,

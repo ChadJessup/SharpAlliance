@@ -153,6 +153,8 @@ public class MouseSubSystem : ISharpAllianceManager
                     ButtonSubSystem.PlayButtonSound(btn, ButtonSounds.BUTTON_SOUND_CLICKED_OFF);
                 }
             }
+
+            ButtonSubSystem.InvalidateButtonArea(btn);
         }
         else if (reason.HasFlag(MSYS_CALLBACK_REASON.GAIN_MOUSE))
         {
@@ -161,6 +163,8 @@ public class MouseSubSystem : ISharpAllianceManager
             {
                 ButtonSubSystem.PlayButtonSound(btn, ButtonSounds.BUTTON_SOUND_CLICKED_ON);
             }
+
+            ButtonSubSystem.InvalidateButtonArea(btn);
         }
     }
 
@@ -734,6 +738,46 @@ public class MouseSubSystem : ISharpAllianceManager
         => MSYS_DefineRegion(
             ref region,
             bounds,
+            priority,
+            crsr,
+            movecallback,
+            buttoncallback);
+
+    /// <summary>
+    /// The original C signature: the region is given by its corners (inclusive left/top, exclusive right/bottom),
+    /// not by position and size. Prefer this when porting a call from the C code.
+    /// </summary>
+    public static void MSYS_DefineRegion(
+        MOUSE_REGION region,
+        int left,
+        int top,
+        int right,
+        int bottom,
+        MSYS_PRIORITY priority,
+        CURSOR crsr,
+        MouseCallback? movecallback,
+        MouseCallback? buttoncallback)
+        => MSYS_DefineRegion(
+            region,
+            Rectangle.FromLTRB(left, top, right, bottom),
+            priority,
+            crsr,
+            movecallback,
+            buttoncallback);
+
+    public static void MSYS_DefineRegion(
+        ref MOUSE_REGION region,
+        int left,
+        int top,
+        int right,
+        int bottom,
+        MSYS_PRIORITY priority,
+        CURSOR crsr,
+        MouseCallback? movecallback,
+        MouseCallback? buttoncallback)
+        => MSYS_DefineRegion(
+            ref region,
+            Rectangle.FromLTRB(left, top, right, bottom),
             priority,
             crsr,
             movecallback,

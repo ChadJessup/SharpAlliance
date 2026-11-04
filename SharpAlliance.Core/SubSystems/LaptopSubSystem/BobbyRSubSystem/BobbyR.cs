@@ -18,7 +18,7 @@ public partial class BobbyR
         video = videoManager;
     }
 
-    bool EnterBobbyR()
+    public bool EnterBobbyR()
     {
         //VOBJECT_DESC VObjectDesc;
         int i;
@@ -137,7 +137,7 @@ public partial class BobbyR
         HandleBobbyRUnderConstructionAni(false);
     }
 
-    void RenderBobbyR()
+    public void RenderBobbyR()
     {
         HVOBJECT? hPixHandle;
         HVOBJECT? hStorePlaqueHandle;
@@ -300,7 +300,7 @@ public partial class BobbyR
             //Mouse region for the toc buttons
             MouseSubSystem.MSYS_DefineRegion(
                 region,
-                new SixLabors.ImageSharp.Rectangle(usMouseRegionPosArray[ubCount],
+                SixLabors.ImageSharp.Rectangle.FromLTRB(usMouseRegionPosArray[ubCount],
                 usMouseRegionPosArray[ubCount + 1],
                 usMouseRegionPosArray[ubCount + 2],
                 usMouseRegionPosArray[ubCount + 3]),

@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
 using System.Diagnostics;
 using SharpAlliance.Core.SubSystems.LaptopSubSystem.BobbyRSubSystem;
 
@@ -173,7 +174,8 @@ public class LaptopSaveInfoStruct
     //General Laptop Info
     public bool gfNewGameLaptop;                                    //Is it the firs time in Laptop
     public Dictionary<BOOKMARK, bool> fVisitedBookmarkAlready = new();            // have we visitied this site already?
-    public BOOKMARK[] iBookMarkList = new BOOKMARK[MAX_BOOKMARKS];
+    // -1 (UNSET) marks an empty slot, so a freshly created struct is always a valid empty list
+    public BOOKMARK[] iBookMarkList = Enumerable.Repeat(BOOKMARK.UNSET, MAX_BOOKMARKS).ToArray();
     public int iCurrentBalance;                                  // current players balance
 
     //IMP Information

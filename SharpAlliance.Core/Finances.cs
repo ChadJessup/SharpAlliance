@@ -456,7 +456,7 @@ public class Finances
 
     }
 
-    private static void RenderFinances()
+    public static void RenderFinances()
     {
         HVOBJECT hHandle;
 

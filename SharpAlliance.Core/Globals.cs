@@ -361,7 +361,7 @@ public partial class Globals
     // VIDEO OVERLAYS 
     public int giFPSOverlay;
     public int giCounterPeriodOverlay;
-    public static bool gfProgramIsRunning { get; set; } // Turn this to false to exit program
+    public static bool gfProgramIsRunning { get; set; } = true; // Turn this to false to exit program
 
     // World Data
     public static List<MAP_ELEMENT> gpWorldLevelData { get; set; } = new();
@@ -765,7 +765,7 @@ public partial class Globals
 
     //Global dynamic array of all of the items in a loaded map.
     public static List<WORLDITEM> gWorldItems = new();
-    public static List<int> guiNumWorldItems = new();
+    public static int guiNumWorldItems => gWorldItems.Count;   // the C table grew by 10 at a time; here the list is the table
 
     public static List<WORLDBOMB> gWorldBombs = new();
     public static int guiNumWorldBombs = 0;

@@ -1,4 +1,4 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
+<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <TargetFramework>net9.0</TargetFramework>
@@ -54,4 +54,7 @@
     <PackageReference Update="Microsoft.SourceLink.GitHub" Version="10.0.403" />
   </ItemGroup>
 
+  <ItemGroup>
+    <InternalsVisibleTo Include="SharpAlliance.Core.Tests" />
+  </ItemGroup>
 </Project>

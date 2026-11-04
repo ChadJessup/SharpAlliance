@@ -8,6 +8,7 @@ namespace SharpAlliance.Core.SubSystems;
 
 public class Keys
 {
+    public static KEY[] KeyTable = new KEY[NUM_KEYS];
     public static List<LOCK> LockTable = [];
 
     private static IFileManager files;

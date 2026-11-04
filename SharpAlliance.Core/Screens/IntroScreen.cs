@@ -75,11 +75,11 @@ public class IntroScreen : IScreen
         return ValueTask.CompletedTask;
     }
 
-    public ValueTask<ScreenName> Handle()
+    public async ValueTask<ScreenName> Handle()
     {
         if (Globals.gfIntroScreenEntry)
         {
-            this.EnterIntroScreen();
+            await this.EnterIntroScreen();
             Globals.gfIntroScreenEntry = false;
             Globals.gfIntroScreenExit = false;
 
@@ -91,7 +91,7 @@ public class IntroScreen : IScreen
 
         this.GetIntroScreenUserInput();
 
-        this.HandleIntroScreen();
+        await this.HandleIntroScreen();
 
         RenderDirty.ExecuteBaseDirtyRectQueue();
         video.EndFrameBufferRender();
@@ -103,14 +103,14 @@ public class IntroScreen : IScreen
             Globals.gfIntroScreenEntry = true;
         }
 
-        return ValueTask.FromResult(Globals.guiIntroExitScreen);
+        return Globals.guiIntroExitScreen;
     }
 
     private void ExitIntroScreen()
     {
     }
 
-    private void HandleIntroScreen()
+    private async ValueTask HandleIntroScreen()
     {
         bool fFlicStillPlaying = false;
 
@@ -130,11 +130,11 @@ public class IntroScreen : IScreen
 
             if (iNextVideoToPlay != SmackerFiles.SMKINTRO_NO_VIDEO)
             {
-                this.StartPlayingIntroFlic(iNextVideoToPlay);
+                await this.StartPlayingIntroFlic(iNextVideoToPlay);
             }
             else
             {
-                this.PrepareToExitIntroScreen();
+                await this.PrepareToExitIntroScreen();
                 Globals.giCurrentIntroBeingPlayed = SmackerFiles.SMKINTRO_NO_VIDEO;
             }
         }
@@ -151,7 +151,7 @@ public class IntroScreen : IScreen
     {
     }
 
-    private bool EnterIntroScreen()
+    private async ValueTask<bool> EnterIntroScreen()
     {
         SmackerFiles iFirstVideoID = SmackerFiles.SMKINTRO_NO_VIDEO;
 
@@ -166,7 +166,7 @@ public class IntroScreen : IScreen
         //if the library doesnt exist, exit
         if (!this.library.IsLibraryOpened(LibraryNames.INTRO))
         {
-            this.PrepareToExitIntroScreen();
+            await this.PrepareToExitIntroScreen();
             return true;
         }
 
@@ -178,20 +178,20 @@ public class IntroScreen : IScreen
 
         if (iFirstVideoID != SmackerFiles.SMKINTRO_NO_VIDEO)
         {
-            this.StartPlayingIntroFlic(iFirstVideoID);
+            await this.StartPlayingIntroFlic(iFirstVideoID);
 
             Globals.guiIntroExitScreen = ScreenName.INTRO_SCREEN;
         }
         else
         {
             //Got no intro video, exit
-            this.PrepareToExitIntroScreen();
+            await this.PrepareToExitIntroScreen();
         }
 
         return true;
     }
 
-    private void StartPlayingIntroFlic(SmackerFiles iIndexOfFlicToPlay)
+    private async ValueTask StartPlayingIntroFlic(SmackerFiles iIndexOfFlicToPlay)
     {
         if (iIndexOfFlicToPlay != SmackerFiles.SMKINTRO_NO_VIDEO)
         {
@@ -208,7 +208,7 @@ public class IntroScreen : IScreen
             else
             {
                 //do a check
-                this.PrepareToExitIntroScreen();
+                await this.PrepareToExitIntroScreen();
             }
         }
     }
@@ -302,7 +302,7 @@ public class IntroScreen : IScreen
         return iStringToUse;
     }
 
-    private void PrepareToExitIntroScreen()
+    private async ValueTask PrepareToExitIntroScreen()
     {
         //if its the intro at the begining of the game
         if (Globals.gbIntroScreenMode == IntroScreenType.INTRO_BEGINING)
@@ -321,7 +321,7 @@ public class IntroScreen : IScreen
         else
         {
             //We want to reinitialize the game
-            this.gameInit.ReStartingGame();
+            await this.gameInit.ReStartingGame();
 
             //		guiIntroExitScreen = MAINMENU_SCREEN;
             Globals.guiIntroExitScreen = ScreenName.CREDIT_SCREEN;

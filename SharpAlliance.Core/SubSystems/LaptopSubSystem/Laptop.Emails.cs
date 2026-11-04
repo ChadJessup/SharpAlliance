@@ -21,7 +21,7 @@ public class Emails
     private static bool fDisplayMessageFlag = false;
     private static bool fOldDisplayMessageFlag = false;
     private static bool fReDraw = false;
-    private static bool fDeleteMailFlag = false;
+    public static bool fDeleteMailFlag = false;
     private static bool fReDrawMessageFlag = false;
     private static bool fOnLastPageFlag = false;
     private static bool fJustStartedEmail = false;
@@ -33,7 +33,19 @@ public class Emails
 
 
     // mouse regions
-    private static MOUSE_REGION[] pEmailRegions = new MOUSE_REGION[MAX_MESSAGES_PAGE];
+    // one mouse region per row of the mail list; created up front so the array never holds nulls
+    private static readonly MOUSE_REGION[] pEmailRegions = CreateEmailRegions();
+
+    private static MOUSE_REGION[] CreateEmailRegions()
+    {
+        var regions = new MOUSE_REGION[MAX_MESSAGES_PAGE];
+        for (int i = 0; i < regions.Length; i++)
+        {
+            regions[i] = new($"{nameof(pEmailRegions)}-{i}");
+        }
+
+        return regions;
+    }
     private static MOUSE_REGION pScreenMask = new(nameof(pScreenMask));
     private static MOUSE_REGION pDeleteScreenMask = new(nameof(pDeleteScreenMask));
 
@@ -48,6 +60,7 @@ public class Emails
         this.buttons = buttonSubSystem;
         files = fileManager;
         video = videoManager;
+        buttonList = new();
     }
 
     public static void GameInitEmail()
@@ -77,7 +90,7 @@ public class Emails
             var region = pEmailRegions[iCounter];
             MouseSubSystem.MSYS_DefineRegion(
                 region,
-                new(MIDDLE_X, (MIDDLE_Y + iCounter * MIDDLE_WIDTH),
+                SixLabors.ImageSharp.Rectangle.FromLTRB(MIDDLE_X, (MIDDLE_Y + iCounter * MIDDLE_WIDTH),
                     MIDDLE_X + LINE_WIDTH, (MIDDLE_Y + iCounter * MIDDLE_WIDTH + MIDDLE_WIDTH)),
                 MSYS_PRIORITY.NORMAL + 2,
                 CURSOR.MSYS_NO_CURSOR,
@@ -323,7 +336,7 @@ public class Emails
         return;
     }
 
-    private static void RenderEmail()
+    public static void RenderEmail()
     {
         HVOBJECT hHandle;
         int iCounter = 0;
@@ -357,7 +370,7 @@ public class Emails
         DisplayEmailHeaders();
 
         // display border
-        guiLaptopBACKGROUND = video.GetVideoObject("");
+        guiLaptopBACKGROUND = video.GetVideoObject("LAPTOP\\taskbar.sti");
         //        video.BltVideoObject(Surfaces.FRAME_BUFFER, hHandle, 0, 108, 23, VO_BLT.SRCTRANSPARENCY, null);
 
 
@@ -1889,7 +1902,7 @@ public class Emails
     private static List<GUI_BUTTON> buttonList;
     private static bool fOldNewMailFlag;
 
-    private static void CreateDestroyDeleteNoticeMailButton()
+    public static void CreateDestroyDeleteNoticeMailButton()
     {
         if (fDeleteMailFlag && (!fOldDeleteMailFlag))
         {
@@ -2387,22 +2400,11 @@ public class Emails
     }
 
 
-    private static void ClearOutEmailMessageRecordsList()
+    internal static void ClearOutEmailMessageRecordsList()
     {
-        RecordPtr pTempRecord;
         int iCounter = 0;
 
-        // runt hrough list freeing records up
-        //        while (pMessageRecordList)
-        //        {
-        //            // set temp to current
-        //            pTempRecord = pMessageRecordList;
-        //
-        //            // next element
-        //            pMessageRecordList = pMessageRecordList.Next;
-        //
-        //            MemFree(pTempRecord);
-        //        }
+        // the records are managed memory, so dropping the head frees the whole list (see below)
 
         for (iCounter = 0; iCounter < MAX_NUMBER_EMAIL_PAGES; iCounter++)
         {
@@ -2412,51 +2414,46 @@ public class Emails
         }
 
         // null out list
-        //        pMessageRecordList = null;
+        pMessageRecordList = null;
 
         return;
     }
 
-    private static void AddEmailRecordToList(string pString)
+    /// <summary>
+    /// Head of the linked list of text records (one per line/paragraph) of the e-mail being read.
+    /// </summary>
+    internal static RecordPtr? pMessageRecordList;
+
+    /// <summary>Appends a text record to the end of the message record list.</summary>
+    internal static void AddEmailRecordToList(string pString)
     {
-        RecordPtr? pTempRecord = null;
-
-        // set to head of list
-        //        pTempRecord = pMessageRecordList;
-
-        if (pTempRecord is null)
+        var pNewRecord = new RecordPtr
         {
+            // set next to null
+            Next = null,
 
+            // copy in string
+            pRecord = pString,
+        };
+
+        if (pMessageRecordList is null)
+        {
             // list empty, set this node to head
-            //            pTempRecord = MemAlloc(sizeof(Record));
-            //            pMessageRecordList = pTempRecord;
+            pMessageRecordList = pNewRecord;
+            return;
         }
-        else
+
+        // run to end of list
+        RecordPtr pTempRecord = pMessageRecordList;
+        while (pTempRecord.Next is not null)
         {
-            // run to end of list
-            //            while (pTempRecord.Next)
-            //            {
-            //                pTempRecord = pTempRecord.Next;
-            //            }
-
-            // found, alloc
-            //            pTempRecord.Next = MemAlloc(sizeof(Record));
-
-            // move to node
             pTempRecord = pTempRecord.Next;
         }
 
-        // set next to null
-        pTempRecord.Next = null;
-
-        // copy in string
-        pTempRecord.pRecord = wcscpy(pString);
-
-        // done return
-
-        return;
-
+        // found, link in the new node
+        pTempRecord.Next = pNewRecord;
     }
+
     private static void UpDateMessageRecordList()
     {
 

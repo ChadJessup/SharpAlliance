@@ -43,6 +43,9 @@ public class ButtonSubSystem : ISharpAllianceManager
     private static MouseSubSystem mouse;
     private static IVideoManager video;
 
+    /// <summary>Marks the screen area under a button as needing a redraw.</summary>
+    internal static void InvalidateButtonArea(GUI_BUTTON btn) => video?.InvalidateRegion(btn.MouseRegion.Bounds);
+
     public bool IsInitialized { get; private set; }
 
     // flag to state we wish to render buttons on the one after the next pass through render buttons

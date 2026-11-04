@@ -247,6 +247,88 @@ public class WorldManager
         return true;
     }
 
+    public static LEVELNODE? AddStructToTail(int iMapIndex, TileIndexes usIndex)
+    {
+        LEVELNODE? pStruct = gpWorldLevelData[iMapIndex].pStructHead;
+        LEVELNODE? pTailStruct = null;
+
+        if (!CreateLevelNode(out LEVELNODE pNextStruct))
+        {
+            return null;
+        }
+
+        // (the structure database hook-up from the original is still disabled, as in AddStructToHead)
+        pNextStruct.usIndex = usIndex;
+        pNextStruct.pNext = null;
+
+        if (pStruct == null)
+        {
+            // Do we have an empty list?
+            gpWorldLevelData[iMapIndex].pStructHead = pNextStruct;
+        }
+        else
+        {
+            // MOVE TO TAIL
+            while (pStruct != null)
+            {
+                pTailStruct = pStruct;
+                pStruct = pStruct.pNext;
+            }
+
+            pTailStruct!.pNext = pNextStruct;
+        }
+
+        // Check flags for tiledat and set a shadow if we have a buddy
+        if (usIndex < NUMBEROFTILES && gTileDatabase.TryGetValue(usIndex, out TILE_ELEMENT? tile))
+        {
+            if (!GridNoIndoors(iMapIndex) && tile.uiFlags.HasFlag(TileCategory.HAS_SHADOW_BUDDY) && tile.sBuddyNum != TileIndexes.UNSET)
+            {
+                AddShadowToHead(iMapIndex, tile.sBuddyNum);
+                gpWorldLevelData[iMapIndex].pShadowHead!.uiFlags |= LEVELNODEFLAGS.BUDDYSHADOW;
+            }
+        }
+
+        RenderWorld.ResetSpecificLayerOptimizing(TILES_DYNAMIC.STRUCTURES);
+
+        return pNextStruct;
+    }
+
+    public static bool RemoveOnRoofFromLevelNode(int iMapIndex, LEVELNODE? pNode)
+    {
+        LEVELNODE? pOnRoof = gpWorldLevelData[iMapIndex].pOnRoofHead;
+        LEVELNODE? pOldOnRoof = null;
+
+        // Look through all OnRoofs and remove index if found
+        while (pOnRoof != null)
+        {
+            if (pOnRoof == pNode)
+            {
+                // OK, set links
+                // Check for head or tail
+                if (pOldOnRoof == null)
+                {
+                    // It's the head
+                    gpWorldLevelData[iMapIndex].pOnRoofHead = pOnRoof.pNext;
+                }
+                else
+                {
+                    pOldOnRoof.pNext = pOnRoof.pNext;
+                }
+
+                // REMOVE ONROOF!
+                Globals.guiLevelNodes--;
+
+                return true;
+            }
+
+            pOldOnRoof = pOnRoof;
+            pOnRoof = pOnRoof.pNext;
+        }
+
+        // Could not find it, return false
+        return false;
+    }
+
     public static bool AddShadowToHead(int iMapIndex, TileIndexes usIndex)
     {
         LEVELNODE? pShadow;
@@ -1149,7 +1231,7 @@ public class WorldManager
         return pNextTopmost;
     }
 
-    public bool AddOnRoofToHead(int iMapIndex, TileIndexes usIndex)
+    public static bool AddOnRoofToHead(int iMapIndex, TileIndexes usIndex)
     {
         LEVELNODE? pOnRoof = null;
 

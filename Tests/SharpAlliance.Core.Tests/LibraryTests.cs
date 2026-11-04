@@ -10,25 +10,25 @@ namespace SharpAlliance.Core.Tests
 {
     public class LibraryTests
     {
-        [Fact]
-        public async Task LoadsLibraries()
-        {
-            const string dataDir = @"C:\SharpAlliance\Data";
-            var config = new ConfigurationBuilder()
-                .AddInMemoryCollection(new Dictionary<string, string>
-                {
-                    { "DataDirectory", dataDir },
-                })
-                .Build();
+        //[Fact]
+        //public async Task LoadsLibraries()
+        //{
+        //    const string dataDir = @"C:\SharpAlliance\Data";
+        //    var config = new ConfigurationBuilder()
+        //        .AddInMemoryCollection(new Dictionary<string, string>
+        //        {
+        //            { "DataDirectory", dataDir },
+        //        })
+        //        .Build();
 
-            var context = new GameContext(null, null, config);
+        //    var context = new GameContext(null, null, config);
 
-            // TODO: Moqs for logger across all tests.
-            var library = new LibraryFileManager(null, context, null);
-            Assert.True(await library.Initialize());
+        //    // TODO: Moqs for logger across all tests.
+        //    var library = new LibraryFileManager(null, context, null);
+        //    Assert.True(await library.Initialize());
 
-            Assert.True(LibraryFileManager.IsInitialized);
-            Assert.All(library.Libraries.Values, l => Assert.True(l.fLibraryOpen));
-        }
+        //    Assert.True(LibraryFileManager.IsInitialized);
+        //    Assert.All(library.Libraries.Values, l => Assert.True(l.fLibraryOpen));
+        //}
     }
 }

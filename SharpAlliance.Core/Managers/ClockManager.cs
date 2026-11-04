@@ -58,7 +58,7 @@ public class ClockManager : IClockManager
         return Globals.guiCurrentTime;
     }
 
-    private void ClockCallback(object sender, ElapsedEventArgs e)
+    private void ClockCallback(object? sender, ElapsedEventArgs e)
     {
         Globals.guiCurrentTime = e.SignalTime.Ticks;
 

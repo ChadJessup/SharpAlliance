@@ -101,6 +101,93 @@ public class WorldItems
         }
     }
 
+    /// <summary>Index of a free slot in gWorldItems, growing the table by 10 when it is full.</summary>
+    public static int GetFreeWorldItemIndex()
+    {
+        for (int uiCount = 0; uiCount < gWorldItems.Count; uiCount++)
+        {
+            if (!gWorldItems[uiCount].fExists)
+            {
+                return uiCount;
+            }
+        }
+
+        int uiOld = gWorldItems.Count;
+        for (int i = 0; i < 10; i++)
+        {
+            gWorldItems.Add(new WORLDITEM());
+        }
+
+        return uiOld;
+    }
+
+    public static int AddItemToWorld(int sGridNo, OBJECTTYPE pObject, int ubLevel, WORLD_ITEM usFlags, int bRenderZHeightAboveLevel, ItemVisibility bVisible)
+    {
+        int iReturn;
+
+        // ATE: Check if the gridno is OK
+        if (sGridNo == NOWHERE)
+        {
+            // (the original prints a beta-version warning here)
+            return -1;
+        }
+
+        int iItemIndex = GetFreeWorldItemIndex();
+
+        //Add the new world item to the table.
+        WORLDITEM item = gWorldItems[iItemIndex];
+        item.fExists = true;
+        item.sGridNo = sGridNo;
+        item.ubLevel = ubLevel;
+        item.usFlags = usFlags;
+        item.bVisible = bVisible;
+        item.bRenderZHeightAboveLevel = bRenderZHeightAboveLevel;
+        item.o.CopyFrom(pObject);
+
+        // Add a bomb reference if needed
+        if (usFlags.HasFlag(WORLD_ITEM.ARMED_BOMB))
+        {
+            iReturn = AddBombToWorld(iItemIndex);
+            if (iReturn == -1)
+            {
+                return -1;
+            }
+        }
+
+        return iItemIndex;
+    }
+
+    public static int GetFreeWorldBombIndex()
+    {
+        for (int uiCount = 0; uiCount < gWorldBombs.Count; uiCount++)
+        {
+            if (!gWorldBombs[uiCount].fExists)
+            {
+                return uiCount;
+            }
+        }
+
+        int uiOld = gWorldBombs.Count;
+        for (int i = 0; i < 10; i++)
+        {
+            gWorldBombs.Add(new WORLDBOMB());
+        }
+
+        guiNumWorldBombs = gWorldBombs.Count;
+        return uiOld;
+    }
+
+    public static int AddBombToWorld(int iItemIndex)
+    {
+        int iBombIndex = GetFreeWorldBombIndex();
+
+        //Add the new world item to the table.
+        gWorldBombs[iBombIndex].fExists = true;
+        gWorldBombs[iBombIndex].iItemIndex = iItemIndex;
+
+        return iBombIndex;
+    }
+
     public static void RemoveBombFromWorld(int iBombIndex)
     {
         //Remove the world bomb from the table.
@@ -129,10 +216,10 @@ public class WORLDITEM
     public bool fExists;
     public int sGridNo;
     public int ubLevel;
-    public OBJECTTYPE o;
+    public OBJECTTYPE o = new();
     public WORLD_ITEM usFlags;
     public int bRenderZHeightAboveLevel;
-    public int bVisible;
+    public ItemVisibility bVisible;
 
     //This is the chance associated with an item or a trap not-existing in the world.  The reason why 
     //this is reversed (10 meaning item has 90% chance of appearing, is because the order that the map 

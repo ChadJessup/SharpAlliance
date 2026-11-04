@@ -6,47 +6,18 @@ using static SharpAlliance.Core.Globals;
 
 namespace SharpAlliance.Core.SubSystems;
 
-public class ItemSubSystem
+public partial class ItemSubSystem
 {
     public static void DeleteObj(OBJECTTYPE? pObj)
     {
-        pObj = null;
+        // memset( pObj, 0, sizeof( OBJECTTYPE ) );  -- the object stays in its slot, emptied
+        pObj?.Clear();
     }
 
     public static bool ValidLaunchable(Items usLaunchable, Items usItem)
     {
-        Items iLoop = 0;
-
-        // look for the section of the array pertaining to this launchable item...
-        while (true)
-        {
-            if (Launchable[iLoop][0] == usLaunchable)
-            {
-                break;
-            }
-            iLoop++;
-            if (Launchable[iLoop][0] == 0)
-            {
-                // the proposed item cannot be attached to anything!
-                return false;
-            }
-        }
-        // now look through this section for the item in question
-        while (true)
-        {
-            if (Launchable[iLoop][1] == usItem)
-            {
-                break;
-            }
-            iLoop++;
-            if (Launchable[iLoop][0] != usLaunchable)
-            {
-                // the proposed item cannot be attached to the item in question
-                return false;
-            }
-        }
-
-        return true;
+        // Launchable maps each launchable item to the launchers it can be fired from
+        return Launchable.TryGetValue(usLaunchable, out List<Items>? launchers) && launchers.Contains(usItem);
     }
 
     public static InventorySlot FindLaunchable(SOLDIERTYPE pSoldier, Items usWeapon)
@@ -247,7 +218,7 @@ public class ItemSubSystem
         return NO_SLOT;
     }
 
-    public static Items FindObjInObjRange(SOLDIERTYPE? pSoldier, Items usItem1, Items usItem2)
+    public static InventorySlot FindObjInObjRange(SOLDIERTYPE? pSoldier, Items usItem1, Items usItem2)
     {
         InventorySlot bLoop;
         Items usTemp;
@@ -265,16 +236,180 @@ public class ItemSubSystem
             usTemp = pSoldier.inv[bLoop].usItem;
             if (usTemp >= usItem1 && usTemp <= usItem2)
             {
-                return (Items)bLoop;
+                return bLoop;
             }
         }
 
-        return ITEM_NOT_FOUND;
+        return NO_SLOT;
+    }
+
+    public static InventorySlot FindUsableObj(SOLDIERTYPE pSoldier, Items usItem)
+    {
+        for (InventorySlot bLoop = 0; bLoop < NUM_INV_SLOTS; bLoop++)
+        {
+            if (pSoldier.inv[bLoop].usItem == usItem && pSoldier.inv[bLoop].bStatus[0] >= USABLE)
+            {
+                return bLoop;
+            }
+        }
+
+        return NO_SLOT;
+    }
+
+    public static InventorySlot FindObjExcludingSlot(SOLDIERTYPE pSoldier, Items usItem, InventorySlot bExcludeSlot)
+    {
+        for (InventorySlot bLoop = 0; bLoop < NUM_INV_SLOTS; bLoop++)
+        {
+            if (bLoop == bExcludeSlot)
+            {
+                continue;
+            }
+
+            if (pSoldier.inv[bLoop].usItem == usItem)
+            {
+                return bLoop;
+            }
+        }
+
+        return NO_SLOT;
+    }
+
+    public static InventorySlot FindExactObj(SOLDIERTYPE pSoldier, OBJECTTYPE pObj)
+    {
+        // C compared the pointer and then memcmp'd the object with itself;
+        // with reference types the identity check is the whole test.
+        for (InventorySlot bLoop = 0; bLoop < NUM_INV_SLOTS; bLoop++)
+        {
+            if (ReferenceEquals(pObj, pSoldier.inv[bLoop]))
+            {
+                return bLoop;
+            }
+        }
+
+        return NO_SLOT;
+    }
+
+    public static InventorySlot FindObjWithin(SOLDIERTYPE pSoldier, Items usItem, InventorySlot bLower, InventorySlot bUpper)
+    {
+        for (InventorySlot bLoop = bLower; bLoop <= bUpper; bLoop++)
+        {
+            if (pSoldier.inv[bLoop].usItem == usItem)
+            {
+                return bLoop;
+            }
+        }
+
+        return NO_SLOT;
+    }
+
+    public static InventorySlot FindObjClassAfterSlot(SOLDIERTYPE pSoldier, InventorySlot bStartAfter, IC usItemClass)
+    {
+        for (InventorySlot bLoop = bStartAfter + 1; bLoop < NUM_INV_SLOTS; bLoop++)
+        {
+            if (Item[pSoldier.inv[bLoop].usItem].usItemClass == usItemClass)
+            {
+                return bLoop;
+            }
+        }
+
+        return NO_SLOT;
+    }
+
+    // finds the first object of the specified class which does NOT have
+    // the "unusable by AI" flag set.
+    // uses HasFlag rather than == so that this function can search for any weapon
+    public static InventorySlot FindAIUsableObjClass(SOLDIERTYPE pSoldier, IC usItemClass)
+    {
+        return FindAIUsableObjClassWithin(pSoldier, usItemClass, 0, NUM_INV_SLOTS - 1);
+    }
+
+    public static InventorySlot FindAIUsableObjClassWithin(SOLDIERTYPE pSoldier, IC usItemClass, InventorySlot bLower, InventorySlot bUpper)
+    {
+        // This is for the AI only so:
+        // Do not consider tank cannons or rocket launchers to be "guns"
+        for (InventorySlot bLoop = bLower; bLoop <= bUpper; bLoop++)
+        {
+            OBJECTTYPE obj = pSoldier.inv[bLoop];
+            if (Item[obj.usItem].usItemClass.HasFlag(usItemClass)
+                && !obj.fFlags.HasFlag(OBJECT.AI_UNUSABLE)
+                && obj.bStatus[0] >= USABLE)
+            {
+                if (usItemClass == IC.GUN && EXPLOSIVE_GUN(obj.usItem))
+                {
+                    continue;
+                }
+
+                return bLoop;
+            }
+        }
+
+        return NO_SLOT;
+    }
+
+    public static InventorySlot FindEmptySlotWithin(SOLDIERTYPE pSoldier, InventorySlot bLower, InventorySlot bUpper)
+    {
+        for (InventorySlot bLoop = bLower; bLoop <= bUpper; bLoop++)
+        {
+            if (pSoldier.inv[bLoop].usItem == 0)
+            {
+                if (bLoop == InventorySlot.SECONDHANDPOS
+                    && Item[pSoldier.inv[InventorySlot.HANDPOS].usItem].fFlags.HasFlag(ItemAttributes.ITEM_TWO_HANDED))
+                {
+                    continue;
+                }
+
+                return bLoop;
+            }
+        }
+
+        // the C code returns ITEM_NOT_FOUND (-1) here; NO_SLOT is the same value in slot terms
+        return NO_SLOT;
+    }
+
+    public static bool GLGrenadeInSlot(SOLDIERTYPE pSoldier, InventorySlot bSlot)
+    {
+        switch (pSoldier.inv[bSlot].usItem)
+        {
+            case Items.GL_HE_GRENADE:
+            case Items.GL_TEARGAS_GRENADE:
+            case Items.GL_STUN_GRENADE:
+            case Items.GL_SMOKE_GRENADE:
+                return true;
+            default:
+                return false;
+        }
+    }
+
+    // for grenade launchers
+    public static InventorySlot FindGLGrenade(SOLDIERTYPE pSoldier)
+    {
+        for (InventorySlot bLoop = 0; bLoop < NUM_INV_SLOTS; bLoop++)
+        {
+            if (GLGrenadeInSlot(pSoldier, bLoop))
+            {
+                return bLoop;
+            }
+        }
+
+        return NO_SLOT;
+    }
+
+    public static int FindLaunchableAttachment(OBJECTTYPE pObj, Items usWeapon)
+    {
+        for (int bLoop = 0; bLoop < MAX_ATTACHMENTS; bLoop++)
+        {
+            if (pObj.usAttachItem[bLoop] != Items.NONE && ValidLaunchable(pObj.usAttachItem[bLoop], usWeapon))
+            {
+                return bLoop;
+            }
+        }
+
+        return (int)ITEM_NOT_FOUND;
     }
 
     public static bool RemoveAttachment(OBJECTTYPE? pObj, int bAttachPos, OBJECTTYPE? pNewObj)
     {
-        Items bGrenade;
+        int bGrenade;
 
         if (pObj is null)
         {
@@ -309,7 +444,7 @@ public class ItemSubSystem
             // look for any grenade; if it exists, we must make it an 
             // attachment of the grenade launcher
             bGrenade = FindAttachmentByClass(pObj, IC.GRENADE);
-            if (bGrenade != Globals.ITEM_NOT_FOUND)
+            if (bGrenade != -1)
             {
                 pNewObj.usAttachItem[0] = pObj.usAttachItem[(int)bGrenade];
                 pNewObj.bAttachStatus[0] = pObj.bAttachStatus[(int)bGrenade];
@@ -466,9 +601,9 @@ public class ItemSubSystem
                 if (pObject.usAttachItem[bLoop] != NOTHING && pObject.bAttachStatus[bLoop] > 0)
                 {
                     // pObject.bAttachStatus[bLoop] -= CheckItemForDamage(pObject.usAttachItem[bLoop], iDamage);
-                    if (pObject.bAttachStatus[bLoop] < (Items)1)
+                    if (pObject.bAttachStatus[bLoop] < 1)
                     {
-                        pObject.bAttachStatus[bLoop] = (Items)1;
+                        pObject.bAttachStatus[bLoop] = 1;
                     }
                 }
             }
@@ -477,9 +612,33 @@ public class ItemSubSystem
         return false;
     }
 
-    private static void RemoveObjFrom(OBJECTTYPE pObject, int bLoop)
+    internal static void RemoveObjFrom(OBJECTTYPE pObj, int ubRemoveIndex)
     {
-        throw new NotImplementedException();
+        // remove 1 object from an OBJECTTYPE, starting at index ubRemoveIndex
+        if (pObj.ubNumberOfObjects < ubRemoveIndex)
+        {
+            // invalid index!
+            return;
+        }
+        else if (pObj.ubNumberOfObjects == 1)
+        {
+            // delete!
+            DeleteObj(pObj);
+        }
+        else
+        {
+            // shift down all the values that should be down
+            for (int ubLoop = ubRemoveIndex + 1; ubLoop < pObj.ubNumberOfObjects; ubLoop++)
+            {
+                pObj.bStatus[ubLoop - 1] = pObj.bStatus[ubLoop];
+            }
+
+            // and set the upper value to 0
+            pObj.bStatus[pObj.ubNumberOfObjects - 1] = 0;
+
+            // make the number of objects recorded match the array
+            pObj.ubNumberOfObjects--;
+        }
     }
 
     private static bool CheckForChainReaction(Items usItem, int v, int bDamage, bool fOnGround)
@@ -520,7 +679,7 @@ public class ItemSubSystem
     {
         bool fRet;
 
-        pObj = new();
+        pObj.Clear();       // memset( pObj, 0, sizeof( OBJECTTYPE ) ), the caller's object is filled in place
 
         if (usItem >= Items.MAXITEMS)
         {
@@ -574,14 +733,12 @@ public class ItemSubSystem
             return false;
         }
 
-        pObj = new()
-        {
-            usItem = usItem,
-            ubNumberOfObjects = 1,
-            bGunStatus = bStatus,
-            ubImprintID = NO_PROFILE,
-            ubWeight = CalculateObjectWeight(pObj),
-        };
+        pObj.Clear();
+        pObj.usItem = usItem;
+        pObj.ubNumberOfObjects = 1;
+        pObj.bGunStatus = bStatus;
+        pObj.ubImprintID = NO_PROFILE;
+        pObj.ubWeight = CalculateObjectWeight(pObj);
 
         if (WeaponTypes.Weapon[usItem].ubWeaponClass == WeaponClass.MONSTERCLASS)
         {
@@ -638,13 +795,11 @@ public class ItemSubSystem
             return false;
         }
 
-        pObj = new()
-        {
-            usItem = usItem,
-            ubNumberOfObjects = 1,
-            ubShotsLeft = new[] { WeaponTypes.Magazine[Globals.Item[usItem].ubClassIndex].ubMagSize },
-            ubWeight = CalculateObjectWeight(pObj)
-        };
+        pObj.Clear();
+        pObj.usItem = usItem;
+        pObj.ubNumberOfObjects = 1;
+        pObj.ubShotsLeft[0] = WeaponTypes.Magazine[Globals.Item[usItem].ubClassIndex].ubMagSize;
+        pObj.ubWeight = CalculateObjectWeight(pObj);
 
         return true;
     }
@@ -684,32 +839,32 @@ public class ItemSubSystem
         return usWeight;
     }
 
-    public static Items FindAttachmentByClass(OBJECTTYPE? pObj, IC uiItemClass)
+    /// <summary>Index (0..MAX_ATTACHMENTS-1) of the first attachment of that class, or -1.</summary>
+    public static int FindAttachmentByClass(OBJECTTYPE? pObj, IC uiItemClass)
     {
         for (int bLoop = 0; bLoop < Globals.MAX_ATTACHMENTS; bLoop++)
         {
             if (Globals.Item[pObj.usAttachItem[bLoop]].usItemClass == uiItemClass)
             {
-                return pObj.usAttachItem[bLoop];
+                return bLoop;
             }
         }
 
-        return Globals.ITEM_NOT_FOUND;
+        return -1;
     }
 
-    public static InventorySlot FindAttachment(OBJECTTYPE pObj, Items usItem)
+    /// <summary>Index (0..MAX_ATTACHMENTS-1) of the attachment, or -1.</summary>
+    public static int FindAttachment(OBJECTTYPE pObj, Items usItem)
     {
-        int bLoop;
-
-        for (bLoop = 0; bLoop < MAX_ATTACHMENTS; bLoop++)
+        for (int bLoop = 0; bLoop < MAX_ATTACHMENTS; bLoop++)
         {
             if (pObj.usAttachItem[bLoop] == usItem)
             {
-                return (InventorySlot)bLoop;
+                return bLoop;
             }
         }
 
-        return NO_SLOT;
+        return -1;
     }
 
 

@@ -183,7 +183,7 @@ public class MAP_ELEMENT
     public LEVELNODE? pShadowHead;                     //4
     public LEVELNODE? pMercHead;                           //5
     public LEVELNODE? pRoofHead;                           //6
-    public LEVELNODE? pOnRoofHead { get; set; } = new();   //7
+    public LEVELNODE? pOnRoofHead { get; set; }   //7
     public LEVELNODE pTopmostHead { get; set; } = new();  //8
     public LEVELNODE[] pLevelNodes = new LEVELNODE[9];
 

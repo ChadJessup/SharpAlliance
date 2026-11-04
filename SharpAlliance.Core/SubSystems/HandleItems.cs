@@ -7,17 +7,23 @@ using SharpAlliance.Core.Managers;
 
 namespace SharpAlliance.Core.SubSystems;
 
-public class HandleItems
+public partial class HandleItems
 {
     // INVENTORY POOL STUFF
     public static OBJECTTYPE? AddItemToPool(int sGridNo, OBJECTTYPE? pObject, ItemVisibility bVisible, int ubLevel, WORLD_ITEM usFlags, int bRenderZHeightAboveLevel)
     {
-        return InternalAddItemToPool(ref sGridNo, pObject, bVisible, ubLevel, usFlags, bRenderZHeightAboveLevel, null);
+        return InternalAddItemToPool(ref sGridNo, pObject, bVisible, ubLevel, usFlags, bRenderZHeightAboveLevel, out _);
     }
 
-    private static OBJECTTYPE? InternalAddItemToPool(ref int psGridNo, OBJECTTYPE? pObject, ItemVisibility bVisible, int ubLevel, WORLD_ITEM usFlags, int bRenderZHeightAboveLevel, int? piItemIndex)
+    public static OBJECTTYPE? AddItemToPoolAndGetIndex(int sGridNo, OBJECTTYPE? pObject, ItemVisibility bVisible, int ubLevel, WORLD_ITEM usFlags, int bRenderZHeightAboveLevel, out int piItemIndex)
+    {
+        return InternalAddItemToPool(ref sGridNo, pObject, bVisible, ubLevel, usFlags, bRenderZHeightAboveLevel, out piItemIndex);
+    }
+
+    public static OBJECTTYPE? InternalAddItemToPool(ref int psGridNo, OBJECTTYPE? pObject, ItemVisibility bVisible, int ubLevel, WORLD_ITEM usFlags, int bRenderZHeightAboveLevel, out int piItemIndex)
     {
         ITEM_POOL? pItemPoolTemp;
+        ITEM_POOL? pItemPool;
         int iWorldItem = 0;
         STRUCTURE? pStructure, pBase;
         STRUCTURE_ON sDesiredLevel;
@@ -26,6 +32,8 @@ public class HandleItems
         bool fForceOnGround = false;
         bool fObjectInOpenable = false;
         TerrainTypeDefines bTerrainID;
+
+        piItemIndex = -1;
 
         Debug.Assert(pObject.ubNumberOfObjects <= MAX_OBJECTS_PER_SLOT);
 
@@ -206,17 +214,16 @@ public class HandleItems
         }
 
 
-        //First add the item to the global list.  This is so the game can keep track 
+        //First add the item to the global list.  This is so the game can keep track
         //of where the items are, for file i/o, etc.
-//        iWorldItem = AddItemToWorld(psGridNo, pObject, ubLevel, usFlags, bRenderZHeightAboveLevel, bVisible);
+        iWorldItem = WorldItems.AddItemToWorld(psGridNo, pObject, ubLevel, usFlags, bRenderZHeightAboveLevel, bVisible);
 
         // Check for and existing pool on the object layer
-        if (GetItemPool(psGridNo, out ITEM_POOL? pItemPool, ubLevel))
+        if (GetItemPool(psGridNo, out pItemPool, ubLevel))
         {
-
             // Add to exitsing pool
             // Add graphic
-//            pNode = AddItemGraphicToWorld((Item[pObject.usItem]), psGridNo, ubLevel);
+            pNode = AddItemGraphicToWorld(Item[pObject.usItem], psGridNo, ubLevel);
 
             // Set pool head value in levelnode
             pNode.pItemPool = pItemPool;
@@ -224,7 +231,7 @@ public class HandleItems
             // Add New Node
             pItemPoolTemp = pItemPool;
             // Create new pool
-            pItemPool = new();
+            pItemPool = new ITEM_POOL();
 
             // Set Next to null
             pItemPool.pNext = null;
@@ -244,13 +251,13 @@ public class HandleItems
                 // Set Next of previous
                 pItemPoolTemp.pNext = pItemPool;
             }
+
             // Set Previous of new one
             pItemPool.pPrev = pItemPoolTemp;
-
         }
         else
         {
-//            pNode = AddItemGraphicToWorld((Item[pObject.usItem]), psGridNo, ubLevel);
+            pNode = AddItemGraphicToWorld(Item[pObject.usItem], psGridNo, ubLevel);
 
             // Create new pool
             pItemPool = new ITEM_POOL();
@@ -274,7 +281,7 @@ public class HandleItems
         pItemPool.bVisible = bVisible;
 
         // If bbisible is true, render makered world
-        if (bVisible == (ItemVisibility)1 && SoldierFind.GridNoOnScreen(psGridNo))
+        if (bVisible == ItemVisibility.VISIBLE && SoldierFind.GridNoOnScreen(psGridNo))
         {
             //gpWorldLevelData[*psGridNo].uiFlags|=MAPELEMENTFLAGS.REDRAW;
             //RenderWorld.SetRenderFlags(RenderingFlags.MARKED);
@@ -292,13 +299,10 @@ public class HandleItems
         // ATE: Get head of pool again....
         if (GetItemPool(psGridNo, out pItemPool, ubLevel))
         {
-//            AdjustItemPoolVisibility(pItemPool);
+            AdjustItemPoolVisibility(pItemPool!);
         }
 
-        if (piItemIndex is not null)
-        {
-            piItemIndex = iWorldItem;
-        }
+        piItemIndex = iWorldItem;
 
         return gWorldItems[iWorldItem].o;
     }
@@ -367,9 +371,6 @@ public class HandleItems
         return false;
     }
 
-    internal static void ToggleItemGlow(bool fOn)
-    {
-    }
 }
 
 public enum ITEM_HANDLE
@@ -403,18 +404,16 @@ public class ITEM_POOL
 }
 
 public delegate void ITEM_POOL_LOCATOR_HOOK();
-public struct ITEM_POOL_LOCATOR
+public class ITEM_POOL_LOCATOR
 {
-
-    ITEM_POOL? pItemPool;
+    public ITEM_POOL? pItemPool;
 
     // Additional info for locators
     public int bRadioFrame;
     public int uiLastFrameUpdate;
-    public ITEM_POOL_LOCATOR_HOOK Callback;
+    public ITEM_POOL_LOCATOR_HOOK? Callback;
     public bool fAllocated;
     public int ubFlags;
-
 }
 
 // visibility defines
