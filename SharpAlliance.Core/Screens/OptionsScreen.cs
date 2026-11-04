@@ -210,7 +210,7 @@ public class OptionsScreen : IScreen
             this.RenderOptionsScreen();
 
             //Blit the background to the save buffer
-            video.BlitBufferToBuffer(SurfaceType.RENDER_BUFFER, SurfaceType.SAVE_BUFFER, new(0, 0, 640, 480));
+            video.BlitBufferToBuffer(SurfaceType.FRAME_BUFFER, SurfaceType.SAVE_BUFFER, new(0, 0, 640, 480));
             video.InvalidateRegion(new Rectangle(0, 0, 640, 480));
         }
 
@@ -612,7 +612,7 @@ public class OptionsScreen : IScreen
         this.buttonList.Add(this.guiQuitButton);
 
         ButtonSubSystem.SpecifyDisabledButtonStyle(this.guiQuitButton, DISABLED_STYLE.HATCHED);
-        ButtonSubSystem.DisableButton(guiQuitButton);
+        // ButtonSubSystem.DisableButton(guiQuitButton);  // also commented out in the original
 
         //Done button
 

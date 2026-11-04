@@ -76,11 +76,7 @@ public class SliderSubSystem
             this.OptDisplayLine(new(pSlider.usPos.X + 1, pSlider.usPos.Y + 1), new(pSlider.usPos.X + pSlider.ubSliderWidth - 1, pSlider.usPos.Y + 1), pSlider.usBackGroundColor);
 
             //invalidate the area
-            video.InvalidateRegion(new(
-                pSlider.usPos.X,
-                pSlider.usPos.Y - 2,
-                pSlider.ubSliderWidth + 1,
-                2));
+            video.InvalidateRegion(new(pSlider.usPos.X, pSlider.usPos.Y - 2, pSlider.ubSliderWidth + 1, 4));
         }
 
         this.RenderSliderBox(pSlider);
@@ -111,14 +107,14 @@ public class SliderSubSystem
             if (!(pSlider.LastRect.Left == 0 && pSlider.LastRect.Right == 0))
             {
                 //Restore the old rect
-                video.BlitBufferToBuffer(SurfaceType.SAVE_BUFFER, SurfaceType.RENDER_BUFFER, new(pSlider.LastRect.Left, pSlider.LastRect.Top, pSlider.ubSliderWidth, pSlider.ubSliderHeight));
+                video.BlitBufferToBuffer(SurfaceType.SAVE_BUFFER, SurfaceType.FRAME_BUFFER, new(pSlider.LastRect.Left, pSlider.LastRect.Top, pSlider.ubSliderWidth, pSlider.ubSliderHeight));
 
                 //invalidate the old area
-                video.InvalidateRegion(new(pSlider.LastRect.Left, pSlider.LastRect.Top, pSlider.LastRect.Right, pSlider.LastRect.Bottom));
+                video.InvalidateRegion(pSlider.LastRect);
             }
 
             //Blit the new rect
-            video.BlitBufferToBuffer(SurfaceType.RENDER_BUFFER, SurfaceType.SAVE_BUFFER, new(DestRect.Left, DestRect.Top, pSlider.ubSliderWidth, pSlider.ubSliderHeight));
+            video.BlitBufferToBuffer(SurfaceType.FRAME_BUFFER, SurfaceType.SAVE_BUFFER, new(DestRect.Left, DestRect.Top, pSlider.ubSliderWidth, pSlider.ubSliderHeight));
         }
         else
         {
@@ -130,18 +126,18 @@ public class SliderSubSystem
 
             DestRect.X = pSlider.usCurrentSliderBoxPosition;
             DestRect.Y = pSlider.usPos.Y - Slider.DEFAULT_SLIDER_SIZE;
-            DestRect.Width = DestRect.Left + pSlider.ubSliderWidth;
-            DestRect.Height = DestRect.Top + pSlider.ubSliderHeight;
+            DestRect.Width = pSlider.ubSliderWidth;
+            DestRect.Height = pSlider.ubSliderHeight;
 
             //If it is not the first time to render the slider
             if (!(pSlider.LastRect.Left == 0 && pSlider.LastRect.Right == 0))
             {
                 //Restore the old rect
-                video.BlitBufferToBuffer(SurfaceType.SAVE_BUFFER, SurfaceType.RENDER_BUFFER,new(pSlider.LastRect.Left, pSlider.LastRect.Top, 8, 15));
+                video.BlitBufferToBuffer(SurfaceType.SAVE_BUFFER, SurfaceType.FRAME_BUFFER,new(pSlider.LastRect.Left, pSlider.LastRect.Top, 8, 15));
             }
 
             //save the new rect
-            video.BlitBufferToBuffer(SurfaceType.RENDER_BUFFER, SurfaceType.SAVE_BUFFER, new(DestRect.Left, DestRect.Top, 8, 15));
+            video.BlitBufferToBuffer(SurfaceType.FRAME_BUFFER, SurfaceType.SAVE_BUFFER, new(DestRect.Left, DestRect.Top, 8, 15));
         }
 
         //Save the new rect location
@@ -154,7 +150,7 @@ public class SliderSubSystem
             video.BltVideoObject(SurfaceType.FRAME_BUFFER, hPixHandle, 0, pSlider.LastRect.Left, pSlider.LastRect.Top);
 
             //invalidate the area
-            video.InvalidateRegion(new(pSlider.LastRect.Left, pSlider.LastRect.Top, pSlider.LastRect.Right, pSlider.LastRect.Bottom));
+            video.InvalidateRegion(pSlider.LastRect);
         }
         else
         {
@@ -163,7 +159,7 @@ public class SliderSubSystem
             video.BltVideoObject(SurfaceType.FRAME_BUFFER, hPixHandle, 0, pSlider.usCurrentSliderBoxPosition, pSlider.usPos.Y - Slider.DEFAULT_SLIDER_SIZE);
 
             //invalidate the area
-            video.InvalidateRegion(new(pSlider.usCurrentSliderBoxPosition, pSlider.usPos.Y - Slider.DEFAULT_SLIDER_SIZE, pSlider.usCurrentSliderBoxPosition + 9, pSlider.usPos.Y + Slider.DEFAULT_SLIDER_SIZE));
+            video.InvalidateRegion(new(pSlider.usCurrentSliderBoxPosition, pSlider.usPos.Y - Slider.DEFAULT_SLIDER_SIZE, 9, Slider.DEFAULT_SLIDER_SIZE * 2));
         }
     }
 
@@ -186,7 +182,7 @@ public class SliderSubSystem
 
         usOldIncrement = pSlider.usCurrentIncrement;
 
-        if (pSlider.uiFlags == SliderDirection.SLIDER_VERTICAL)
+        if (pSlider.uiFlags.HasFlag(SliderDirection.SLIDER_VERTICAL))
         {
             if (usPos >= (int)(pSlider.Bounds.Height * (float).99))
             {
@@ -242,7 +238,7 @@ public class SliderSubSystem
     {
         int usMaxPos;
 
-        if (pSlider.uiFlags == SliderDirection.SLIDER_VERTICAL)
+        if (pSlider.uiFlags.HasFlag(SliderDirection.SLIDER_VERTICAL))
         {
             //if the box is in the last position
             if (pSlider.usCurrentIncrement >= pSlider.usNumberOfIncrements)
@@ -256,7 +252,7 @@ public class SliderSubSystem
             }
             else
             {
-                pSlider.usCurrentSliderBoxPosition = pSlider.usPos.Y + (pSlider.Bounds.Height / pSlider.usNumberOfIncrements * pSlider.usCurrentIncrement);
+                pSlider.usCurrentSliderBoxPosition = pSlider.usPos.Y + (int)(pSlider.Bounds.Height / (float)pSlider.usNumberOfIncrements * pSlider.usCurrentIncrement);
             }
 
             usMaxPos = pSlider.usPos.Y + pSlider.Bounds.Height;// - pSlider.ubSliderHeight//2 + 1;
@@ -276,7 +272,7 @@ public class SliderSubSystem
             }
             else
             {
-                pSlider.usCurrentSliderBoxPosition = pSlider.usPos.X + (pSlider.Bounds.Width / pSlider.usNumberOfIncrements * pSlider.usCurrentIncrement);
+                pSlider.usCurrentSliderBoxPosition = pSlider.usPos.X + (int)(pSlider.Bounds.Width / (float)pSlider.usNumberOfIncrements * pSlider.usCurrentIncrement);
             }
 
             usMaxPos = pSlider.usPos.X + pSlider.Bounds.Width - 8 + 1;
@@ -349,15 +345,16 @@ public class SliderSubSystem
                 //                    pNewSlider.usHeight = usWidth;
                 pNewSlider.ubSliderWidth = Slider.STEEL_SLIDER_WIDTH;
                 pNewSlider.ubSliderHeight = Slider.STEEL_SLIDER_HEIGHT;
+                pNewSlider.Bounds = new Rectangle(loc.X, loc.Y, Slider.STEEL_SLIDER_WIDTH, usWidth);
 
 
                 MouseSubSystem.MSYS_DefineRegion(
                     pNewSlider.ScrollAreaMouseRegion,
-                    new Rectangle(
+                    Rectangle.FromLTRB(
                         loc.X - pNewSlider.ubSliderWidth / 2,
                         loc.Y,
                         loc.X + pNewSlider.ubSliderWidth / 2,
-                        pNewSlider.usPos.Y + pNewSlider.ubSliderHeight),
+                        pNewSlider.usPos.Y + usWidth),
                     sPriority,
                     usCursor,
                     this.SelectedSliderMovementCallBack,
@@ -372,10 +369,11 @@ public class SliderSubSystem
                 pNewSlider.uiFlags |= SliderDirection.SLIDER_HORIZONTAL;
                 pNewSlider.ubSliderWidth = usWidth;
                 pNewSlider.ubSliderHeight = Slider.DEFAULT_SLIDER_SIZE;
+                pNewSlider.Bounds = new Rectangle(loc.X, loc.Y, usWidth, Slider.DEFAULT_SLIDER_SIZE);
 
                 MouseSubSystem.MSYS_DefineRegion(
                     pNewSlider.ScrollAreaMouseRegion,
-                    new Rectangle(loc.X, loc.Y - Slider.DEFAULT_SLIDER_SIZE, pNewSlider.usPos.X + pNewSlider.ubSliderWidth, loc.Y + Slider.DEFAULT_SLIDER_SIZE),
+                    Rectangle.FromLTRB(loc.X, loc.Y - Slider.DEFAULT_SLIDER_SIZE, pNewSlider.usPos.X + pNewSlider.ubSliderWidth, loc.Y + Slider.DEFAULT_SLIDER_SIZE),
                     sPriority,
                     usCursor,
                     this.SelectedSliderMovementCallBack,
@@ -574,6 +572,16 @@ public class SliderSubSystem
 
     public void SetSliderValue(ref Slider slider, int newValue)
     {
+        if (newValue >= slider.usNumberOfIncrements)
+        {
+            return;
+        }
+
+        slider.usCurrentIncrement = slider.uiFlags.HasFlag(SliderDirection.SLIDER_VERTICAL)
+            ? slider.usNumberOfIncrements - newValue
+            : newValue;
+
+        this.CalculateNewSliderBoxPosition(ref slider);
     }
 
     internal static void RemoveSliderBar(Slider slider)

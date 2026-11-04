@@ -92,7 +92,7 @@ public class GameEventHook
             //If a merc gets hired and they dont show up immediately, the merc gets added to the queue and shows up
             // uiTimeTillMercArrives  minutes later
             case EVENT.DELAYED_HIRING_OF_MERC:
-//                MercArrivesCallback((int)pEvent.uiParam);
+MercHiring.MercArrivesCallback(Convert.ToInt32(pEvent.uiParam));
                 break;
             //handles the life insurance contract for a merc from AIM.
             case EVENT.HANDLE_INSURED_MERCS:

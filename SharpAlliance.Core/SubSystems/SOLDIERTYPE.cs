@@ -19,7 +19,19 @@ public class SOLDIERTYPE
 
     public SOLDIER uiStatusFlags { get; set; }
 
-    public Dictionary<InventorySlot, OBJECTTYPE> inv = new();
+    // every slot always exists (empty objects), like the original's fixed inventory array
+    public Dictionary<InventorySlot, OBJECTTYPE> inv = CreateEmptyInventory();
+
+    private static Dictionary<InventorySlot, OBJECTTYPE> CreateEmptyInventory()
+    {
+        var inventory = new Dictionary<InventorySlot, OBJECTTYPE>((int)InventorySlot.NUM_INV_SLOTS);
+        for (var slot = InventorySlot.HELMETPOS; slot < InventorySlot.NUM_INV_SLOTS; slot++)
+        {
+            inventory[slot] = new OBJECTTYPE();
+        }
+
+        return inventory;
+    }
 
     public OBJECTTYPE? pTempObject;
     public KEY_ON_RING[] pKeyRing = new KEY_ON_RING[Keys.NUM_KEYS];

@@ -102,6 +102,42 @@ public static class EnglishText
         "Guns and stuff, if we dont have it, you dont need it.",
     };
 
+    public static string[] AimFiText =
+    {
+        "Price", "Experience", "Marksmanship", "Medical", "Explosives", "Mechanical",
+        "A.I.M. Members Sorted Ascending By %s",
+        "A.I.M. Members Sorted Descending By %s",
+        "Left Click", "To Select Merc", "Right Click", "For Sorting Options",
+        "Away", "Deceased", "On Assign",
+    };
+
+    public static string[] AimSortText =
+    {
+        "A.I.M. Members", "Sort By:",
+        "Price", "Experience", "Marksmanship", "Medical", "Explosives", "Mechanical",
+        "View the mercenary mug shot index", "Review the individual mercenary's file", "Browse the A.I.M. Alumni Gallery",
+        "Ascending", "Descending",
+    };
+
+    public static string[] pPOWStrings = { "POW", "??" };
+
+    public static string[] MercInfo =
+    {
+        "Health", "Agility", "Dexterity", "Strength", "Leadership", "Wisdom", "Experience Lvl", "Marksmanship",
+        "Mechanical", "Explosive", "Medical",
+        "Previous", "Hire", "Next", "Additional Info", "Home", "Hired", "Salary:", "Per Day", "Deceased",
+        "Looks like you're trying to hire too many mercs. Your limit is 18.", "Unavailable",
+    };
+
+    public static string[] AimAlumniText = { "PAGE 1", "PAGE 2", "PAGE 3", "A.I.M. Alumni", "DONE" };
+
+    public static string[] pFilesTitle = { "File Viewer" };
+
+    public static string[] pFilesSenderList =
+    {
+        "Recon Report", "Intercept #1", "Intercept #2", "Intercept #3", "Intercept #4", "Intercept #5", "Intercept #6",
+    };
+
     public static string[] AimLinkText =
     {
         "A.I.M. Links",	//The title of the AIM links page

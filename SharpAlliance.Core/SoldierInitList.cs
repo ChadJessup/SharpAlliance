@@ -47,13 +47,17 @@ public partial class Globals
     public static int gubBoxersRests { get; internal set; }
     public static int gubBoxingMatchesWon { get; internal set; }
 
+    // gprintf / mprintf print at a position using the current font, foreground colour and shadow
     internal static void gprintf(int x, int y, string format, params object?[] arguments)
-    {
-    }
+        => PrintWithCurrentFont(x, y, format, arguments);
 
     internal static void mprintf(int sNewX, int sNewY, string format, params object?[] args)
-    {
+        => PrintWithCurrentFont(sNewX, sNewY, format, args);
 
+    private static void PrintWithCurrentFont(int x, int y, string format, object?[] args)
+    {
+        string text = args.Length == 0 ? format : wprintf(format, args);
+        FontSubSystem.DrawTextToScreen(text, new(x, y));
     }
 
     public static bool saveEnabled = false;

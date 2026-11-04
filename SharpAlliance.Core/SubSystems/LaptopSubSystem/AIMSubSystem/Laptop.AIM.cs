@@ -105,17 +105,6 @@ public partial class Laptop
         gfInitAdArea = true;
     }
 
-    private static bool RenderAIMMembersTopLevel()
-    {
-        InitCreateDeleteAimPopUpBox(AIM_POPUP.DISPLAY, null, null, 0, 0, 0);
-
-        return true;
-    }
-
-    private static void InitCreateDeleteAimPopUpBox(AIM_POPUP ubFlag, string? sString1, string? sString2, int usPosX, int usPosY, int ubData)
-    {
-    }
-
     public static void EnterAIM()
     {
         gubWarningTimer = 0;
@@ -239,8 +228,6 @@ public partial class Laptop
         MouseSubSystem.MSYS_AddRegion(ref gSelectedAimLogo);
     }
 
-    public static void EnterAimArchives() { }
-    public static void ExitAimArchives() { }
 
 }
 

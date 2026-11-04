@@ -305,16 +305,16 @@ public partial class Laptop
                 RenderAIM();
                 break;
             case LAPTOP_MODE.AIM_MEMBERS:
-                //                RenderAIMMembers();
+                RenderAIMMembers();
                 break;
             case LAPTOP_MODE.AIM_MEMBERS_FACIAL_INDEX:
-                //                RenderAimFacialIndex();
+                RenderAimFacialIndex();
                 break;
             case LAPTOP_MODE.AIM_MEMBERS_SORTED_FILES:
-                //                RenderAimSort();
+                RenderAimSort();
                 break;
             case LAPTOP_MODE.AIM_MEMBERS_ARCHIVES:
-                //                RenderAimArchives();
+                RenderAimArchives();
                 break;
             case LAPTOP_MODE.AIM_POLICIES:
                 RenderAimPolicies();
@@ -343,19 +343,19 @@ public partial class Laptop
                 break;
 
             case LAPTOP_MODE.BOBBY_R_GUNS:
-                //                RenderBobbyRGuns();
+                BobbyR.RenderBobbyRGuns();
                 break;
             case LAPTOP_MODE.BOBBY_R_AMMO:
-                //                RenderBobbyRAmmo();
+                BobbyR.RenderBobbyRAmmo();
                 break;
             case LAPTOP_MODE.BOBBY_R_ARMOR:
-                //                RenderBobbyRArmour();
+                BobbyR.RenderBobbyRArmour();
                 break;
             case LAPTOP_MODE.BOBBY_R_MISC:
-                //                RenderBobbyRMisc();
+                BobbyR.RenderBobbyRMisc();
                 break;
             case LAPTOP_MODE.BOBBY_R_USED:
-                //                RenderBobbyRUsed();
+                BobbyR.RenderBobbyRUsed();
                 break;
             case LAPTOP_MODE.BOBBY_R_MAILORDER:
                 //                RenderBobbyRMailOrder();
@@ -402,13 +402,13 @@ public partial class Laptop
                 Finances.RenderFinances();
                 break;
             case LAPTOP_MODE.PERSONNEL:
-                //                RenderPersonnel();
+                RenderPersonnel();
                 break;
             case LAPTOP_MODE.HISTORY:
                 history.RenderHistory();
                 break;
             case LAPTOP_MODE.FILES:
-                //                RenderFiles();
+                RenderFiles();
                 break;
             case LAPTOP_MODE.EMAIL:
                 Emails.RenderEmail();
@@ -687,7 +687,6 @@ ubPreviousAdvertisment = DisplayBobbyRAd(fInit, fRedraw);
             new(LAPTOP_SCREEN_UL_X - 2, LAPTOP_SCREEN_UL_Y - 3),
             clip);
 
-        Globals.Save(pDestBuf, "pDestBuf.png");
         return true;
     }
 
@@ -698,16 +697,12 @@ ubPreviousAdvertisment = DisplayBobbyRAd(fInit, fRedraw);
         int iIndex = 0;
         string sString = string.Empty;
 
-        // title bar - load
-        CHECKF(video.GetVideoObject("LAPTOP\\programtitlebar.sti", out string uiTITLEFORWWW));
-
-        // blit title
-        hHandle = video.GetVideoObject(uiTITLEFORWWW);
-        VideoObjectManager.BltVideoObject(SurfaceType.FRAME_BUFFER, hHandle, 0, LAPTOP_SCREEN_UL_X, LAPTOP_SCREEN_UL_Y - 2, VO_BLT.SRCTRANSPARENCY, null);
-
+        // title bar - load and blit
+        hHandle = video.GetVideoObject(Utils.FilenameForBPP("LAPTOP\\programtitlebar.sti"));
+        video.BltVideoObject(SurfaceType.FRAME_BUFFER, hHandle, 0, LAPTOP_SCREEN_UL_X, LAPTOP_SCREEN_UL_Y - 2, VO_BLT.SRCTRANSPARENCY);
 
         // now delete
-        video.DeleteVideoObjectFromIndex(uiTITLEFORWWW);
+        video.DeleteVideoObject(hHandle);
 
         // now slapdown text
         FontSubSystem.SetFont(FontStyle.FONT14ARIAL);
@@ -721,14 +716,14 @@ ubPreviousAdvertisment = DisplayBobbyRAd(fInit, fRedraw);
 
         if (guiCurrentLaptopMode == LAPTOP_MODE.WWW)
         {
-            //            mprintf(140, 33, pWebTitle[0]);
+            mprintf(140, 33, pWebTitle[0]);
         }
 
         else
         {
             iIndex = guiCurrentLaptopMode - LAPTOP_MODE.WWW - 1;
 
-            //            wprintf(sString, "%s  -  %s", pWebTitle[0], pWebPagesTitles[iIndex]);
+            sString = pWebTitle[0] + "  -  " + pWebPagesTitles[iIndex];
             mprintf(140, 33, sString);
         }
 
@@ -1113,8 +1108,6 @@ ubPreviousAdvertisment = DisplayBobbyRAd(fInit, fRedraw);
     private static bool gfFirstTimeInContactScreen;
 
     public static bool[] AimArchivesSubPagesVisitedFlag = new bool[3];
-    private static bool gfDrawPopUpBox;
-    private static bool gfDestroyPopUpBox;
     private static bool[] AimPoliciesSubPagesVisitedFlag = new bool[NUM_AIM_POLICY_PAGES];
     private static bool[] AimHistorySubPagesVisitedFlag = new bool[NUM_AIM_HISTORY_PAGES];
 

@@ -130,6 +130,8 @@ public class SDL2VideoManager : IVideoManager
         this.renderWorld = renderWorld;
         this.screenManager = (screenManager as ScreenManager)!;
 
+        Core.Managers.VideoSurfaceManager.Initialize(this);
+
         Configuration.Default.MemoryAllocator = new SixLabors.ImageSharp.Memory.SimpleGcMemoryAllocator();
     }
 
@@ -195,6 +197,13 @@ public class SDL2VideoManager : IVideoManager
         if (this.Renderer == IntPtr.Zero)
         {
             Console.WriteLine($"There was an issue creating the renderer. {SDL.SDL_GetError()}");
+        }
+
+        // The game always works in a fixed 640x480 coordinate space. A logical size makes SDL scale (and letterbox) the
+        // frame to whatever size the window is resized to, and map mouse positions in events back to 640x480.
+        if (SDL.SDL_RenderSetLogicalSize(this.Renderer, SCREEN_WIDTH, SCREEN_HEIGHT) < 0)
+        {
+            Console.WriteLine($"There was an issue setting the logical render size. {SDL.SDL_GetError()}");
         }
 
         this.Surfaces.InitializeSurfaces(this.Renderer, SCREEN_WIDTH, SCREEN_HEIGHT);
@@ -278,11 +287,11 @@ public class SDL2VideoManager : IVideoManager
             var error = SDL.SDL_GetError();
         }
 
-        // Clears the current render surface.
-        // if (SDL.SDL_RenderClear(Renderer) < 0)
-        // {
-        //     Console.WriteLine($"There was an issue with clearing the render surface. {SDL.SDL_GetError()}");
-        // }
+        // Clears the current render surface (the bars around the frame when the window is not 4:3).
+        if (SDL.SDL_RenderClear(this.Renderer) < 0)
+        {
+            Console.WriteLine($"There was an issue with clearing the render surface. {SDL.SDL_GetError()}");
+        }
 
         ScreenManager.Draw(this);
         MouseSubSystem.Draw(this);
@@ -1721,9 +1730,7 @@ public class SDL2VideoManager : IVideoManager
         => this.ColorFillVideoSurfaceArea(rectangle, color.ToPixel<Rgba32>());
 
     public void ColorFillVideoSurfaceArea(Rectangle region, Rgba32 rgba32)
-    {
-
-    }
+        => this.ColorFillVideoSurfaceArea(SurfaceType.FRAME_BUFFER, region, rgba32);
 
     public void ImageFillVideoSurfaceArea(Rectangle region, HVOBJECT hVOBJECT, ushort v3, short v4, short v5)
     {
@@ -2017,31 +2024,39 @@ public class SDL2VideoManager : IVideoManager
         var src = this.Surfaces[srcBuffer];
         var dst = this.Surfaces[dstBuffer];
 
-        Globals.Save(src, "src.png");
-        Globals.Save(dst, "dst.png");
-
         fRetVal = this.Blt16BPPTo16BPP(
             dst,
             src,
             dstPoint ?? srcRect.ToPoint(),
             srcRect.ToPoint(),
             new(srcRect.Width, srcRect.Height),
-            debug: true);
+            debug: false);
 
         return (fRetVal);
     }
 
     public void ColorFillVideoSurfaceArea(Image<Rgba32> surface, Rectangle region, Color rgba32)
-    {
-    }
+        => this.ColorFillVideoSurfaceArea(surface, region, rgba32.ToPixel<Rgba32>());
 
     public void ColorFillVideoSurfaceArea(Image<Rgba32> surface, Rectangle region, Rgba32 rgba32)
     {
+        region.Intersect(new Rectangle(0, 0, surface.Width, surface.Height));
+        if (region.Width <= 0 || region.Height <= 0)
+        {
+            return;
+        }
+
+        surface.ProcessPixelRows(accessor =>
+        {
+            for (int y = region.Top; y < region.Bottom; y++)
+            {
+                accessor.GetRowSpan(y).Slice(region.Left, region.Width).Fill(rgba32);
+            }
+        });
     }
 
     public void ColorFillVideoSurfaceArea(SurfaceType surface, Rectangle rectangle, Rgba32 color)
-    {
-    }
+        => this.ColorFillVideoSurfaceArea(this.Surfaces[surface], rectangle, color);
 
     public void SetVideoSurfaceTransparency(HVOBJECT hobj, Rgba32 pixel)
     {

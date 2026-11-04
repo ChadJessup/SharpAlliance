@@ -27,6 +27,7 @@ public partial class Laptop : IScreen
     private static BobbyR bobbyR;
     private static IFileManager files;
     private static MessageBoxSubSystem messageBoxes = null!;
+    private static Finances finances = null!;
     public static readonly List<GUI_BUTTON> buttonList = [];
 
     public Laptop(
@@ -36,9 +37,11 @@ public partial class Laptop : IScreen
         History history,
         BobbyR bobbyR,
         IFileManager fileManager,
-        MessageBoxSubSystem messageBoxSubSystem)
+        MessageBoxSubSystem messageBoxSubSystem,
+        Finances financesService)
     {
         this.logger = logger;
+        finances = financesService;
         messageBoxes = messageBoxSubSystem;
         files = fileManager;
         Laptop.history = history;
@@ -63,6 +66,7 @@ public partial class Laptop : IScreen
 
     public ValueTask Deactivate()
     {
+        ExitLaptop();
         return ValueTask.CompletedTask;
     }
 
@@ -773,20 +777,6 @@ public partial class Laptop : IScreen
          */
     }
 
-    private static bool DisableNewMailMessage()
-    {
-        if (Emails.fNewMailFlag && gubVideoConferencingMode != 0)
-        {
-            Laptop.gfIsNewMailFlagSet = true;
-            Emails.fNewMailFlag = false;
-            gfRedrawScreen = true;
-
-            return true;
-        }
-
-        return false;
-    }
-
     private void DisplayErrorBox()
     {
         // this function will display the error graphic
@@ -1139,7 +1129,7 @@ public partial class Laptop : IScreen
 
     private void DisableMercSiteButton()
     {
-        if (Mercs.iMercPopUpBox != -1)
+        if (Mercs.iMercPopUpBox != -1 && Mercs.guiAccountBoxButton is not null)
         {
             Mercs.guiAccountBoxButton.uiFlags |= ButtonFlags.BUTTON_FORCE_UNDIRTY;
         }
@@ -1465,44 +1455,14 @@ public partial class Laptop : IScreen
     }
 
 
-    private void HandleFiles()
-    {
-        throw new NotImplementedException();
-    }
-
     private void HandleHistory()
     {
         history.HandleHistory();
     }
 
-    private void HandlePersonnel()
-    {
-        throw new NotImplementedException();
-    }
-
 
 
     private void HandleCharProfile()
-    {
-        throw new NotImplementedException();
-    }
-
-    private void HandleAimArchives()
-    {
-        throw new NotImplementedException();
-    }
-
-    private void HandleAimSort()
-    {
-        throw new NotImplementedException();
-    }
-
-    private void HandleAimFacialIndex()
-    {
-        throw new NotImplementedException();
-    }
-
-    private void HandleAIMMembers()
     {
         throw new NotImplementedException();
     }
@@ -1703,6 +1663,19 @@ public partial class Laptop : IScreen
 
         }
         return;
+    }
+
+    private static void HandleDefaultWebpageForLaptop()
+    {
+        // go to first page in bookmark list
+        if (guiCurrentLaptopMode == LAPTOP_MODE.WWW)
+        {
+            // if valid entry go there
+            if (LaptopSaveInfo.iBookMarkList[0] != BOOKMARK.UNSET)
+            {
+                GoToWebPage(LaptopSaveInfo.iBookMarkList[0]);
+            }
+        }
     }
 
     private static void GoToWebPage(BOOKMARK iPageId)
@@ -2171,6 +2144,9 @@ public partial class Laptop : IScreen
                     /*guiExitScreen = GAME_SCREEN; */
                     await GameInit.InitNewGame(false);
                     gfDontStartTransitionFromLaptop = true;
+
+                    // the new game set-up does not pick the screen to go to, so leave the laptop for the map screen
+                    await screens.SetPendingNewScreen(guiExitScreen);
                     /*InitHelicopterEntranceByMercs( );
                     fFirstTimeInGameScreen = true;*/
                     return (true);
@@ -2388,7 +2364,6 @@ public partial class Laptop : IScreen
     }
 
     private static bool fOldLoadFlag = false;
-    private static bool gfIsNewMailFlagSet;
 
     private void EnterNewLaptopMode()
     {
@@ -2736,7 +2711,7 @@ public partial class Laptop : IScreen
 
 
         // check to see if we need to go to there default web page of not
-        //HandleDefaultWebpageForLaptop( );
+        HandleDefaultWebpageForLaptop();
 
     }
 
@@ -2746,19 +2721,9 @@ public partial class Laptop : IScreen
     }
 
 
-    private void EnterFiles()
-    {
-        throw new NotImplementedException();
-    }
-
     private void EnterHistory()
     {
         history.EnterHistory();
-    }
-
-    private void EnterPersonnel()
-    {
-        throw new NotImplementedException();
     }
 
 
@@ -2775,27 +2740,27 @@ public partial class Laptop : IScreen
 
     private void EnterBobbyRUsed()
     {
-        throw new NotImplementedException();
+        BobbyR.EnterBobbyRUsed();
     }
 
     private void EnterBobbyRMisc()
     {
-        throw new NotImplementedException();
+        BobbyR.EnterBobbyRMisc();
     }
 
     private void EnterBobbyRArmour()
     {
-        throw new NotImplementedException();
+        BobbyR.EnterBobbyRArmour();
     }
 
     private void EnterBobbyRAmmo()
     {
-        throw new NotImplementedException();
+        BobbyR.EnterBobbyRAmmo();
     }
 
     private void EnterBobbyRGuns()
     {
-        throw new NotImplementedException();
+        BobbyR.EnterBobbyRGuns();
     }
 
     private void EnterBobbyR()
@@ -2819,21 +2784,6 @@ public partial class Laptop : IScreen
     }
 
     private void EnterMercs()
-    {
-        throw new NotImplementedException();
-    }
-
-    private void EnterAimSort()
-    {
-        throw new NotImplementedException();
-    }
-
-    private void EnterAIMMembers()
-    {
-        throw new NotImplementedException();
-    }
-
-    private void EnterAimFacialIndex()
     {
         throw new NotImplementedException();
     }
@@ -3064,39 +3014,14 @@ public partial class Laptop : IScreen
     }
 
 
-    private void ExitFiles()
-    {
-        throw new NotImplementedException();
-    }
-
     private void ExitHistory()
     {
         history.ExitHistory();
     }
 
-    private void ExitPersonnel()
-    {
-        throw new NotImplementedException();
-    }
-
 
 
     private void ExitCharProfile()
-    {
-        throw new NotImplementedException();
-    }
-
-    private void ExitAimSort()
-    {
-        throw new NotImplementedException();
-    }
-
-    private void ExitAIMMembers()
-    {
-        throw new NotImplementedException();
-    }
-
-    private void ExitAimFacialIndex()
     {
         throw new NotImplementedException();
     }

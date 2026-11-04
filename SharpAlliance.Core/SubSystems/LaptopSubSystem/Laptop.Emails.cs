@@ -310,6 +310,16 @@ public class Emails
         return;
     }
 
+    private static void SpecifyEmailHeaderButton(GUI_BUTTON button, string text)
+    {
+        // the column headers are the text of the sort buttons (SpecifyFullButtonTextAttributes in the original)
+        ButtonSubSystem.SpecifyButtonText(button, text);
+        ButtonSubSystem.SpecifyButtonFont(button, EMAIL_WARNING_FONT);
+        ButtonSubSystem.SpecifyButtonUpTextColors(button, FontColor.FONT_BLACK, (FontShadow)FontColor.FONT_BLACK);
+        ButtonSubSystem.SpecifyButtonDownTextColors(button, FontColor.FONT_BLACK, (FontShadow)FontColor.FONT_BLACK);
+        button.bJustification = ButtonTextJustifies.TEXT_CJUSTIFIED;
+    }
+
     public static void DisplayEmailHeaders()
     {
         // draw the text at the top of the screen
@@ -2301,9 +2311,7 @@ public class Emails
                                             ButtonFlags.BUTTON_TOGGLE, MSYS_PRIORITY.HIGHEST - 1,
                                             (GUI_CALLBACK)MouseSubSystem.BtnGenericMouseMoveButtonCallback, (GUI_CALLBACK)FromCallback);
         ButtonSubSystem.SetButtonCursor(giSortButton[1], CURSOR.LAPTOP_SCREEN);
-        //        SpecifyFullButtonTextAttributes(giSortButton[1], pEmailHeaders[FROM_HEADER], EMAIL_WARNING_FONT,
-        //                                                                               FontColor.FONT_BLACK, FontColor.FONT_BLACK,
-        //                                                                                 FontColor.FONT_BLACK, FontColor.FONT_BLACK, TEXT_CJUSTIFIED);
+        SpecifyEmailHeaderButton(giSortButton[1], pEmailHeaders[(int)EmailHeaders.FROM_HEADER]);
 
 
         // sender sort
@@ -2312,9 +2320,7 @@ public class Emails
                                             ButtonFlags.BUTTON_TOGGLE, MSYS_PRIORITY.HIGHEST - 1,
                                             (GUI_CALLBACK)MouseSubSystem.BtnGenericMouseMoveButtonCallback, (GUI_CALLBACK)SubjectCallback);
         ButtonSubSystem.SetButtonCursor(giSortButton[2], CURSOR.LAPTOP_SCREEN);
-        //        SpecifyFullButtonTextAttributes(giSortButton[2], pEmailHeaders[SUBJECT_HEADER], EMAIL_WARNING_FONT,
-        //                                                                              FontColor.FONT_BLACK, FontColor.FONT_BLACK,
-        //                                                                                FontColor.FONT_BLACK, FontColor.FONT_BLACK, TEXT_CJUSTIFIED);
+        SpecifyEmailHeaderButton(giSortButton[2], pEmailHeaders[(int)EmailHeaders.SUBJECT_HEADER]);
 
 
 
@@ -2324,9 +2330,7 @@ public class Emails
                                             ButtonFlags.BUTTON_TOGGLE, MSYS_PRIORITY.HIGHEST - 1,
                                             (GUI_CALLBACK)MouseSubSystem.BtnGenericMouseMoveButtonCallback, (GUI_CALLBACK)DateCallback);
         ButtonSubSystem.SetButtonCursor(giSortButton[3], CURSOR.LAPTOP_SCREEN);
-        //        SpecifyFullButtonTextAttributes(giSortButton[3], pEmailHeaders[RECD_HEADER], EMAIL_WARNING_FONT,
-        //                                                                              FontColor.FONT_BLACK, FontColor.FONT_BLACK,
-        //                                                                                FontColor.FONT_BLACK, FontColor.FONT_BLACK, TEXT_CJUSTIFIED);
+        SpecifyEmailHeaderButton(giSortButton[3], pEmailHeaders[(int)EmailHeaders.RECD_HEADER]);
 
         buttonList.AddRange(giSortButton);
 
@@ -3923,20 +3927,15 @@ public class Emails
 
     private static int GetNumberOfPagesToEmail()
     {
-        RecordPtr? pTempRecord = null;
+        RecordPtr? pTempRecord = pMessageRecordList;
         int iNumberOfPagesToEmail = 0;
 
-
-        // set temp record to head of list
-        //        pTempRecord = pMessageRecordList;
-
-        // run through messages, and find out how many 
+        // run through messages, and find out how many pages there are
         while (pTempRecord is not null)
         {
-            //            pTempRecord = GetFirstRecordOnThisPage(pMessageRecordList, MESSAGE_FONT, MESSAGE_WIDTH, MESSAGE_GAP, iNumberOfPagesToEmail, MAX_EMAIL_MESSAGE_PAGE_SIZE);
+            pTempRecord = GetFirstRecordOnThisPage(pMessageRecordList, MESSAGE_FONT, MESSAGE_WIDTH, MESSAGE_GAP, iNumberOfPagesToEmail, MAX_EMAIL_MESSAGE_PAGE_SIZE);
             iNumberOfPagesToEmail++;
         }
-
 
         return iNumberOfPagesToEmail;
     }
@@ -3949,18 +3948,62 @@ public class Emails
         ClearPages();
     }
 
+    private static int MAX_EMAIL_MESSAGE_PAGE_SIZE => (FontSubSystem.GetFontHeight(MESSAGE_FONT) + MESSAGE_GAP) * 20;
+
+    /// <summary>Port of GetFirstRecordOnThisPage (WordWrap.c): the first record of the given page of an email.</summary>
+    private static RecordPtr? GetFirstRecordOnThisPage(RecordPtr? recordList, FontStyle uiFont, int usWidth, int ubGap, int iPage, int iPageSize)
+    {
+        // null record list, nothing to do
+        if (recordList is null)
+        {
+            return null;
+        }
+
+        RecordPtr? currentRecord = recordList;
+        int iCurrentPositionOnThisPage = 0;
+        int iCurrentPage = 0;
+
+        // while we are not on the current page
+        while (iCurrentPage < iPage)
+        {
+            // build record list to this point
+            while (iCurrentPositionOnThisPage + WordWrap.IanWrappedStringHeight(0, 0, usWidth, ubGap, uiFont, 0, currentRecord!.pRecord ?? string.Empty, 0, false, 0) <= iPageSize)
+            {
+                // still room on this page
+                iCurrentPositionOnThisPage += WordWrap.IanWrappedStringHeight(0, 0, usWidth, ubGap, uiFont, 0, currentRecord.pRecord ?? string.Empty, 0, false, 0);
+
+                // next record
+                currentRecord = currentRecord.Next;
+
+                // check if we have gone too far?
+                if (currentRecord is null)
+                {
+                    return null;
+                }
+            }
+
+            // reset position
+            iCurrentPositionOnThisPage = 0;
+
+            // next page
+            iCurrentPage++;
+        }
+
+        return currentRecord;
+    }
+
     private static void PreProcessEmail(email pMail)
     {
-        RecordPtr? pTempRecord = null, pCurrentRecord = null, pLastRecord, pTempList;
+        RecordPtr? pTempRecord, pCurrentRecord = null, pLastRecord, pTempList;
         string pString;
-        int iCounter = 0, iHeight = 0, iOffSet = 0;
+        int iCounter = 0, iHeight = 0, iOffSet;
         bool fGoingOffCurrentPage = false;
-        int iYPositionOnPage = 0;
+        int iYPositionOnPage;
 
-        iOffSet = (int)pMail.usOffset;
+        iOffSet = pMail.usOffset;
 
         // set record ptr to head of list
-        //        pTempRecord = pMessageRecordList;
+        pTempRecord = pMessageRecordList;
 
         if (pEmailPageInfo[0].pFirstRecord != null)
         {
@@ -3974,7 +4017,7 @@ public class Emails
             while (pMail.usLength > iCounter)
             {
                 // read one record from email file
-                files.LoadEncryptedDataFromFile("BINARYDATA\\Email.edt", out pString, (MAIL_STRING_SIZE * (iOffSet + iCounter)), MAIL_STRING_SIZE);
+                files.LoadEncryptedDataFromFile("BINARYDATA\\Email.edt", out pString, MAIL_STRING_SIZE * (iOffSet + iCounter), MAIL_STRING_SIZE);
 
                 // add to list
                 AddEmailRecordToList(pString);
@@ -3982,13 +4025,13 @@ public class Emails
                 // increment email record counter
                 iCounter++;
             }
-            giPrevMessageId = giMessageId;
 
+            giPrevMessageId = giMessageId;
         }
 
         // set record ptr to head of list
-        //        pTempRecord = pMessageRecordList;
-        //def removed
+        pTempRecord = pMessageRecordList;
+
         // pass the subject line
         if (pTempRecord is not null && pMail.usOffset != IMP_EMAIL_PROFILE_RESULTS)
         {
@@ -3998,19 +4041,15 @@ public class Emails
         // get number of pages to this email
         giNumberOfPagesToCurrentEmail = GetNumberOfPagesToEmail();
 
-
         while (pTempRecord is not null)
         {
-
-            // copy over string
-            pString = wcscpy(pTempRecord.pRecord);
+            pString = pTempRecord.pRecord ?? string.Empty;
 
             // get the height of the string, ONLY!...must redisplay ON TOP OF background graphic
-            //            iHeight += IanWrappedStringHeight(VIEWER_X + MESSAGE_X + 4, (int)(VIEWER_MESSAGE_BODY_START_Y + iHeight + FontSubSystem.GetFontHeight(MESSAGE_FONT)), MESSAGE_WIDTH, MESSAGE_GAP, MESSAGE_FONT, MESSAGE_COLOR, pString, 0, false, 0);
+            iHeight += WordWrap.IanWrappedStringHeight(VIEWER_X + MESSAGE_X + 4, VIEWER_MESSAGE_BODY_START_Y + iHeight + FontSubSystem.GetFontHeight(MESSAGE_FONT), MESSAGE_WIDTH, MESSAGE_GAP, MESSAGE_FONT, MESSAGE_COLOR, pString, 0, false, 0);
 
             // next message record string
             pTempRecord = pTempRecord.Next;
-
         }
 
         // set iViewerY so to center the viewer
@@ -4022,160 +4061,132 @@ public class Emails
         }
 
         // set total height to height of records displayed
-        //        iTotalHeight = iHeight;
+        iTotalHeight = iHeight;
 
         // if the message background is less than MIN_MESSAGE_HEIGHT_IN_LINES, set to that number
-        //        if ((iTotalHeight / FontSubSystem.GetFontHeight(MESSAGE_FONT)) < MIN_MESSAGE_HEIGHT_IN_LINES)
-        //        {
-        //            iTotalHeight = FontSubSystem.GetFontHeight(MESSAGE_FONT) * MIN_MESSAGE_HEIGHT_IN_LINES;
-        //        }
+        if ((iTotalHeight / FontSubSystem.GetFontHeight(MESSAGE_FONT)) < MIN_MESSAGE_HEIGHT_IN_LINES)
+        {
+            iTotalHeight = FontSubSystem.GetFontHeight(MESSAGE_FONT) * MIN_MESSAGE_HEIGHT_IN_LINES;
+        }
 
-        //        if (iTotalHeight > MAX_EMAIL_MESSAGE_PAGE_SIZE)
-        //        {
-        //            // if message to big to fit on page
-        //            iTotalHeight = MAX_EMAIL_MESSAGE_PAGE_SIZE + 10;
-        //        }
-        //        else
-        //        {
-        //            iTotalHeight += 10;
-        //        }
-        //
-        //        pTempRecord = pMessageRecordList;
-        //
-        //        if (iTotalHeight < MAX_EMAIL_MESSAGE_PAGE_SIZE)
-        //        {
-        //            fOnLastPageFlag = true;
-        //
-        //            if (pTempRecord is not null && pMail.usOffset != IMP_EMAIL_PROFILE_RESULTS)
-        //            {
-        //                pTempRecord = pTempRecord.Next;
-        //            }
-        //
-        //            /*
-        //            //Def removed
-        //                    if( pTempRecord )
-        //                    {
-        //                        pTempRecord = pTempRecord.Next;
-        //                    }
-        //            */
-        //
-        //            pEmailPageInfo[0].pFirstRecord = pTempRecord;
-        //            pEmailPageInfo[0].iPageNumber = 0;
-        //
-        //
-        //            Debug.Assert(pTempRecord is not null);        // required, otherwise we're testing pCurrentRecord when undefined later
-        //
-        //            while (pTempRecord is not null)
-        //            {
-        //                pCurrentRecord = pTempRecord;
-        //
-        //                // increment email record ptr
-        //                pTempRecord = pTempRecord.Next;
-        //
-        //            }
-        //
-        //            // only one record to this email?..then set next to null
-        //            if (pCurrentRecord == pEmailPageInfo[0].pFirstRecord)
-        //            {
-        //                pCurrentRecord = null;
-        //            }
-        //
-        //            // set up the last record for the page
-        //            pEmailPageInfo[0].pLastRecord = pCurrentRecord;
-        //
-        //            // now set up the next page
-        //            pEmailPageInfo[1].pFirstRecord = null;
-        //            pEmailPageInfo[1].pLastRecord = null;
-        //            pEmailPageInfo[1].iPageNumber = 1;
-        //        }
-        //        else
-        //        {
-        //            fOnLastPageFlag = false;
-        //            pTempList = pMessageRecordList;
-        //
-        //            if (pTempList is not null && pMail.usOffset != IMP_EMAIL_PROFILE_RESULTS)
-        //            {
-        //                pTempList = pTempList.Next;
-        //            }
-        //
-        //            /*
-        //            //def removed
-        //                    // skip the subject
-        //                    if( pTempList )
-        //                    {
-        //                        pTempList = pTempList.Next;
-        //                    }
-        //
-        //            */
-        //            iCounter = 0;
-        //
-        //            // more than one page
-        //            //for( iCounter = 0; iCounter < giNumberOfPagesToCurrentEmail; iCounter++ )
-        //            while (pTempRecord = GetFirstRecordOnThisPage(pTempList, MESSAGE_FONT, MESSAGE_WIDTH, MESSAGE_GAP, iCounter, MAX_EMAIL_MESSAGE_PAGE_SIZE))
-        //            {
-        //                iYPositionOnPage = 0;
-        //
-        //                pEmailPageInfo[iCounter].pFirstRecord = pTempRecord;
-        //                pEmailPageInfo[iCounter].iPageNumber = iCounter;
-        //                pLastRecord = null;
-        //
-        //                // go to the right record
-        //                while (pTempRecord is not null)
-        //                {
-        //                    // copy over string 
-        //                    pString = wcscpy(pTempRecord.pRecord);
-        //
-        //                    if (pString[0] == 0)
-        //                    {
-        //                        // on last page
-        //                        fOnLastPageFlag = true;
-        //                    }
-        //
-        //
-        ////                    if ((iYPositionOnPage + IanWrappedStringHeight(0, 0, MESSAGE_WIDTH, MESSAGE_GAP,
-        ////                                                                        MESSAGE_FONT, 0, pTempRecord.pRecord,
-        ////                                                                     0, 0, 0)) <= MAX_EMAIL_MESSAGE_PAGE_SIZE)
-        ////                    {
-        ////                        // now print it
-        ////                        iYPositionOnPage += IanWrappedStringHeight(VIEWER_X + MESSAGE_X + 4, (int)(VIEWER_MESSAGE_BODY_START_Y + 10 + iYPositionOnPage + iViewerPositionY), MESSAGE_WIDTH, MESSAGE_GAP, MESSAGE_FONT, MESSAGE_COLOR, pString, 0, false, IAN_WRAP_NO_SHADOW);
-        ////                        fGoingOffCurrentPage = false;
-        ////                    }
-        ////                    else
-        ////                    {
-        ////                        // gonna get cut off...end now
-        ////                        fGoingOffCurrentPage = true;
-        ////                    }
-        //
-        //
-        //
-        //                    pCurrentRecord = pTempRecord;
-        //                    pTempRecord = pTempRecord.Next;
-        //
-        //                    if (fGoingOffCurrentPage == false)
-        //                    {
-        //                        pLastRecord = pTempRecord;
-        //                    }
-        //                    // record get cut off?...end now
-        //
-        //                    if (fGoingOffCurrentPage == true)
-        //                    {
-        //                        pTempRecord = null;
-        //                    }
-        //                }
-        //
-        //                if (pLastRecord == pEmailPageInfo[iCounter].pFirstRecord)
-        //                {
-        //                    pLastRecord = null;
-        //                }
-        //
-        //                pEmailPageInfo[iCounter].pLastRecord = pLastRecord;
-        //                iCounter++;
-        //            }
-        //
-        //            pEmailPageInfo[iCounter].pFirstRecord = null;
-        //            pEmailPageInfo[iCounter].pLastRecord = null;
-        //            pEmailPageInfo[iCounter].iPageNumber = iCounter;
-        //        }
+        if (iTotalHeight > MAX_EMAIL_MESSAGE_PAGE_SIZE)
+        {
+            // if message to big to fit on page
+            iTotalHeight = MAX_EMAIL_MESSAGE_PAGE_SIZE + 10;
+        }
+        else
+        {
+            iTotalHeight += 10;
+        }
+
+        pTempRecord = pMessageRecordList;
+
+        if (iTotalHeight < MAX_EMAIL_MESSAGE_PAGE_SIZE)
+        {
+            fOnLastPageFlag = true;
+
+            if (pTempRecord is not null && pMail.usOffset != IMP_EMAIL_PROFILE_RESULTS)
+            {
+                pTempRecord = pTempRecord.Next;
+            }
+
+            pEmailPageInfo[0].pFirstRecord = pTempRecord!;
+            pEmailPageInfo[0].iPageNumber = 0;
+
+            while (pTempRecord is not null)
+            {
+                pCurrentRecord = pTempRecord;
+
+                // increment email record ptr
+                pTempRecord = pTempRecord.Next;
+            }
+
+            // only one record to this email?..then set next to null
+            if (pCurrentRecord == pEmailPageInfo[0].pFirstRecord)
+            {
+                pCurrentRecord = null;
+            }
+
+            // set up the last record for the page
+            pEmailPageInfo[0].pLastRecord = pCurrentRecord!;
+
+            // now set up the next page
+            pEmailPageInfo[1].pFirstRecord = null!;
+            pEmailPageInfo[1].pLastRecord = null!;
+            pEmailPageInfo[1].iPageNumber = 1;
+        }
+        else
+        {
+            fOnLastPageFlag = false;
+            pTempList = pMessageRecordList;
+
+            if (pTempList is not null && pMail.usOffset != IMP_EMAIL_PROFILE_RESULTS)
+            {
+                pTempList = pTempList.Next;
+            }
+
+            iCounter = 0;
+
+            // more than one page
+            while ((pTempRecord = GetFirstRecordOnThisPage(pTempList, MESSAGE_FONT, MESSAGE_WIDTH, MESSAGE_GAP, iCounter, MAX_EMAIL_MESSAGE_PAGE_SIZE)) is not null)
+            {
+                iYPositionOnPage = 0;
+
+                pEmailPageInfo[iCounter].pFirstRecord = pTempRecord;
+                pEmailPageInfo[iCounter].iPageNumber = iCounter;
+                pLastRecord = null;
+
+                // go to the right record
+                while (pTempRecord is not null)
+                {
+                    pString = pTempRecord.pRecord ?? string.Empty;
+
+                    if (pString.Length == 0)
+                    {
+                        // on last page
+                        fOnLastPageFlag = true;
+                    }
+
+                    int iRecordHeight = WordWrap.IanWrappedStringHeight(0, 0, MESSAGE_WIDTH, MESSAGE_GAP, MESSAGE_FONT, 0, pString, 0, false, 0);
+                    if (iYPositionOnPage + iRecordHeight <= MAX_EMAIL_MESSAGE_PAGE_SIZE)
+                    {
+                        iYPositionOnPage += iRecordHeight;
+                        fGoingOffCurrentPage = false;
+                    }
+                    else
+                    {
+                        // gonna get cut off...end now
+                        fGoingOffCurrentPage = true;
+                    }
+
+                    pCurrentRecord = pTempRecord;
+                    pTempRecord = pTempRecord.Next;
+
+                    if (!fGoingOffCurrentPage)
+                    {
+                        pLastRecord = pTempRecord;
+                    }
+
+                    // record get cut off?...end now
+                    if (fGoingOffCurrentPage)
+                    {
+                        pTempRecord = null;
+                    }
+                }
+
+                if (pLastRecord == pEmailPageInfo[iCounter].pFirstRecord)
+                {
+                    pLastRecord = null;
+                }
+
+                pEmailPageInfo[iCounter].pLastRecord = pLastRecord!;
+                iCounter++;
+            }
+
+            pEmailPageInfo[iCounter].pFirstRecord = null!;
+            pEmailPageInfo[iCounter].pLastRecord = null!;
+            pEmailPageInfo[iCounter].iPageNumber = iCounter;
+        }
     }
 
     private static void ModifyInsuranceEmails(int usMessageId, int? iResults, email pMail, int ubNumberOfRecords)

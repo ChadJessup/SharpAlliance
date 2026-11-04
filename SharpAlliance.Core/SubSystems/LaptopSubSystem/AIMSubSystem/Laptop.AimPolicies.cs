@@ -383,8 +383,10 @@ public partial class Laptop
     		return( false );
 
     	for(i=0; i<AIM_POLICY_MENU_BUTTON_AMOUNT; i++)
+    	{
     		buttonList.Remove(guiPoliciesMenuButton[i]);
     		ButtonSubSystem.RemoveButton( guiPoliciesMenuButton[i]);
+    	}
 
     	ButtonSubSystem.UnloadButtonImage( guiPoliciesMenuButtonImage );
 
@@ -563,8 +565,10 @@ public partial class Laptop
     	ButtonSubSystem.UnloadButtonImage( guiPoliciesButtonImage);
 
     	for(i=0; i<2; i++)
-    	  buttonList.Remove(guiPoliciesAgreeButton[i]);
-    	  ButtonSubSystem.RemoveButton( guiPoliciesAgreeButton[ i ]);
+    	{
+    		buttonList.Remove(guiPoliciesAgreeButton[i]);
+    		ButtonSubSystem.RemoveButton( guiPoliciesAgreeButton[ i ]);
+    	}
 
     	gfInAgreementPage = false;
 

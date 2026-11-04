@@ -15,7 +15,10 @@ public class VideoSurfaceManager //: IVideoSurfaceManager
     //        public const int DEFAULT_NUM_REGIONS = 5;
 
     //        private readonly ILogger<VideoSurfaceManager> logger;
-    private static IVideoManager video;
+    private static IVideoManager video = null!;
+
+    /// <summary>Gives the static video surface helpers the video manager they draw through.</summary>
+    public static void Initialize(IVideoManager videoManager) => video = videoManager;
 
     //        private VSURFACE_NODE? gpVSurfaceHead = null;
     //        private VSURFACE_NODE? gpVSurfaceTail = null;

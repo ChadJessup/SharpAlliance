@@ -4,6 +4,10 @@ using System.Diagnostics;
 using System.Threading.Tasks;
 using SharpAlliance.Core.Interfaces;
 using SharpAlliance.Core.Managers;
+using SharpAlliance.Core.Managers.VideoSurfaces;
+using SixLabors.ImageSharp.Processing;
+using SharpAlliance.Core.SubSystems;
+using SharpAlliance.Platform.Interfaces;
 
 using static SharpAlliance.Core.Globals;
 
@@ -42,11 +46,55 @@ public class MapScreen : IScreen
 
     public ValueTask Activate()
     {
+        fMapBackgroundDrawn = false;
         return ValueTask.CompletedTask;
     }
 
+    private bool fMapBackgroundDrawn;
+    private SixLabors.ImageSharp.Image<SixLabors.ImageSharp.PixelFormats.Rgba32>? bigMapHalf;
+
+    /// <summary>
+    /// TODO(port): MapScreenHandle in mapscreen.c is not ported (character list, sector info, buttons, time
+    /// compression, ...). For now this only draws the map and its border so the screen is not blank.
+    /// </summary>
     public ValueTask<ScreenName> Handle()
     {
+        if (!fMapBackgroundDrawn)
+        {
+            fMapBackgroundDrawn = true;
+
+            var frame = video.Surfaces[SurfaceType.FRAME_BUFFER];
+            video.ColorFillVideoSurfaceArea(SurfaceType.FRAME_BUFFER, new(0, 0, 640, 480), new SixLabors.ImageSharp.PixelFormats.Rgba32(0, 0, 0, 255));
+
+            // the big map is drawn at half size, inside the map view
+            if (bigMapHalf is null)
+            {
+                var bigMap = video.GetVideoObject("INTERFACE\\b_map.pcx");
+                bigMapHalf = bigMap.Images[0].Clone(ctx => ctx.Resize(
+                    bigMap.Images[0].Width / 2,
+                    bigMap.Images[0].Height / 2));
+            }
+
+            video.Blt16BPPTo16BPP(
+                frame,
+                bigMapHalf,
+                new(MAP_VIEW_START_X + 1, MAP_VIEW_START_Y),
+                new(0, 0),
+                new(Math.Min(bigMapHalf.Width, 640 - MAP_VIEW_START_X - 1), Math.Min(bigMapHalf.Height, 480 - MAP_VIEW_START_Y)));
+
+            video.BltVideoObject(
+                SurfaceType.FRAME_BUFFER,
+                video.GetVideoObject(Utils.FilenameForBPP("INTERFACE\\MBS.sti")),
+                0,
+                MAP_BORDER_X,
+                0,
+                VO_BLT.SRCTRANSPARENCY);
+
+            video.InvalidateRegion(0, 0, 640, 480);
+        }
+
+        video.EndFrameBufferRender();
+
         return ValueTask.FromResult(ScreenName.MAP_SCREEN);
     }
 
@@ -151,7 +199,7 @@ public class MapScreen : IScreen
 
     public ValueTask Deactivate()
     {
-        throw new System.NotImplementedException();
+        return ValueTask.CompletedTask;
     }
 
     public static void MapscreenMarkButtonsDirty()

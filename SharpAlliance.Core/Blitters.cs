@@ -1,4 +1,5 @@
-﻿using SixLabors.ImageSharp;
+﻿using System;
+using SixLabors.ImageSharp;
 using SixLabors.ImageSharp.PixelFormats;
 
 namespace SharpAlliance.Core;
@@ -19,73 +20,31 @@ public static class Blitters
 *********************************************************************************************/
     public static bool Blt16BPPBufferShadowRect(Image<Rgba32> pBuffer, Rectangle area)
     {
-        int width, height;
-        uint LineSkip;
-        Image<Rgba32> DestPtr;
+        // The area is given by its corners, and the right and bottom edges are part of it (as in the original).
+        int left = Math.Max(area.Left, ClippingRect.Left);
+        int top = Math.Max(area.Top, ClippingRect.Top);
+        int right = Math.Min(area.Right, Math.Min(ClippingRect.Right, pBuffer.Width) - 1);
+        int bottom = Math.Min(area.Bottom, Math.Min(ClippingRect.Bottom, pBuffer.Height) - 1);
 
-        // Clipping
-        if (area.X < ClippingRect.X)
-        {
-            area.X = ClippingRect.X;
-        }
-
-        if (area.Top < ClippingRect.Top)
-        {
-            area.Height = ClippingRect.Top;
-        }
-
-        if (area.Right >= ClippingRect.Right)
-        {
-            area.Width = ClippingRect.Width - 1;
-        }
-
-        if (area.Bottom >= ClippingRect.Bottom)
-        {
-            area.Y = ClippingRect.Y - 1;
-        }
-
-        //CHECKF(area.Left >= ClippingRect.Left );
-        //CHECKF(area.Top >= ClippingRect.Top );
-        //CHECKF(area.Right <= ClippingRect.Right );
-        //CHECKF(area.Bottom <= ClippingRect.Bottom );
-
-        //DestPtr = (pBuffer + (area.Top * (uiDestPitchBYTES / 2)) + area.Left);
-        width = area.Right - area.Left + 1;
-        height = area.Bottom - area.Top + 1;
-        //LineSkip = (uiDestPitchBYTES - (width * 2));
+        int width = right - left + 1;
+        int height = bottom - top + 1;
 
         CHECKF(width >= 1);
         CHECKF(height >= 1);
 
-        //        __asm {
-        //            mov esi, OFFSET ShadeTable
-        //            mov     edi, DestPtr
-        //            xor     eax, eax
-        //            mov     ebx, LineSkip
-        //            mov     edx, height
-        //
-        //    BlitNewLine:
-        //		mov ecx, width
-        //    
-        //BlitLine:
-        //            mov ax, [edi]
-        //    
-        //        mov ax, [esi + eax * 2]
-        //    
-        //        mov[edi], ax
-        //        add     edi, 2
-        //    
-        //        dec ecx
-        //    
-        //        jnz BlitLine
-        //    
-        //
-        //        add edi, ebx
-        //    
-        //        dec edx
-        //    
-        //        jnz BlitNewLine
-        //    }
+        // darken every pixel by 25%
+        pBuffer.ProcessPixelRows(accessor =>
+        {
+            for (int y = top; y <= bottom; y++)
+            {
+                foreach (ref Rgba32 pixel in accessor.GetRowSpan(y).Slice(left, width))
+                {
+                    pixel.R = (byte)(pixel.R * 3 / 4);
+                    pixel.G = (byte)(pixel.G * 3 / 4);
+                    pixel.B = (byte)(pixel.B * 3 / 4);
+                }
+            }
+        });
 
         return true;
     }

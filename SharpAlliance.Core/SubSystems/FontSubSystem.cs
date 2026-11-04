@@ -320,6 +320,10 @@ public class FontSubSystem : ISharpAllianceManager
     {
     }
 
+    /// <summary>
+    /// Draws text wrapped to the given width, one line per (font height + gap) like the original, and returns the
+    /// height used so callers can place the next paragraph below it.
+    /// </summary>
     public static int DisplayWrappedString(
         SixLabors.ImageSharp.Point pos,
         int sWrappedWidth,
@@ -330,16 +334,65 @@ public class FontSubSystem : ISharpAllianceManager
         FontColor sBackgroundColor,
         TextJustifies bJustified)
     {
-        DrawTextToScreen(
-            stringText,
-            pos,
-            sWrappedWidth,
-            usFont,
-            sForeColor,
-            sBackgroundColor,
-            bJustified);
+        if (string.IsNullOrEmpty(stringText) || !fontLookup.TryGetValue(usFont, out Font? font))
+        {
+            return 0;
+        }
 
-        return 0;
+        List<string> lines = WrapText(stringText, font, sWrappedWidth);
+        int lineHeight = GetFontHeight(usFont) + gap;
+
+        if (!bJustified.HasFlag(TextJustifies.DONT_DISPLAY_TEXT))
+        {
+            for (int i = 0; i < lines.Count; i++)
+            {
+                DrawTextToScreen(
+                    lines[i],
+                    new PointF(pos.X, pos.Y + (i * lineHeight)),
+                    sWrappedWidth,
+                    usFont,
+                    sForeColor,
+                    sBackgroundColor,
+                    bJustified);
+            }
+        }
+
+        return lines.Count * lineHeight;
+    }
+
+    /// <summary>Breaks text into lines that fit the width (0 means no wrapping), measured with the font that will draw it.</summary>
+    private static List<string> WrapText(string text, Font font, int width)
+    {
+        var lines = new List<string>();
+        var options = new TextOptions(font);
+
+        foreach (string paragraph in text.Replace("\r", string.Empty).Split('\n'))
+        {
+            if (width <= 0)
+            {
+                lines.Add(paragraph);
+                continue;
+            }
+
+            string current = string.Empty;
+            foreach (string word in paragraph.Split(' '))
+            {
+                string candidate = current.Length == 0 ? word : current + " " + word;
+                if (current.Length > 0 && TextMeasurer.MeasureAdvance(candidate, options).Width > width)
+                {
+                    lines.Add(current);
+                    current = word;
+                }
+                else
+                {
+                    current = candidate;
+                }
+            }
+
+            lines.Add(current);
+        }
+
+        return lines;
     }
 
     public static void DrawTextToScreen(string text, PointF location)
@@ -366,13 +419,10 @@ public class FontSubSystem : ISharpAllianceManager
             return;
         }
 
-        var alignment = justification switch
-        {
-            TextJustifies.CENTER_JUSTIFIED => TextAlignment.Center,
-            TextJustifies.RIGHT_JUSTIFIED => TextAlignment.End,
-            TextJustifies.LEFT_JUSTIFIED => TextAlignment.Start,
-            _ => TextAlignment.Center,
-        };
+        // the justification is a set of flags (e.g. LEFT_JUSTIFIED | INVALIDATE_TEXT), so test the bits rather than the value
+        var alignment = justification.HasFlag(TextJustifies.CENTER_JUSTIFIED) ? TextAlignment.Center
+            : justification.HasFlag(TextJustifies.RIGHT_JUSTIFIED) ? TextAlignment.End
+            : TextAlignment.Start;
 
         FontSubSystem.TextRenderer.DrawText(
             text,
@@ -380,8 +430,29 @@ public class FontSubSystem : ISharpAllianceManager
             width,
             alignment,
             fontLookup[font],
-            fontColorLookup[foregroundColor],
-            fontColorLookup[foregroundColor]);
+            ResolveFontColor(font, foregroundColor),
+            ResolveFontColor(font, foregroundColor));
+    }
+
+    /// <summary>The RGB value of a font colour index, taken from the font's palette the first time it is used.</summary>
+    private static Rgba32 ResolveFontColor(FontStyle font, FontColor color)
+    {
+        if (fontColorLookup.TryGetValue(color, out Rgba32 known))
+        {
+            return known;
+        }
+
+        Rgba32 resolved = Color.White.ToPixel<Rgba32>();
+        if (FontObjs.TryGetValue(font, out HVOBJECT? fontObject)
+            && (int)color >= 0
+            && (int)color < fontObject.pPaletteEntry.Count)
+        {
+            SGPPaletteEntry entry = fontObject.pPaletteEntry[(int)color];
+            resolved = FROMRGB(entry.peRed, entry.peGreen, entry.peBlue);
+        }
+
+        fontColorLookup[color] = resolved;
+        return resolved;
     }
 
     public void Dispose()

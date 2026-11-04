@@ -571,6 +571,7 @@ public class MouseSubSystem : ISharpAllianceManager
     public static void MSYS_DisableRegion(ref MOUSE_REGION region)
     {
         region.uiFlags &= ~MouseRegionFlags.MSYS_REGION_ENABLED;
+        region.IsEnabled = false;
     }
 
     public static void SetRegionFastHelpText(MOUSE_REGION region, string fastHelpText)
@@ -720,7 +721,9 @@ public class MouseSubSystem : ISharpAllianceManager
     //	Returns a unique ID number for region nodes. If no new ID numbers can be found, the MAX value
     //	is returned.
     //
-    private static int GetNewId() => Regions.Count;
+    private static int nextRegionId;
+
+    private static int GetNewId() => ++nextRegionId;
 
     //=================================================================================================
     //	MSYS_DefineRegion
@@ -919,11 +922,13 @@ public class MouseSubSystem : ISharpAllianceManager
     internal static void MSYS_DisableRegion(MOUSE_REGION region)
     {
         region.uiFlags &= ~MouseRegionFlags.MSYS_REGION_ENABLED;
+        region.IsEnabled = false;
     }
 
     internal static void MSYS_EnableRegion(MOUSE_REGION region)
     {
         region.uiFlags |= MouseRegionFlags.MSYS_REGION_ENABLED;
+        region.IsEnabled = true;
     }
 
     internal static void RenderFastHelp()

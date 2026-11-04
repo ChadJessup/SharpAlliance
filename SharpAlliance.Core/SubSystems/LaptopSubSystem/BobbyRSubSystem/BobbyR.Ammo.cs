@@ -12,23 +12,7 @@ public partial class BobbyR
     {
     }
 
-    internal static void ExitBobbyRAmmo()
-    {
-    }
-
-    internal static void ExitBobbyRArmour()
-    {
-    }
-
-    internal static void ExitBobbyRGuns()
-    {
-    }
-
     internal static void ExitBobbyRMailOrder()
-    {
-    }
-
-    internal static void ExitBobbyRMisc()
     {
     }
 
@@ -36,31 +20,7 @@ public partial class BobbyR
     {
     }
 
-    internal static void ExitBobbyRUsed()
-    {
-    }
-
-    internal static void HandleBobbyRAmmo()
-    {
-        throw new NotImplementedException();
-    }
-
-    internal static void HandleBobbyRArmour()
-    {
-        throw new NotImplementedException();
-    }
-
-    internal static void HandleBobbyRGuns()
-    {
-        throw new NotImplementedException();
-    }
-
     internal static void HandleBobbyRMailOrder()
-    {
-        throw new NotImplementedException();
-    }
-
-    internal static void HandleBobbyRMisc()
     {
         throw new NotImplementedException();
     }
@@ -70,8 +30,4 @@ public partial class BobbyR
         throw new NotImplementedException();
     }
 
-    internal static void HandleBobbyRUsed()
-    {
-        throw new NotImplementedException();
-    }
 }

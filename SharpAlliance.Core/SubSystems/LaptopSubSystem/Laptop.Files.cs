@@ -59,42 +59,52 @@ public partial class Laptop
         return uiId;
     }
 
+    private const int FILES_PATH_SIZE = 128;
+
+    private static void WritePath(BinaryWriter writer, string? path)
+    {
+        byte[] buffer = new byte[FILES_PATH_SIZE];
+        if (!string.IsNullOrEmpty(path))
+        {
+            System.Text.Encoding.ASCII.GetBytes(path, 0, Math.Min(path.Length, FILES_PATH_SIZE - 1), buffer, 0);
+        }
+
+        writer.Write(buffer);
+    }
+
+    private static string ReadPath(BinaryReader reader)
+    {
+        byte[] buffer = reader.ReadBytes(FILES_PATH_SIZE);
+        int length = Array.IndexOf(buffer, (byte)0);
+        return System.Text.Encoding.ASCII.GetString(buffer, 0, length < 0 ? buffer.Length : length);
+    }
+
     private static bool OpenAndWriteFilesFile()
     {
-        // this procedure will open and write out data from the finance list
-        Stream hFileHandle;
-        int iBytesWritten = 0;
-
-        // open file
-        hFileHandle = files.FileOpen(FILES_DAT_FILE, FileAccess.Write, FileMode.OpenOrCreate, false);
+        // this procedure will open and write out data from the files list
+        Stream hFileHandle = files.FileOpen(FILES_DAT_FILE, FileAccess.Write, FileMode.Create, false);
 
         // if no file exits, do nothing
         if (!hFileHandle.CanWrite)
         {
-            return (false);
+            return false;
         }
 
-        // write info, while there are elements left in the list
-        foreach(var pFile in pFilesListHead)
+        using (var writer = new BinaryWriter(hFileHandle, System.Text.Encoding.ASCII, leaveOpen: true))
         {
-            string pFirstFilePath = pFile.pPicFileNameList[0];
-            string pSecondFilePath = pFile.pPicFileNameList[1];
-
-            // now write date and amount, and code
-            files.FileWrite(hFileHandle, (pFile.ubCode), sizeof(int), out var _);
-            files.FileWrite(hFileHandle, (pFile.uiDate), sizeof(uint), out var _);
-            files.FileWrite(hFileHandle, (pFirstFilePath), 128, out var _);
-            files.FileWrite(hFileHandle, (pSecondFilePath), 128, out var _);
-            files.FileWrite(hFileHandle, (pFile.ubFormat), sizeof(byte), out var _);
-            files.FileWrite(hFileHandle, (pFile.fRead), sizeof(bool), out var _);
+            foreach (var pFile in pFilesListHead)
+            {
+                writer.Write((int)pFile.ubCode);
+                writer.Write(pFile.uiDate);
+                WritePath(writer, pFile.pPicFileNameList[0]);
+                WritePath(writer, pFile.pPicFileNameList[1]);
+                writer.Write((byte)pFile.ubFormat);
+                writer.Write(pFile.fRead);
+            }
         }
 
-        // close file
         files.FileClose(hFileHandle);
-        // clear out the old list
-        ClearFilesList();
-
-        return (true);
+        return true;
     }
 
     private static void CheckForUnreadFiles()
@@ -124,28 +134,16 @@ public partial class Laptop
 
     private static void OpenAndReadFilesFile()
     {
-        // this procedure will open and read in data to the finance list
-        Stream hFileHandle;
-        BACKGROUND ubCode = 0;
-        uint uiDate = 0;
-        int iBytesRead = 0;
-        uint uiByteCount = 0;
-        string pFirstFilePath = string.Empty;
-        string pSecondFilePath = string.Empty;
-        byte ubFormat = 0;
-        bool fRead = false;
-
-        // clear out the old list
+        // this procedure will open and read in data to the files list
         ClearFilesList();
 
         // no file, return
-        if (!(files.FileExists(FILES_DAT_FILE)))
+        if (!files.FileExists(FILES_DAT_FILE))
         {
             return;
         }
 
-        // open file
-        hFileHandle = files.FileOpen(FILES_DAT_FILE, FileAccess.Read, FileMode.Open, false);
+        Stream hFileHandle = files.FileOpen(FILES_DAT_FILE, FileAccess.Read, FileMode.Open, false);
 
         // failed to get file, return
         if (!hFileHandle.CanRead)
@@ -153,31 +151,24 @@ public partial class Laptop
             return;
         }
 
-        // make sure file is more than 0 length
-        if (files.FileGetSize(hFileHandle) == 0)
+        const int recordSize = sizeof(int) + sizeof(uint) + FILES_PATH_SIZE + FILES_PATH_SIZE + sizeof(byte) + sizeof(bool);
+
+        using (var reader = new BinaryReader(hFileHandle, System.Text.Encoding.ASCII, leaveOpen: true))
         {
-            files.FileClose(hFileHandle);
-            return;
+            // file exists, read in data, continue until file end
+            while (hFileHandle.Length - hFileHandle.Position >= recordSize)
+            {
+                BACKGROUND ubCode = (BACKGROUND)reader.ReadInt32();
+                uint uiDate = reader.ReadUInt32();
+                string pFirstFilePath = ReadPath(reader);
+                string pSecondFilePath = ReadPath(reader);
+                byte ubFormat = reader.ReadByte();
+                bool fRead = reader.ReadBoolean();
+
+                ProcessAndEnterAFilesRecord(ubCode, uiDate, ubFormat, pFirstFilePath, pSecondFilePath, fRead);
+            }
         }
 
-        // file exists, read in data, continue until file end
-        while (files.FileGetSize(hFileHandle) > uiByteCount)
-        {
-            // read in data
-            //            files.FileRead(hFileHandle, &ubCode, sizeof(byte), out iBytesRead);
-            //            files.FileRead(hFileHandle, &uiDate, sizeof(uint), out iBytesRead);
-            //            files.FileRead(hFileHandle, &pFirstFilePath, 128, out iBytesRead);
-            //            files.FileRead(hFileHandle, &pSecondFilePath, 128, out iBytesRead);
-            //            files.FileRead(hFileHandle, &ubFormat, sizeof(byte), out iBytesRead);
-            //            files.FileRead(hFileHandle, &fRead, sizeof(bool), out iBytesRead);
-            // add transaction
-            ProcessAndEnterAFilesRecord(ubCode, uiDate, ubFormat, pFirstFilePath, pSecondFilePath, fRead);
-
-            // increment byte counter
-            uiByteCount += sizeof(uint) + sizeof(byte) + 128 + 128 + sizeof(byte) + sizeof(bool);
-        }
-
-        // close file 
         files.FileClose(hFileHandle);
     }
 

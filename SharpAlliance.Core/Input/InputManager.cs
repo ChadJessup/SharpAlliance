@@ -160,6 +160,8 @@ public class InputManager : IInputManager
 
             InputTracker.UpdateFrameInput(snapshot);
 
+            this.gusMousePos = new Point((int)snapshot.MousePosition.X, (int)snapshot.MousePosition.Y);
+
             var tmpLeft = snapshot.IsMouseDown(MouseButton.Left);
             var tmpRight = snapshot.IsMouseDown(MouseButton.Right);
 

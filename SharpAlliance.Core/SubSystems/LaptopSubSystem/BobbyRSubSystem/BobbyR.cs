@@ -12,10 +12,12 @@ public partial class BobbyR
 {
     public BobbyR(
         ILogger<BobbyR> logger,
-        IVideoManager videoManager)
+        IVideoManager videoManager,
+        IFileManager fileManager)
     {
         this.logger = logger;
         video = videoManager;
+        files = fileManager;
     }
 
     public bool EnterBobbyR()
@@ -383,6 +385,7 @@ public partial class BobbyR
     static ushort usCount = 0;
     private readonly ILogger<BobbyR> logger;
     private static IVideoManager video;
+    private static IFileManager files = null!;
 
     private static void HandleBobbyRUnderConstructionAni(bool fReset)
     {

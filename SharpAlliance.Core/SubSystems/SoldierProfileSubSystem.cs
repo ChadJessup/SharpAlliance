@@ -52,13 +52,15 @@ public class SoldierProfileSubSystem
             ubLoopLimit = Globals.MAX_NUM_SOLDIERS;
         }
 
-        for (ubLoop = 0, pSoldier = Globals.MercPtrs[0]; ubLoop < ubLoopLimit; ubLoop++)//, pSoldier++)
+        for (ubLoop = 0; ubLoop < ubLoopLimit; ubLoop++)
         {
-            if (pSoldier.bActive && pSoldier.ubProfile == ubProfileID)
+            pSoldier = Globals.MercPtrs[ubLoop];
+            if (pSoldier is not null && pSoldier.bActive && pSoldier.ubProfile == ubProfileID)
             {
                 return pSoldier;
             }
         }
+
         return null;
     }
 

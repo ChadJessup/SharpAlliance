@@ -39,7 +39,12 @@ public record LibraryHeader
 
         if (!string.IsNullOrWhiteSpace(this.sLibraryPath))
         {
-            fileNameNoLibrary = fileName.ToUpper().Replace(this.sLibraryPath.ToUpper(), "");
+            // remove the library's path once, from the front: a plain Replace would also eat the same text inside a
+            // sub folder name (the "faces\\" library and "FACES\BIGFACES\00.STI" would become "BIG00.STI")
+            int at = fileName.IndexOf(this.sLibraryPath, StringComparison.OrdinalIgnoreCase);
+            fileNameNoLibrary = at >= 0
+                ? fileName.Remove(at, this.sLibraryPath.Length)
+                : fileName;
         }
 
         //this.pFileHeader.TryGetValue(fileName, out var fileHeader);
