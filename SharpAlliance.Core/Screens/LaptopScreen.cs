@@ -26,6 +26,7 @@ public partial class Laptop : IScreen
     private static History history;
     private static BobbyR bobbyR;
     private static IFileManager files;
+    private static MessageBoxSubSystem messageBoxes = null!;
     public static readonly List<GUI_BUTTON> buttonList = [];
 
     public Laptop(
@@ -34,9 +35,11 @@ public partial class Laptop : IScreen
         IScreenManager screenManager,
         History history,
         BobbyR bobbyR,
-        IFileManager fileManager)
+        IFileManager fileManager,
+        MessageBoxSubSystem messageBoxSubSystem)
     {
         this.logger = logger;
+        messageBoxes = messageBoxSubSystem;
         files = fileManager;
         Laptop.history = history;
         Laptop.bobbyR = bobbyR;
@@ -1484,21 +1487,6 @@ public partial class Laptop : IScreen
         throw new NotImplementedException();
     }
 
-    private void HandleAimHistory()
-    {
-        throw new NotImplementedException();
-    }
-
-    private void HandleAimLinks()
-    {
-        throw new NotImplementedException();
-    }
-
-    private void HandleAimPolicies()
-    {
-        throw new NotImplementedException();
-    }
-
     private void HandleAimArchives()
     {
         throw new NotImplementedException();
@@ -1517,10 +1505,6 @@ public partial class Laptop : IScreen
     private void HandleAIMMembers()
     {
         throw new NotImplementedException();
-    }
-
-    private void HandleAIM()
-    {
     }
 
     private void GetLaptopKeyboardInput()
@@ -1577,9 +1561,25 @@ public partial class Laptop : IScreen
         }
     }
 
-    private void BtnErrorCallback(ref GUI_BUTTON button, MSYS_CALLBACK_REASON reason)
+    private void BtnErrorCallback(ref GUI_BUTTON btn, MSYS_CALLBACK_REASON reason)
     {
-        throw new NotImplementedException();
+        if (!btn.uiFlags.HasFlag(ButtonFlags.BUTTON_ENABLED))
+        {
+            return;
+        }
+
+        if (reason.HasFlag(MSYS_CALLBACK_REASON.LBUTTON_DWN))
+        {
+            btn.uiFlags |= ButtonFlags.BUTTON_CLICKED_ON;
+        }
+        else if (reason.HasFlag(MSYS_CALLBACK_REASON.LBUTTON_UP))
+        {
+            if (btn.uiFlags.HasFlag(ButtonFlags.BUTTON_CLICKED_ON))
+            {
+                btn.uiFlags &= ~ButtonFlags.BUTTON_CLICKED_ON;
+                fErrorFlag = false;
+            }
+        }
     }
 
     private void BtnGenericMouseMoveButtonCallback(ref GUI_BUTTON button, MSYS_CALLBACK_REASON reason)
@@ -1609,9 +1609,11 @@ public partial class Laptop : IScreen
     void CreateBookMarkMouseRegions()
     {
         int iCounter = 0;
+
         // creates regions based on number of entries
         while (LaptopSaveInfo.iBookMarkList[iCounter] != (BOOKMARK)(-1))
         {
+            gBookmarkMouseRegions[iCounter] = new("gBookmarkMouseRegions-" + iCounter);
             MouseSubSystem.MSYS_DefineRegion(
                 gBookmarkMouseRegions[iCounter],
                 Rectangle.FromLTRB(BOOK_X,
@@ -1634,6 +1636,7 @@ public partial class Laptop : IScreen
         }
         // now add one more
         // for the cancel button
+        gBookmarkMouseRegions[iCounter] = new("gBookmarkMouseRegions-" + iCounter);
         MouseSubSystem.MSYS_DefineRegion(
             gBookmarkMouseRegions[iCounter],
             Rectangle.FromLTRB(BOOK_X,
@@ -1882,9 +1885,18 @@ public partial class Laptop : IScreen
     }
 
 
-    private static void DoLapTopMessageBox(MessageBoxStyle mSG_BOX_LAPTOP_DEFAULT, string v, ScreenName lAPTOP_SCREEN, MSG_BOX_FLAG oK, MSGBOX_CALLBACK internetRainDelayMessageBoxCallBack)
+    internal static bool DoLapTopMessageBox(MessageBoxStyle ubStyle, string zString, ScreenName uiExitScreen, MSG_BOX_FLAG ubFlags, MSGBOX_CALLBACK? ReturnCallback)
     {
-        throw new NotImplementedException();
+        Rectangle? pCenteringRect = Rectangle.FromLTRB(LAPTOP_SCREEN_UL_X, LAPTOP_SCREEN_UL_Y, LAPTOP_SCREEN_LR_X, LAPTOP_SCREEN_LR_Y);
+
+        // reset exit mode
+        fExitDueToMessageBox = true;
+
+        // do message box and return
+        iLaptopMessageBox = messageBoxes.DoMessageBox(ubStyle, zString, uiExitScreen, ubFlags | MSG_BOX_FLAG.USE_CENTERING_RECT, ReturnCallback, ref pCenteringRect);
+
+        // send back return state
+        return iLaptopMessageBox != -1;
     }
 
     private static bool IsItRaining()
@@ -2811,21 +2823,6 @@ public partial class Laptop : IScreen
         throw new NotImplementedException();
     }
 
-    private void EnterAimHistory()
-    {
-        throw new NotImplementedException();
-    }
-
-    private void EnterAimLinks()
-    {
-        throw new NotImplementedException();
-    }
-
-    private void EnterAimPolicies()
-    {
-        throw new NotImplementedException();
-    }
-
     private void EnterAimSort()
     {
         throw new NotImplementedException();
@@ -3089,21 +3086,6 @@ public partial class Laptop : IScreen
         throw new NotImplementedException();
     }
 
-    private void ExitAimHistory()
-    {
-        throw new NotImplementedException();
-    }
-
-    private void ExitAimLinks()
-    {
-        throw new NotImplementedException();
-    }
-
-    private void ExitAimPolicies()
-    {
-        throw new NotImplementedException();
-    }
-
     private void ExitAimSort()
     {
         throw new NotImplementedException();
@@ -3270,14 +3252,100 @@ public partial class Laptop : IScreen
         return (true);
     }
 
-    private void PersonnelRegionButtonCallback(ref GUI_BUTTON button, MSYS_CALLBACK_REASON reason)
+    private void PersonnelRegionButtonCallback(ref GUI_BUTTON btn, MSYS_CALLBACK_REASON reason)
     {
-        throw new NotImplementedException();
+        if (!btn.uiFlags.HasFlag(ButtonFlags.BUTTON_ENABLED))
+        {
+            return;
+        }
+
+        if (reason.HasFlag(MSYS_CALLBACK_REASON.LBUTTON_DWN))
+        {
+            if (!btn.uiFlags.HasFlag(ButtonFlags.BUTTON_CLICKED_ON))
+            {
+                btn.uiFlags |= ButtonFlags.BUTTON_CLICKED_ON;
+            }
+        }
+        else if (reason.HasFlag(MSYS_CALLBACK_REASON.LBUTTON_UP))
+        {
+            if (btn.uiFlags.HasFlag(ButtonFlags.BUTTON_CLICKED_ON))
+            {
+                btn.uiFlags &= ~ButtonFlags.BUTTON_CLICKED_ON;
+
+                // if not already on this program, remember where we came from
+                if (giCurrentRegion != LaptopRegions.PERSONNEL_REGION)
+                {
+                    giOldRegion = giCurrentRegion;
+                }
+
+                // stop showing WWW bookmarks
+                if (gfShowBookmarks)
+                {
+                    gfShowBookmarks = false;
+                    fReDrawScreenFlag = true;
+                }
+
+                giCurrentRegion = LaptopRegions.PERSONNEL_REGION;
+                guiCurrentLaptopMode = LAPTOP_MODE.PERSONNEL;
+
+                // restore the old highlight region and highlight the new one
+                RestoreOldRegion(giOldRegion);
+                HighLightRegion(giCurrentRegion);
+
+                UpdateListToReflectNewProgramOpened(LAPTOP_PROGRAM.PERSONNEL);
+
+                // redraw screen
+                fReDrawScreenFlag = true;
+            }
+        }
     }
 
-    private void HistoryRegionButtonCallback(ref GUI_BUTTON button, MSYS_CALLBACK_REASON reason)
+    private void HistoryRegionButtonCallback(ref GUI_BUTTON btn, MSYS_CALLBACK_REASON reason)
     {
-        throw new NotImplementedException();
+        if (!btn.uiFlags.HasFlag(ButtonFlags.BUTTON_ENABLED))
+        {
+            return;
+        }
+
+        if (reason.HasFlag(MSYS_CALLBACK_REASON.LBUTTON_DWN))
+        {
+            if (!btn.uiFlags.HasFlag(ButtonFlags.BUTTON_CLICKED_ON))
+            {
+                btn.uiFlags |= ButtonFlags.BUTTON_CLICKED_ON;
+            }
+        }
+        else if (reason.HasFlag(MSYS_CALLBACK_REASON.LBUTTON_UP))
+        {
+            if (btn.uiFlags.HasFlag(ButtonFlags.BUTTON_CLICKED_ON))
+            {
+                btn.uiFlags &= ~ButtonFlags.BUTTON_CLICKED_ON;
+
+                // if not already on this program, remember where we came from
+                if (giCurrentRegion != LaptopRegions.HISTORY_REGION)
+                {
+                    giOldRegion = giCurrentRegion;
+                }
+
+                // stop showing WWW bookmarks
+                if (gfShowBookmarks)
+                {
+                    gfShowBookmarks = false;
+                    fReDrawScreenFlag = true;
+                }
+
+                giCurrentRegion = LaptopRegions.HISTORY_REGION;
+                guiCurrentLaptopMode = LAPTOP_MODE.HISTORY;
+
+                // restore the old highlight region and highlight the new one
+                RestoreOldRegion(giOldRegion);
+                HighLightRegion(giCurrentRegion);
+
+                UpdateListToReflectNewProgramOpened(LAPTOP_PROGRAM.HISTORY);
+
+                // redraw screen
+                fReDrawScreenFlag = true;
+            }
+        }
     }
 
     private void BtnOnCallback(ref GUI_BUTTON btn, MSYS_CALLBACK_REASON reason)

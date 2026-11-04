@@ -3,6 +3,20 @@
     "Items.c": "ItemSubSystem"
   },
   "aliases": {
-    "NOTHING": "Items.NONE"
-  }
+    "NOTHING": "Items.NONE",
+    "LAPTOP_PROGRAM_MINIMIZED": "LAPTOP_PROGRAM_STATES.LAPTOP_PROGRAM_MINIMIZED",
+    "LAPTOP_PROGRAM_MAXIMIZED": "LAPTOP_PROGRAM_STATES.LAPTOP_PROGRAM_MAXIMIZED",
+    "fNewMailFlag": "Emails.fNewMailFlag",
+    "fDeleteMailFlag": "Emails.fDeleteMailFlag"
+  },
+  "qualify": {
+    "Emails": ["CreateDestroyNewMailButton", "CreateDestroyDeleteNoticeMailButton", "ReDrawNewMailBox", "DisplayNewMailBox", "AddEmail", "ShutDownEmailList"],
+    "Finances": ["InsertCommasForDollarFigure", "InsertDollarSignInToString"],
+    "History": ["ClearHistoryList"],
+    "HelpScreen": ["ShouldTheHelpScreenComeUp", "HelpScreenHandler"],
+    "GameClock": ["GetWorldTotalMin"]
+  },
+  "call_rules": [
+    ["(?<![\\w.])MarkButtonsDirty\\(\\s*\\)", "ButtonSubSystem.MarkButtonsDirty(buttonList)"]
+  ]
 }

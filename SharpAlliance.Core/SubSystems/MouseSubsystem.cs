@@ -791,6 +791,11 @@ public class MouseSubSystem : ISharpAllianceManager
         MouseCallback? movecallback,
         MouseCallback? buttoncallback)
     {
+        if (region is null)
+        {
+            var b = 0;
+        }
+
         if (region.Name == "MouseRegion")
         {
 

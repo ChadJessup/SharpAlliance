@@ -4,6 +4,7 @@ using SharpAlliance.Core.Interfaces;
 using SharpAlliance.Core.Managers;
 using SharpAlliance.Core.Managers.VideoSurfaces;
 using SharpAlliance.Core.Screens;
+using SharpAlliance.Core.SubSystems.LaptopSubSystem;
 using SharpAlliance.Platform.Interfaces;
 using static SharpAlliance.Core.EnglishText;
 using static SharpAlliance.Core.Globals;
@@ -224,7 +225,7 @@ public class History
         this.DisplayPageNumberAndDateRange();
 
         // title bar icon
-//        BlitTitleBarIcons();
+        Laptop.BlitTitleBarIcons();
 
         return;
     }
@@ -772,7 +773,7 @@ public class History
                 StrategicMap.GetSectorIDString(pCurHistory.sSectorX, pCurHistory.sSectorY, pCurHistory.bSectorZ, out sString, true);
                 FontSubSystem.FindFontCenterCoordinates(RECORD_DATE_X + RECORD_DATE_WIDTH, 0, RECORD_LOCATION_WIDTH + 10, 0, sString, Globals.HISTORY_TEXT_FONT, out sX, out sY);
 
-                WordWrap.ReduceStringLength(sString, RECORD_LOCATION_WIDTH + 10, Globals.HISTORY_TEXT_FONT);
+                WordWrap.ReduceStringLength(ref sString, RECORD_LOCATION_WIDTH + 10, Globals.HISTORY_TEXT_FONT);
 
                 mprintf(sX, RECORD_Y + (iCounter * BOX_HEIGHT) + 3, sString);
             }

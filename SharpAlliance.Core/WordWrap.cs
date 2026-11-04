@@ -17,72 +17,36 @@ public class WordWrap
     private const char TEXT_CODE_NEWCOLOR = (char)180;
     private const char TEXT_CODE_DEFCOLOR = (char)181;
 
-    public static bool ReduceStringLength(string pString, int uiWidthToFitIn, FontStyle uiFont)
+    /// <summary>Shortens pString so it fits in uiWidthToFitIn pixels, ending it with "..." when it had to be cut.</summary>
+    public static bool ReduceStringLength(ref string pString, int uiWidthToFitIn, FontStyle uiFont)
     {
-        string OneChar;
-        string zTemp = string.Empty;
-        string zStrDots = string.Empty;
-        int uiDotWidth;
-        int uiTempStringPixWidth = 0;
-        int uiStringPixWidth;
-        bool fDone = false;
-        int uiSrcStringCntr = 0;
-        int uiOneCharWidth = 0;
-
-        //        uiStringPixWidth = WFStringPixLength(pString, uiFont);
-
-        OneChar = "\0";
-        //zTemp[0] = '\0';
-
-        //if the string is wider then the loaction
-        //        if (uiStringPixWidth <= uiWidthToFitIn)
-        //        {
-        //            //leave
-        //            return (true);
-        //        }
-
-        //addd the '...' to the string
-        //        wcscpy(zStrDots, "...");
-
-        //get the width of the '...'
-        //        uiDotWidth = FontSubSystem.StringPixLength(zStrDots, uiFont);
-
-        //since the temp strig will contain the '...' add the '...' width to the temp string now
-        //        uiTempStringPixWidth = uiDotWidth;
-
-        //loop through and add each character, 1 at a time
-        while (!fDone)
+        //if the string already fits, leave
+        if (FontSubSystem.WFStringPixLength(pString, uiFont) <= uiWidthToFitIn)
         {
-            //get the next char
-            //            OneChar = pString[uiSrcStringCntr];
-
-            //get the width of the character
-            uiOneCharWidth = FontSubSystem.StringPixLength(OneChar.ToString(), uiFont);
-
-            //will the new char + the old string be too wide for the width
-            if ((uiTempStringPixWidth + uiOneCharWidth) <= uiWidthToFitIn)
-            {
-                //add the new char to the string
-                //                zTemp = wcscat(OneChar);
-
-                //add the new char width to the string width
-                uiTempStringPixWidth += uiOneCharWidth;
-
-                //increment to the next string
-                uiSrcStringCntr++;
-            }
-
-            //yes the string would be too long if we add the new char, stop adding characters
-            else
-            {
-                //we are done
-                fDone = true;
-            }
+            return true;
         }
 
+        const string zStrDots = "...";
+
+        //since the temp string will contain the '...' add the '...' width to the temp string now
+        int uiTempStringPixWidth = FontSubSystem.StringPixLength(zStrDots, uiFont);
+        var zTemp = new System.Text.StringBuilder();
+
+        //loop through and add each character, 1 at a time, until the next one would not fit
+        foreach (char c in pString)
+        {
+            int uiOneCharWidth = FontSubSystem.StringPixLength(c.ToString(), uiFont);
+            if (uiTempStringPixWidth + uiOneCharWidth > uiWidthToFitIn)
+            {
+                break;
+            }
+
+            zTemp.Append(c);
+            uiTempStringPixWidth += uiOneCharWidth;
+        }
 
         //combine the temp string and the '...' to form the finished string
-        pString = wprintf("%s%s", zTemp, zStrDots);
+        pString = zTemp + zStrDots;
 
         return true;
     }

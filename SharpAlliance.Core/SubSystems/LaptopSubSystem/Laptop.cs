@@ -317,13 +317,13 @@ public partial class Laptop
                 //                RenderAimArchives();
                 break;
             case LAPTOP_MODE.AIM_POLICIES:
-                //                RenderAimPolicies();
+                RenderAimPolicies();
                 break;
             case LAPTOP_MODE.AIM_LINKS:
-                //                RenderAimLinks();
+                RenderAimLinks();
                 break;
             case LAPTOP_MODE.AIM_HISTORY:
-                //                RenderAimHistory();
+                RenderAimHistory();
                 break;
             case LAPTOP_MODE.MERC:
                 //                RenderMercs();
@@ -510,7 +510,7 @@ public partial class Laptop
         {
             if (ubPreviousAdvertisment == AIM_AD.DONE)
             {
-//                gubCurrentAdvertisment = GetNextAimAd(gubCurrentAdvertisment);
+gubCurrentAdvertisment = GetNextAimAd(gubCurrentAdvertisment);
 
                 fInit = true;
 
@@ -573,33 +573,33 @@ public partial class Laptop
         {
             case AIM_AD.WARNING_BOX:
                 MouseSubSystem.MSYS_DisableRegion(gSelectedBannerRegion);
-//                ubPreviousAdvertisment = DrawWarningBox(fInit, fRedraw);
+ubPreviousAdvertisment = DrawWarningBox(fInit, fRedraw);
                 break;
 
             case AIM_AD.FLOWER_SHOP:
-//                ubPreviousAdvertisment = DisplayFlowerAd(fInit, fRedraw);
+ubPreviousAdvertisment = DisplayFlowerAd(fInit, fRedraw);
                 break;
 
             case AIM_AD.FOR_ADS:
                 // disable the region because only certain banners will be 'clickable'
                 MouseSubSystem.MSYS_DisableRegion(gSelectedBannerRegion);
-//                ubPreviousAdvertisment = DisplayAd(fInit, fRedraw, AIM_AD.FOR_ADS_DELAY, AIM_AD.FOR_ADS__NUM_SUBIMAGES, guiAdForAdsImages);
+ubPreviousAdvertisment = DisplayAd(fInit, fRedraw, AIM_AD_FOR_ADS_DELAY, AIM_AD_FOR_ADS__NUM_SUBIMAGES, guiAdForAdsImages);
                 break;
 
             case AIM_AD.INSURANCE_AD:
                 MouseSubSystem.MSYS_EnableRegion(gSelectedBannerRegion);
-//                ubPreviousAdvertisment = DisplayAd(fInit, fRedraw, AIM_AD.INSURANCE_AD_DELAY, AIM_AD.INSURANCE_AD__NUM_SUBIMAGES, guiInsuranceAdImages);
+ubPreviousAdvertisment = DisplayAd(fInit, fRedraw, AIM_AD_INSURANCE_AD_DELAY, AIM_AD_INSURANCE_AD__NUM_SUBIMAGES, guiInsuranceAdImages);
                 break;
 
             case AIM_AD.FUNERAL_ADS:
                 MouseSubSystem.MSYS_EnableRegion(gSelectedBannerRegion);
-//                ubPreviousAdvertisment = DisplayAd(fInit, fRedraw, AIM_AD.FUNERAL_AD_DELAY, AIM_AD.FUNERAL_AD__NUM_SUBIMAGES, guiFuneralAdImages);
+ubPreviousAdvertisment = DisplayAd(fInit, fRedraw, AIM_AD_FUNERAL_AD_DELAY, AIM_AD_FUNERAL_AD__NUM_SUBIMAGES, guiFuneralAdImages);
                 break;
 
             case AIM_AD.BOBBY_RAY_AD:
                 MouseSubSystem.MSYS_EnableRegion(gSelectedBannerRegion);
                 //			ubPreviousAdvertisment = DisplayAd( fInit, fRedraw, AIM_AD.BOBBYR_AD_DELAY, AIM_AD.BOBBYR_AD__NUM_SUBIMAGES, guiBobbyRAdImages );
-//                ubPreviousAdvertisment = DisplayBobbyRAd(fInit, fRedraw);
+ubPreviousAdvertisment = DisplayBobbyRAd(fInit, fRedraw);
                 break;
         }
     }
@@ -780,9 +780,16 @@ public partial class Laptop
         guiExitScreen = exitScreen;
     }
 
-    internal static void DoLapTopSystemMessageBoxWithRect(MessageBoxStyle mSG_BOX_LAPTOP_DEFAULT, string zString, ScreenName lAPTOP_SCREEN, MSG_BOX_FLAG usFlags, MSGBOX_CALLBACK? returnCallback, Rectangle? pCenteringRect)
+    internal static bool DoLapTopSystemMessageBoxWithRect(MessageBoxStyle ubStyle, string zString, ScreenName uiExitScreen, MSG_BOX_FLAG usFlags, MSGBOX_CALLBACK? ReturnCallback, Rectangle? pCenteringRect)
     {
-        throw new NotImplementedException();
+        // reset exit mode
+        fExitDueToMessageBox = true;
+
+        // do message box and return
+        iLaptopMessageBox = messageBoxes.DoMessageBox(ubStyle, zString, uiExitScreen, usFlags | MSG_BOX_FLAG.USE_CENTERING_RECT, ReturnCallback, ref pCenteringRect);
+
+        // send back return state
+        return iLaptopMessageBox != -1;
     }
 
     private static bool fEnteredFromGameStartup = true;

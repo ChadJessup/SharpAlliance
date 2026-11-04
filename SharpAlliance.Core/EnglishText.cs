@@ -87,6 +87,48 @@ public static class EnglishText
 
     //Aim Home Page
 
+    public static string[] AimScreenText =
+    {
+        // AIM disclaimers
+        "A.I.M. and the A.I.M. logo are registered trademarks in most countries.",
+        "So don't even think of trying to copy us.",
+        "Copyright 1998-1999 A.I.M., Ltd.  All rights reserved.",
+
+        //Text for an advertisement that gets displayed on the AIM page
+        "United Floral Service",
+        "\"We air-drop anywhere\"",
+        "Do it right",
+        "... the first time",
+        "Guns and stuff, if we dont have it, you dont need it.",
+    };
+
+    public static string[] AimLinkText =
+    {
+        "A.I.M. Links",	//The title of the AIM links page
+    };
+
+    public static string[] AimHistoryText =
+    {
+        "A.I.M. History",					//Title
+
+        // Text on the buttons at the bottom of the page
+        "Previous Page",
+        "Home",
+        "A.I.M. Alumni",
+        "Next Page",
+    };
+
+    public static string[] AimPolicyText =
+    {
+        // The text on the buttons at the bottom of the page
+        "Previous Page",
+        "AIM HomePage",
+        "Policy Index",
+        "Next Page",
+        "Disagree",
+        "Agree",
+    };
+
     public static string[] AimBottomMenuText =
     {
     	//Text for the links at the bottom of all AIM pages
@@ -505,6 +547,11 @@ public static class EnglishText
         "experience.",
         "strength.",
         "leadership.",
+    };
+
+    public static string[] pDayStrings =
+    {
+        "Day",
     };
 
     public static string[] pFinanceHeaders =

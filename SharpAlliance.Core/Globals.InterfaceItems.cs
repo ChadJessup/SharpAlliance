@@ -50,7 +50,9 @@ public partial class Globals
     public const int ITEMPICK_TEXT_HEIGHT = 17;
     public static ITEM_PICKUP_MENU_STRUCT gItemPickupMenu;
 
-    public static string wprintf(string format, params object?[] args) => string.Format(format, args);
+    // The ported code mixes .NET composite formats ("{0}") with the original C ones ("%s %d")
+    public static string wprintf(string format, params object?[] args) =>
+        CPrintf.LooksLikePrintf(format) ? CPrintf.Format(format, args) : string.Format(format, args);
 
 
     // This definition mimics what is found in WINDOWS.H ( for Direct Draw compatiblity )

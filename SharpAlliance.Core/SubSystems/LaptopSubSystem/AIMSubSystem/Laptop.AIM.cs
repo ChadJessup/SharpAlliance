@@ -30,7 +30,7 @@ public partial class Laptop
     private static AIM_AD gubCurrentAdvertisment;
     private static int gubAimMenuButtonDown;
     private static bool fFirstTimeIn;
-    private static MOUSE_REGION? gSelectedAimLogo;
+    private static MOUSE_REGION gSelectedAimLogo = new(nameof(gSelectedAimLogo));
 
     // Link Images
     private const int IMAGE_OFFSET_X = LAPTOP_SCREEN_UL_X;//111
@@ -219,31 +219,6 @@ public partial class Laptop
         RenderAIM();
     }
 
-    private static void SelectHistoryRegionCallBack(ref MOUSE_REGION pRegion, MSYS_CALLBACK_REASON iReason)
-    {
-        throw new NotImplementedException();
-    }
-
-    private static void SelectPoliciesRegionCallBack(ref MOUSE_REGION pRegion, MSYS_CALLBACK_REASON iReason)
-    {
-        throw new NotImplementedException();
-    }
-
-    private static void SelectLinksRegionCallBack(ref MOUSE_REGION pRegion, MSYS_CALLBACK_REASON iReason)
-    {
-        throw new NotImplementedException();
-    }
-
-    private static void SelectBannerRegionCallBack(ref MOUSE_REGION pRegion, MSYS_CALLBACK_REASON iReason)
-    {
-        throw new NotImplementedException();
-    }
-
-    private static void SelectMemberCardRegionCallBack(ref MOUSE_REGION pRegion, MSYS_CALLBACK_REASON iReason)
-    {
-        throw new NotImplementedException();
-    }
-
     private static void InitAimDefaults()
     {
         // load the Rust bacground graphic and add it
@@ -264,12 +239,6 @@ public partial class Laptop
         MouseSubSystem.MSYS_AddRegion(ref gSelectedAimLogo);
     }
 
-    private static void SelectAimLogoRegionCallBack(ref MOUSE_REGION pRegion, MSYS_CALLBACK_REASON iReason)
-    {
-        throw new NotImplementedException();
-    }
-
-    public static void ExitAIM() { }
     public static void EnterAimArchives() { }
     public static void ExitAimArchives() { }
 

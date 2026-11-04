@@ -16,6 +16,9 @@ public class Emails
     private static int iViewerPositionY = 0;
     private static int iDeleteId = 0;
     private static bool fUnReadMailFlag = false;
+
+    // the line of the mail list the mouse is over (-1 for none)
+    private static int iHighLightLine = -1;
     private static bool fOldUnreadFlag = true;
     public static bool fNewMailFlag = false;
     private static bool fDisplayMessageFlag = false;
@@ -60,7 +63,6 @@ public class Emails
         this.buttons = buttonSubSystem;
         files = fileManager;
         video = videoManager;
-        buttonList = new();
     }
 
     public static void GameInitEmail()
@@ -370,13 +372,12 @@ public class Emails
         DisplayEmailHeaders();
 
         // display border
-        guiLaptopBACKGROUND = video.GetVideoObject("LAPTOP\\taskbar.sti");
-        //        video.BltVideoObject(Surfaces.FRAME_BUFFER, hHandle, 0, 108, 23, VO_BLT.SRCTRANSPARENCY, null);
+        video.BltVideoObject(SurfaceType.FRAME_BUFFER, guiLaptopBACKGROUND, 0, 108, 23, VO_BLT.SRCTRANSPARENCY, null);
 
 
         ReDisplayBoxes();
 
-        //        BlitTitleBarIcons();
+        Laptop.BlitTitleBarIcons();
 
 
 
@@ -435,7 +436,7 @@ public class Emails
 
 
         // starts at iSubjectOffset amd goes iSubjectLength, reading in string
-        //        files.LoadEncryptedDataFromFile("BINARYDATA\\Email.edt", out pSubject, 640 * (iMessageOffset), 640);
+        files.LoadEncryptedDataFromFile("BINARYDATA\\Email.edt", out pSubject, 640 * (iMessageOffset), 640);
 
         // add message to list
         AddEmailMessage(iMessageOffset, iMessageLength, pSubject, iDate, ubSender, false, 0, 0);
@@ -543,6 +544,9 @@ public class Emails
 
         Array.Fill(pPage.iIds, -1);
 
+        // pages are numbered from 0, in the order they were added
+        pPage.iPageId = iLastPage + 1;
+
         pPageList.Add(pPage);
 
         iLastPage++;
@@ -568,12 +572,12 @@ public class Emails
     public static void AddMessageToPages(int iMessageId)
     {
         // go to end of page list
-        PagePtr? pPage = pPageList.FirstOrDefault();
+        PagePtr? pPage = pPageList.LastOrDefault();
         int iCounter = 0;
         if (pPage is null)
         {
             AddEmailPage();
-            pPage = pPageList.First();
+            pPage = pPageList.Last();
         }
 
         while (iCounter < MAX_MESSAGES_PAGE)
@@ -643,7 +647,7 @@ public class Emails
         }
 
         // place new list into pages of email
-        //PlaceMessagesinPages();
+        PlaceMessagesinPages();
 
         // redraw the screen
         fReDrawScreenFlag = true;
@@ -714,6 +718,11 @@ public class Emails
     {
         string pTempSubject;
 
+        // TODO: fix
+        if (string.IsNullOrWhiteSpace(pSubject))
+        {
+            return;
+        }
 
         // draw subject line of mail being viewed in viewer
 
@@ -730,24 +739,22 @@ public class Emails
             //if the subject will be too long, cap it, and add the '...'
             if (FontSubSystem.StringPixLength(pTempSubject, MESSAGE_FONT) >= SUBJECT_WIDTH - 10)
             {
-                WordWrap.ReduceStringLength(pTempSubject, SUBJECT_WIDTH - 10, MESSAGE_FONT);
+                WordWrap.ReduceStringLength(ref pTempSubject, SUBJECT_WIDTH - 10, MESSAGE_FONT);
             }
 
             // display string subject
-            //            IanDisplayWrappedString(SUBJECT_X, ((int)(4 + MIDDLE_Y + iCounter * MIDDLE_WIDTH)), SUBJECT_WIDTH, MESSAGE_GAP, MESSAGE_FONT, MESSAGE_COLOR, pTempSubject, 0, false, TextJustifies.LEFT_JUSTIFIED);
+            WordWrap.IanDisplayWrappedString(new(SUBJECT_X, 4 + MIDDLE_Y + iCounter * MIDDLE_WIDTH), SUBJECT_WIDTH, MESSAGE_GAP, MESSAGE_FONT, MESSAGE_COLOR, pTempSubject, 0, false, IAN_TEXT_FLAGS.LEFT_JUSTIFIED);
         }
         else
         {
             //if the subject will be too long, cap it, and add the '...'
             if (FontSubSystem.StringPixLength(pTempSubject, FontStyle.FONT10ARIALBOLD) >= SUBJECT_WIDTH - 10)
             {
-                WordWrap.ReduceStringLength(pTempSubject, SUBJECT_WIDTH - 10, FontStyle.FONT10ARIALBOLD);
+                WordWrap.ReduceStringLength(ref pTempSubject, SUBJECT_WIDTH - 10, FontStyle.FONT10ARIALBOLD);
             }
 
             // display string subject
-            //            IanDisplayWrappedString(SUBJECT_X, ((int)(4 + MIDDLE_Y + iCounter * MIDDLE_WIDTH)), SUBJECT_WIDTH, MESSAGE_GAP,
-            //                FontStyle.FONT10ARIALBOLD, MESSAGE_COLOR, pTempSubject, 0, false,
-            //                TextJustifies.LEFT_JUSTIFIED);
+            WordWrap.IanDisplayWrappedString(new(SUBJECT_X, 4 + MIDDLE_Y + iCounter * MIDDLE_WIDTH), SUBJECT_WIDTH, MESSAGE_GAP, FontStyle.FONT10ARIALBOLD, MESSAGE_COLOR, pTempSubject, 0, false, IAN_TEXT_FLAGS.LEFT_JUSTIFIED);
 
         }
 
@@ -775,7 +782,7 @@ public class Emails
             FontSubSystem.SetFont(FontStyle.FONT10ARIALBOLD);
         }
 
-        //        mprintf(SENDER_X, ((int)(4 + MIDDLE_Y + iCounter * MIDDLE_WIDTH)), pSenderNameList[ubSender]);
+        mprintf(SENDER_X, 4 + MIDDLE_Y + iCounter * MIDDLE_WIDTH, pSenderNameList[(int)ubSender]);
 
         FontSubSystem.SetFont(MESSAGE_FONT);
         FontSubSystem.SetFontShadow(FontShadow.DEFAULT_SHADOW);
@@ -799,7 +806,7 @@ public class Emails
             FontSubSystem.SetFont(FontStyle.FONT10ARIALBOLD);
         }
         // draw date of message being displayed in mail viewer
-        //        wprintf(sString, "%s %d", pDayStrings[0], iDate / (24 * 60));
+        sString = wprintf("%s %d", pDayStrings[0], iDate / (24 * 60));
         mprintf(DATE_X, (int)(4 + MIDDLE_Y + iCounter * MIDDLE_WIDTH), sString);
 
         FontSubSystem.SetFont(MESSAGE_FONT);
@@ -811,7 +818,7 @@ public class Emails
     {
         int iCounter = 0;
         // look at current page, and display
-        PagePtr? pPage = pPageList.FirstOrDefault();
+        PagePtr? pPage = pPageList.FirstOrDefault(p => p.iPageId == iCurrentPage) ?? pPageList.FirstOrDefault();
         email? pEmail = null;
 
 
@@ -844,23 +851,20 @@ public class Emails
         {
 
             // highlighted message, set text of message in list to blue
-            //            if (iCounter == iHighLightLine)
-            //            {
-            //                FontSubSystem.SetFontForeground(FontColor.FONT_BLUE);
-            //            }
-            //            else if (pEmail.fRead)
-            //            {
-            //                // message has been read, reset color to black
-            //                FontSubSystem.SetFontForeground(FontColor.FONT_BLACK);
-            //                //SetFontBackground(FONT_BLACK);
-            //
-            //            }
-            //            else
-            //            {
-            //                // defualt, message is not read, set font red
-            //                FontSubSystem.SetFontForeground(FontColor.FONT_RED);
-            //                //SetFontBackground(FONT_BLACK);
-            //            }
+            if (iCounter == iHighLightLine)
+            {
+                FontSubSystem.SetFontForeground(FontColor.FONT_BLUE);
+            }
+            else if (pEmail.fRead)
+            {
+                // message has been read, reset color to black
+                FontSubSystem.SetFontForeground(FontColor.FONT_BLACK);
+            }
+            else
+            {
+                // defualt, message is not read, set font red
+                FontSubSystem.SetFontForeground(FontColor.FONT_RED);
+            }
 
             FontSubSystem.SetFontBackground(FontColor.FONT_BLACK);
 
@@ -911,7 +915,8 @@ public class Emails
     private static void EmailBtnCallBack(ref MOUSE_REGION pRegion, MSYS_CALLBACK_REASON iReason)
     {
         int iCount;
-        PagePtr pPage = pPageList.First();
+        // find the page being shown
+        PagePtr? pPage = pPageList.FirstOrDefault(p => p.iPageId == iCurrentPage);
         if (iReason.HasFlag(MSYS_CALLBACK_REASON.INIT))
         {
             return;
@@ -927,22 +932,10 @@ public class Emails
             // error check
             iCount = (int)MouseSubSystem.MSYS_GetRegionUserData(ref pRegion, 0);
             // check for valid email
-            // find surrent page
-            //if (pPage is null)
-            //{
-            //    return;
-            //}
-            //
-            //while ((pPage.Next is not null) && (pPage.iPageId != iCurrentPage))
-            //{
-            //    pPage = pPage.Next;
-            //}
-            //
-            //if (pPage is null)
-            //{
-            //    return;
-            //}
-            // found page
+            if (pPage is null)
+            {
+                return;
+            }
 
             // get id for element iCount
             int iId = pPage.iIds[iCount];
@@ -1006,13 +999,13 @@ public class Emails
         {
 
             // set highlight to current regions data, this is the message to display
-            //            iHighLightLine = MouseSubSystem.MSYS_GetRegionUserData(ref pRegion, 0);
+            iHighLightLine = (int)MouseSubSystem.MSYS_GetRegionUserData(ref pRegion, 0);
         }
         if (iReason == MSYS_CALLBACK_REASON.LOST_MOUSE)
         {
 
             // reset highlight line to invalid message
-            //            iHighLightLine = -1;
+            iHighLightLine = -1;
         }
     }
 
@@ -1200,7 +1193,7 @@ public class Emails
                 pString = wcscpy(pTempRecord.pRecord);
 
                 // get the height of the string, ONLY!...must redisplay ON TOP OF background graphic
-                //                iHeight += IanDisplayWrappedString(VIEWER_X + MESSAGE_X + 4, (int)(VIEWER_MESSAGE_BODY_START_Y + iHeight + iViewerPositionY), MESSAGE_WIDTH, MESSAGE_GAP, MESSAGE_FONT, MESSAGE_COLOR, pString, 0, false, IAN_WRAP_NO_SHADOW);
+                iHeight += WordWrap.IanDisplayWrappedString(new(VIEWER_X + MESSAGE_X + 4, VIEWER_MESSAGE_BODY_START_Y + iHeight + iViewerPositionY), MESSAGE_WIDTH, MESSAGE_GAP, MESSAGE_FONT, MESSAGE_COLOR, pString, 0, false, IAN_TEXT_FLAGS.IAN_WRAP_NO_SHADOW);
 
                 // increment email record ptr
                 pTempRecord = pTempRecord.Next;
@@ -1347,31 +1340,31 @@ public class Emails
 
             // add X button
             giMessageButtonImage[0] = ButtonSubSystem.LoadButtonImage("LAPTOP\\X.sti", -1, 0, -1, 1, -1);
-            giMessageButton[0] = ButtonSubSystem.QuickCreateButton(giMessageButtonImage[0], new(BUTTON_X + 2, (int)(BUTTON_Y + (int)iViewerY + 1)),
+            giMessageButton[0] = TrackButton(ButtonSubSystem.QuickCreateButton(giMessageButtonImage[0], new(BUTTON_X + 2, (int)(BUTTON_Y + (int)iViewerY + 1)),
                 ButtonFlags.BUTTON_TOGGLE, MSYS_PRIORITY.HIGHEST - 1,
-                (GUI_CALLBACK)MouseSubSystem.BtnGenericMouseMoveButtonCallback, (GUI_CALLBACK)BtnMessageXCallback);
+                (GUI_CALLBACK)MouseSubSystem.BtnGenericMouseMoveButtonCallback, (GUI_CALLBACK)BtnMessageXCallback));
             ButtonSubSystem.SetButtonCursor(giMessageButton[0], CURSOR.LAPTOP_SCREEN);
 
             if (giNumberOfPagesToCurrentEmail > 2)
             {
                 // add next and previous mail page buttons
                 giMailMessageButtonsImage[0] = ButtonSubSystem.LoadButtonImage("LAPTOP\\NewMailButtons.sti", -1, 0, -1, 3, -1);
-                giMailMessageButtons[0] = ButtonSubSystem.QuickCreateButton(giMailMessageButtonsImage[0], new(PREVIOUS_PAGE_BUTTON_X, (int)(LOWER_BUTTON_Y + (int)iViewerY + 2)),
+                giMailMessageButtons[0] = TrackButton(ButtonSubSystem.QuickCreateButton(giMailMessageButtonsImage[0], new(PREVIOUS_PAGE_BUTTON_X, (int)(LOWER_BUTTON_Y + (int)iViewerY + 2)),
                     ButtonFlags.BUTTON_TOGGLE, MSYS_PRIORITY.HIGHEST - 1,
-                    (GUI_CALLBACK)MouseSubSystem.BtnGenericMouseMoveButtonCallback, (GUI_CALLBACK)BtnPreviousEmailPageCallback);
+                    (GUI_CALLBACK)MouseSubSystem.BtnGenericMouseMoveButtonCallback, (GUI_CALLBACK)BtnPreviousEmailPageCallback));
 
                 giMailMessageButtonsImage[1] = ButtonSubSystem.LoadButtonImage("LAPTOP\\NewMailButtons.sti", -1, 1, -1, 4, -1);
-                giMailMessageButtons[1] = ButtonSubSystem.QuickCreateButton(giMailMessageButtonsImage[1], new(NEXT_PAGE_BUTTON_X, (int)(LOWER_BUTTON_Y + (int)iViewerY + 2)),
+                giMailMessageButtons[1] = TrackButton(ButtonSubSystem.QuickCreateButton(giMailMessageButtonsImage[1], new(NEXT_PAGE_BUTTON_X, (int)(LOWER_BUTTON_Y + (int)iViewerY + 2)),
                     ButtonFlags.BUTTON_TOGGLE, MSYS_PRIORITY.HIGHEST - 1,
-                    (GUI_CALLBACK)MouseSubSystem.BtnGenericMouseMoveButtonCallback, (GUI_CALLBACK)BtnNextEmailPageCallback);
+                    (GUI_CALLBACK)MouseSubSystem.BtnGenericMouseMoveButtonCallback, (GUI_CALLBACK)BtnNextEmailPageCallback));
 
                 gfPageButtonsWereCreated = true;
             }
 
             giMailMessageButtonsImage[2] = ButtonSubSystem.LoadButtonImage("LAPTOP\\NewMailButtons.sti", -1, 2, -1, 5, -1);
-            giMailMessageButtons[2] = ButtonSubSystem.QuickCreateButton(giMailMessageButtonsImage[2], new(DELETE_BUTTON_X, (int)(BUTTON_LOWER_Y + (int)iViewerY + 2)),
+            giMailMessageButtons[2] = TrackButton(ButtonSubSystem.QuickCreateButton(giMailMessageButtonsImage[2], new(DELETE_BUTTON_X, (int)(BUTTON_LOWER_Y + (int)iViewerY + 2)),
                 ButtonFlags.BUTTON_TOGGLE, MSYS_PRIORITY.HIGHEST - 1,
-                (GUI_CALLBACK)MouseSubSystem.BtnGenericMouseMoveButtonCallback, (GUI_CALLBACK)BtnDeleteCallback);
+                (GUI_CALLBACK)MouseSubSystem.BtnGenericMouseMoveButtonCallback, (GUI_CALLBACK)BtnDeleteCallback));
             /*
                     // set up disable methods
                     SpecifyDisabledButtonStyle( giMailMessageButtons[1], DISABLED_STYLE_SHADED );
@@ -1390,20 +1383,20 @@ public class Emails
         {
             // delete region
             fOldDisplayMessageFlag = false;
-            ButtonSubSystem.RemoveButton(giMessageButton[0]);
+            DestroyButton(giMessageButton[0]);
             ButtonSubSystem.UnloadButtonImage(giMessageButtonImage[0]);
 
             // net/previous email page buttons
             if (gfPageButtonsWereCreated)
             {
-                ButtonSubSystem.RemoveButton(giMailMessageButtons[0]);
+                DestroyButton(giMailMessageButtons[0]);
                 ButtonSubSystem.UnloadButtonImage(giMailMessageButtonsImage[0]);
-                ButtonSubSystem.RemoveButton(giMailMessageButtons[1]);
+                DestroyButton(giMailMessageButtons[1]);
                 ButtonSubSystem.UnloadButtonImage(giMailMessageButtonsImage[1]);
                 gfPageButtonsWereCreated = false;
             }
 
-            ButtonSubSystem.RemoveButton(giMailMessageButtons[2]);
+            DestroyButton(giMailMessageButtons[2]);
             ButtonSubSystem.UnloadButtonImage(giMailMessageButtonsImage[2]);
             // force update of screen
             fReDrawScreenFlag = true;
@@ -1463,7 +1456,7 @@ public class Emails
             CreateDestroyNewMailButtonfOldNewMailFlag = false;
 
             // remove the button
-            ButtonSubSystem.RemoveButton(giNewMailButton[0]);
+            DestroyButton(giNewMailButton[0]);
             ButtonSubSystem.UnloadButtonImage(giNewMailButtonImage[0]);
 
             // remove screen mask
@@ -1849,9 +1842,9 @@ public class Emails
             // destroy already create next, previous mouse regions
             fCreated = false;
 
-            ButtonSubSystem.RemoveButton(giMailPageButtons[1]);
+            DestroyButton(giMailPageButtons[1]);
             ButtonSubSystem.UnloadButtonImage(giMailPageButtonsImage[1]);
-            ButtonSubSystem.RemoveButton(giMailPageButtons[0]);
+            DestroyButton(giMailPageButtons[0]);
             ButtonSubSystem.UnloadButtonImage(giMailPageButtonsImage[0]);
         }
         else
@@ -1899,7 +1892,25 @@ public class Emails
     private readonly FontSubSystem fonts;
     private readonly ButtonSubSystem buttons;
     private static IFileManager files;
-    private static List<GUI_BUTTON> buttonList;
+    // the laptop renders only the buttons in its own list, so the e-mail buttons live there too
+    private static List<GUI_BUTTON> buttonList => Laptop.buttonList;
+
+    /// <summary>Creates are tracked so the laptop draws them; pairs with <see cref="DestroyButton"/>.</summary>
+    private static GUI_BUTTON TrackButton(GUI_BUTTON button)
+    {
+        if (!buttonList.Contains(button))
+        {
+            buttonList.Add(button);
+        }
+
+        return button;
+    }
+
+    private static void DestroyButton(GUI_BUTTON button)
+    {
+        buttonList.Remove(button);
+        ButtonSubSystem.RemoveButton(button);
+    }
     private static bool fOldNewMailFlag;
 
     public static void CreateDestroyDeleteNoticeMailButton()
@@ -1911,15 +1922,15 @@ public class Emails
             // YES button
             fOldDeleteMailFlag = true;
             giDeleteMailButtonImage[0] = ButtonSubSystem.LoadButtonImage("LAPTOP\\YesNoButtons.sti", -1, 0, -1, 1, -1);
-            giDeleteMailButton[0] = ButtonSubSystem.QuickCreateButton(giDeleteMailButtonImage[0], new(NEW_BTN_X + 1, NEW_BTN_Y),
+            giDeleteMailButton[0] = TrackButton(ButtonSubSystem.QuickCreateButton(giDeleteMailButtonImage[0], new(NEW_BTN_X + 1, NEW_BTN_Y),
                 ButtonFlags.BUTTON_TOGGLE, MSYS_PRIORITY.HIGHEST - 2,
-                (GUI_CALLBACK)MouseSubSystem.BtnGenericMouseMoveButtonCallback, (GUI_CALLBACK)BtnDeleteYesback);
+                (GUI_CALLBACK)MouseSubSystem.BtnGenericMouseMoveButtonCallback, (GUI_CALLBACK)BtnDeleteYesback));
 
             // NO button
             giDeleteMailButtonImage[1] = ButtonSubSystem.LoadButtonImage("LAPTOP\\YesNoButtons.sti", -1, 2, -1, 3, -1);
-            giDeleteMailButton[1] = ButtonSubSystem.QuickCreateButton(giDeleteMailButtonImage[1], new(NEW_BTN_X + 40, NEW_BTN_Y),
+            giDeleteMailButton[1] = TrackButton(ButtonSubSystem.QuickCreateButton(giDeleteMailButtonImage[1], new(NEW_BTN_X + 40, NEW_BTN_Y),
                 ButtonFlags.BUTTON_TOGGLE, MSYS_PRIORITY.HIGHEST - 2,
-                (GUI_CALLBACK)MouseSubSystem.BtnGenericMouseMoveButtonCallback, (GUI_CALLBACK)BtnDeleteNoback);
+                (GUI_CALLBACK)MouseSubSystem.BtnGenericMouseMoveButtonCallback, (GUI_CALLBACK)BtnDeleteNoback));
 
             // set up cursors
             ButtonSubSystem.SetButtonCursor(giDeleteMailButton[0], CURSOR.LAPTOP_SCREEN);
@@ -1939,9 +1950,9 @@ public class Emails
 
             // clear out the buttons and screen mask
             fOldDeleteMailFlag = false;
-            ButtonSubSystem.RemoveButton(giDeleteMailButton[0]);
+            DestroyButton(giDeleteMailButton[0]);
             ButtonSubSystem.UnloadButtonImage(giDeleteMailButtonImage[0]);
-            ButtonSubSystem.RemoveButton(giDeleteMailButton[1]);
+            DestroyButton(giDeleteMailButton[1]);
             ButtonSubSystem.UnloadButtonImage(giDeleteMailButtonImage[1]);
 
             // the region
@@ -2249,7 +2260,7 @@ public class Emails
         FontSubSystem.SetFontBackground(FontColor.FONT_BLACK);
 
         // printf the title
-        //        mprintf(EMAIL_TITLE_X, EMAIL_TITLE_Y, pEmailTitleText[0]);
+        mprintf(EMAIL_TITLE_X, EMAIL_TITLE_Y, pEmailTitleText[0]);
 
         // reset the shadow
 
@@ -2260,13 +2271,13 @@ public class Emails
         // this function will destory the buttons used in the email screen
 
         // the sort email buttons
-        ButtonSubSystem.RemoveButton(giSortButton[0]);
+        DestroyButton(giSortButton[0]);
         ButtonSubSystem.UnloadButtonImage(giSortButtonImage[0]);
-        ButtonSubSystem.RemoveButton(giSortButton[1]);
+        DestroyButton(giSortButton[1]);
         ButtonSubSystem.UnloadButtonImage(giSortButtonImage[1]);
-        ButtonSubSystem.RemoveButton(giSortButton[2]);
+        DestroyButton(giSortButton[2]);
         ButtonSubSystem.UnloadButtonImage(giSortButtonImage[2]);
-        ButtonSubSystem.RemoveButton(giSortButton[3]);
+        DestroyButton(giSortButton[3]);
         ButtonSubSystem.UnloadButtonImage(giSortButtonImage[3]);
 
         return;
@@ -2361,8 +2372,7 @@ public class Emails
         mprintf(usX, MESSAGE_SUBJECT_Y + (int)iViewerY, pEmailHeaders[1]);
 
         // the actual subject info
-        //mprintf( , MESSAGE_SUBJECT_Y, pMail.pSubject);
-        //FontSubSystem.IanDisplayWrappedString(SUBJECT_LINE_X + 2, (int)(SUBJECT_LINE_Y + 2 + (int)iViewerY), SUBJECT_LINE_WIDTH, MESSAGE_GAP, MESSAGE_FONT, MESSAGE_COLOR, pMail.pSubject, 0, false, 0);
+        WordWrap.IanDisplayWrappedString(new(SUBJECT_LINE_X + 2, SUBJECT_LINE_Y + 2 + iViewerY), SUBJECT_LINE_WIDTH, MESSAGE_GAP, MESSAGE_FONT, MESSAGE_COLOR, pMail.pSubject, 0, false, IAN_TEXT_FLAGS.LEFT_JUSTIFIED);
 
 
         // reset shadow
@@ -2381,7 +2391,7 @@ public class Emails
         FontSubSystem.SetFontBackground(FontColor.FONT_BLACK);
 
         // dsiplay mail viewer title on message viewer
-        //        mprintf(VIEWER_X + 30, VIEWER_Y + 8 + (int)iViewerY, pEmailTitleText[0]);
+        mprintf(VIEWER_X + 30, VIEWER_Y + 8 + iViewerY, pEmailTitleText[0]);
 
         return;
     }
@@ -3775,16 +3785,16 @@ public class Emails
 
         // next button
         giMailPageButtonsImage[0] = ButtonSubSystem.LoadButtonImage("LAPTOP\\NewMailButtons.sti", -1, 1, -1, 4, -1);
-        giMailPageButtons[0] = ButtonSubSystem.QuickCreateButton(giMailPageButtonsImage[0], new(NEXT_PAGE_X, NEXT_PAGE_Y),
+        giMailPageButtons[0] = TrackButton(ButtonSubSystem.QuickCreateButton(giMailPageButtonsImage[0], new(NEXT_PAGE_X, NEXT_PAGE_Y),
                                             ButtonFlags.BUTTON_TOGGLE, MSYS_PRIORITY.HIGHEST - 1,
-                                            (GUI_CALLBACK)MouseSubSystem.BtnGenericMouseMoveButtonCallback, (GUI_CALLBACK)NextRegionButtonCallback);
+                                            (GUI_CALLBACK)MouseSubSystem.BtnGenericMouseMoveButtonCallback, (GUI_CALLBACK)NextRegionButtonCallback));
         ButtonSubSystem.SetButtonCursor(giMailPageButtons[0], CURSOR.LAPTOP_SCREEN);
 
         // previous button
         giMailPageButtonsImage[1] = ButtonSubSystem.LoadButtonImage("LAPTOP\\NewMailButtons.sti", -1, 0, -1, 3, -1);
-        giMailPageButtons[1] = ButtonSubSystem.QuickCreateButton(giMailPageButtonsImage[1], new(PREVIOUS_PAGE_X, NEXT_PAGE_Y),
+        giMailPageButtons[1] = TrackButton(ButtonSubSystem.QuickCreateButton(giMailPageButtonsImage[1], new(PREVIOUS_PAGE_X, NEXT_PAGE_Y),
                                         ButtonFlags.BUTTON_TOGGLE, MSYS_PRIORITY.HIGHEST - 1,
-                                        (GUI_CALLBACK)MouseSubSystem.BtnGenericMouseMoveButtonCallback, (GUI_CALLBACK)PreviousRegionButtonCallback);
+                                        (GUI_CALLBACK)MouseSubSystem.BtnGenericMouseMoveButtonCallback, (GUI_CALLBACK)PreviousRegionButtonCallback));
         ButtonSubSystem.SetButtonCursor(giMailPageButtons[1], CURSOR.LAPTOP_SCREEN);
 
         /*

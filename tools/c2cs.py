@@ -160,7 +160,8 @@ class Repo:
             dirs[:] = [d for d in dirs if d not in ('bin', 'obj', '.git', 'tools', 'Tests', 'SharpAlliance.Web', 'node_modules')]
             for f in files:
                 if f.endswith('.cs'):
-                    src = strip_cs_comments(open(os.path.join(dirpath, f), errors='ignore', encoding='utf-8-sig').read())
+                    with open(os.path.join(dirpath, f), errors='ignore', encoding='utf-8-sig') as fh:
+                        src = strip_cs_comments(fh.read())
                     self._scan_file(src)
 
     def _scan_file(self, src):
@@ -799,6 +800,184 @@ def hoist_statics(fn_name, body):
     return body, fields
 
 
+# ----------------------------------------------------------------------------
+# Qualifying calls that live in other classes
+# ----------------------------------------------------------------------------
+# Static (C global function) -> owning class in the port. Extend per project in the map json: "qualify": {"Class": ["Fn", ...]}
+DEFAULT_QUALIFY = {
+    'FontSubSystem': ['SetFont', 'SetFontForeground', 'SetFontBackground', 'SetFontShadow', 'SetFontDestBuffer',
+                      'FindFontCenterCoordinates'],
+    'ButtonSubSystem': ['RemoveButton', 'UnloadButtonImage', 'QuickCreateButton', 'LoadButtonImage', 'RenderButtons',
+                        'SetButtonCursor'],
+}
+# Prefix rules: (regex matching a call, replacement). `NB` keeps us from touching member access / longer names.
+NB = r'(?<![\w.])'
+DEFAULT_CALL_RULES = [
+    # video manager (an instance field named `video` in the port)
+    (NB + r'InvalidateRegion\(', 'video.InvalidateRegion('),
+    (NB + r'BltVideoObject\(\s*FRAME_BUFFER\b', 'video.BltVideoObject(SurfaceType.FRAME_BUFFER'),
+    (NB + r'BltVideoObject\(\s*SurfaceType', 'video.BltVideoObject(SurfaceType'),
+    (NB + r'DeleteVideoObjectFromIndex\(', 'video.DeleteVideoObject('),
+    # GetVideoObject( &h, id ) / GetVideoObject( out h, id )  ->  h = id
+    (NB + r'GetVideoObject\(\s*(?:&|out\s+)?(\w+)\s*,\s*([\w.\[\]]+)\s*\)', r'\1 = \2'),
+    # mouse system
+    # button user data lives on ButtonSubSystem, everything else MSYS_ is the mouse system
+    (NB + r'(MSYS_(?:Set|Get)BtnUserData)\(', r'ButtonSubSystem.\1('),
+    (NB + r'(MSYS_(?!MOUSE_IN_AREA\b|SetBtnUserData\b|GetBtnUserData\b)\w+)\(', r'MouseSubSystem.\1('),
+    (NB + r'MSYS_MOUSE_IN_AREA\b', 'MouseRegionFlags.IN_AREA'),
+    (r'MouseRegionFlags\.MOUSE_IN_AREA\b', 'MouseRegionFlags.IN_AREA'),
+    # files
+    (NB + r'(FileExists|FileDelete|FileClearAttributes)\(', r'files.\1('),
+    # C library / macros
+    (NB + r'Assert\(', 'System.Diagnostics.Debug.Assert('),
+    (NB + r'min\(', 'Math.Min('),
+    (NB + r'max\(', 'Math.Max('),
+    (NB + r'GetJA2Clock\(\s*\)', '(int)GetJA2Clock()'),
+]
+
+
+# Owners that are instance services in the port: call them through the injected field instead of the type name.
+INSTANCE_OWNERS = {'VeldridVideoManager': 'video', 'SDL2VideoManager': 'video', 'VideoManager': 'video'}
+
+
+def load_call_rules(cmap):
+    """Built-in rules + project rules from the map json: "call_rules": [[regex, replacement], ...]."""
+    rules = [(re.compile(rx), rep) for rx, rep in DEFAULT_CALL_RULES]
+    rules += [(re.compile(rx), rep) for rx, rep in cmap.get('call_rules', [])]
+    return rules
+
+
+# ----------------------------------------------------------------------------
+# Text drawing / encrypted file calls: the C argument lists differ from the port's overloads
+# ----------------------------------------------------------------------------
+JUSTIFY_RX = re.compile(r'(?<![\w.])(LEFT_JUSTIFIED|CENTER_JUSTIFIED|RIGHT_JUSTIFIED|TEXT_SHADOWED|INVALIDATE_TEXT|DONT_DISPLAY_TEXT)\b')
+
+
+def split_call_args(text, open_idx):
+    """text[open_idx] is '(' : return (args, index after the matching ')') with top-level commas split."""
+    depth, args, cur, i = 0, [], [], open_idx
+    in_str = False
+    while i < len(text):
+        c = text[i]
+        if in_str:
+            cur.append(c)
+            if c == '\\':
+                cur.append(text[i + 1])
+                i += 1
+            elif c == '"':
+                in_str = False
+        elif c == '"':
+            in_str = True
+            cur.append(c)
+        elif c in '([{':
+            depth += 1
+            if depth > 1:
+                cur.append(c)
+        elif c in ')]}':
+            depth -= 1
+            if depth == 0:
+                args.append(''.join(cur).strip())
+                return args, i + 1
+            cur.append(c)
+        elif c == ',' and depth == 1:
+            args.append(''.join(cur).strip())
+            cur = []
+        else:
+            cur.append(c)
+        i += 1
+    return None, open_idx
+
+
+def rewrite_text_calls(body):
+    """DrawTextToScreen / DisplayWrappedString / LoadEncryptedDataFromFile: C argument order -> the port's overloads."""
+    # string buffers read through LoadEncryptedDataFromFile become strings: `char[] s = new char[N];` -> `string s = string.Empty;`
+    buffers = set(re.findall(r'\bchar\[\]\s+(\w+)\s*=\s*new char\[[^\]]*\];', body))
+    body = re.sub(r'\bchar\[\]\s+(\w+)\s*=\s*new char\[[^\]]*\];', r'string \1 = string.Empty;', body)
+
+    def justify(a):
+        return JUSTIFY_RX.sub(r'TextJustifies.\1', a)
+
+    out, i = [], 0
+    call = re.compile(r'(?<![\w.])(DrawTextToScreen|DisplayWrappedString|LoadEncryptedDataFromFile|CreateIconAndTextButton|QuickCreateButton)\s*\(')
+    while True:
+        m = call.search(body, i)
+        if not m:
+            out.append(body[i:])
+            break
+        args, end = split_call_args(body, m.end() - 1)
+        name = m.group(1)
+        new = None
+        if args is not None:
+            if name == 'DrawTextToScreen' and len(args) == 9:
+                new = (f'FontSubSystem.DrawTextToScreen({args[0]}, new({args[1]}, {args[2]}), {args[3]}, '
+                       f'{args[4]}, {args[5]}, {args[6]}, {justify(args[8])})')
+            elif name == 'DisplayWrappedString' and len(args) == 10:
+                new = (f'FontSubSystem.DisplayWrappedString(new({args[0]}, {args[1]}), {args[2]}, {args[3]}, '
+                       f'{args[4]}, {args[5]}, {args[6]}, {args[7]}, {justify(args[9])})')
+            elif name == 'CreateIconAndTextButton' and len(args) == 14:
+                # (image, text, font, fore, shadow, foreDown, shadowDown, justify, x, y, flags, priority, move, click)
+                new = 'ButtonSubSystem.CreateIconAndTextButton(' + ', '.join(
+                    args[:8] + [f'new Point({args[8]}, {args[9]})'] + args[10:]) + ')'
+            elif name == 'QuickCreateButton' and len(args) == 7:
+                # (image, x, y, flags, priority, move, click)
+                new = 'ButtonSubSystem.QuickCreateButton(' + ', '.join(
+                    [args[0], f'new Point({args[1]}, {args[2]})'] + args[3:]) + ')'
+            elif name == 'LoadEncryptedDataFromFile' and len(args) == 4 and args[1] in buffers:
+                new = f'files.LoadEncryptedDataFromFile({args[0]}, out {args[1]}, {args[2]}, {args[3]})'
+        out.append(body[i:m.start()])
+        if new:
+            out.append(new)
+            i = end
+        else:
+            out.append(body[m.start():m.end()])
+            i = m.end()
+    return ''.join(out)
+
+
+def qualify_calls(body, repo, cls, batch_names, cmap):
+    """Prefix calls to functions that are defined in some other class of the port with that class's name.
+
+    Order: explicit regex rules, then the class tables, then (best effort) the owning class found by scanning the repo.
+    Calls to functions of the file being ported, and names the port keeps in Globals, are left alone.
+    """
+    rules = load_call_rules(cmap)
+    table = {}
+    for owner, names in list(DEFAULT_QUALIFY.items()) + list(cmap.get('qualify', {}).items()):
+        for n in names:
+            table[n] = owner
+    skip_classes = {cls, 'Globals', 'EnglishText'}
+    call_rx = re.compile(NB + r'([A-Za-z_]\w*)\s*\(')
+
+    def owner_of(name):
+        if name in table:
+            return table[name]
+        if name in batch_names or name not in repo.method_class:
+            return None
+        owner, n = repo.method_class[name].most_common(1)[0]
+        total = sum(repo.method_class[name].values())
+        if owner in skip_classes or cls in repo.method_class[name] or n * 2 <= total:
+            return None
+        return owner
+
+    def fix_line(code):
+        for rx, rep in rules:
+            code = rx.sub(rep, code)
+
+        def sub(m):
+            name = m.group(1)
+            if name in CS_KEYWORDS or name in ('if', 'while', 'for', 'switch', 'return', 'sizeof', 'nameof', 'typeof'):
+                return m.group(0)
+            owner = owner_of(name)
+            return f'{INSTANCE_OWNERS.get(owner, owner)}.{m.group(0)}' if owner else m.group(0)
+        return call_rx.sub(sub, code)
+
+    out = []
+    for line in body.split('\n'):
+        code, sep, comment = line.partition('//')
+        out.append(fix_line(code) + sep + comment)
+    return '\n'.join(out)
+
+
 def add_todo_markers(text):
     final = []
     for line in text.split('\n'):
@@ -813,7 +992,8 @@ def add_todo_markers(text):
 # ----------------------------------------------------------------------------
 def load_map(path):
     if path and os.path.exists(path):
-        return json.load(open(path, encoding='utf-8'))
+        with open(path, encoding='utf-8') as f:
+            return json.load(f)
     return {}
 
 
@@ -835,7 +1015,8 @@ def port_file(cfile, repo_root, outdir, include_all, map_path):
     repo = Repo(repo_root)
     cmap = load_map(map_path)
     aliases = cmap.get('aliases', {})
-    src = open(cfile, errors='ignore').read()
+    with open(cfile, errors='ignore') as f:
+        src = f.read()
     fns = [Func(n, s, b) for n, s, b in extract_functions(src)]
     # register all signatures first (so calls between functions of this batch resolve),
     # then infer twice so that return types discovered late reach earlier callers
@@ -857,6 +1038,7 @@ def port_file(cfile, repo_root, outdir, include_all, map_path):
                 envs[fn.name] = infer_function(fn, bodies[fn.name], repo, local_names(bodies[fn.name]))
                 repo.sigs[fn.name][-1] = (fn.ret, [p['type'] for p in fn.params])
 
+    cls, existing = class_name(cfile, repo, [f.name for f in fns], cmap)
     chunks, skipped, todo_total, promoted = [], 0, 0, 0
     for fn in fns:
         if fn.name in repo.ids and not include_all:
@@ -869,6 +1051,8 @@ def port_file(cfile, repo_root, outdir, include_all, map_path):
         body = retype_locals(bodies[fn.name], env)
         body = resolve_addr_of(body, repo)
         body = flags_to_hasflag(body, repo, env)
+        body = rewrite_text_calls(body)
+        body = qualify_calls(body, repo, cls, {f.name for f in fns}, cmap)
         body = add_todo_markers(body)
         todo_total += body.count('TODO(port)')
         promoted += sum(1 for p in fn.params if repo.is_enum(p['type'])) + (1 if repo.is_enum(fn.ret) else 0)
@@ -879,7 +1063,6 @@ def port_file(cfile, repo_root, outdir, include_all, map_path):
             for t, nm, init, _ in static_fields.get(fn.name, []))
         chunks.append(f'{field_txt}{note_txt}    {fn.render_sig()}\n{ind}\n')
 
-    cls, existing = class_name(cfile, repo, [f.name for f in fns], cmap)
     text = (
         '// Generated by tools/c2cs.py from ' + os.path.basename(cfile) + ' - first pass, will not compile as-is.\n'
         f'// {len(chunks)} functions emitted, {skipped} skipped (already present), {todo_total} TODO(port) markers,\n'
@@ -891,7 +1074,8 @@ def port_file(cfile, repo_root, outdir, include_all, map_path):
     )
     os.makedirs(outdir, exist_ok=True)
     path = os.path.join(outdir, re.sub(r'[^A-Za-z0-9]+', '', os.path.splitext(os.path.basename(cfile))[0]) + '.cs')
-    open(path, 'w', encoding='utf-8').write(text)
+    with open(path, 'w', encoding='utf-8') as f:
+        f.write(text)
     print(f'{path}: {len(chunks)} functions, {skipped} already ported, {todo_total} TODO markers, '
           f'{promoted} enum-typed signature slots, class {cls}{" (existing)" if existing else ""}')
 
