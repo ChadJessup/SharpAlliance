@@ -324,7 +324,7 @@ public class MouseSubSystem : ISharpAllianceManager
 
         if (CurrentRegion != PreviousRegion)
         {
-            Console.WriteLine($"In MouseRegion: {CurrentRegion}");
+            //Console.WriteLine($"In MouseRegion: {CurrentRegion}");
         }
 
         if (PreviousRegion is not null)

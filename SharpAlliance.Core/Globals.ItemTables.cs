@@ -52,6 +52,7 @@ public class ItemNameTable : Dictionary<Items, string>
 public partial class Globals
 {
     public static readonly ItemNameTable ItemNames = new();
+    public static readonly ItemNameTable ItemDescriptions = new();
 
     // NB hack:  if an item appears in this array with an item class of IC_MISC,
     // it is a slot used for noting the skill check required for a merge or multi-item attachment

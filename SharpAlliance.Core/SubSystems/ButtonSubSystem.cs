@@ -1,6 +1,8 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using SharpAlliance.Core.Interfaces;
@@ -264,7 +266,7 @@ public class ButtonSubSystem : ISharpAllianceManager
         bool fOldButtonDown, fOldEnabled;
 
         fonts.SaveFontSettings();
-        foreach (var b in buttons)
+        foreach (var b in buttons ?? [])
         {
             // If the button exists, and it's not owned by another object, draw it
             //Kris:  and make sure that the button isn't hidden.

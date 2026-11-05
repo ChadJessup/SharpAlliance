@@ -188,6 +188,7 @@ public class SharpAllianceGameLogic : IGameLogic
             Globals.guiGameCycleCounter++;
 
             ClockManager.UpdateClock();
+            GameClock.UpdateClock();
 
             // anything in the game can ask to quit by clearing gfProgramIsRunning (C: the WinMain loop condition)
             if (!Globals.gfProgramIsRunning)

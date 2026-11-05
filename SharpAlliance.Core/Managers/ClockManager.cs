@@ -35,8 +35,8 @@ public class ClockManager : IClockManager
 
     public ValueTask<bool> Initialize()
     {
-        DateTimeOffset = new DateTimeOffset();
-        Globals.guiStartupTime = Globals.guiCurrentTime = DateTimeOffset.ToUnixTimeMilliseconds();
+        // the game clock counts milliseconds (GetTickCount in the original)
+        Globals.guiStartupTime = Globals.guiCurrentTime = System.Environment.TickCount64;
         this.globalTimer = new Timer
         {
             Interval = interval.TotalMilliseconds,
@@ -60,7 +60,7 @@ public class ClockManager : IClockManager
 
     private void ClockCallback(object? sender, ElapsedEventArgs e)
     {
-        Globals.guiCurrentTime = e.SignalTime.Ticks;
+        Globals.guiCurrentTime = System.Environment.TickCount64;
 
         this.StartTimer();
     }
@@ -77,7 +77,7 @@ public class ClockManager : IClockManager
 
     public static void UpdateClock()
     {
-        Globals.guiCurrentTime = DateTimeOffset.ToUnixTimeMilliseconds();
+        Globals.guiCurrentTime = System.Environment.TickCount64;
     }
 
     public static long GetTickCount()

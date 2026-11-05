@@ -21,7 +21,7 @@ public class GameClock
     // is the clock pause region created currently?
     public static bool fClockMouseRegionCreated = false;
 
-    bool fTimeCompressHasOccured = false;
+    static bool fTimeCompressHasOccured = false;
 
     public GameClock(IVideoManager videoManager, MercTextBox mercTextBox)
     {
@@ -190,28 +190,28 @@ public class GameClock
 
 
     // set the flag that time compress has occured
-    void SetFactTimeCompressHasOccured()
+    public static void SetFactTimeCompressHasOccured()
     {
-        this.fTimeCompressHasOccured = true;
+        fTimeCompressHasOccured = true;
         return;
     }
 
     //reset fact the time compress has occured
-    void ResetTimeCompressHasOccured()
+    public static void ResetTimeCompressHasOccured()
     {
-        this.fTimeCompressHasOccured = false;
+        fTimeCompressHasOccured = false;
         return;
     }
 
     // has time compress occured?
-    bool HasTimeCompressOccured()
+    public static bool HasTimeCompressOccured()
     {
-        return this.fTimeCompressHasOccured;
+        return fTimeCompressHasOccured;
     }
 
 
 
-    void RenderClock(int sX, int sY)
+    public static void RenderClock(int sX, int sY)
     {
         FontSubSystem.SetFont(CLOCK_FONT);
         FontSubSystem.SetFontBackground(FontColor.FONT_MCOLOR_BLACK);
@@ -291,7 +291,7 @@ public class GameClock
     }
 
 
-    void StartTimeCompression()
+    public static void StartTimeCompression()
     {
         if (!gfTimeCompressionOn)
         {
@@ -320,26 +320,26 @@ public class GameClock
             // if no compression mode is set, increase it first
             if (giTimeCompressMode <= TIME_COMPRESS.TIME_COMPRESS_X1)
             {
-                this.IncreaseGameTimeCompressionRate();
+                IncreaseGameTimeCompressionRate();
             }
 
             // change clock resolution to the current compression mode
             SetClockResolutionToCompressMode(giTimeCompressMode);
 
             // if it's the first time we're doing this since entering map screen (which reset the flag)
-            if (!this.HasTimeCompressOccured())
+            if (!HasTimeCompressOccured())
             {
                 // set fact that we have compressed time during this map screen session
-                this.SetFactTimeCompressHasOccured();
+                SetFactTimeCompressHasOccured();
 
-                this.ClearTacticalStuffDueToTimeCompression();
+                ClearTacticalStuffDueToTimeCompression();
             }
         }
     }
 
 
     // returns false if time isn't currently being compressed for ANY reason (various pauses, etc.)
-    bool IsTimeBeingCompressed()
+    public static bool IsTimeBeingCompressed()
     {
         if (!gfTimeCompressionOn || (giTimeCompressMode == TIME_COMPRESS.TIME_COMPRESS_X0) || gfGamePaused)
         {
@@ -359,7 +359,7 @@ public class GameClock
     }
 
 
-    void IncreaseGameTimeCompressionRate()
+    public static void IncreaseGameTimeCompressionRate()
     {
         // if not already at maximum time compression rate
         if (giTimeCompressMode < TIME_COMPRESS.TIME_COMPRESS_60MINS)
@@ -386,7 +386,7 @@ public class GameClock
     }
 
 
-    void DecreaseGameTimeCompressionRate()
+    public static void DecreaseGameTimeCompressionRate()
     {
         // if not already at minimum time compression rate
         if (giTimeCompressMode > TIME_COMPRESS.TIME_COMPRESS_X0)
@@ -1179,7 +1179,7 @@ public class GameClock
 
 
 
-    void ClearTacticalStuffDueToTimeCompression()
+    public static void ClearTacticalStuffDueToTimeCompression()
     {
         // is this test the right thing?  ARM
         if (guiTacticalInterfaceFlags.HasFlag(INTERFACE.MAPSCREEN))

@@ -93,6 +93,12 @@ public class SoldierProfileSubSystem
 
 
         fptr = files.FileOpen(pFileName, FileAccess.Read, fDeleteOnClose: false);
+
+        // a second load (starting a new game) gets the same open stream back, still at the end of the file from the first load
+        if (fptr.CanSeek)
+        {
+            fptr.Seek(0, SeekOrigin.Begin);
+        }
         //if (!fptr)
         //{
         //    this.logger.LogDebug(LoggingEventId.JA2, $"FAILED to LoadMercProfiles from file {pFileName}");

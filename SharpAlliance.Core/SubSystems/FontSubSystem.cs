@@ -607,6 +607,28 @@ public class FontSubSystem : ISharpAllianceManager
         CreateFontPaletteTables(gvoHugeFont);
         FontObjs[FontStyle.HUGEFONT] = gvoHugeFont;
 
+        // The bitmap fonts above have no TrueType stand-in registered; give each a similar one so drawing text with them works.
+        // TODO(port): draw text with the real .sti bitmap fonts.
+        (FontStyle style, int size, SixLabors.Fonts.FontStyle weight)[] fallbacks =
+        [
+            (FontStyle.CLOCKFONT, 12, SixLabors.Fonts.FontStyle.Regular),
+            (FontStyle.COMPFONT, 10, SixLabors.Fonts.FontStyle.Regular),
+            (FontStyle.SMALLCOMPFONT, 10, SixLabors.Fonts.FontStyle.Regular),
+            (FontStyle.MILITARYFONT1, 12, SixLabors.Fonts.FontStyle.Regular),
+            (FontStyle.BLOCKFONT, 12, SixLabors.Fonts.FontStyle.Bold),
+            (FontStyle.BLOCKFONT2, 10, SixLabors.Fonts.FontStyle.Bold),
+            (FontStyle.BLOCKFONTNARROW, 10, SixLabors.Fonts.FontStyle.Bold),
+            (FontStyle.HUGEFONT, 30, SixLabors.Fonts.FontStyle.Bold),
+        ];
+
+        foreach (var (style, size, weight) in fallbacks)
+        {
+            if (!fontLookup.ContainsKey(style))
+            {
+                fontLookup.Add(style, FontSubSystem.TextRenderer.LoadFont("Arial", size, weight));
+            }
+        }
+
         // Set default for font system
         SetFontDestBuffer(SurfaceType.FRAME_BUFFER, new(0, 0, 640, 480), false);
     }

@@ -12,6 +12,15 @@ namespace SharpAlliance.Core.SubSystems;
 
 public class Interface
 {
+    /// <summary>The picture file an item's interface graphic (the small one used in inventories) lives in.</summary>
+    public static HVOBJECT GetInterfaceGraphicForItem(INVTYPE pItem) => pItem.ubGraphicType switch
+    {
+        0 => guiGUNSM,
+        1 => guiP1ITEMS,
+        2 => guiP2ITEMS,
+        _ => guiP3ITEMS,
+    };
+
     private static Dictionary<ICON_IMAGES, ButtonPic> iIconImages = [];
 
     private static int iOverlayMessageBox = -1;

@@ -1096,7 +1096,7 @@ public partial class Globals
     public static uint guiRIGHTPANEL { get; set; }
     //    public static Surfaces guiRENDERBUFFER { get; set; }
     //public static Surfaces Surfaces.SAVE_BUFFER { get; set; }
-    public static SurfaceType guiEXTRABUFFER { get; set; }
+    public static SurfaceType guiEXTRABUFFER { get; set; } = SurfaceType.EXTRA_BUFFER;
     public static bool gfExtraBuffer { get; set; }
 
     public static OBJECTTYPE? gpItemPointer { get; set; } = null;

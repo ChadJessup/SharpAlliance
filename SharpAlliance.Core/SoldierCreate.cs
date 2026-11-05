@@ -24,6 +24,12 @@ public class SoldierCreate
         SOLDIERTYPE Soldier = new();
         Soldier.uiUniqueSoldierIdValue = guiCurrentUniqueSoldierId++;
 
+        // defaults every new soldier starts with (InitSoldierStruct); TODO(port): the rest of its fields
+        Soldier.bMorale = DEFAULT_MORALE;
+        Soldier.bBreath = 99;
+        Soldier.bBreathMax = 100;
+        Soldier.bActive = true;
+
         // OK, CHECK IF WE HAVE A VALID PROFILE ID!
         if (pCreateStruct.ubProfile != NO_PROFILE)
         {

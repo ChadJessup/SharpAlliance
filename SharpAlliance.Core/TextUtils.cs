@@ -25,21 +25,42 @@ public class TextUtils
         await this.LoadAllItemNames();
     }
 
+    /// <summary>
+    /// Reads every item's names and description from BINARYDATA\ITEMDESC.EDT (LoadAllItemNames). Each record is
+    /// the short name, the name and the description, one after the other.
+    /// </summary>
     private ValueTask LoadAllItemNames()
     {
+        const int recordSize = SIZE_SHORT_ITEM_NAME + SIZE_ITEM_NAME + SIZE_ITEM_INFO;
         var maxItems = (int)Items.MAXITEMS;
-        List<string> itemNames = new(maxItems);
-        List<string> itemDescriptions = new(maxItems);
-        List<string> shortItemNames = new(maxItems);
 
-        for (ushort loop = 0; loop < maxItems; loop++)
+        using var stream = this.files.FileOpen(ITEMSTRINGFILENAME, FileAccess.Read);
+        if (stream == Stream.Null)
         {
-            var (itemName, shortItemName, itemDescription) = this.LoadItemInfo(loop);
-            itemNames.Add(itemName);
-            shortItemNames.Add(shortItemName);
-            itemDescriptions.Add(itemDescription);
+            return ValueTask.CompletedTask;
+        }
 
-            // Load short item info
+        var data = new byte[(int)Math.Min(stream.Length, (long)recordSize * maxItems)];
+        int total = 0;
+        while (total < data.Length)
+        {
+            int read = stream.Read(data, total, data.Length - total);
+            if (read <= 0)
+            {
+                break;
+            }
+
+            total += read;
+        }
+
+        for (int loop = 0; loop < maxItems && (loop + 1) * recordSize <= total; loop++)
+        {
+            var item = (Items)loop;
+            int offset = loop * recordSize;
+
+            ShortItemNames[item] = ExtractString(data.AsSpan(offset, SIZE_SHORT_ITEM_NAME));
+            ItemNames[item] = ExtractString(data.AsSpan(offset + SIZE_SHORT_ITEM_NAME, SIZE_ITEM_NAME));
+            ItemDescriptions[item] = ExtractString(data.AsSpan(offset + SIZE_SHORT_ITEM_NAME + SIZE_ITEM_NAME, SIZE_ITEM_INFO));
         }
 
         return ValueTask.CompletedTask;

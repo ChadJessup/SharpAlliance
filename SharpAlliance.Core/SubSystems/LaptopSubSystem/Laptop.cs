@@ -815,6 +815,7 @@ ubPreviousAdvertisment = DisplayBobbyRAd(fInit, fRedraw);
         }
 
         gfDontStartTransitionFromLaptop = false;
+        guiCurrentScreen = ScreenName.LAPTOP_SCREEN;
 
         //Since we are coming in from MapScreen, uncheck the flag
         guiTacticalInterfaceFlags &= ~INTERFACE.MAPSCREEN;

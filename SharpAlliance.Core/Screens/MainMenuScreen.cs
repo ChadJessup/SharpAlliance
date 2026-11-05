@@ -225,7 +225,7 @@ public class MainMenuScreen : IScreen
                     break;
 
                 case MainMenuItems.PREFERENCES:
-                    //this.optionsScreen.guiPreviousOptionScreen = guiCurrentScreen;
+                    Globals.guiPreviousOptionScreen = ScreenName.MAINMENU_SCREEN;
                     this.guiMainMenuExitScreen = ScreenName.OPTIONS_SCREEN;
                     Globals.gbHandledMainMenu = 0;
                     Globals.gfMainMenuScreenExit = true;

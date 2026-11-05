@@ -2,6 +2,7 @@ using System;
 using SharpAlliance.Core.Managers;
 using SharpAlliance.Core.Managers.VideoSurfaces;
 using SixLabors.ImageSharp;
+using SixLabors.ImageSharp.PixelFormats;
 using static SharpAlliance.Core.EnglishText;
 using static SharpAlliance.Core.Globals;
 
@@ -728,6 +729,71 @@ public partial class Laptop
     }
 
 
+    private static readonly System.Collections.Generic.Dictionary<Image<Rgba32>, Image<Rgba32>> itemPictures = [];
+
+    /// <summary>
+    /// The item pictures use pure green for the pixels the original highlights when an item is selected; drawn
+    /// normally they are dark. TODO(port): the shade tables the original draws item pictures through.
+    /// </summary>
+    private static Image<Rgba32> ItemPictureWithoutOutline(Image<Rgba32> picture)
+    {
+        if (!itemPictures.TryGetValue(picture, out var plain))
+        {
+            plain = picture.Clone();
+            plain.ProcessPixelRows(accessor =>
+            {
+                for (int y = 0; y < accessor.Height; y++)
+                {
+                    foreach (ref Rgba32 pixel in accessor.GetRowSpan(y))
+                    {
+                        if (pixel.A != 0 && pixel.R == 0 && pixel.G == 255 && pixel.B == 0)
+                        {
+                            pixel = new Rgba32(16, 16, 16, 255);
+                        }
+                    }
+                }
+            });
+
+            itemPictures[picture] = plain;
+        }
+
+        return plain;
+    }
+
+    /// <summary>The shadow of an item: every pixel the item covers darkens the picture behind it (as the original's shadow shade table does).</summary>
+    private static void DrawItemShadow(Image<Rgba32> picture, int left, int top)
+    {
+        Image<Rgba32> frame = video.Surfaces[SurfaceType.FRAME_BUFFER];
+
+        frame.ProcessPixelRows(picture, (target, source) =>
+        {
+            for (int y = 0; y < source.Height; y++)
+            {
+                int ty = top + y;
+                if (ty < 0 || ty >= target.Height)
+                {
+                    continue;
+                }
+
+                Span<Rgba32> targetRow = target.GetRowSpan(ty);
+                Span<Rgba32> sourceRow = source.GetRowSpan(y);
+                for (int x = 0; x < sourceRow.Length; x++)
+                {
+                    int tx = left + x;
+                    if (sourceRow[x].A == 0 || tx < 0 || tx >= targetRow.Length)
+                    {
+                        continue;
+                    }
+
+                    ref Rgba32 pixel = ref targetRow[tx];
+                    pixel.R = (byte)(pixel.R * 45 / 100);
+                    pixel.G = (byte)(pixel.G * 45 / 100);
+                    pixel.B = (byte)(pixel.B * 45 / 100);
+                }
+            }
+        });
+    }
+
     private static bool DisplayMercsInventory(NPCID ubMercID)
     {
         MERCPROFILESTRUCT profile = gMercProfiles[ubMercID];
@@ -751,7 +817,19 @@ public partial class Laptop
                 // increase the item count
                 ubItemCount++;
 
-                // TODO(port): blit the item's graphic (shadow + item) - the item interface graphics are not loaded in the port yet
+                // the item's picture, centred in its box, with a shadow behind it
+                INVTYPE pItem = Item[usItem];
+                HVOBJECT itemGraphics = Interface.GetInterfaceGraphicForItem(pItem);
+                if (pItem.ubGraphicNum >= 0 && pItem.ubGraphicNum < itemGraphics.Images.Length)
+                {
+                    Image<Rgba32> picture = ItemPictureWithoutOutline(itemGraphics.Images[pItem.ubGraphicNum]);
+                    int sCenX = PosX + Math.Abs(WEAPONBOX_SIZE_X - 3 - picture.Width) / 2;
+                    int sCenY = PosY + Math.Abs(WEAPONBOX_SIZE_Y - picture.Height) / 2;
+
+                    // shadow: darkens what is behind the item's shape, two pixels down and to the left
+                    DrawItemShadow(picture, sCenX - 2, sCenY + 2);
+                    video.BlitSurfaceToSurface(picture, SurfaceType.FRAME_BUFFER, Point.Empty, new(sCenX, sCenY));
+                }
 
                 // if there are more then 1 piece of equipment in the current slot, display how many there are
                 if (profile.bInvNumber[(int)i] > 1)

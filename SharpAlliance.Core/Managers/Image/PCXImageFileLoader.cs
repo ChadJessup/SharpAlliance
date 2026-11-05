@@ -444,6 +444,11 @@ public class PCXImageFileLoader : IImageFileLoader
 
       //  var uncompressedData = imageSpan.ToArray();
 
+        // ref parameters can't be used inside the lambda below
+        byte[]? indices = hImage.p8BPPData;
+        List<SGPPaletteEntry> palette = hImage.pPalette;
+        int width = hImage.usWidth;
+
         image.ProcessPixelRows(p =>
         {
             ReadOnlySpan<Rgba32> paletteSpan = new(hVObject.Palette);
@@ -454,6 +459,13 @@ public class PCXImageFileLoader : IImageFileLoader
                 for (int x = 0; x < image.Width; x++)
                 {
                     var pixel = IVideoManager.AlphaPixel;//paletteSpan[x];
+
+                    // the PCX bitmap holds palette indexes: look each one up (every pixel is opaque)
+                    if (indices is not null && palette.Count == 256)
+                    {
+                        var entry = palette[indices[y * width + x]];
+                        pixel = new Rgba32(entry.peRed, entry.peGreen, entry.peBlue, 255);
+                    }
 
                     // This is the alpha pixel after all the conversions...so replace with
                     // RGBA32 alpha pixel.

@@ -346,7 +346,18 @@ public class FileManager : IFileManager
         }
 
         Span<byte> buff = new byte[size];
-        var buffer = System.Text.Json.JsonSerializer.SerializeToUtf8Bytes(value);
+        byte[] buffer;
+        if (typeof(T).IsPrimitive || typeof(T).IsEnum)
+        {
+            // numbers go to the file as the raw bytes the C code wrote with its (size)-byte write; reading them back with FileRead<T> expects that
+            var full = new byte[System.Runtime.CompilerServices.Unsafe.SizeOf<T>()];
+            System.Runtime.CompilerServices.Unsafe.WriteUnaligned(ref full[0], value);
+            buffer = full[..Math.Min(size, full.Length)];
+        }
+        else
+        {
+            buffer = System.Text.Json.JsonSerializer.SerializeToUtf8Bytes(value);
+        }
 
         using var bw = new BinaryWriter(stream, System.Text.Encoding.Default, leaveOpen: true);
         bw.Write(buffer);

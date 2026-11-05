@@ -122,7 +122,6 @@ public class OptionsScreen : IScreen
     private bool gfExitOptionsDueToMessageBox;
     private int giOptionsMessageBox;
     private ScreenName guiOptionsScreen = ScreenName.OPTIONS_SCREEN;
-    private ScreenName guiPreviousOptionScreen = ScreenName.OPTIONS_SCREEN;
 
     private string guiOptionBackGroundImageKey;
     private string guiOptionsAddOnImagesKey;
@@ -243,16 +242,22 @@ public class OptionsScreen : IScreen
         video.EndFrameBufferRender();
         //        video.InvalidateScreen();
 
+        ScreenName next = this.guiOptionsScreen;
+
         if (this.gfOptionsScreenExit)
         {
             this.ExitOptionsScreen();
+
+            // the next visit starts from scratch
+            this.guiOptionsScreen = ScreenName.OPTIONS_SCREEN;
+
             this.gfOptionsScreenExit = false;
             this.gfOptionsScreenEntry = true;
 
             ClockManager.UnPauseGame();
         }
 
-        return ValueTask.FromResult(this.guiOptionsScreen);
+        return ValueTask.FromResult(next);
     }
 
     private void ExitOptionsScreen()
@@ -566,7 +571,7 @@ public class OptionsScreen : IScreen
         this.buttonList.Add(this.guiOptGotoSaveGameBtn);
 
         ButtonSubSystem.SpecifyDisabledButtonStyle(this.guiOptGotoSaveGameBtn, DISABLED_STYLE.HATCHED);
-        if (this.guiPreviousOptionScreen == ScreenName.MAINMENU_SCREEN)// || !CanGameBeSaved())
+        if (Globals.guiPreviousOptionScreen == ScreenName.MAINMENU_SCREEN)// || !CanGameBeSaved())
         {
             ButtonSubSystem.DisableButton(this.guiOptGotoSaveGameBtn);
         }
@@ -1157,7 +1162,7 @@ public class OptionsScreen : IScreen
         {
             btn.uiFlags &= ~ButtonFlags.BUTTON_CLICKED_ON;
 
-            this.SetOptionsExitScreen(this.guiPreviousOptionScreen);
+            this.SetOptionsExitScreen(Globals.guiPreviousOptionScreen);
 
             video.InvalidateRegion(btn.MouseRegion.Bounds);
         }

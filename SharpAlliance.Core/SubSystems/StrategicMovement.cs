@@ -2325,22 +2325,23 @@ public class StrategicMovement
 
     public static void SetGroupSectorValue(int sSectorX, MAP_ROW sSectorY, int sSectorZ, int ubGroupID)
     {
-        GROUP? pGroup;
-        PLAYERGROUP? pPlayer = null;
-
         // get the group
-        pGroup = GetGroup(ubGroupID);
+        GROUP? pGroup = GetGroup(ubGroupID);
 
         // make sure it is valid
         Debug.Assert(pGroup is not null);
+        if (pGroup is null)
+        {
+            return;
+        }
 
         //Remove waypoints
         RemovePGroupWaypoints(pGroup);
 
         // set sector x and y to passed values
-        pGroup.ubSectorX = pGroup.ubNextX = (int)sSectorX;
+        pGroup.ubSectorX = pGroup.ubNextX = sSectorX;
         pGroup.ubSectorY = pGroup.ubNextY = sSectorY;
-        pGroup.ubSectorZ = (int)sSectorZ;
+        pGroup.ubSectorZ = sSectorZ;
         pGroup.fBetweenSectors = false;
 
         // set next sectors same as current
@@ -2348,18 +2349,21 @@ public class StrategicMovement
         GameEvents.DeleteStrategicEvent(EVENT.GROUP_ARRIVAL, pGroup.ubGroupID);
 
         // set all of the mercs in the group so that they are in the new sector too.
-        //        pPlayer = pGroup.pPlayerList;
-        //        while (pPlayer)
+        foreach (PLAYERGROUP pPlayer in pGroup.pPlayerList)
         {
+            if (pPlayer.pSoldier is null)
+            {
+                continue;
+            }
+
             pPlayer.pSoldier.sSectorX = sSectorX;
             pPlayer.pSoldier.sSectorY = sSectorY;
-            pPlayer.pSoldier.bSectorZ = (int)sSectorZ;
+            pPlayer.pSoldier.bSectorZ = sSectorZ;
             pPlayer.pSoldier.fBetweenSectors = false;
             pPlayer.pSoldier.uiStatusFlags &= ~SOLDIER.SHOULD_BE_TACTICALLY_VALID;
-            pPlayer = pPlayer.next;
         }
 
-        //        CheckAndHandleUnloadingOfCurrentWorld();
+        // TODO(port): CheckAndHandleUnloadingOfCurrentWorld (only matters once a sector is loaded)
     }
 
     private static void SetEnemyGroupSector(GROUP? pGroup, SEC ubSectorID)

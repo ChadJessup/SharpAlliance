@@ -337,7 +337,7 @@ public class Finances
     }
 
 
-    private static int GetProjectedTotalDailyIncome()
+    internal static int GetProjectedTotalDailyIncome()
     {
         // return total  projected income, including what is earned today already
 

@@ -620,7 +620,7 @@ public class StrategicMines
 
 
     // get index of this mine, return -1 if no mine found
-    static MINE GetMineIndexForSector(int sX, MAP_ROW sY)
+    internal static MINE GetMineIndexForSector(int sX, MAP_ROW sY)
     {
         MINE ubMineIndex = 0;
 

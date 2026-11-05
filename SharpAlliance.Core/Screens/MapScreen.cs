@@ -13,12 +13,13 @@ using static SharpAlliance.Core.Globals;
 
 namespace SharpAlliance.Core.Screens;
 
-public class MapScreen : IScreen
+public partial class MapScreen : IScreen
 {
     private readonly IVideoManager video;
     private readonly ILibraryManager library;
     private readonly MapScreenInterfaceMap mapScreenInterface;
     private readonly MessageSubSystem messages;
+    private readonly IScreenManager screens;
     public static List<MERC_LEAVE_ITEM?> gpLeaveListHead = [];
     private static Path? gpHelicopterPreviousMercPath = null;
     private static Path?[] gpCharacterPreviousMercPath = new Path?[MAX_CHARACTER_COUNT];
@@ -32,8 +33,10 @@ public class MapScreen : IScreen
         MapScreenInterfaceMap mapScreenInterfaceMap,
         IVideoManager videoManager,
         ILibraryManager libraryManager,
-        MessageSubSystem messageSubSystem)
+        MessageSubSystem messageSubSystem,
+        IScreenManager screenManager)
     {
+        this.screens = screenManager;
         video = videoManager;
         this.library = libraryManager;
         this.mapScreenInterface = mapScreenInterfaceMap;
@@ -42,61 +45,7 @@ public class MapScreen : IScreen
 
     public bool IsInitialized { get; set; }
     public ScreenState State { get; set; }
-    public static IEnumerable<GUI_BUTTON> buttonList { get; private set; }
-
-    public ValueTask Activate()
-    {
-        fMapBackgroundDrawn = false;
-        return ValueTask.CompletedTask;
-    }
-
-    private bool fMapBackgroundDrawn;
-    private SixLabors.ImageSharp.Image<SixLabors.ImageSharp.PixelFormats.Rgba32>? bigMapHalf;
-
-    /// <summary>
-    /// TODO(port): MapScreenHandle in mapscreen.c is not ported (character list, sector info, buttons, time
-    /// compression, ...). For now this only draws the map and its border so the screen is not blank.
-    /// </summary>
-    public ValueTask<ScreenName> Handle()
-    {
-        if (!fMapBackgroundDrawn)
-        {
-            fMapBackgroundDrawn = true;
-
-            var frame = video.Surfaces[SurfaceType.FRAME_BUFFER];
-            video.ColorFillVideoSurfaceArea(SurfaceType.FRAME_BUFFER, new(0, 0, 640, 480), new SixLabors.ImageSharp.PixelFormats.Rgba32(0, 0, 0, 255));
-
-            // the big map is drawn at half size, inside the map view
-            if (bigMapHalf is null)
-            {
-                var bigMap = video.GetVideoObject("INTERFACE\\b_map.pcx");
-                bigMapHalf = bigMap.Images[0].Clone(ctx => ctx.Resize(
-                    bigMap.Images[0].Width / 2,
-                    bigMap.Images[0].Height / 2));
-            }
-
-            video.Blt16BPPTo16BPP(
-                frame,
-                bigMapHalf,
-                new(MAP_VIEW_START_X + 1, MAP_VIEW_START_Y),
-                new(0, 0),
-                new(Math.Min(bigMapHalf.Width, 640 - MAP_VIEW_START_X - 1), Math.Min(bigMapHalf.Height, 480 - MAP_VIEW_START_Y)));
-
-            video.BltVideoObject(
-                SurfaceType.FRAME_BUFFER,
-                video.GetVideoObject(Utils.FilenameForBPP("INTERFACE\\MBS.sti")),
-                0,
-                MAP_BORDER_X,
-                0,
-                VO_BLT.SRCTRANSPARENCY);
-
-            video.InvalidateRegion(0, 0, 640, 480);
-        }
-
-        video.EndFrameBufferRender();
-
-        return ValueTask.FromResult(ScreenName.MAP_SCREEN);
-    }
+    public static List<GUI_BUTTON> buttonList { get; } = [];
 
     public ValueTask<bool> Initialize()
     {
@@ -199,6 +148,7 @@ public class MapScreen : IScreen
 
     public ValueTask Deactivate()
     {
+        LeaveMapScreen();
         return ValueTask.CompletedTask;
     }
 
